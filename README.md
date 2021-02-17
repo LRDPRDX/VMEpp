@@ -9,5 +9,12 @@ make
 sudo make install
 ```
 
+# Run the first example
+```
+cd <root_dir>/template
+make
+./Main
+```
+
 # Disclaimer
 It is not stable. Do not use it for now.
