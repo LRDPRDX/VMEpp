@@ -26,10 +26,10 @@ int main()
         //********************
         //hv.Print();
     }
-    catch( const VException &cv )
+    catch( const VException &e )
     {
-        std::cerr << cv.what() << "\n"; 
-        std::cerr << cv.GetInfo() << "\n"; 
+        std::cerr << e.what() << "\n"; 
+        std::cerr << e.GetInfo() << "\n"; 
     }
 
     return 0;
