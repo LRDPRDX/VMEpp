@@ -1,0 +1,21 @@
+# Compilation results
+*.[od]
+*.pcm
+*.so
+/lib
+/bin
+/obj
+Main
+
+# Tests
+/test
+
+# Documentation
+/doc
+
+# ROOT directories
+ROOT/
+
+# rsync script
+/backup.sh
+
