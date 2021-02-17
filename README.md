@@ -2,6 +2,10 @@
 A C++ library (based on [CAENVMElib](https://www.caen.it/products/caenvmelib-library/))
 which provides a UI for CAEN VME modules 
 
+# Prerequisites
+ - GCC compiler with c++11 support
+ - [CAENVMElib](https://www.caen.it/products/caenvmelib-library/)
+
 # Installation
 ```
 cd <root_dir>
