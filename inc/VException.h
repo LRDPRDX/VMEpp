@@ -45,32 +45,32 @@ namespace vmeplus
                 switch( errorCode )
                 {
                     case( VError_t::vSuccess ) :
-                        fMessage = "Operation completed successfully"; break;
+                        fMessage = "VME++ :: ERROR :: Operation completed successfully"; break;
                     case( VError_t::vBusError ) :
-                        fMessage = "VME bus error during the cycle";
-                        fHint    = "Check your cable or reboot VME crate manually";
+                        fMessage = "VME++ :: ERROR :: VME bus error during the cycle";
+                        fHint    = "VME++ :: HINT :: Check your cable or reboot VME crate manually";
                         break;
                     case( VError_t::vCommError ) :
-                        fMessage = "Communication error"; break;
+                        fMessage = "VME++ :: ERROR :: Communication error"; break;
                     case( VError_t::vGenericError ) :      
-                        fMessage = "Unspecified error"; break;
+                        fMessage = "VME++ :: ERROR :: Unspecified error"; break;
                     case( VError_t::vInvalidParam ) :      
-                        fMessage = "Invalid parameter"; break;
+                        fMessage = "VME++ :: ERROR :: Invalid parameter"; break;
                     case( VError_t::vTimeoutError ) :      
-                        fMessage = "Timeout error"; break;
+                        fMessage = "VME++ :: ERROR :: Timeout error"; break;
                     case( VError_t::vBadMaster ) :
-                        fMessage = "Requesting a bad controller";
-                        fHint    = "Try to register this board to the correct master";
+                        fMessage = "VME++ :: ERROR :: Requesting a bad controller";
+                        fHint    = "VME++ :: HINT :: Try to register this board to the correct master";
                         break;
                     case( VError_t::vOrphan ) :
-                        fMessage = "The controller is invalid";
-                        fHint = "Use VController::RegisterBoard( VBoard* ) method to register the board";
+                        fMessage = "VME++ :: ERROR :: The controller is invalid";
+                        fHint = "VME++ :: HINT :: Use VController::RegisterBoard( VBoard* ) method to register the board";
                         break;
                     case( VError_t::vBuffAllocFailed ) :
-                        fMessage = "Failed to allocate memory for the readout buffer";
+                        fMessage = "VME++ :: ERROR :: Failed to allocate memory for the readout buffer";
                         break;
                     case( VError_t::vBadSlave ) :
-                        fMessage = "Bad master (base address, nullptr, etc.)";
+                        fMessage = "VME++ :: ERROR :: Bad master (base address, nullptr, etc.)";
                         break;
                 }
             }
