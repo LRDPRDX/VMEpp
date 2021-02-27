@@ -14,10 +14,9 @@ int main()
     //Next create a board which you want to work with
     //For example,
     //V6533N hv( 0x40000000 );
-    
     try
     {
-        controller.Open( 0, 0 ); 
+        controller.Open( 0, 0 );
         //controller.RegisterSlave( &hv );
         //controller.Initialize();
 
@@ -26,10 +25,10 @@ int main()
         //********************
         //hv.Print();
     }
-    catch( const VException &cv )
+    catch( const VException &e )
     {
-        std::cerr << cv.what() << "\n"; 
-        std::cerr << cv.GetInfo() << "\n"; 
+        std::cerr << e.what() << "\n";
+        std::cerr << e.GetInfo() << "\n";
     }
 
     return 0;
