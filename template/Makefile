@@ -1,4 +1,4 @@
-TOP_DIR := /home/lrdprdx/projects/VME
+TOP_DIR := /home/sayka/course/VMEpp
 INC_DIR     := $(TOP_DIR)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
