@@ -81,9 +81,9 @@ namespace vmeplus {
 
         // OPCODE
     public:
-        bool WriteOpcode(uint16_t opcode);
+        void WriteOpcode(uint16_t opcode);
 
-        bool ReadOpcode(uint16_t opcode);
+        uint16_t ReadOpcode(uint16_t opcode);
     };
 }
 

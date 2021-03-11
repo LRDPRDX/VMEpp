@@ -1,8 +1,8 @@
 #include "modules/V1190B.h"
 
-
-
 namespace vmeplus {
+
+
     void V1190B::Initialize() {}
 
     void V1190B::Release() {}
@@ -31,6 +31,10 @@ namespace vmeplus {
 
     uint32_t ReadRegister() { return 0;}
 
-    bool WriteOpcode(uint16_t opcode) { return 0; }
-    bool ReadOpcode(uint16_t opcode) { return 0; }
+    void WriteOpcode(uint16_t opcode) {
+    }
+
+    uint16_t ReadOpcode(uint16_t opcode) {
+
+        return 0; }
 }
