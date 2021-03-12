@@ -1,6 +1,9 @@
 #ifndef V_PLUS_V1190B_H
 #define V_PLUS_V1190B_H
 
+#define V1190B_BASE_ADDRESS
+#define V1190B_OUTPUT_REGISTER              0X0000UL
+#define V1190B_OUTPUT_BUFFER_MAX            0x0FFCUL
 #define V1190B_CONTROL_REGISTER             0x1000UL
 #define V1190B_STATUS_REGISTER              0X1002UL
 #define V1190B_INTERRUPT_LEVEL              0x100AUL
@@ -73,17 +76,10 @@ namespace vmeplus {
     public:
         void Reset() override;
 
-        // Register
-    public:
-        void WriteRegister(uint32_t data);
-
-        uint32_t ReadRegister();
-
         // OPCODE
     public:
         void WriteOpcode(uint16_t opcode);
-
-        uint16_t ReadOpcode(uint16_t opcode);
+        uint16_t ReadOpcode();
     };
 }
 
