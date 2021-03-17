@@ -28,18 +28,18 @@ namespace vmeplus {
     void V1190B::Reset() {}
 
     void V1190B::WriteMicro(uint16_t data) {
-        while (!(V1190B::ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK))) {}
-        V1190B::WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, data);
+        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK))) {}
+        WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, data);
     }
 
     void V1190B::WriteMicro(Opcode opcode) {
-        uint16_t code = static_cast<uint16_t>(opcode.command)<<8 | opcode.obj;
-        while (!(V1190B::ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK))) {}
-        V1190B::WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, code);
+        uint16_t code = static_cast<uint16_t>(opcode.command)<<8U | opcode.obj;
+        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK))) {}
+        WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, code);
     }
 
     uint16_t V1190B::ReadMicro() {
-        while (!(V1190B::ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, READ_OK))) {}
+        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, READ_OK))) {}
         return ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO);
     }
 }
