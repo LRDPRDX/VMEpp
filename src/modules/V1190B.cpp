@@ -1,5 +1,6 @@
+#include <string>
+
 #include "CAENVMElib.h"
-#include "VException.h"
 #include "modules/V1190B.h"
 
 namespace vmeplus {
@@ -28,21 +29,22 @@ namespace vmeplus {
 
     void V1190B::Reset() {}
 
-    void V1190B::WriteOpcode(uint16_t opcode) {
-        if (V1190B::ReadRegister16(V1190B_BASE_ADDRESS +V1190B_MICRO_HANDSHAKE) == 1) {
-            V1190B::WriteRegister16(V1190B_BASE_ADDRESS +V1190B_MICRO, opcode);
-        } else {
-
-        }
+    void V1190B::WriteMicro(uint16_t opcode) {
+        uint16_t writeOkMsk = 0x0001;
+        while (V1190B::ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, writeOkMsk) != writeOkMsk) {}
+        V1190B::WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, opcode);
     }
 
-    uint16_t V1190B::ReadOpcode() {
-        uint16_t opcode;
-        if (V1190B::ReadRegister16(V1190B_BASE_ADDRESS +V1190B_MICRO_HANDSHAKE) == 1) {
-            V1190B::ReadRegister16(V1190B_BASE_ADDRESS +V1190B_MICRO, opcode);
-        } else {
+    void V1190B::WriteMicro(Opcode opcode) {
+        uint16_t code = std::stoi(std::to_string(static_cast<uint8_t>(opcode.command)) + std::to_string(opcode.obj));
+        uint16_t writeOkMsk = 0x0001;
+        while (V1190B::ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, writeOkMsk) != writeOkMsk) {}
+        V1190B::WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, code);
+    }
 
-        }
-        return opcode;
+    uint16_t V1190B::ReadMicro() {
+        uint16_t readOkMsk = 0x0002;
+        while (V1190B::ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, readOkMsk) != readOkMsk) {}
+        return ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO);
     }
 }

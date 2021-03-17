@@ -1,8 +1,8 @@
 #ifndef V_PLUS_V1190B_H
 #define V_PLUS_V1190B_H
 
-#define V1190B_BASE_ADDRESS
-#define V1190B_OUTPUT_REGISTER              0X0000UL
+#define V1190B_BASE_ADDRESS                 0x0000UL//can be chosen from 0x0000UL - 0xFFFFUL
+#define V1190B_OUTPUT_BUFFER                0X0000UL
 #define V1190B_OUTPUT_BUFFER_MAX            0x0FFCUL
 #define V1190B_CONTROL_REGISTER             0x1000UL
 #define V1190B_STATUS_REGISTER              0X1002UL
@@ -38,6 +38,104 @@
 #include "VEvent.h"
 
 namespace vmeplus {
+
+    enum class Command {
+        //ACQUISITION MODE
+        TRG_MATCH,                                      //set trigger matching
+        CONT_STOR,                                      //set continuous storage
+        READ_ACQ_MOD,                                   //read acquisition mode
+        SET_KEEP_TOKEN,                                 //set keep_token
+        CLEAR_KEEP_TOKEN,                               //clear keep token
+        LOAD_DEF_CONFIG,                                //load default configuration
+        SAVE_USER_CONFIG,                               //save User configuration
+        LOAD_USER_CONFIG,                               //load User configuration
+        AUTOLOAD_USER_CONF,                             //set auto load User configuration
+        AUTOLOAD_DEF_CONFI,                             //set auto load default configuration
+
+        //TRIGGER
+        SET_WIN_WIDTH,                                  //set window width
+        SET_WIN_OFFS,                                   //set window offset
+        SET_SW_MARGIN,                                  //set extra search margin
+        SET_REJ_MARGIN,                                 //set reject margin
+        EN_SUB_TRG,                                     //enable subtraction of trigger time
+        DIS_SUB_TRG,                                    //disable subtraction of trigger time
+        READ_TRG_CONF,                                  //read trigger configuration
+
+        //TDC EDGE DETECTION & RESOLUTION
+        SET_DETECTION,                                  //enable paired meas. leading/ trailing edge
+        READ_DETECTION,                                 //read edge detection configuration
+        SET_TR_LEAD_LSB,                                //set LSB of leading/trailing edge
+        SET_PAIR_RES,                                   //set leading time and width res. when pair
+        READ_RES,                                       //read resolution
+        SET_DEAD_TIME,                                  //set channel dead time between hits
+        READ_DEAD_TIME,                                 //read channel dead time between hits
+
+        //TDC READOUT
+        EN_HEAD_TRAILER,                                //enable TDC header and TRAILER
+        DIS_HEAD_TRAILER,                               //disable TDC header and TRAILER
+        READ_HEAD_TRAILER,                              //read status TDC header and TRAILER
+        SET_EVENT_SIZE,                                 //set maximum number of hits per event
+        READ_EVENT_SIZE,                                //read maximum number of hits per event
+        EN_ERROR_MARK,                                  //enable TDC error mark
+        DIS_ERROR_MARK,                                 //disable TDC error mark
+        EN_ERROR_BYPASS,                                //enable bypass TDC if error
+        DIS_ERROR_BYPASS,                               //disable bypass TDC if error
+        SET_ERROR_TYPES,                                //set TDC internal error type
+        READ_ERROR_TYPES,                               //read TDC internal error type
+        SET_FIFO_SIZE,                                  //set effective size of readout FIFO
+        READ_FIFO_SIZE,                                 //read effective size of readout FIFO
+
+        //CHANNEL ENABLE
+        EN_CHANNEL,                                     //enable channel nn
+        DIS_CHANNEL,                                    //disable channel nn
+        EN_ALL_CH,                                      //enable all channels
+        DIS_ALL_CH,                                     //disable all channels
+        WRITE_EN_PATTERN,                               //write enable pattern for channels
+        READ_EN_PATTERN,                                //read enable pattern for channels
+        WRITE_EN_PATTERN32,                             //write 32 bit enable pattern for channels
+        READ_EN_PATTERN32,                              //read 32 bit enable pattern for channels
+
+        //ADJUST
+        SET_GLOB_OFFS,                                  //set global offset
+        READ_GLOB_OFFS,                                 //read global offset
+        SET_ADJUST_CH,                                  //set channel nn adjust
+        READ_ADJUST_CH,                                 //read channel nn adjust
+        SET_RC_ADJ,                                     //Set RC adjust of tdc 0n
+        READ_RC_ADJ,                                    //Read RC adjust of tdc 0n
+        SAVE_RC_ADJ,                                    //save RC adjust on EEPROM
+
+        //MISCELLANEOUS
+        READ_TDC_ID,                                    //read programmed ID of TDC 0n
+        READ_MICRO_REV,                                 //read firmware revision of microcontroller
+        RESET_DLL_PLL,                                  //reset DLL and PLL
+
+        //ADVANCED
+        WRITE_SETUP_REG,                                //write word nn into the scan path setup
+        READ_SETUP_REG,                                 //read word nn into the scan path setup
+        UPDATE_SETUP_REG,                               //load the scan path setup
+        DEFAULT_SETUP_REG,                              //reload the default scan path setup
+        READ_ERROR_STATUS,                              //read errors in the TDC 0n status
+        READ_DLL_LOCK,                                  //read the DLL LOCK bit of the TDC 0n
+        READ_STATUS_STREAM,                             //read the TDC 0n status
+        UPDATE_SETUP_TDC,                               //load the scan path setup on TDC nn
+
+        //DEBUG AND TEST
+        WRITE_EEPROM,                                   //write 1 byte into the EEPROM
+        READ_EEPROM,                                    //read 1 byte from the EEPROM
+        REVISION_DATE_μCONTROLLER_FW,                   //read the μcontroller firmware revision/date
+        WRITE_SPARE,                                    //write a 16 bit spare variable
+        READ_SPARE,                                     //read a 16 bit spare variable
+        ENABLE_TEST_MODE,                               //enable TDC test mode
+        DISABLE_TEST_MODE,                              //disable TDC test mode
+        SET_TDC_TEST_OUTPUT,                            //set TDC 0n signal test output
+        SET_DLL_CLOCK,                                  //set DLL clock source
+        READ_TDC_SETUP_SCAN_PATH                        //read all Setup Scan Path on TDC 0n
+    };
+
+    struct Opcode {
+        Command command;
+        uint8_t obj;
+    };
 
     class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor {
     public:
@@ -76,10 +174,11 @@ namespace vmeplus {
     public:
         void Reset() override;
 
-        // OPCODE
+        //MICRO
     public:
-        void WriteOpcode(uint16_t opcode);
-        uint16_t ReadOpcode();
+        void WriteMicro(uint16_t opcode);
+        void WriteMicro(Opcode opcode);
+        uint16_t ReadMicro();
     };
 }
 
