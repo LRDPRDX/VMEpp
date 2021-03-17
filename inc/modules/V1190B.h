@@ -125,7 +125,7 @@ namespace vmeplus {
         //DEBUG AND TEST
         WRITE_EEPROM,                             //write 1 byte into the EEPROM
         READ_EEPROM,                                    //read 1 byte from the EEPROM
-        REVISION_DATE_μCONTROLLER_FW,                   //read the μcontroller firmware revision/date
+        REVISION_DATE_CONTROLLER_FW,                   //read the controller firmware revision/date
         WRITE_SPARE,                                    //write a 16 bit spare variable
         READ_SPARE,                                     //read a 16 bit spare variable
         ENABLE_TEST_MODE,                               //enable TDC test mode
