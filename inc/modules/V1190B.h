@@ -33,6 +33,9 @@
 #define V1190B_DUMMY_32                     0x1200UL
 #define V1190B_DUMMY_16                     0x1204UL
 
+#define WRITE_OK (1<<0)
+#define READ_OK (1<<1)
+
 #include "VSlaveAcquisitor.h"
 #include "VSlaveInterrupter.h"
 #include "VEvent.h"
@@ -50,10 +53,10 @@ namespace vmeplus {
         SAVE_USER_CONFIG,                               //save User configuration
         LOAD_USER_CONFIG,                               //load User configuration
         AUTOLOAD_USER_CONF,                             //set auto load User configuration
-        AUTOLOAD_DEF_CONFI,                             //set auto load default configuration
+        AUTOLOAD_DEF_CONF,                             //set auto load default configuration
 
         //TRIGGER
-        SET_WIN_WIDTH,                                  //set window width
+        SET_WIN_WIDTH = 16,                             //set window width
         SET_WIN_OFFS,                                   //set window offset
         SET_SW_MARGIN,                                  //set extra search margin
         SET_REJ_MARGIN,                                 //set reject margin
@@ -62,7 +65,7 @@ namespace vmeplus {
         READ_TRG_CONF,                                  //read trigger configuration
 
         //TDC EDGE DETECTION & RESOLUTION
-        SET_DETECTION,                                  //enable paired meas. leading/ trailing edge
+        SET_DETECTION = 34,                             //enable paired meas. leading/ trailing edge
         READ_DETECTION,                                 //read edge detection configuration
         SET_TR_LEAD_LSB,                                //set LSB of leading/trailing edge
         SET_PAIR_RES,                                   //set leading time and width res. when pair
@@ -86,7 +89,7 @@ namespace vmeplus {
         READ_FIFO_SIZE,                                 //read effective size of readout FIFO
 
         //CHANNEL ENABLE
-        EN_CHANNEL,                                     //enable channel nn
+        EN_CHANNEL = 64,                                //enable channel nn
         DIS_CHANNEL,                                    //disable channel nn
         EN_ALL_CH,                                      //enable all channels
         DIS_ALL_CH,                                     //disable all channels
@@ -96,7 +99,7 @@ namespace vmeplus {
         READ_EN_PATTERN32,                              //read 32 bit enable pattern for channels
 
         //ADJUST
-        SET_GLOB_OFFS,                                  //set global offset
+        SET_GLOB_OFFS = 80,                             //set global offset
         READ_GLOB_OFFS,                                 //read global offset
         SET_ADJUST_CH,                                  //set channel nn adjust
         READ_ADJUST_CH,                                 //read channel nn adjust
@@ -105,12 +108,12 @@ namespace vmeplus {
         SAVE_RC_ADJ,                                    //save RC adjust on EEPROM
 
         //MISCELLANEOUS
-        READ_TDC_ID,                                    //read programmed ID of TDC 0n
+        READ_TDC_ID = 96,                               //read programmed ID of TDC 0n
         READ_MICRO_REV,                                 //read firmware revision of microcontroller
         RESET_DLL_PLL,                                  //reset DLL and PLL
 
         //ADVANCED
-        WRITE_SETUP_REG,                                //write word nn into the scan path setup
+        WRITE_SETUP_REG = 112,                          //write word nn into the scan path setup
         READ_SETUP_REG,                                 //read word nn into the scan path setup
         UPDATE_SETUP_REG,                               //load the scan path setup
         DEFAULT_SETUP_REG,                              //reload the default scan path setup
@@ -120,7 +123,7 @@ namespace vmeplus {
         UPDATE_SETUP_TDC,                               //load the scan path setup on TDC nn
 
         //DEBUG AND TEST
-        WRITE_EEPROM,                                   //write 1 byte into the EEPROM
+        WRITE_EEPROM = 192,                             //write 1 byte into the EEPROM
         READ_EEPROM,                                    //read 1 byte from the EEPROM
         REVISION_DATE_μCONTROLLER_FW,                   //read the μcontroller firmware revision/date
         WRITE_SPARE,                                    //write a 16 bit spare variable
@@ -176,7 +179,7 @@ namespace vmeplus {
 
         //MICRO
     public:
-        void WriteMicro(uint16_t opcode);
+        void WriteMicro(uint16_t data);
         void WriteMicro(Opcode opcode);
         uint16_t ReadMicro();
     };
