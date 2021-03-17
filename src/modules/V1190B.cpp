@@ -28,18 +28,25 @@ namespace vmeplus {
     void V1190B::Reset() {}
 
     void V1190B::WriteMicro(uint16_t data) {
-        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK))) {}
+        //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register
+        // if the WO bit is set to 1, the VME can write a datum
+        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK_MSK))) {}
         WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, data);
     }
 
     void V1190B::WriteMicro(Opcode opcode) {
         uint16_t code = static_cast<uint16_t>(opcode.command)<<8U | opcode.obj;
-        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK))) {}
+
+        //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register
+        // if the WO bit is set to 1, the VME can write a datum
+        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, WRITE_OK_MSK))) {}
         WriteRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO, code);
     }
 
     uint16_t V1190B::ReadMicro() {
-        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, READ_OK))) {}
+        //a valid datum can be read via VME only if the READ_OK (RO) bit in the Micro
+        //Handshake Register is set to 1
+        while (!(ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO_HANDSHAKE, READ_OK_MSK))) {}
         return ReadRegister16(V1190B_BASE_ADDRESS + V1190B_MICRO);
     }
 }
