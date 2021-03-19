@@ -23,8 +23,8 @@
 #define V1190B_OUT_PROG_CONTROL             0x102CUL
 #define V1190B_MICRO                        0x102EUL
 #define V1190B_MICRO_HANDSHAKE              0x1030UL
-#define V1190B_WRITE_OK_MSK                 (1<<0)
-#define V1190B_READ_OK_MSK                  (1<<1)
+#define V1190B_WRITE_OK_MSK                 (1<<0)              //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register if the WO bit is set to 1, the VME can write a datum
+#define V1190B_READ_OK_MSK                  (1<<1)              //the VME (master) tests the READ_OK bit in the Micro Handshake Register  if the RO bit is set to 1, the VME can read a datum
 #define V1190B_SEL_FLASH                    0x1032UL
 #define V1190B_FLASH                        0x1034UL
 #define V1190B_COMPENSATION_SRAM_PAGE       0x1036UL
