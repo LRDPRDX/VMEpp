@@ -34,7 +34,6 @@
 #define V1190B_DUMMY_32                     0x1200UL
 #define V1190B_DUMMY_16                     0x1204UL
 
-
 #include "VSlaveAcquisitor.h"
 #include "VSlaveInterrupter.h"
 #include "VEvent.h"

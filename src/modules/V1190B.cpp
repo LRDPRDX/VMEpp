@@ -2,7 +2,6 @@
 #include "modules/V1190B.h"
 
 namespace vmeplus {
-
     void V1190B::Initialize() {}
 
     void V1190B::Release() {}
