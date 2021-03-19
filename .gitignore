@@ -1,4 +1,5 @@
 # Compilation results
+.idea/
 *.[od]
 *.pcm
 *.so

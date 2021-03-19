@@ -15,15 +15,25 @@ namespace vmeplus {
 
     bool V1190B::GetEventAt(uint32_t index, VEvent *event) const { return 0; }
 
-    void V1190B::WriteIRQLevel(uint16_t level) {}
+    //INTERRUPTER
+    void V1190B::WriteIRQLevel(uint16_t level) {
+        WriteRegister16(V1190B_INTERRUPT_LEVEL, level, V1190B_INTERRUPT_LEVEL_MSK);
+    }
 
-    uint16_t V1190B::ReadIRQLevel() { return 0; }
+    uint16_t V1190B::ReadIRQLevel() {
+        return ReadRegister16(V1190B_INTERRUPT_LEVEL, V1190B_INTERRUPT_LEVEL_MSK);
+    }
 
-    void V1190B::WriteIRQVector(uint16_t vector) {}
+    void V1190B::WriteIRQVector(uint16_t vector) {
+        WriteRegister16(V1190B_INTERRUPT_VECTOR, vector, V1190B_INTERRUPT_VECTOR_MSK);
+    }
 
-    uint16_t V1190B::ReadIRQVector() { return 0; }
+    uint16_t V1190B::ReadIRQVector() {
+        return ReadRegister16(V1190B_INTERRUPT_VECTOR, V1190B_INTERRUPT_VECTOR_MSK);
+    }
 
     void V1190B::ISR(uint16_t vector) {}
+    //??????????????????????????????????
 
     void V1190B::Reset() {}
 
