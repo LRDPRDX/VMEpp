@@ -31,7 +31,7 @@ namespace vmeplus
 
     void VMaster::UnregisterSlave( VSlave *slave )
     {
-        for( auto it = fSlaves.cbegin(); it != fSlaves.cend(); )
+        for( auto it = fSlaves.begin(); it != fSlaves.end(); )
         {
             if( *it == slave )
             {

@@ -2,18 +2,18 @@
 #include "modules/V1190B.h"
 
 namespace vmeplus {
-    V1190B::V1190B( const std::string &name, uint32_t baseAddress, uint32_t range ) :            │     ^
-         VSlave( "V1190B", baseAddress, range ),                                                  │V1190B.cpp:26:10: warning: unused parameter ‘event’ [-Wunused-parameter]
-         VSlaveInterrupter( "V1190B", baseAddress, range ),                                       │     bool V1190B::GetEvent(VEvent *event) { return 0; }
-         VSlaveAcquisitor( "V1190B", baseAddress, range ) {}                                      │          ^
-                                                                                                  │V1190B.cpp:28:10: warning: unused parameter ‘index’ [-Wunused-parameter]
-     V1190B::~V1190B(){};                                                                         │     bool V1190B::GetEventAt(uint32_t index, VEvent *event) const { return 0; }
-                                                                                                  │          ^
-     void V1190B::Initialize()                                                                    │V1190B.cpp:28:10: warning: unused parameter ‘event’ [-Wunused-parameter]
-     {                                                                                            │V1190B.cpp:30:10: warning: unused parameter ‘level’ [-Wunused-parameter]
-         PrintMessage( Message_t::INFO, "Inititalizing " + fName + "..." );                       │     void V1190B::WriteIRQLevel(uint16_t level) {}
-         PrintMessage( Message_t::INFO, "Inititalizing " + fName + "...OK" );                     │          ^
-     }
+    V1190B::V1190B( const std::string &name, uint32_t baseAddress, uint32_t range ) :
+        VSlave( "V1190B", baseAddress, range ),
+        VSlaveInterrupter( "V1190B", baseAddress, range ),
+         VSlaveAcquisitor( "V1190B", baseAddress, range ) {}
+ 
+    V1190B::~V1190B(){};
+
+    void V1190B::Initialize()
+    {
+        PrintMessage( Message_t::INFO, "Inititalizing " + fName + "..." );
+        PrintMessage( Message_t::INFO, "Inititalizing " + fName + "...OK" );
+    }
 
     void V1190B::Release() {}
 

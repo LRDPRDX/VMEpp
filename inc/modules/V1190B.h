@@ -34,6 +34,9 @@
 #define V1190B_DUMMY_32                     0x1200UL
 #define V1190B_DUMMY_16                     0x1204UL
 
+#define V1190B_LUB                          0x8FFFUL // LUB =)
+
+#include "VException.h"
 #include "VSlaveAcquisitor.h"
 #include "VSlaveInterrupter.h"
 #include "VEvent.h"
@@ -142,7 +145,7 @@ namespace vmeplus {
         };
 
     public:
-        V1190B(std::string name, uint32_t address, uint32_t range);
+        V1190B(const std::string& name, uint32_t address, uint32_t range = V1190B_LUB );
 
         virtual ~V1190B();
 
