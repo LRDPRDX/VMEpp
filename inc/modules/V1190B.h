@@ -34,7 +34,7 @@
 #define V1190B_DUMMY_32                     0x1200UL
 #define V1190B_DUMMY_16                     0x1204UL
 
-#define V1190B_LUB                          0x8FFFUL // LUB =)
+#define V1190B_LUB                          0x8FFFUL            //the Last Used Byte 
 
 #include "VException.h"
 #include "VSlaveAcquisitor.h"
@@ -127,7 +127,7 @@ namespace vmeplus {
             UPDATE_SETUP_TDC,                               //load the scan path setup on TDC nn
 
             //DEBUG AND TEST
-            WRITE_EEPROM = 0xC0,                                   //write 1 byte into the EEPROM
+            WRITE_EEPROM = 0xC0,                            //write 1 byte into the EEPROM
             READ_EEPROM,                                    //read 1 byte from the EEPROM
             REVISION_DATE_CONTROLLER_FW,                    //read the controller firmware revision/date
             WRITE_SPARE,                                    //write a 16 bit spare variable
