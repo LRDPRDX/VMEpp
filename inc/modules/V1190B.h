@@ -60,13 +60,13 @@ namespace vmeplus {
             AUTOLOAD_DEF_CONF,                              //set auto load default configuration
 
             //TRIGGER
-            SET_WIN_WIDTH,                                  //set window width
+            SET_WIN_WIDTH = 0x10,                                  //set window width
             SET_WIN_OFFS,                                   //set window offset
             SET_SW_MARGIN,                                  //set extra search margin
             SET_REJ_MARGIN,                                 //set reject margin
             EN_SUB_TRG,                                     //enable subtraction of trigger time
             DIS_SUB_TRG,                                    //disable subtraction of trigger time
-            READ_TRG_CONF,                           //read trigger configuration
+            READ_TRG_CONF,                                  //read trigger configuration
 
             //TDC EDGE DETECTION & RESOLUTION
             SET_DETECTION = 0x22,                           //enable paired meas. leading/ trailing edge
