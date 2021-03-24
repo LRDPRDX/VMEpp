@@ -60,7 +60,7 @@ namespace vmeplus {
             AUTOLOAD_DEF_CONF,                              //set auto load default configuration
 
             //TRIGGER
-            SET_WIN_WIDTH = 0x10,                                  //set window width
+            SET_WIN_WIDTH = 0x10,                           //set window width
             SET_WIN_OFFS,                                   //set window offset
             SET_SW_MARGIN,                                  //set extra search margin
             SET_REJ_MARGIN,                                 //set reject margin
