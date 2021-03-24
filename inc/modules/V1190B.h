@@ -145,7 +145,7 @@ namespace vmeplus {
         };
 
     public:
-        V1190B(std::string name, uint32_t address, uint32_t range);
+        V1190B( uint32_t address, uint32_t range);
 
         virtual ~V1190B();
 
