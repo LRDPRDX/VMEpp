@@ -1,4 +1,4 @@
-TOP_DIR := /home/csi/Local/Saifudinova/VMEppTest
+TOP_DIR := /home/sayka/course/VMEppTest
 INC_DIR     := $(TOP_DIR)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
