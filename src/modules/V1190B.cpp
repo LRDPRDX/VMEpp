@@ -2,7 +2,7 @@
 #include "modules/V1190B.h"
 
 namespace vmeplus {
-    V1190B::V1190B( const std::string &name, uint32_t baseAddress, uint32_t range ) :
+    V1190B::V1190B( uint32_t baseAddress, uint32_t range ) :
         VSlave( "V1190B", baseAddress, range ),
         VSlaveInterrupter( "V1190B", baseAddress, range ),
          VSlaveAcquisitor( "V1190B", baseAddress, range ) {}
