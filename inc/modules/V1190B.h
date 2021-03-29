@@ -74,7 +74,7 @@ namespace vmeplus {
             SET_TR_LEAD_LSB,                                //set LSB of leading/trailing edge
             SET_PAIR_RES,                                   //set leading time and width res. when pair
             READ_RES,                                       //read resolution
-            SET_DEAD_TIME,                                  //set channel dead time between hits
+            SET_DEAD_TIME = 0x28,                           //set channel dead time between hits
             READ_DEAD_TIME,                                 //read channel dead time between hits
 
             //TDC READOUT

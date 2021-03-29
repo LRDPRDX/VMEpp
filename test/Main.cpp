@@ -9,7 +9,7 @@ using namespace vmeplus;
 int main()
 {
     V2718 controller;
-    V1190B tdc(hx20080000);
+    V1190B tdc(0x20080000);
     
     try
     {
