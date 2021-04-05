@@ -144,6 +144,14 @@ namespace vmeplus {
             uint8_t obj;
         };
 
+        struct TriggerData {
+            uint16_t WinWidth;
+            uint16_t WinOffs;
+            uint16_t SwMargin;
+            uint16_t RejMargin;
+            uint16_t SubTrigger;
+        };
+
     public:
         V1190B( uint32_t address, uint32_t range = V1190B_LUB );
 
@@ -187,6 +195,15 @@ namespace vmeplus {
         void WriteMicro(Opcode opcode);
 
         uint16_t ReadMicro();
+
+    // Trigger functions
+    public:
+        void WriteWindowWidth(uint16_t data);
+        void WriteWindowOffset(uint16_t data);
+        void WriteExtraSearchMargin(uint16_t data);
+        void WriteRejectMargin(uint16_t data);
+        void WriteSubstractionOfTriggerTime(bool data);
+        void ReadTriggerConfiguration();
     };
 }
 

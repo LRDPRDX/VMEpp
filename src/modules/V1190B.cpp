@@ -59,4 +59,58 @@ namespace vmeplus {
         while (!(ReadRegister16(V1190B_MICRO_HANDSHAKE, V1190B_READ_OK_MSK))) {}
         return ReadRegister16(V1190B_MICRO);
     }
+
+     void V1190B::WriteWindowWidth(uint16_t data){
+        V1190B::Opcode opcode;
+        opcode.command = Command::SET_WIN_WIDTH;
+        WriteMicro(opcode);
+        WriteMicro(data);
+    }
+
+    void V1190B::WriteWindowOffset(uint16_t data){
+        V1190B::Opcode opcode;
+        opcode.command = Command::SET_WIN_OFFS;
+        WriteMicro(opcode);
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteExtraSearchMargin(uint16_t data){
+        V1190B::Opcode opcode;
+        opcode.command = Command::SET_SW_MARGIN;
+        WriteMicro(opcode);
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteRejectMargin(uint16_t data){
+        V1190B::Opcode opcode;
+        opcode.command = Command::SET_REJ_MARGIN;
+        WriteMicro(opcode);
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteSubstractionOfTriggerTime(bool data){
+        V1190B::Opcode opcode;
+        if (data) {
+            opcode.command = Command::EN_SUB_TRG;
+            WriteMicro(opcode);
+        }
+        else {
+            opcode.command = Command::DIS_SUB_TRG;
+            WriteMicro(opcode);
+        }
+    }
+
+    void V1190B::ReadTriggerConfiguration(){
+        V1190B::Opcode opcode;
+        opcode.command = Command::READ_TRG_CONF;
+
+        V1190B::TriggerData trigger;
+        WriteMicro(opcode);
+
+        trigger.WinWidth = ReadMicro();
+        trigger.WinOffs = ReadMicro();
+        trigger.SwMargin = ReadMicro();
+        trigger.RejMargin = ReadMicro();
+        trigger.SubTrigger = ReadMicro();
+    }
 }
