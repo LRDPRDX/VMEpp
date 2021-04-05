@@ -61,56 +61,49 @@ namespace vmeplus {
     }
 
      void V1190B::WriteWindowWidth(uint16_t data){
-        V1190B::Opcode opcode;
-        opcode.command = Command::SET_WIN_WIDTH;
+        V1190B::Opcode opcode = {.command = V1190B::Command::SET_WIN_WIDTH};
         WriteMicro(opcode);
         WriteMicro(data);
     }
 
     void V1190B::WriteWindowOffset(uint16_t data){
-        V1190B::Opcode opcode;
-        opcode.command = Command::SET_WIN_OFFS;
+        V1190B::Opcode opcode = {.command = V1190B::Command::SET_WIN_OFFS};
         WriteMicro(opcode);
         WriteMicro(data);
      }
 
     void V1190B::WriteExtraSearchMargin(uint16_t data){
-        V1190B::Opcode opcode;
-        opcode.command = Command::SET_SW_MARGIN;
+        V1190B::Opcode opcode = {.command = V1190B::Command::SET_SW_MARGIN};
         WriteMicro(opcode);
         WriteMicro(data);
      }
 
     void V1190B::WriteRejectMargin(uint16_t data){
-        V1190B::Opcode opcode;
-        opcode.command = Command::SET_REJ_MARGIN;
+        V1190B::Opcode opcode = {.command = V1190B::Command::SET_REJ_MARGIN};
         WriteMicro(opcode);
         WriteMicro(data);
      }
 
     void V1190B::WriteSubstractionOfTriggerTime(bool data){
         V1190B::Opcode opcode;
-        if (data) {
+        if (data)
             opcode.command = Command::EN_SUB_TRG;
-            WriteMicro(opcode);
-        }
-        else {
+        else 
             opcode.command = Command::DIS_SUB_TRG;
-            WriteMicro(opcode);
-        }
+        WriteMicro(opcode);
     }
 
     void V1190B::ReadTriggerConfiguration(){
-        V1190B::Opcode opcode;
-        opcode.command = Command::READ_TRG_CONF;
-
-        V1190B::TriggerData trigger;
+        V1190B::Opcode opcode = {.command = V1190B::Command::READ_TRG_CONF};
         WriteMicro(opcode);
 
-        trigger.WinWidth = ReadMicro();
-        trigger.WinOffs = ReadMicro();
-        trigger.SwMargin = ReadMicro();
-        trigger.RejMargin = ReadMicro();
-        trigger.SubTrigger = ReadMicro();
+        V1190B::TriggerData trigger = {.WinWidth = ReadMicro(), .WinOffs = ReadMicro(), 
+            .SwMargin = ReadMicro(), .RejMargin = ReadMicro(), .SubTrigger = ReadMicro()};
+        
+        //trigger.WinWidth = ReadMicro();
+        //trigger.WinOffs = ReadMicro();
+        //trigger.SwMargin = ReadMicro();
+        //trigger.RejMargin = ReadMicro();
+        //trigger.SubTrigger = ReadMicro();
     }
 }
