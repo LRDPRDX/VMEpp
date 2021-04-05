@@ -93,11 +93,11 @@ namespace vmeplus {
         WriteMicro(opcode);
     }
 
-    void V1190B::ReadTriggerConfiguration(){
+    void V1190B::ReadTriggerConfiguration(TriggerData& trigger){
         V1190B::Opcode opcode = {.command = V1190B::Command::READ_TRG_CONF};
         WriteMicro(opcode);
 
-        V1190B::TriggerData trigger = {.WinWidth = ReadMicro(), .WinOffs = ReadMicro(), 
+        trigger = {.WinWidth = ReadMicro(), .WinOffs = ReadMicro(), 
             .SwMargin = ReadMicro(), .RejMargin = ReadMicro(), .SubTrigger = ReadMicro()};
         
         //trigger.WinWidth = ReadMicro();

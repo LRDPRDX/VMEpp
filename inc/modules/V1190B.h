@@ -203,7 +203,7 @@ namespace vmeplus {
         void WriteExtraSearchMargin(uint16_t data);
         void WriteRejectMargin(uint16_t data);
         void WriteSubstractionOfTriggerTime(bool data);
-        void ReadTriggerConfiguration();
+        void ReadTriggerConfiguration(TriggerData& trigger);
     };
 }
 
