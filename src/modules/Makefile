@@ -19,6 +19,7 @@ $(TARGET) : $(MODULE_OBJS) | $(LIB_DIR)
 
 $(LIB_DIR) : ; mkdir -p $@
 
+-include $(wildcard $(DEP_DIR)/*.d)
 
 .PHONY : install
 install : $(TARGET)
