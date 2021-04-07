@@ -61,49 +61,35 @@ namespace vmeplus {
     }
 
      void V1190B::WriteWindowWidth(uint16_t data){
-        V1190B::Opcode opcode = {.command = V1190B::Command::SET_WIN_WIDTH};
-        WriteMicro(opcode);
+        WriteMicro(Opcode(Command::SET_WIN_WIDTH));
         WriteMicro(data);
     }
 
     void V1190B::WriteWindowOffset(uint16_t data){
-        V1190B::Opcode opcode = {.command = V1190B::Command::SET_WIN_OFFS};
-        WriteMicro(opcode);
+        WriteMicro(Opcode(Command::SET_WIN_OFFS));
         WriteMicro(data);
      }
 
     void V1190B::WriteExtraSearchMargin(uint16_t data){
-        V1190B::Opcode opcode = {.command = V1190B::Command::SET_SW_MARGIN};
-        WriteMicro(opcode);
+        WriteMicro(Opcode(Command::SET_SW_MARGIN));
         WriteMicro(data);
      }
 
     void V1190B::WriteRejectMargin(uint16_t data){
-        V1190B::Opcode opcode = {.command = V1190B::Command::SET_REJ_MARGIN};
-        WriteMicro(opcode);
+        WriteMicro(Opcode(Command::SET_REJ_MARGIN));
         WriteMicro(data);
      }
 
     void V1190B::WriteSubstractionOfTriggerTime(bool data){
-        V1190B::Opcode opcode;
         if (data)
-            opcode.command = Command::EN_SUB_TRG;
+            WriteMicro(Opcode(Command::EN_SUB_TRG));
         else 
-            opcode.command = Command::DIS_SUB_TRG;
-        WriteMicro(opcode);
+            WriteMicro(Opcode(Command::DIS_SUB_TRG));
     }
 
     void V1190B::ReadTriggerConfiguration(TriggerData& trigger){
-        V1190B::Opcode opcode = {.command = V1190B::Command::READ_TRG_CONF};
-        WriteMicro(opcode);
+        WriteMicro(Opcode(Command::READ_TRG_CONF));
 
-        trigger = {.WinWidth = ReadMicro(), .WinOffs = ReadMicro(), 
-            .SwMargin = ReadMicro(), .RejMargin = ReadMicro(), .SubTrigger = ReadMicro()};
-        
-        //trigger.WinWidth = ReadMicro();
-        //trigger.WinOffs = ReadMicro();
-        //trigger.SwMargin = ReadMicro();
-        //trigger.RejMargin = ReadMicro();
-        //trigger.SubTrigger = ReadMicro();
+        TriggerData(ReadMicro(), ReadMicro(), ReadMicro(), ReadMicro(), ReadMicro());
     }
 }
