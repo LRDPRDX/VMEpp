@@ -143,7 +143,13 @@ namespace vmeplus {
 
         struct Opcode {
             Command command;
-            uint8_t obj;
+            uint8_t object;
+
+            Opcode( V1190B::Command command, uint8_t object = 0x00 ) :
+                command( command ),
+                object( object )
+            { }
+
         };
 
     public:
