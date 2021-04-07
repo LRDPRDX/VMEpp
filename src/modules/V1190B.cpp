@@ -68,4 +68,26 @@ namespace vmeplus {
         while (!(ReadRegister16(V1190B_MICRO_HANDSHAKE, V1190B_READ_OK_MSK))) {}
         return ReadRegister16(V1190B_MICRO);
     }
+
+    // ACQUISITION MODE
+    void V1190B::WriteAcqMode( V1190B::TriggerMode_t mode )
+    {
+        switch( mode )
+        {
+            case( TriggerMode_t::MATCHING ):
+                WriteMicro( Opcode( Command::TRG_MATCH ) );
+                break;
+            case( TriggerMode_t::CONTINUOUS ) :
+                WriteMicro( Opcode( Command::CONT_STOR ) );
+                break;
+        }
+    }
+
+    V1190B::TriggerMode_t V1190B::ReadAcqMode()
+    {
+        WriteMicro( Opcode( Command::READ_ACQ_MOD ) );
+        uint16_t data = ReadMicro();
+        if( 1U & data ) return TriggerMode_t::MATCHING;     //check LSB
+        else            return TriggerMode_t::CONTINUOUS;
+    }
 }

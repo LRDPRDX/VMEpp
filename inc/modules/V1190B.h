@@ -149,8 +149,9 @@ namespace vmeplus {
                 command( command ),
                 object( object )
             { }
-
         };
+
+        enum class TriggerMode_t { MATCHING, CONTINUOUS };
 
     public:
         V1190B( uint32_t address, uint32_t range = V1190B_LUB );
@@ -195,6 +196,11 @@ namespace vmeplus {
         void WriteMicro(Opcode opcode);
 
         uint16_t ReadMicro();
+
+    // ACQUISITION MODE
+    public :
+        void WriteAcqMode( V1190B::TriggerMode_t mode );
+        V1190B::TriggerMode_t ReadAcqMode();
     };
 }
 
