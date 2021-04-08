@@ -90,4 +90,10 @@ namespace vmeplus {
         if( 1U & data ) return TriggerMode_t::MATCHING;     //check LSB
         else            return TriggerMode_t::CONTINUOUS;
     }
+
+    void V1190B::WriteEnableKeepToken( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::SET_KEEP_TOKEN ) );
+        else         WriteMicro( Opcode( Command::CLEAR_KEEP_TOKEN ) );
+    }
 }

@@ -201,6 +201,8 @@ namespace vmeplus {
     public :
         void WriteAcqMode( V1190B::TriggerMode_t mode );
         V1190B::TriggerMode_t ReadAcqMode();
+
+        void WriteEnableKeepToken( bool status );
     };
 }
 
