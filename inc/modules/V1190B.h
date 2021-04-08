@@ -206,6 +206,8 @@ namespace vmeplus {
         void WriteEnableKeepToken( bool status );
 
         void WriteLoadConfig( V1190B::Config_t config );
+
+        void WriteAutoLoad( V1190B::Config_t config );
     };
 }
 

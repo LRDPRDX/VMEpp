@@ -109,4 +109,17 @@ namespace vmeplus {
                 break;
         }
     }
+
+    void V1190B::WriteAutoLoad( V1190B::Config_t config )
+    {
+        switch( config )
+        {
+            case( Config_t::DEFAULT ) :
+                WriteMicro( Opcode( Command::AUTOLOAD_DEF_CONF ) );
+                break;
+            case( Config_t::USER ) :
+                WriteMicro( Opcode( Command::AUTOLOAD_USER_CONF ) );
+                break;
+        }
+    }
 }
