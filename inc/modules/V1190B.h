@@ -208,6 +208,8 @@ namespace vmeplus {
         void WriteLoadConfig( V1190B::Config_t config );
 
         void WriteAutoLoad( V1190B::Config_t config );
+
+        void WriteSaveUserConfig();
     };
 }
 

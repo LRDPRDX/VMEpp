@@ -122,4 +122,9 @@ namespace vmeplus {
                 break;
         }
     }
+
+    void V1190B::WriteSaveUserConfig()
+    {
+        WriteMicro( Opcode( Command::SAVE_USER_CONFIG ) );
+    }
 }
