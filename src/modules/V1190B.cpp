@@ -68,4 +68,11 @@ namespace vmeplus {
         while (!(ReadRegister16(V1190B_MICRO_HANDSHAKE, V1190B_READ_OK_MSK))) {}
         return ReadRegister16(V1190B_MICRO);
     }
+
+    // TDC Readout
+    void V1190B::WriteEnableHeaderTrailer( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_HEAD_TRAILER ) );
+        else         WriteMicro( Opcode( Command::DIS_HEAD_TRAILER ) );
+    }
 }

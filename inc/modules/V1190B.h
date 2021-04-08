@@ -192,6 +192,10 @@ namespace vmeplus {
         void WriteMicro(Opcode opcode);
 
         uint16_t ReadMicro();
+
+        // TDC Readout
+    public :
+        void WriteEnableHeaderTrailer( bool status );
     };
 }
 
