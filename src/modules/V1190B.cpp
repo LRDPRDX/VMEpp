@@ -74,7 +74,7 @@ namespace vmeplus {
     {
         switch( mode )
         {
-            case( TriggerMode_t::MATCHING ):
+            case( TriggerMode_t::MATCHING ) :
                 WriteMicro( Opcode( Command::TRG_MATCH ) );
                 break;
             case( TriggerMode_t::CONTINUOUS ) :
@@ -95,5 +95,18 @@ namespace vmeplus {
     {
         if( status ) WriteMicro( Opcode( Command::SET_KEEP_TOKEN ) );
         else         WriteMicro( Opcode( Command::CLEAR_KEEP_TOKEN ) );
+    }
+
+    void V1190B::WriteLoadConfig( V1190B::Config_t config )
+    {
+        switch( config )
+        {
+            case( Config_t::DEFAULT ) :
+                WriteMicro( Opcode( Command::LOAD_DEF_CONFIG ) );
+                break;
+            case( Config_t::USER ) :
+                WriteMicro( Opcode( Command::LOAD_USER_CONFIG ) );
+                break;
+        }
     }
 }
