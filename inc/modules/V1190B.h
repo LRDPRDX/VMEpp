@@ -80,7 +80,7 @@ namespace vmeplus {
             READ_DEAD_TIME,                                 //read channel dead time between hits
 
             //TDC READOUT
-            EN_HEAD_TRAILER = 0x30,                                //enable TDC header and TRAILER
+            EN_HEAD_TRAILER = 0x30,                         //enable TDC header and TRAILER
             DIS_HEAD_TRAILER,                               //disable TDC header and TRAILER
             READ_HEAD_TRAILER,                              //read status TDC header and TRAILER
             SET_EVENT_SIZE,                                 //set maximum number of hits per event
@@ -143,7 +143,10 @@ namespace vmeplus {
 
         struct Opcode {
             Command command;
-            uint8_t obj;
+            uint8_t object;
+
+            Opcode(Command command, uint8_t object = 0x00):
+                command(command), object(object) {}
         };
 
     public:
