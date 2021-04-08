@@ -99,6 +99,12 @@ namespace vmeplus {
     void V1190B::ReadTriggerConfiguration(TriggerData& trigger){
         WriteMicro(Opcode(Command::READ_TRG_CONF));
 
-        TriggerData(ReadMicro(), ReadMicro(), ReadMicro(), ReadMicro(), ReadMicro());
+        uint16_t WinWidth = ReadMicro();
+        uint16_t WinOffs = ReadMicro();
+        uint16_t SwMargin = ReadMicro();        
+        uint16_t RejMargin = ReadMicro();
+        uint16_t SubTrg = ReadMicro();
+
+        TriggerData(WinWidth, WinOffs, SwMargin, RejMargin, SubTrg);
     }
 }
