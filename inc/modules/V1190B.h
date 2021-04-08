@@ -149,7 +149,8 @@ namespace vmeplus {
                 command(command), object(object) {}
         };
 
-        enum class TriggerMode_t { MATCHING, CONTINUOUS };
+        enum class TriggerMode_t    { MATCHING, CONTINUOUS };
+        enum class Config_t         { DEFAULT, USER };
 
     public:
         V1190B( uint32_t address, uint32_t range = V1190B_LUB );
@@ -199,6 +200,14 @@ namespace vmeplus {
     public :
         void WriteAcqMode( V1190B::TriggerMode_t mode );
         V1190B::TriggerMode_t ReadAcqMode();
+
+        void WriteEnableKeepToken( bool status );
+
+        void WriteLoadConfig( V1190B::Config_t config );
+
+        void WriteAutoLoad( V1190B::Config_t config );
+
+        void WriteSaveUserConfig();
     };
 }
 
