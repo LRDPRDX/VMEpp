@@ -196,6 +196,7 @@ namespace vmeplus {
         // TDC Readout
     public :
         void WriteEnableHeaderTrailer( bool status );
+        bool ReadEnableHeaderTrailer();
     };
 }
 

@@ -75,4 +75,11 @@ namespace vmeplus {
         if( status ) WriteMicro( Opcode( Command::EN_HEAD_TRAILER ) );
         else         WriteMicro( Opcode( Command::DIS_HEAD_TRAILER ) );
     }
+
+    bool V1190B::ReadEnableHeaderTrailer()
+    {
+        WriteMicro( Opcode( Command::READ_HEAD_TRAILER ) );
+        uint16_t data = ReadMicro();
+        return (1U & data);
+    }
 }
