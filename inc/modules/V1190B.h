@@ -192,6 +192,12 @@ namespace vmeplus {
         void WriteMicro(Opcode opcode);
 
         uint16_t ReadMicro();
+    
+    // TDC EDGE DETECTION & RESOLUTION
+    public:
+        void WriteEdjeDetectConfig(uint16_t config);
+
+
     };
 }
 

@@ -68,4 +68,12 @@ namespace vmeplus {
         while (!(ReadRegister16(V1190B_MICRO_HANDSHAKE, V1190B_READ_OK_MSK))) {}
         return ReadRegister16(V1190B_MICRO);
     }
+
+    void V1190B::WriteEdjeDetectConfig(uint16_t config){
+        WriteMicro(Opcode(Command::SET_DETECTION));
+        //??????????this check LSB, should i add a checcking??????????
+        WriteMicro(config);
+    }
+
+
 }
