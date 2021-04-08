@@ -45,7 +45,7 @@ namespace vmeplus {
     }
 
     void V1190B::WriteMicro(Opcode opcode) {
-        uint16_t code = static_cast<uint16_t>(opcode.command)<<8U | opcode.obj;
+        uint16_t code = static_cast<uint16_t>(opcode.command)<<8U | opcode.object;
 
         //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register
         // if the WO bit is set to 1, the VME can write a datum
