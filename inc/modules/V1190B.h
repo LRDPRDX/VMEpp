@@ -207,6 +207,7 @@ namespace vmeplus {
         void WriteMaxHitsPerEvent( V1190B::MaxHitsPerEvent n );
         V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
         void WriteEnableErrMark( bool status );
+        void WriteEnableBypass( bool status );
     };
 }
 

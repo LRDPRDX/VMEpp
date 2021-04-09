@@ -108,4 +108,10 @@ namespace vmeplus {
         if( status ) WriteMicro( Opcode( Command::EN_ERROR_MARK ) );
         else         WriteMicro( Opcode( Command::DIS_ERROR_MARK ) );
     }
+
+    void V1190B::WriteEnableBypass( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_ERROR_BYPASS ) );
+        else         WriteMicro( Opcode( Command::DIS_ERROR_BYPASS ) );
+    }
 }
