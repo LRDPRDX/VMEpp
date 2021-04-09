@@ -192,12 +192,82 @@ namespace vmeplus {
         void WriteMicro(Opcode opcode);
 
         uint16_t ReadMicro();
-    
+
     // TDC EDGE DETECTION & RESOLUTION
     public:
-        void WriteEdjeDetectConfig(uint16_t config);
+        enum class DetectConfig {
+            PairMode = 0x00,
+            Trailing,
+            Leading,
+            TrailingLeading
+        };
 
+        enum class LSBvalue {
+            ps800 = 0x00,
+            ps200,
+            ps100, //default
+        };
 
+        enum class ResLeadEdje {
+            ps100 = 0x000,
+            ps200,
+            ps400,
+            ps800,
+            ps1600,
+            ps3120,
+            ps6250,
+            ps12500
+        };
+
+        enum class ResPulseWidth {
+             ps100 = 0x00,
+             ps200,
+             ps400,
+             ps800,
+             ps1600,
+             ps3120,
+             ps6250,
+             ps12500,
+             ns25,
+             ns50,
+             ns100,
+             ns200,
+             ns400,
+             ns800
+        };
+
+        enum class DeadTime {
+            ns5 = 0x00,
+            ns10,
+            ns30,
+            ns100
+        };
+
+        struct TDCDetectRes {
+            DetectConfig config;
+            LSBvalue lsb;
+            ResLeadEdje lead;
+            ResPulseWidth width;
+            DeadTime time;
+        
+            TDCDetectRes(DetectConfig config, LSBvalue lsb, ResLeadEdje lead, 
+                    ResPulseWidth width, DeadTime time): 
+                config(config), lsb(lsb), lead(lead), width(width), time(time) {}
+        };
+    
+        void WriteDetection(DetectConfig config);
+
+        uint16_t ReadDetection(TDCDetectRes& DetectRes);
+
+        void WriteLSB(LSBvalue lsb);
+
+        void WritePairRes(TDCDetectRes& Detect, ResLeadEdje lead, ResPulseWidth width);
+
+        uint16_t ReadRes(TDCDetectRes& DetectRes);
+
+        void WriteDeadTime(DeadTime time);
+
+        uint16_t ReadDeadTime(TDCDetectRes& DetectRes);
     };
 }
 

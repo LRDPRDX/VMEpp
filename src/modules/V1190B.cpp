@@ -69,11 +69,51 @@ namespace vmeplus {
         return ReadRegister16(V1190B_MICRO);
     }
 
-    void V1190B::WriteEdjeDetectConfig(uint16_t config){
+    void V1190B::WriteDetection(DetectConfig config){
         WriteMicro(Opcode(Command::SET_DETECTION));
-        //??????????this check LSB, should i add a checcking??????????
-        WriteMicro(config);
+        WriteMicro(static_cast<uint16_t>(config));
     }
 
+    uint16_t V1190B::ReadDetection(TDCDetectRes& DetectRes) {
+        WriteMicro(Opcode(Command::READ_DETECTION));
+        uint16_t detect = ReadMicro();
+        DetectRes.config = detect<<14U;
+        return detect;
+    }
 
+    void V1190B::WriteLSB(LSBvalue lsb){
+        WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
+        WriteMicro(static_cast<uint16_t>(lsb)); 
+    }
+    
+    void V1190B::WritePairRes(TDCDetectRes& Detect, ResLeadEdje lead, ResPulseWidth width)  {
+        if (Detect.config == DetectConfig::PairMode) {
+            WriteMicro(Opcode(Command::SET_PAIR_RES));
+            WriteMicro(static_cast<uint16_t>(width)<<8U | lead); 
+        }
+    }
+
+    uint16_t V1190B::ReadRes(TDCDetectRes& DetectRes) {
+        WriteMicro(Opcode(Command::READ_RES));
+        uint16_t res = ReadMicro();
+        if (DetectRes.config == DetectConfig::PairMode) {
+            DetectRes.lead = res<<13U;
+            DetectRes.width = (res<<8U)>>4U;
+        }
+        if ((DetectRes.config == DetectConfig::Trailing) or (DetectRes.DetectConfig == DetectConfig::Leading)) 
+            DetectRes.lsb = res<<14U;
+        return res;
+    }
+
+    void V1190B::WriteDeadTime(DeadTime time){
+        WriteMicro(Opcode(Command::SET_DEAD_TIME));
+        WriteMicro(static_cast<uint16_t>(time));
+    }
+
+    uint16_t V1190B::ReadDeadTime(TDCDetectRes& DetectRes){
+        WriteMicro(Opcode(Command::READ_DEAD_TIME));
+        uint16_t time = ReadMicro();
+        DetectRes.time = time<<14U;
+        return time;
+    }
 }
