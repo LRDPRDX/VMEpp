@@ -152,6 +152,19 @@ namespace vmeplus {
         enum class TriggerMode_t    { MATCHING, CONTINUOUS };
         enum class Config_t         { DEFAULT, USER };
 
+        struct TriggerData {
+            uint16_t WinWidth;
+            uint16_t WinOffs;
+            uint16_t SwMargin;
+            uint16_t RejMargin;
+            uint16_t SubTrigger;
+            
+            TriggerData(uint16_t WinWidth, uint16_t WinOffs, uint16_t SwMargin,
+                    uint16_t RejMargin, uint16_t SubTrigger):
+                WinWidth(WinWidth), WinOffs(WinOffs), SwMargin(SwMargin),
+                RejMargin(RejMargin), SubTrigger(SubTrigger) {}
+        };
+
     public:
         V1190B( uint32_t address, uint32_t range = V1190B_LUB );
 
@@ -200,14 +213,19 @@ namespace vmeplus {
     public :
         void WriteAcqMode( V1190B::TriggerMode_t mode );
         V1190B::TriggerMode_t ReadAcqMode();
-
         void WriteEnableKeepToken( bool status );
-
         void WriteLoadConfig( V1190B::Config_t config );
-
         void WriteAutoLoad( V1190B::Config_t config );
-
         void WriteSaveUserConfig();
+
+    // Trigger functions
+    public:
+        void WriteWindowWidth(uint16_t data);
+        void WriteWindowOffset(uint16_t data);
+        void WriteExtraSearchMargin(uint16_t data);
+        void WriteRejectMargin(uint16_t data);
+        void WriteSubstractionOfTriggerTime(bool data);
+        void ReadTriggerConfiguration(TriggerData& trigger);
     };
 }
 

@@ -123,8 +123,49 @@ namespace vmeplus {
         }
     }
 
+
+    // TRIGGER
     void V1190B::WriteSaveUserConfig()
     {
         WriteMicro( Opcode( Command::SAVE_USER_CONFIG ) );
+    }
+
+    void V1190B::WriteWindowWidth(uint16_t data){
+        WriteMicro(Opcode(Command::SET_WIN_WIDTH));
+        WriteMicro(data);
+    }
+
+    void V1190B::WriteWindowOffset(uint16_t data){
+        WriteMicro(Opcode(Command::SET_WIN_OFFS));
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteExtraSearchMargin(uint16_t data){
+        WriteMicro(Opcode(Command::SET_SW_MARGIN));
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteRejectMargin(uint16_t data){
+        WriteMicro(Opcode(Command::SET_REJ_MARGIN));
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteSubstractionOfTriggerTime(bool data){
+        if (data)
+            WriteMicro(Opcode(Command::EN_SUB_TRG));
+        else 
+            WriteMicro(Opcode(Command::DIS_SUB_TRG));
+    }
+
+    void V1190B::ReadTriggerConfiguration(TriggerData& trigger){
+        WriteMicro(Opcode(Command::READ_TRG_CONF));
+
+        uint16_t WinWidth = ReadMicro();
+        uint16_t WinOffs = ReadMicro();
+        uint16_t SwMargin = ReadMicro();        
+        uint16_t RejMargin = ReadMicro();
+        uint16_t SubTrg = ReadMicro();
+
+        TriggerData(WinWidth, WinOffs, SwMargin, RejMargin, SubTrg);
     }
 }
