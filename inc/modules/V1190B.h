@@ -204,9 +204,9 @@ namespace vmeplus {
     public :
         void WriteEnableHeaderTrailer( bool status );
         bool ReadEnableHeaderTrailer();
-
         void WriteMaxHitsPerEvent( V1190B::MaxHitsPerEvent n );
         V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
+        void WriteEnableErrMark( bool status );
     };
 }
 

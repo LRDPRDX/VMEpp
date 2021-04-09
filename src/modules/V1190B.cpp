@@ -110,4 +110,10 @@ namespace vmeplus {
         }
         return result;
     }
+
+    void V1190B::WriteEnableErrMark( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_ERROR_MARK ) );
+        else         WriteMicro( Opcode( Command::DIS_ERROR_MARK ) );
+    }
 }
