@@ -82,4 +82,32 @@ namespace vmeplus {
         uint16_t data = ReadMicro();
         return (1U & data);
     }
+
+    void V1190B::WriteMaxHitsPerEvent( V1190B::MaxHitsPerEvent n )
+    {
+        WriteMicro( Opcode( Command::SET_EVENT_SIZE ) );
+        WriteMicro( static_cast<uint16_t>( n ) );
+    }
+
+    V1190B::MaxHitsPerEvent V1190B::ReadMaxHitsPerEvent()
+    {
+        MaxHitsPerEvent result = MaxHitsPerEvent::INVALID;
+
+        WriteMicro( Opcode( Command::READ_EVENT_SIZE ) );
+        uint16_t data = ReadMicro();
+        data &= 0x0F; // check 4 LSBs
+        if( data >= static_cast<uint16_t>( MaxHitsPerEvent::INVALID ) )
+        {
+            result = MaxHitsPerEvent::INVALID;
+        }
+        else if( data == static_cast<uint16_t>( MaxHitsPerEvent::NO_LIMIT ) )
+        {
+            result = MaxHitsPerEvent::NO_LIMIT;
+        }
+        else
+        {
+            result = static_cast<MaxHitsPerEvent>( data );
+        }
+        return result;
+    }
 }

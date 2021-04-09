@@ -149,6 +149,13 @@ namespace vmeplus {
                 command(command), object(object) {}
         };
 
+        enum class MaxHitsPerEvent : uint16_t
+        {
+            N0, N1, N2, N4, N8, N16, N32, N64, N128,
+            NO_LIMIT = 0b1001,
+            INVALID  =  0b1010, // Actually, any number >= INVALID is meaningless
+        };
+
     public:
         V1190B( uint32_t address, uint32_t range = V1190B_LUB );
 
@@ -197,6 +204,9 @@ namespace vmeplus {
     public :
         void WriteEnableHeaderTrailer( bool status );
         bool ReadEnableHeaderTrailer();
+
+        void WriteMaxHitsPerEvent( V1190B::MaxHitsPerEvent n );
+        V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
     };
 }
 
