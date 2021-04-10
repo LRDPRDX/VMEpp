@@ -123,13 +123,12 @@ namespace vmeplus {
         }
     }
 
-
-    // TRIGGER
     void V1190B::WriteSaveUserConfig()
     {
         WriteMicro( Opcode( Command::SAVE_USER_CONFIG ) );
     }
 
+    // TRIGGER
     void V1190B::WriteWindowWidth(uint16_t data){
         WriteMicro(Opcode(Command::SET_WIN_WIDTH));
         WriteMicro(data);
