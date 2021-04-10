@@ -159,8 +159,8 @@ namespace vmeplus {
             uint16_t RejMargin;
             uint16_t SubTrigger;
             
-            TriggerData(uint16_t WinWidth, uint16_t WinOffs, uint16_t SwMargin,
-                    uint16_t RejMargin, uint16_t SubTrigger):
+            TriggerData(uint16_t WinWidth = 0x0014, uint16_t WinOffs = 0xFFD8, uint16_t SwMargin = 0x0008,
+                    uint16_t RejMargin = 0x0004, uint16_t SubTrigger = 0x0000 ):
                 WinWidth(WinWidth), WinOffs(WinOffs), SwMargin(SwMargin),
                 RejMargin(RejMargin), SubTrigger(SubTrigger) {}
         };
