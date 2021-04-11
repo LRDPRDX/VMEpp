@@ -161,6 +161,25 @@ namespace vmeplus {
             W2, W4, W8, W16, W32, W64, W128, W256
         };
 
+        enum IError : uint16_t
+        {
+            // NB : it is not an enum class because we want to be able
+            // to perform bitwise operations on these enumerations
+            // without complex overloading of bitwise operators and static_cast
+            VERNIER         = 0x0000,
+            CRS_CNTR_PRTY   = 0x0001,
+            SYNC            = 0x0002,
+            L1_BUF_PRTY     = 0x0004,
+            TRG_FIF0_PRTY   = 0x0008,
+            TRG_MTCH        = 0x0010,
+            ROUT_FIFO_PRTY  = 0x0020,
+            ROUT_STATE      = 0x0040,
+            SET_UP_PRTY     = 0x0080,
+            CTRL_PRTY       = 0x0100,
+            JTAG_PRTY       = 0x0200,
+            ALL             = 0x07FF,
+        };
+
     public:
         V1190B( uint32_t address, uint32_t range = V1190B_LUB );
 
@@ -213,6 +232,8 @@ namespace vmeplus {
         V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
         void WriteEnableErrMark( bool status );
         void WriteEnableBypass( bool status );
+        void WriteErrorPattern( uint16_t );
+        uint16_t ReadErrorPattern();
         void WriteEffSizeFIFO( V1190B::FIFOSize size );
         uint16_t ReadEffSizeFIFO();
     };
