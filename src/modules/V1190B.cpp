@@ -114,4 +114,17 @@ namespace vmeplus {
         if( status ) WriteMicro( Opcode( Command::EN_ERROR_BYPASS ) );
         else         WriteMicro( Opcode( Command::DIS_ERROR_BYPASS ) );
     }
+
+    void V1190B::WriteEffSizeFIFO( V1190B::FIFOSize size )
+    {
+        WriteMicro( Opcode( Command::SET_FIFO_SIZE ) );
+        WriteMicro( static_cast<uint16_t>( size ) );
+    }
+
+    uint16_t V1190B::ReadEffSizeFIFO()
+    {
+        WriteMicro( Opcode( Command::READ_FIFO_SIZE ) );
+        uint16_t data = ReadMicro() & 0x0007; // save only 3 LSB
+        return (2 << data); // starts with 2 (if data == 0) ---  not 1;
+    }
 }

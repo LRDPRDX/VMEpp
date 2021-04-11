@@ -156,6 +156,11 @@ namespace vmeplus {
             INVALID  =  0b1010, // Actually, any number >= INVALID is meaningless
         };
 
+        enum class FIFOSize : uint16_t
+        {
+            W2, W4, W8, W16, W32, W64, W128, W256
+        };
+
     public:
         V1190B( uint32_t address, uint32_t range = V1190B_LUB );
 
@@ -208,6 +213,8 @@ namespace vmeplus {
         V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
         void WriteEnableErrMark( bool status );
         void WriteEnableBypass( bool status );
+        void WriteEffSizeFIFO( V1190B::FIFOSize size );
+        uint16_t ReadEffSizeFIFO();
     };
 }
 
