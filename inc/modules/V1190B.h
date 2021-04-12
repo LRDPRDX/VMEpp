@@ -161,7 +161,7 @@ namespace vmeplus {
             W2, W4, W8, W16, W32, W64, W128, W256
         };
 
-        enum IError : uint16_t
+        enum IError_t : uint16_t
         {
             // NB : it is not an enum class because we want to be able
             // to perform bitwise operations on these enumerations

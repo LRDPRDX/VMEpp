@@ -118,13 +118,13 @@ namespace vmeplus {
     void V1190B::WriteErrorPattern( uint16_t pattern )
     {
         WriteMicro( Opcode( Command::SET_ERROR_TYPES ) );
-        WriteMicro( pattern & IError::ALL );
+        WriteMicro( pattern & IError_t::ALL );
     }
 
     uint16_t V1190B::ReadErrorPattern()
     {
         WriteMicro( Opcode( Command::READ_ERROR_TYPES ) );
-        return ReadMicro() & IError::ALL; // return only 11 LSBs
+        return ReadMicro() & IError_t::ALL; // return only 11 LSBs
     }
 
     void V1190B::WriteEffSizeFIFO( V1190B::FIFOSize size )
