@@ -3,6 +3,7 @@
 #include "modules/V1190B.h"
 
 #include <iostream>
+#include <cassert>
 
 using namespace vmeplus;
 
@@ -16,20 +17,19 @@ int main()
     
     try
     {
+        std::cout << "Test begins...\n";
         controller.Open( 0, 0 ); 
         controller.RegisterSlave( &tdc );
         controller.Initialize();
 
         /****** Trigger mode ******/
-        Trg_t result = tdc.ReadAcqMode();
-
         tdc.WriteAcqMode( Trg_t::CONTINUOUS );
-        result = tdc.ReadAcqMode();
-        std::cout << "ACQ MODE : " << (int)result << "\n";
+        Trg_t trgMode = tdc.ReadAcqMode();
+        assert( trgMode == Trg_t::CONTINUOUS );
 
         tdc.WriteAcqMode( Trg_t::MATCHING );
-        result = tdc.ReadAcqMode();
-        std::cout << "ACQ MODE : " << (int)result << "\n";
+        trgMode = tdc.ReadAcqMode();
+        assert( trgMode == Trg_t::MATCHING );
 
         /****** Enable keep token ******/
         // Seems there is no way to read it back 
@@ -40,17 +40,21 @@ int main()
         /****** Load configuration ******/
         // Load default configuration
         tdc.WriteLoadConfig( Cfg_t::DEFAULT );
+        // NB: Subtraction trigger time doesn't load by previous call
+        // That's why we set it manually
+        tdc.WriteSubstractionOfTriggerTime( true );
 
-        V1190B::TriggerData td; // NB : Default values for ctor are needed here
-        tdc.ReadTriggerConfiguration( td );
+        V1190B::TriggerData tdDef; // Initialized with default values
+        V1190B::TriggerData tdRead; // NB : Default values for ctor are needed here
+        tdc.ReadTriggerConfiguration( tdRead );
 
-        result = tdc.ReadAcqMode();
-        std::cout << "ACQ Mode      : " << (int)result   << "\n";
-        std::cout << "Window width  : " << td.WinWidth   << "\n";
-        std::cout << "Window offset : " << td.WinOffs    << "\n";
-        std::cout << "SW margin     : " << td.SwMargin   << "\n";
-        std::cout << "Reject margin : " << td.RejMargin  << "\n";
-        std::cout << "Sub Trigger   : " << td.SubTrigger << "\n";
+        trgMode = tdc.ReadAcqMode();
+        assert( trgMode             == Trg_t::CONTINUOUS );
+        assert( tdRead.WinWidth     == tdDef.WinWidth );
+        assert( tdRead.WinOffs      == tdDef.WinOffs );
+        assert( tdRead.SwMargin     == tdDef.SwMargin );
+        assert( tdRead.RejMargin    == tdDef.RejMargin );
+        assert( tdRead.SubTrigger   == true );
 
         /****** Set auto load ******/
         // To test this feature we should act
@@ -67,9 +71,20 @@ int main()
         tdc.WriteWindowOffset( 0xFFD0 );
         tdc.WriteExtraSearchMargin( 0x07 );
         tdc.WriteRejectMargin( 0x05 );
-        tdc.WriteSubstractionOfTriggerTime( 1 ); //is not actually saved
+        tdc.WriteSubstractionOfTriggerTime( false ); //is not actually saved
 
         tdc.WriteSaveUserConfig();
+
+        tdc.WriteLoadConfig( Cfg_t::USER );
+        tdc.ReadTriggerConfiguration( tdRead );
+
+        trgMode = tdc.ReadAcqMode();
+        assert( trgMode             == Trg_t::MATCHING );
+        assert( tdRead.WinWidth     == 0x15 );
+        assert( tdRead.WinOffs      == 0xFFD0 );
+        assert( tdRead.SwMargin     == 0x07 );
+        assert( tdRead.RejMargin    == 0x05 );
+        assert( tdRead.SubTrigger   == false );
 
         // 2)
         tdc.WriteAutoLoad( Cfg_t::USER );
@@ -79,6 +94,7 @@ int main()
         // 4) Run the AfterReset/Main executable
         //    and sure that the previously saved
         //    config is indeed loaded at power on 
+        std::cout << "Test has been passed...OK!\n";
     }
     catch( const VException &e )
     {

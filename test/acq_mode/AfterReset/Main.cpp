@@ -3,6 +3,7 @@
 #include "modules/V1190B.h"
 
 #include <iostream>
+#include <cassert>
 
 using namespace vmeplus;
 
@@ -14,6 +15,7 @@ typedef typename V1190B::Config_t      Cfg_t;
 
 int main()
 {
+    std::cout << "Test begins...\n";
     V2718 controller;
     V1190B tdc(0x20080000);
     
@@ -26,13 +28,16 @@ int main()
         V1190B::TriggerData td;
         tdc.ReadTriggerConfiguration( td );
 
-        Trg_t result = tdc.ReadAcqMode();
-        std::cout << "ACQ Mode      : " << (int)result   << "\n";
-        std::cout << "Window width  : " << td.WinWidth   << "\n";
-        std::cout << "Window offset : " << td.WinOffs    << "\n";
-        std::cout << "SW margin     : " << td.SwMargin   << "\n";
-        std::cout << "Reject margin : " << td.RejMargin  << "\n";
-        std::cout << "Sub Trigger   : " << td.SubTrigger << "\n";
+        Trg_t trgMode = tdc.ReadAcqMode();
+
+        // For asserted values see ../Main.cpp file
+        assert( trgMode         == Trg_t::MATCHING );
+        assert( td.WinWidth     == 0x15 );
+        assert( td.WinOffs      == 0xFFD0 );
+        assert( td.SwMargin     == 0x07 );
+        assert( td.RejMargin    == 0x05 );
+
+        std::cout << "Test has been passed...OK!\n";
     }
     catch( const VException &e )
     {
