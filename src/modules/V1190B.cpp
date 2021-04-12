@@ -89,7 +89,7 @@ namespace vmeplus {
         WriteMicro(data);
      }
 
-    void V1190B::WriteSubstractionOfTriggerTime(bool data){
+    void V1190B::WriteEnableSubTrigger(bool data){
         if (data)
             WriteMicro(Opcode(Command::EN_SUB_TRG));
         else 
@@ -99,12 +99,10 @@ namespace vmeplus {
     void V1190B::ReadTriggerConfiguration(TriggerData& trigger){
         WriteMicro(Opcode(Command::READ_TRG_CONF));
 
-        uint16_t WinWidth = ReadMicro();
-        uint16_t WinOffs = ReadMicro();
-        uint16_t SwMargin = ReadMicro();        
-        uint16_t RejMargin = ReadMicro();
-        uint16_t SubTrg = ReadMicro();
-
-        TriggerData(WinWidth, WinOffs, SwMargin, RejMargin, SubTrg);
+        trigger.winWidth = ReadMicro();
+        trigger.winOffs = ReadMicro();
+        trigger.swMargin = ReadMicro();
+        trigger.rejMargin = ReadMicro();
+        trigger.subTrigger = ReadMicro();
     }
 }
