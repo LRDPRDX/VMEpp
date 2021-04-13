@@ -86,10 +86,10 @@ namespace vmeplus {
         }
     }
     
-    void V1190B::WritePairRes(ResLeadEdgeTime_t edgeTime, ResPulseWidth_t width)  {
+    void V1190B::WritePairRes(PairRes pairRes)  {
         if (ReadDetection() == EdgeDetect_t::PAIR) {
             WriteMicro(Opcode(Command::SET_PAIR_RES));
-            WriteMicro(((static_cast<uint16_t>(width)<<8U) | (static_cast<uint16_t>(edgeTime) & 0x0007)) & 0x0F07);
+            WriteMicro(((static_cast<uint16_t>(pairRes.width)<<8U) | (static_cast<uint16_t>(pairRes.edgeTime) & 0x0007)) & 0x0F07);
         }
     }
 

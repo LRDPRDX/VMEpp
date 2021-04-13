@@ -246,22 +246,26 @@ namespace vmeplus {
             ns100
         };
 
-        struct TDCDetectRes {
-            EdgeDetect_t config;
-            EdgeLSB_t lsb;
+        struct PairRes {
             ResLeadEdgeTime_t edgeTime;
             ResPulseWidth_t width;
+
+            PairRes(ResLeadEdgeTime_t edgeTime = ResLeadEdgeTime_t::ps100,
+                    ResPulseWidth_t width = ResPulseWidth_t::ps100):
+                    edgeTime(edgeTime),
+                    width(width){}
+        };
+
+        struct TDCDetectRes {
+            EdgeDetect_t edgeDetect;
+            EdgeLSB_t lsb;
             DeadTime_t time;
         
-            TDCDetectRes(EdgeDetect_t config,
-                         EdgeLSB_t lsb,
-                         ResLeadEdgeTime_t edgeTime,
-                         ResPulseWidth_t width,
-                         DeadTime_t time):
-                config(config),
+            TDCDetectRes(EdgeDetect_t edgeDetect,
+                         EdgeLSB_t lsb = EdgeLSB_t::ps100,
+                         DeadTime_t time = DeadTime_t::ns5):
+                edgeDetect(edgeDetect),
                 lsb(lsb),
-                edgeTime(edgeTime),
-                width(width),
                 time(time) {}
         };
     
@@ -271,7 +275,7 @@ namespace vmeplus {
 
         void WriteLSB(EdgeLSB_t lsb);
 
-        void WritePairRes(ResLeadEdgeTime_t time, ResPulseWidth_t width);
+        void WritePairRes(PairRes pairRes);
 
         uint16_t ReadTDCRes();
 
