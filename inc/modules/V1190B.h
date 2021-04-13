@@ -148,8 +148,10 @@ namespace vmeplus {
             Command command;
             uint8_t object;
 
-            Opcode(Command command, uint8_t object = 0x00) :
-                    command(command), object(object) {}
+            Opcode(Command command, 
+                    uint8_t object = 0x00) :
+                    command(command), 
+                    object(object) {}
         };
 
         struct TriggerData {
@@ -159,10 +161,16 @@ namespace vmeplus {
             uint16_t rejMargin;
             uint16_t subTrigger;
 
-            TriggerData(uint16_t winWidth = 0x0014, uint16_t winOffs = 0xFFD8, uint16_t swMargin = 0x0008,
-                        uint16_t rejMargin = 0x0004, uint16_t subTrigger = 0x0000) :
-                    winWidth(winWidth), winOffs(winOffs), swMargin(swMargin),
-                    rejMargin(rejMargin), subTrigger(subTrigger) {}
+            TriggerData(uint16_t winWidth = 0x0014, 
+                        uint16_t winOffs = 0xFFD8, 
+                        uint16_t swMargin = 0x0008,
+                        uint16_t rejMargin = 0x0004, 
+                        uint16_t subTrigger = 0x0000) :
+                    winWidth(winWidth), 
+                    winOffs(winOffs), 
+                    swMargin(swMargin),
+                    rejMargin(rejMargin), 
+                    subTrigger(subTrigger) {}
         };
 
     public:
