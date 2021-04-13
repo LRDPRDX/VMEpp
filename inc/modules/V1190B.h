@@ -145,28 +145,28 @@ namespace vmeplus {
             Command command;
             uint8_t object;
 
-            Opcode(Command command, uint8_t object = 0x00):
-                command(command), object(object) {}
+            Opcode(Command command, uint8_t object = 0x00) :
+                    command(command), object(object) {}
         };
 
         enum class TriggerMode_t    { MATCHING, CONTINUOUS };
         enum class Config_t         { DEFAULT, USER };
 
         struct TriggerData {
-            uint16_t WinWidth;
-            uint16_t WinOffs;
-            uint16_t SwMargin;
-            uint16_t RejMargin;
-            uint16_t SubTrigger;
-            
-            TriggerData(uint16_t WinWidth = 0x0014, uint16_t WinOffs = 0xFFD8, uint16_t SwMargin = 0x0008,
-                    uint16_t RejMargin = 0x0004, uint16_t SubTrigger = 0x0000 ):
-                WinWidth(WinWidth), WinOffs(WinOffs), SwMargin(SwMargin),
-                RejMargin(RejMargin), SubTrigger(SubTrigger) {}
+            uint16_t winWidth;
+            uint16_t winOffs;
+            uint16_t swMargin;
+            uint16_t rejMargin;
+            uint16_t subTrigger;
+
+            TriggerData(uint16_t winWidth = 0x0014, uint16_t winOffs = 0xFFD8, uint16_t swMargin = 0x0008,
+                        uint16_t rejMargin = 0x0004, uint16_t subTrigger = 0x0000) :
+                    winWidth(winWidth), winOffs(winOffs), swMargin(swMargin),
+                    rejMargin(rejMargin), subTrigger(subTrigger) {}
         };
 
     public:
-        V1190B( uint32_t address, uint32_t range = V1190B_LUB );
+        V1190B(uint32_t address, uint32_t range = V1190B_LUB);
 
         virtual ~V1190B();
 
@@ -218,14 +218,19 @@ namespace vmeplus {
         void WriteAutoLoad( V1190B::Config_t config );
         void WriteSaveUserConfig();
 
-    // Trigger functions
+        // Trigger functions
     public:
         void WriteWindowWidth(uint16_t data);
+
         void WriteWindowOffset(uint16_t data);
+
         void WriteExtraSearchMargin(uint16_t data);
+
         void WriteRejectMargin(uint16_t data);
-        void WriteSubstractionOfTriggerTime(bool data);
-        void ReadTriggerConfiguration(TriggerData& trigger);
+
+        void WriteEnableSubTrigger(bool data);
+
+        void ReadTriggerConfiguration(TriggerData &trigger);
     };
 }
 
