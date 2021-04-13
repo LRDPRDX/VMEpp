@@ -69,40 +69,48 @@ namespace vmeplus {
         return ReadRegister16(V1190B_MICRO);
     }
 
-    void V1190B::WriteDetection(DetectConfig config){
+    void V1190B::WriteDetection(EdgeDetect_t detect){
         WriteMicro(Opcode(Command::SET_DETECTION));
-        WriteMicro(static_cast<uint16_t>(config));
+        WriteMicro(static_cast<uint16_t>(detect) & 0x0003);
     }
 
-    uint16_t V1190B::ReadDetection() {
+    V1190B::EdgeDetect_t V1190B::ReadDetection() {
         WriteMicro(Opcode(Command::READ_DETECTION));
-        return ReadMicro();
+        return static_cast<EdgeDetect_t>( ReadMicro() & 0x0003 );
     }
 
-    void V1190B::WriteLSB(LSBvalue lsb){
-        WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
-        WriteMicro(static_cast<uint16_t>(lsb)); 
+    void V1190B::WriteLSB(EdgeLSB_t lsb){
+        if ((ReadDetection() == EdgeDetect_t::LEADING) or (ReadDetection() == EdgeDetect_t::TRAILING)) {
+            WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
+            WriteMicro(static_cast<uint16_t>(lsb) & 0x0003);
+        }
     }
     
-    void V1190B::WritePairRes(TDCDetectRes& Detect, ResLeadEdge lead, ResPulseWidth width)  {
-        if (Detect.config == DetectConfig::PAIRMODE) {
+    void V1190B::WritePairRes(ResLeadEdgeTime_t edgeTime, ResPulseWidth_t width)  {
+        if (ReadDetection() == EdgeDetect_t::PAIR) {
             WriteMicro(Opcode(Command::SET_PAIR_RES));
-            WriteMicro(static_cast<uint16_t>(width)<<8U | lead);
+            WriteMicro(((static_cast<uint16_t>(width)<<8U) | (static_cast<uint16_t>(edgeTime) & 0x0007)) & 0x0F07);
         }
     }
 
-    uint16_t V1190B::ReadRes() {
-        WriteMicro(Opcode(Command::READ_RES));
-        return ReadMicro();
+    uint16_t V1190B::ReadTDCRes() {
+        if ((ReadDetection() == EdgeDetect_t::TRAILING) or (ReadDetection() == EdgeDetect_t::LEADING)) {
+            WriteMicro(Opcode(Command::READ_RES));
+            return ( ReadMicro() & 0x0003 );
+        }
+        if (ReadDetection() == EdgeDetect_t::PAIR) {
+            WriteMicro(Opcode(Command::READ_RES));
+            return ( ReadMicro() & 0x0F07 );
+        }
     }
 
-    void V1190B::WriteDeadTime(DeadTime time){
+    void V1190B::WriteDeadTime(DeadTime_t time){
         WriteMicro(Opcode(Command::SET_DEAD_TIME));
-        WriteMicro(static_cast<uint16_t>(time));
+        WriteMicro(static_cast<uint16_t>(time) & 0x0003);
     }
 
-    uint16_t V1190B::ReadDeadTime(){
+    V1190B::DeadTime_t V1190B::ReadDeadTime(){
         WriteMicro(Opcode(Command::READ_DEAD_TIME));
-        return ReadMicro();
+        return static_cast<DeadTime_t>( ReadMicro() & 0x0003 );
     }
 }
