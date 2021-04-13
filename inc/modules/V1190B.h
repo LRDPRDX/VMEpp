@@ -196,78 +196,78 @@ namespace vmeplus {
     // TDC EDGE DETECTION & RESOLUTION
     public:
         enum class DetectConfig {
-            PairMode = 0x00,
-            Trailing,
-            Leading,
-            TrailingLeading
+            PAIRMODE,
+            TRAILING,
+            LEADING,
+            TRAILINGLEADING
         };
 
         enum class LSBvalue {
-            ps800 = 0x00,
-            ps200,
-            ps100, //default
+            PS800,
+            PS200,
+            PS100
         };
 
-        enum class ResLeadEdje {
-            ps100 = 0x000,
-            ps200,
-            ps400,
-            ps800,
-            ps1600,
-            ps3120,
-            ps6250,
-            ps12500
+        enum class ResLeadEdge {
+            PS100,
+            PS200,
+            PS400,
+            PS800,
+            PS1600,
+            PS3120,
+            PS6250,
+            PS12500
         };
 
         enum class ResPulseWidth {
-             ps100 = 0x00,
-             ps200,
-             ps400,
-             ps800,
-             ps1600,
-             ps3120,
-             ps6250,
-             ps12500,
-             ns25,
-             ns50,
-             ns100,
-             ns200,
-             ns400,
-             ns800
+            PS100,
+            PS200,
+            PS400,
+            PS800,
+            PS1600,
+            PS3120,
+            PS6250,
+            PS12500,
+            NS25,
+            NS50,
+            NS100,
+            NS200,
+            NS400,
+            NS800
         };
 
         enum class DeadTime {
-            ns5 = 0x00,
-            ns10,
-            ns30,
-            ns100
+            NS5,
+            NS10,
+            NS30,
+            NS100
         };
 
         struct TDCDetectRes {
             DetectConfig config;
             LSBvalue lsb;
-            ResLeadEdje lead;
+            ResLeadEdge lead;
             ResPulseWidth width;
             DeadTime time;
         
-            TDCDetectRes(DetectConfig config, LSBvalue lsb, ResLeadEdje lead, 
-                    ResPulseWidth width, DeadTime time): 
+            TDCDetectRes(DetectConfig config, LSBvalue lsb, ResLeadEdge lead,
+                    ResPulseWidth width, DeadTime time):
                 config(config), lsb(lsb), lead(lead), width(width), time(time) {}
         };
     
         void WriteDetection(DetectConfig config);
 
-        uint16_t ReadDetection(TDCDetectRes& DetectRes);
+        uint16_t ReadDetection();
 
         void WriteLSB(LSBvalue lsb);
 
-        void WritePairRes(TDCDetectRes& Detect, ResLeadEdje lead, ResPulseWidth width);
+        void WritePairRes(TDCDetectRes& Detect, ResLeadEdge lead, ResPulseWidth width);
 
-        uint16_t ReadRes(TDCDetectRes& DetectRes);
+        uint16_t ReadRes();
 
         void WriteDeadTime(DeadTime time);
 
-        uint16_t ReadDeadTime(TDCDetectRes& DetectRes);
+        uint16_t ReadDeadTime();
     };
 }
 
