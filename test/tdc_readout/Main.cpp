@@ -32,13 +32,13 @@ int main()
         assert( headTrail == false );
 
         // MAX HITS PER EVENT
-        tdc.WriteMaxHitsPerEvent( NHits::N128 );
+        tdc.WriteMaxHitsPerEvent( NHits::n128 );
         NHits nHits = tdc.ReadMaxHitsPerEvent();
-        assert( nHits == NHits::N128 );
+        assert( nHits == NHits::n128 );
 
-        tdc.WriteMaxHitsPerEvent( NHits::N32 );
+        tdc.WriteMaxHitsPerEvent( NHits::n32 );
         nHits = tdc.ReadMaxHitsPerEvent();
-        assert( nHits == NHits::N32 );
+        assert( nHits == NHits::n32 );
 
         tdc.WriteMaxHitsPerEvent( NHits::NO_LIMIT );
         nHits = tdc.ReadMaxHitsPerEvent();
@@ -69,11 +69,11 @@ int main()
         assert( ePatternW == ePatternR );
 
         // BUFFER SIZE
-        tdc.WriteEffSizeFIFO( NWords::W4 );
+        tdc.WriteEffSizeFIFO( NWords::w4 );
         uint16_t nWords = tdc.ReadEffSizeFIFO();
         assert( nWords == 4 );
 
-        tdc.WriteEffSizeFIFO( NWords::W256 );
+        tdc.WriteEffSizeFIFO( NWords::w256 );
         nWords = tdc.ReadEffSizeFIFO();
         assert( nWords == 256 );
 

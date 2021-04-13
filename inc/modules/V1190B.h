@@ -151,14 +151,14 @@ namespace vmeplus {
 
         enum class MaxHitsPerEvent : uint16_t
         {
-            N0, N1, N2, N4, N8, N16, N32, N64, N128,
+            n0, n1, n2, n4, n8, n16, n32, n64, n128,
             NO_LIMIT = 0b1001,
             INVALID  =  0b1010, // Actually, any number >= INVALID is meaningless
         };
 
         enum class FIFOSize : uint16_t
         {
-            W2, W4, W8, W16, W32, W64, W128, W256
+            w2, w4, w8, w16, w32, w64, w128, w256
         };
 
         enum IError_t : uint16_t
