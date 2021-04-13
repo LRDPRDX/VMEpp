@@ -42,7 +42,7 @@ int main()
         tdc.WriteLoadConfig( Cfg_t::DEFAULT );
         // NB: Subtraction trigger time doesn't load by previous call
         // That's why we set it manually
-        tdc.WriteSubstractionOfTriggerTime( true );
+        tdc.WriteEnableSubTrigger( true );
 
         V1190B::TriggerData tdDef; // Initialized with default values
         V1190B::TriggerData tdRead; // NB : Default values for ctor are needed here
@@ -50,11 +50,11 @@ int main()
 
         trgMode = tdc.ReadAcqMode();
         assert( trgMode             == Trg_t::CONTINUOUS );
-        assert( tdRead.WinWidth     == tdDef.WinWidth );
-        assert( tdRead.WinOffs      == tdDef.WinOffs );
-        assert( tdRead.SwMargin     == tdDef.SwMargin );
-        assert( tdRead.RejMargin    == tdDef.RejMargin );
-        assert( tdRead.SubTrigger   == true );
+        assert( tdRead.winWidth     == tdDef.winWidth );
+        assert( tdRead.winOffs      == tdDef.winOffs );
+        assert( tdRead.swMargin     == tdDef.swMargin );
+        assert( tdRead.rejMargin    == tdDef.rejMargin );
+        assert( tdRead.subTrigger   == true );
 
         /****** Set auto load ******/
         // To test this feature we should act
@@ -67,11 +67,11 @@ int main()
 
         // 1)
         tdc.WriteAcqMode( Trg_t::MATCHING );
-        tdc.WriteWindowWidth( 0x15 );
+        tdc.WriteWindowWidth( 0x18 );
         tdc.WriteWindowOffset( 0xFFD0 );
         tdc.WriteExtraSearchMargin( 0x07 );
         tdc.WriteRejectMargin( 0x05 );
-        tdc.WriteSubstractionOfTriggerTime( false ); //is not actually saved
+        tdc.WriteEnableSubTrigger( false ); //is not actually saved
 
         tdc.WriteSaveUserConfig();
 
@@ -80,11 +80,11 @@ int main()
 
         trgMode = tdc.ReadAcqMode();
         assert( trgMode             == Trg_t::MATCHING );
-        assert( tdRead.WinWidth     == 0x15 );
-        assert( tdRead.WinOffs      == 0xFFD0 );
-        assert( tdRead.SwMargin     == 0x07 );
-        assert( tdRead.RejMargin    == 0x05 );
-        assert( tdRead.SubTrigger   == false );
+        assert( tdRead.winWidth     == 0x18 );
+        assert( tdRead.winOffs      == 0xFFD0 );
+        assert( tdRead.swMargin     == 0x07 );
+        assert( tdRead.rejMargin    == 0x05 );
+        assert( tdRead.subTrigger   == false );
 
         // 2)
         tdc.WriteAutoLoad( Cfg_t::USER );

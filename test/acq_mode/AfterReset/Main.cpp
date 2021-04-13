@@ -32,10 +32,10 @@ int main()
 
         // For asserted values see ../Main.cpp file
         assert( trgMode         == Trg_t::MATCHING );
-        assert( td.WinWidth     == 0x15 );
-        assert( td.WinOffs      == 0xFFD0 );
-        assert( td.SwMargin     == 0x07 );
-        assert( td.RejMargin    == 0x05 );
+        assert( td.winWidth     == 0x18 );
+        assert( td.winOffs      == 0xFFD0 );
+        assert( td.swMargin     == 0x07 );
+        assert( td.rejMargin    == 0x05 );
 
         std::cout << "Test has been passed...OK!\n";
     }
