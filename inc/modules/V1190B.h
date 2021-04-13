@@ -141,16 +141,32 @@ namespace vmeplus {
             READ_TDC_SETUP_SCAN_PATH                        //read all Setup Scan Path on TDC 0n
         };
 
+        enum class TriggerMode_t {MATCHING, CONTINUOUS};
+        enum class Config_t {DEFAULT, USER};
+
         struct Opcode {
             Command command;
             uint8_t object;
 
-            Opcode(Command command, uint8_t object = 0x00):
-                command(command), object(object) {}
+            Opcode(Command command, uint8_t object = 0x00) :
+                    command(command), object(object) {}
+        };
+
+        struct TriggerData {
+            uint16_t winWidth;
+            uint16_t winOffs;
+            uint16_t swMargin;
+            uint16_t rejMargin;
+            uint16_t subTrigger;
+
+            TriggerData(uint16_t winWidth = 0x0014, uint16_t winOffs = 0xFFD8, uint16_t swMargin = 0x0008,
+                        uint16_t rejMargin = 0x0004, uint16_t subTrigger = 0x0000) :
+                    winWidth(winWidth), winOffs(winOffs), swMargin(swMargin),
+                    rejMargin(rejMargin), subTrigger(subTrigger) {}
         };
 
     public:
-        V1190B( uint32_t address, uint32_t range = V1190B_LUB );
+        V1190B(uint32_t address, uint32_t range = V1190B_LUB);
 
         virtual ~V1190B();
 
@@ -192,6 +208,20 @@ namespace vmeplus {
         void WriteMicro(Opcode opcode);
 
         uint16_t ReadMicro();
+
+        // Trigger functions
+    public:
+        void WriteWindowWidth(uint16_t data);
+
+        void WriteWindowOffset(uint16_t data);
+
+        void WriteExtraSearchMargin(uint16_t data);
+
+        void WriteRejectMargin(uint16_t data);
+
+        void WriteEnableSubTrigger(bool data);
+
+        void ReadTriggerConfiguration(TriggerData &trigger);
     };
 }
 

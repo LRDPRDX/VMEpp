@@ -68,4 +68,41 @@ namespace vmeplus {
         while (!(ReadRegister16(V1190B_MICRO_HANDSHAKE, V1190B_READ_OK_MSK))) {}
         return ReadRegister16(V1190B_MICRO);
     }
+
+     void V1190B::WriteWindowWidth(uint16_t data){
+        WriteMicro(Opcode(Command::SET_WIN_WIDTH));
+        WriteMicro(data);
+    }
+
+    void V1190B::WriteWindowOffset(uint16_t data){
+        WriteMicro(Opcode(Command::SET_WIN_OFFS));
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteExtraSearchMargin(uint16_t data){
+        WriteMicro(Opcode(Command::SET_SW_MARGIN));
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteRejectMargin(uint16_t data){
+        WriteMicro(Opcode(Command::SET_REJ_MARGIN));
+        WriteMicro(data);
+     }
+
+    void V1190B::WriteEnableSubTrigger(bool data){
+        if (data)
+            WriteMicro(Opcode(Command::EN_SUB_TRG));
+        else 
+            WriteMicro(Opcode(Command::DIS_SUB_TRG));
+    }
+
+    void V1190B::ReadTriggerConfiguration(TriggerData& trigger){
+        WriteMicro(Opcode(Command::READ_TRG_CONF));
+
+        trigger.winWidth = ReadMicro();
+        trigger.winOffs = ReadMicro();
+        trigger.swMargin = ReadMicro();
+        trigger.rejMargin = ReadMicro();
+        trigger.subTrigger = ReadMicro();
+    }
 }
