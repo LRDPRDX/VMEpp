@@ -195,7 +195,7 @@ namespace vmeplus {
 
         // TDC EDGE DETECTION & RESOLUTION
     public:
-        enum class EdgeDetect {
+        enum class EdgeDetect_t {
             PAIR,
             TRAILING,
             LEADING,
@@ -256,12 +256,12 @@ namespace vmeplus {
                     width(width) {}
         };
 
-        struct TDCDetectRes {
-            EdgeDetect edgeDetect;
+        struct DetectRes {
+            EdgeDetect_t edgeDetect;
             EdgeLSB lsb;
             DeadTime time;
 
-            TDCDetectRes(EdgeDetect edgeDetect,
+            DetectRes(EdgeDetect_t edgeDetect,
                          EdgeLSB lsb = EdgeLSB::ps100,
                          DeadTime time = DeadTime::ns5) :
                     edgeDetect(edgeDetect),
@@ -269,9 +269,9 @@ namespace vmeplus {
                     time(time) {}
         };
 
-        void WriteDetection(EdgeDetect detect);
+        void WriteDetection(EdgeDetect_t detect);
 
-        EdgeDetect ReadDetection();
+        EdgeDetect_t ReadDetection();
 
         void WriteLSB(EdgeLSB lsb);
 

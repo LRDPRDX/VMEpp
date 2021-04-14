@@ -68,42 +68,49 @@ namespace vmeplus {
         return ReadRegister16(V1190B_MICRO);
     }
 
-    void V1190B::WriteDetection(EdgeDetect detect) {
+    void V1190B::WriteDetection(EdgeDetect_t detect) {
         WriteMicro(Opcode(Command::SET_DETECTION));
         WriteMicro(static_cast<uint16_t>(detect) & 0x0003);
     }
 
-    V1190B::EdgeDetect V1190B::ReadDetection() {
+    V1190B::EdgeDetect_t V1190B::ReadDetection() {
         WriteMicro(Opcode(Command::READ_DETECTION));
-        return static_cast<EdgeDetect>(ReadMicro() & 0x0003);
+        return static_cast<EdgeDetect_t>(ReadMicro() & 0x0003);
     }
 
     void V1190B::WriteLSB(EdgeLSB lsb) {
-        EdgeDetect edgeDetect = ReadDetection();
-        if ((edgeDetect == EdgeDetect::TRAILING) or (edgeDetect == EdgeDetect::LEADING) or (edgeDetect == EdgeDetect::TRAILINGLEADING)) {
-            WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
-            WriteMicro(static_cast<uint16_t>(lsb) & 0x0003);
+        switch (ReadDetection()) {
+            case EdgeDetect_t::TRAILING:
+            case EdgeDetect_t::LEADING:
+            case EdgeDetect_t::TRAILINGLEADING:
+                WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
+                WriteMicro(static_cast<uint16_t>(lsb) & 0x0003);
+                break;
+            case EdgeDetect_t::PAIR:
+                break;
         }
     }
 
     void V1190B::WritePairRes(PairRes pairRes) {
-        if (ReadDetection() == EdgeDetect::PAIR) {
+        if (ReadDetection() == EdgeDetect_t::PAIR) {
             WriteMicro(Opcode(Command::SET_PAIR_RES));
             WriteMicro(((static_cast<uint16_t>(pairRes.width) << 8U) |
-                        (static_cast<uint16_t>(pairRes.edgeTime) & 0x0007)) & 0x0F07);
+                        (static_cast<uint16_t>(pairRes.edgeTime))) & 0x0F07);
         }
     }
 
     uint16_t V1190B::ReadTDCRes() {
-        EdgeDetect edgeDetect = ReadDetection();
-        if ((edgeDetect == EdgeDetect::TRAILING) or (edgeDetect == EdgeDetect::LEADING) or (edgeDetect == EdgeDetect::TRAILINGLEADING)) {
-            WriteMicro(Opcode(Command::READ_RES));
-            return (ReadMicro() & 0x0003);
+        switch (ReadDetection()) {
+            case EdgeDetect_t::TRAILING:
+            case EdgeDetect_t::LEADING:
+            case EdgeDetect_t::TRAILINGLEADING:
+                WriteMicro(Opcode(Command::READ_RES));
+                break;
+            case EdgeDetect_t::PAIR:
+                WriteMicro(Opcode(Command::READ_RES));
+                break;
         }
-        if (edgeDetect == EdgeDetect::PAIR) {
-            WriteMicro(Opcode(Command::READ_RES));
-            return (ReadMicro() & 0x0F07);
-        }
+        return ReadMicro();
     }
 
     void V1190B::WriteDeadTime(DeadTime time) {
