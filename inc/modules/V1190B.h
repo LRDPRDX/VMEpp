@@ -141,9 +141,6 @@ namespace vmeplus {
             READ_TDC_SETUP_SCAN_PATH                        //read all Setup Scan Path on TDC 0n
         };
 
-        enum class TriggerMode_t {MATCHING, CONTINUOUS};
-        enum class Config_t {DEFAULT, USER};
-
         struct Opcode {
             Command command;
             uint8_t object;
