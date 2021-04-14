@@ -145,12 +145,12 @@ namespace vmeplus {
             Command command;
             uint8_t object;
 
-            Opcode(Command command, uint8_t object = 0x00):
-                command(command), object(object) {}
+            Opcode(Command command, uint8_t object = 0x00) :
+                    command(command), object(object) {}
         };
 
     public:
-        V1190B( uint32_t address, uint32_t range = V1190B_LUB );
+        V1190B(uint32_t address, uint32_t range = V1190B_LUB);
 
         virtual ~V1190B();
 
@@ -193,23 +193,23 @@ namespace vmeplus {
 
         uint16_t ReadMicro();
 
-    // TDC EDGE DETECTION & RESOLUTION
+        // TDC EDGE DETECTION & RESOLUTION
     public:
-        enum class EdgeDetect_t {
+        enum class EdgeDetect {
             PAIR,
             TRAILING,
             LEADING,
             TRAILINGLEADING
         };
 
-        enum class EdgeLSB_t {
+        enum class EdgeLSB {
             ps800,
             ps200,
             ps100,
             UNUSED
         };
 
-        enum class ResLeadEdgeTime_t {
+        enum class ResLeadEdgeTime {
             ps100,
             ps200,
             ps400,
@@ -220,7 +220,7 @@ namespace vmeplus {
             ps12500
         };
 
-        enum class ResPulseWidth_t {
+        enum class ResPulseWidth {
             ps100,
             ps200,
             ps400,
@@ -239,7 +239,7 @@ namespace vmeplus {
             INVALID_2
         };
 
-        enum class DeadTime_t {
+        enum class DeadTime {
             ns5,
             ns10,
             ns30,
@@ -247,41 +247,41 @@ namespace vmeplus {
         };
 
         struct PairRes {
-            ResLeadEdgeTime_t edgeTime;
-            ResPulseWidth_t width;
+            ResLeadEdgeTime edgeTime;
+            ResPulseWidth width;
 
-            PairRes(ResLeadEdgeTime_t edgeTime = ResLeadEdgeTime_t::ps100,
-                    ResPulseWidth_t width = ResPulseWidth_t::ps100):
+            PairRes(ResLeadEdgeTime edgeTime = ResLeadEdgeTime::ps100,
+                    ResPulseWidth width = ResPulseWidth::ps100) :
                     edgeTime(edgeTime),
-                    width(width){}
+                    width(width) {}
         };
 
         struct TDCDetectRes {
-            EdgeDetect_t edgeDetect;
-            EdgeLSB_t lsb;
-            DeadTime_t time;
-        
-            TDCDetectRes(EdgeDetect_t edgeDetect,
-                         EdgeLSB_t lsb = EdgeLSB_t::ps100,
-                         DeadTime_t time = DeadTime_t::ns5):
-                edgeDetect(edgeDetect),
-                lsb(lsb),
-                time(time) {}
+            EdgeDetect edgeDetect;
+            EdgeLSB lsb;
+            DeadTime time;
+
+            TDCDetectRes(EdgeDetect edgeDetect,
+                         EdgeLSB lsb = EdgeLSB::ps100,
+                         DeadTime time = DeadTime::ns5) :
+                    edgeDetect(edgeDetect),
+                    lsb(lsb),
+                    time(time) {}
         };
-    
-        void WriteDetection(EdgeDetect_t detect);
 
-        EdgeDetect_t ReadDetection();
+        void WriteDetection(EdgeDetect detect);
 
-        void WriteLSB(EdgeLSB_t lsb);
+        EdgeDetect ReadDetection();
+
+        void WriteLSB(EdgeLSB lsb);
 
         void WritePairRes(PairRes pairRes);
 
         uint16_t ReadTDCRes();
 
-        void WriteDeadTime(DeadTime_t time);
+        void WriteDeadTime(DeadTime time);
 
-        DeadTime_t ReadDeadTime();
+        DeadTime ReadDeadTime();
     };
 }
 
