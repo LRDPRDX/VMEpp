@@ -75,4 +75,10 @@ namespace vmeplus {
         if( status ) WriteMicro( Opcode( Command::EN_CHANNEL, n % fChNumber ) );
         else         WriteMicro( Opcode( Command::DIS_CHANNEL, n % fChNumber ) );
     }
+
+    void V1190B::WriteEnableAll( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_ALL_CH ) );
+        else         WriteMicro( Opcode( Command::DIS_ALL_CH ) );
+    }
 }

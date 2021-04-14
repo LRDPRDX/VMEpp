@@ -202,6 +202,7 @@ namespace vmeplus {
         //CHANNEL
     public :
         void WriteEnableChannel( uint8_t n, bool status );
+        void WriteEnableAll( bool status );
     };
 }
 
