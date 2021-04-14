@@ -198,6 +198,10 @@ namespace vmeplus {
         void WriteMicro(Opcode opcode);
 
         uint16_t ReadMicro();
+
+        //CHANNEL
+    public :
+        void WriteEnableChannel( uint8_t n, bool status );
     };
 }
 

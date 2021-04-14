@@ -68,4 +68,11 @@ namespace vmeplus {
         while (!(ReadRegister16(V1190B_MICRO_HANDSHAKE, V1190B_READ_OK_MSK))) {}
         return ReadRegister16(V1190B_MICRO);
     }
+
+    //CHANNEL
+    void V1190B::WriteEnableChannel( uint8_t n, bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_CHANNEL, n % fChNumber ) );
+        else         WriteMicro( Opcode( Command::DIS_CHANNEL, n % fChNumber ) );
+    }
 }
