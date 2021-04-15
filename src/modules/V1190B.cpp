@@ -78,39 +78,27 @@ namespace vmeplus {
         return static_cast<EdgeDetect_t>(ReadMicro() & 0x0003);
     }
 
-    void V1190B::WriteLSB(EdgeLSB lsb) {
-        switch (ReadDetection()) {
-            case EdgeDetect_t::TRAILING:
-            case EdgeDetect_t::LEADING:
-            case EdgeDetect_t::TRAILINGLEADING:
-                WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
-                WriteMicro(static_cast<uint16_t>(lsb) & 0x0003);
-                break;
-            case EdgeDetect_t::PAIR:
-                break;
-        }
+    void V1190B::WriteEdgeRes(TrLeadLSB lsb) {
+        WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
+        WriteMicro(static_cast<uint16_t>(lsb) & 0x0003);
     }
 
     void V1190B::WritePairRes(PairRes pairRes) {
-        if (ReadDetection() == EdgeDetect_t::PAIR) {
-            WriteMicro(Opcode(Command::SET_PAIR_RES));
-            WriteMicro(((static_cast<uint16_t>(pairRes.width) << 8U) |
-                        (static_cast<uint16_t>(pairRes.edgeTime))) & 0x0F07);
-        }
+        WriteMicro(Opcode(Command::SET_PAIR_RES));
+        WriteMicro(((static_cast<uint16_t>(pairRes.width) << 8U) |
+                    (static_cast<uint16_t>(pairRes.edgeTime))) & 0x0F07);
     }
 
-    uint16_t V1190B::ReadTDCRes() {
-        switch (ReadDetection()) {
-            case EdgeDetect_t::TRAILING:
-            case EdgeDetect_t::LEADING:
-            case EdgeDetect_t::TRAILINGLEADING:
-                WriteMicro(Opcode(Command::READ_RES));
-                break;
-            case EdgeDetect_t::PAIR:
-                WriteMicro(Opcode(Command::READ_RES));
-                break;
-        }
-        return ReadMicro();
+    V1190B::TrLeadLSB V1190B::ReadEdgeRes() {
+        WriteMicro(Opcode(Command::READ_RES));
+        return static_cast<TrLeadLSB>(ReadMicro() & 0x0003);
+    }
+
+    void V1190B::ReadPairRes(PairRes& pairRes) {
+        WriteMicro(Opcode(Command::READ_RES));
+        uint16_t data = ReadMicro();
+        pairRes.edgeTime = static_cast<ResLeadEdgeTime>(data & 0x0003);
+        pairRes.width = static_cast<ResPulseWidth>(data & 0x0F00);
     }
 
     void V1190B::WriteDeadTime(DeadTime time) {

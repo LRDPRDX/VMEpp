@@ -202,7 +202,7 @@ namespace vmeplus {
             TRAILINGLEADING
         };
 
-        enum class EdgeLSB {
+        enum class TrLeadLSB {
             ps800,
             ps200,
             ps100,
@@ -256,28 +256,42 @@ namespace vmeplus {
                     width(width) {}
         };
 
-        struct DetectRes {
-            EdgeDetect_t edgeDetect;
-            EdgeLSB lsb;
-            DeadTime time;
+        struct EdgeRes {
+            TrLeadLSB lsb;
+            DeadTime deadTime;
 
-            DetectRes(EdgeDetect_t edgeDetect,
-                         EdgeLSB lsb = EdgeLSB::ps100,
-                         DeadTime time = DeadTime::ns5) :
-                    edgeDetect(edgeDetect),
+            EdgeRes(TrLeadLSB lsb = TrLeadLSB::ps100,
+                    DeadTime deadTime = DeadTime::ns5):
                     lsb(lsb),
-                    time(time) {}
+                    deadTime(deadTime) {}
         };
+
+
+
+//        struct DetectRes {
+//            EdgeDetect_t edgeDetect;
+//            EdgeLeadLSB lsb;
+//            DeadTime time;
+//
+//            DetectRes(EdgeDetect_t edgeDetect,
+//                         EdgeLSB lsb = EdgeLSB::ps100,
+//                         DeadTime time = DeadTime::ns5) :
+//                    edgeDetect(edgeDetect),
+//                    lsb(lsb),
+//                    time(time) {}
+//        };
 
         void WriteDetection(EdgeDetect_t detect);
 
         EdgeDetect_t ReadDetection();
 
-        void WriteLSB(EdgeLSB lsb);
+        void WriteEdgeRes(TrLeadLSB lsb);
+
+        TrLeadLSB ReadEdgeRes();
 
         void WritePairRes(PairRes pairRes);
 
-        uint16_t ReadTDCRes();
+        void ReadPairRes(PairRes& pairRes);
 
         void WriteDeadTime(DeadTime time);
 
