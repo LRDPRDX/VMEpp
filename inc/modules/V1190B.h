@@ -201,8 +201,17 @@ namespace vmeplus {
 
         //CHANNEL
     public :
+        struct ChannelPattern
+        {
+            uint16_t channel[4];
+
+            bool GetChannel( uint8_t ch ) { ch %= V1190B::GetChNumber(); return channel[ch / 16] & (1 << (ch % 16)); }
+        };
+
         void WriteEnableChannel( uint8_t n, bool status );
         void WriteEnableAll( bool status );
+        void WriteEnablePattern( const ChannelPattern &pattern );
+        ChannelPattern ReadEnablePattern();
     };
 }
 
