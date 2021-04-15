@@ -256,17 +256,15 @@ namespace vmeplus {
                     width(width) {}
         };
 
-        struct EdgeRes {
-            TrLeadLSB lsb;
-            DeadTime deadTime;
-
-            EdgeRes(TrLeadLSB lsb = TrLeadLSB::ps100,
-                    DeadTime deadTime = DeadTime::ns5):
-                    lsb(lsb),
-                    deadTime(deadTime) {}
-        };
-
-
+//        struct EdgeRes {
+//            TrLeadLSB lsb;
+//            DeadTime deadTime;
+//
+//            EdgeRes(TrLeadLSB lsb = TrLeadLSB::ps100,
+//                    DeadTime deadTime = DeadTime::ns5):
+//                    lsb(lsb),
+//                    deadTime(deadTime) {}
+//        };
 
 //        struct DetectRes {
 //            EdgeDetect_t edgeDetect;
