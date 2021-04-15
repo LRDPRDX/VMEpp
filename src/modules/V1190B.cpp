@@ -68,6 +68,7 @@ namespace vmeplus {
         return ReadRegister16(V1190B_MICRO);
     }
 
+    // TDC EDGE DETECTION & RESOLUTION
     void V1190B::WriteDetection(EdgeDetect_t detect) {
         WriteMicro(Opcode(Command::SET_DETECTION));
         WriteMicro(static_cast<uint16_t>(detect) & 0x0003);
