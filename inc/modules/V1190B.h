@@ -145,9 +145,9 @@ namespace vmeplus {
             Command command;
             uint8_t object;
 
-            Opcode(Command command, 
-                    uint8_t object = 0x00) :
-                    command(command), 
+            Opcode(Command command,
+                   uint8_t object = 0x00) :
+                    command(command),
                     object(object) {}
         };
 
@@ -158,15 +158,15 @@ namespace vmeplus {
             uint16_t rejMargin;
             uint16_t subTrigger;
 
-            TriggerData(uint16_t winWidth = 0x0014, 
-                        uint16_t winOffs = 0xFFD8, 
+            TriggerData(uint16_t winWidth = 0x0014,
+                        uint16_t winOffs = 0xFFD8,
                         uint16_t swMargin = 0x0008,
-                        uint16_t rejMargin = 0x0004, 
+                        uint16_t rejMargin = 0x0004,
                         uint16_t subTrigger = 0x0000) :
-                    winWidth(winWidth), 
-                    winOffs(winOffs), 
+                    winWidth(winWidth),
+                    winOffs(winOffs),
                     swMargin(swMargin),
-                    rejMargin(rejMargin), 
+                    rejMargin(rejMargin),
                     subTrigger(subTrigger) {}
         };
 
@@ -227,6 +227,27 @@ namespace vmeplus {
         void WriteEnableSubTrigger(bool data);
 
         void ReadTriggerConfiguration(TriggerData &trigger);
+
+        //Adjust functions
+    public:
+        struct AdjustOffset {
+            uint16_t coarseCounter;
+            uint16_t fineCounter;
+
+            AdjustOffset(uint16_t coarseCounter = 0x0000,
+                         uint16_t fineCounter = 0x0000) :
+                         coarseCounter(coarseCounter),
+                         fineCounter(fineCounter) {}
+        };
+
+        void WriteGlobalOffset(AdjustOffset adjustOffset);
+
+        void ReadGlobalOffset(AdjustOffset& adjustOffset);
+
+        void WriteAdjustChannel(uint16_t offset, uint8_t channel);
+
+        uint16_t ReadAdjustChannel(uint8_t channel);
+
     };
 }
 

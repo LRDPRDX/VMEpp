@@ -69,6 +69,8 @@ namespace vmeplus {
         return ReadRegister16(V1190B_MICRO);
     }
 
+    // TRIGGER
+
      void V1190B::WriteWindowWidth(uint16_t data){
         WriteMicro(Opcode(Command::SET_WIN_WIDTH));
         WriteMicro(data);
@@ -105,4 +107,28 @@ namespace vmeplus {
         trigger.rejMargin = ReadMicro();
         trigger.subTrigger = ReadMicro();
     }
+
+    // ADJUST
+    void V1190B::WriteGlobalOffset(AdjustOffset adjustOffset) {
+        WriteMicro(Opcode(Command::SET_GLOB_OFFS));
+        WriteMicro(adjustOffset.coarseCounter & 0x0FFF);
+        WriteMicro(adjustOffset.fineCounter & 0x001F);
+    }
+
+    void V1190B::ReadGlobalOffset(AdjustOffset& adjustOffset) {
+        WriteMicro(Opcode(Command::READ_GLOB_OFFS));
+        adjustOffset.coarseCounter = ReadMicro() & 0x0FFF;
+        adjustOffset.fineCounter = ReadMicro() & 0x001F;
+    }
+
+    void V1190B::WriteAdjustChannel(uint16_t offset, uint8_t channel) {
+        WriteMicro(Opcode(Command::SET_ADJUST_CH, channel));
+        WriteMicro(offset);
+    }
+
+    uint16_t V1190B::ReadAdjustChannel(uint8_t channel) {
+        WriteMicro(Opcode(Command::READ_ADJUST_CH, channel));
+        return ReadMicro();
+    }
+
 }
