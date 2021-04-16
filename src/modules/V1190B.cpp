@@ -98,7 +98,7 @@ namespace vmeplus {
     void V1190B::ReadPairRes(PairRes& pairRes) {
         WriteMicro(Opcode(Command::READ_RES));
         uint16_t data = ReadMicro();
-        pairRes.edgeTime = static_cast<ResLeadEdgeTime>(data & 0x0003);
+        pairRes.edgeTime = static_cast<ResLeadEdgeTime>(data & 0x0007);
         pairRes.width = static_cast<ResPulseWidth>(data & 0x0F00);
     }
 
