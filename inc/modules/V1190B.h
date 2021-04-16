@@ -203,18 +203,8 @@ namespace vmeplus {
     public :
         enum class TDC { TDC0, TDC1 };
 
-        //struct ChannelPattern
-        //{
-        //    uint32_t tdc1;
-        //    uint32_t tdc2;
-
-        //    bool GetChannel( uint8_t ch ) { ch %= V1190B::GetChNumber(); return channel[ch / 16] & (1 << (ch % 16)); }
-        //};
-
         void WriteEnableChannel( uint8_t n, bool status = true );
         void WriteEnableAll( bool status = true );
-        //void WriteEnablePattern( const V1190B::ChannelPattern &pattern );
-        //void ReadEnablePattern( V1190B::ChannelPattern &pattern );
         void WriteEnablePattern( V1190B::TDC tdc, uint32_t pattern );
         uint32_t ReadEnablePattern( V1190B::TDC tdc );
     };

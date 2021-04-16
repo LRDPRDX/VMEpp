@@ -82,23 +82,7 @@ namespace vmeplus {
         else         WriteMicro( Opcode( Command::DIS_ALL_CH ) );
     }
 
-    //void V1190B::WriteEnablePattern( const V1190B::ChannelPattern &pattern )
-    //{
-    //    WriteMicro( Opcode( Command::WRITE_EN_PATTERN ) );
-    //    for( unsigned i = 0; i < 4; ++i )
-    //    {
-    //        WriteMicro( pattern.channel[i] );
-    //    }
-    //}
 
-    //void V1190B::ReadEnablePattern( V1190B::ChannelPattern &pattern )
-    //{
-    //    WriteMicro( Opcode( Command::READ_EN_PATTERN ) );
-    //    for( unsigned i = 0; i < 4; ++i )
-    //    {
-    //        pattern.channel[i] = ReadMicro();
-    //    }
-    //}
     void V1190B::WriteEnablePattern( V1190B::TDC tdc, uint32_t pattern )
     {
         switch( tdc )
