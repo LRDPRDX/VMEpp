@@ -220,7 +220,7 @@ namespace vmeplus {
 
         uint16_t ReadMicro();
 
-        // Trigger functions
+        // TRIGGER
     public:
         void WriteWindowWidth(uint16_t data);
 

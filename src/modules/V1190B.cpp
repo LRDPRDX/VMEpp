@@ -68,6 +68,7 @@ namespace vmeplus {
         return ReadRegister16(V1190B_MICRO);
     }
 
+    // TRIGGER
      void V1190B::WriteWindowWidth(uint16_t data){
         WriteMicro(Opcode(Command::SET_WIN_WIDTH));
         WriteMicro(data);
@@ -105,7 +106,7 @@ namespace vmeplus {
         trigger.subTrigger = ReadMicro();
     }
 
-        // TDC EDGE DETECTION & RESOLUTION
+    // TDC EDGE DETECTION & RESOLUTION
     void V1190B::WriteDetection(EdgeDetect_t detect) {
         WriteMicro(Opcode(Command::SET_DETECTION));
         WriteMicro(static_cast<uint16_t>(detect) & 0x0003);
