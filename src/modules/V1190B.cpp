@@ -99,7 +99,7 @@ namespace vmeplus {
         WriteMicro(Opcode(Command::READ_RES));
         uint16_t data = ReadMicro();
         pairRes.edgeTime = static_cast<ResLeadEdgeTime>(data & 0x0007);
-        pairRes.width = static_cast<ResPulseWidth>(data & 0x0F00);
+        pairRes.width = static_cast<ResPulseWidth>((data & 0x0F00) >> 8U);
     }
 
     void V1190B::WriteDeadTime(DeadTime time) {
