@@ -120,12 +120,12 @@ namespace vmeplus {
     }
 
     void V1190B::WriteAdjustChannel(uint16_t offset, uint8_t channel) {
-        WriteMicro(Opcode(Command::SET_ADJUST_CH, channel));
+        WriteMicro(Opcode(Command::SET_ADJUST_CH, channel % V1190B::GetChNumber()));
         WriteMicro(offset & 0x00FF);
     }
 
     uint16_t V1190B::ReadAdjustChannel(uint8_t channel) {
-        WriteMicro(Opcode(Command::READ_ADJUST_CH, channel));
+        WriteMicro(Opcode(Command::READ_ADJUST_CH, channel % V1190B::GetChNumber()));
         return ReadMicro() & 0x00FF;
     }
 
