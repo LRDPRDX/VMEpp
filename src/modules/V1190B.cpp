@@ -2,17 +2,16 @@
 #include "modules/V1190B.h"
 
 namespace vmeplus {
-    V1190B::V1190B( uint32_t baseAddress, uint32_t range ) :
-        VSlave( "V1190B", baseAddress, range ),
-        VSlaveInterrupter( "V1190B", baseAddress, range ),
-         VSlaveAcquisitor( "V1190B", baseAddress, range ) {}
- 
-    V1190B::~V1190B(){};
+    V1190B::V1190B(uint32_t baseAddress, uint32_t range) :
+            VSlave("V1190B", baseAddress, range),
+            VSlaveInterrupter("V1190B", baseAddress, range),
+            VSlaveAcquisitor("V1190B", baseAddress, range) {}
 
-    void V1190B::Initialize()
-    {
-        PrintMessage( Message_t::INFO, "Inititalizing " + fName + "..." );
-        PrintMessage( Message_t::INFO, "Inititalizing " + fName + "...OK" );
+    V1190B::~V1190B() {};
+
+    void V1190B::Initialize() {
+        PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...");
+        PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...OK");
     }
 
     void V1190B::Release() {}
@@ -54,7 +53,7 @@ namespace vmeplus {
     }
 
     void V1190B::WriteMicro(Opcode opcode) {
-        uint16_t code = static_cast<uint16_t>(opcode.command)<<8U | opcode.object;
+        uint16_t code = static_cast<uint16_t>(opcode.command) << 8U | opcode.object;
 
         //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register
         // if the WO bit is set to 1, the VME can write a datum
@@ -104,5 +103,49 @@ namespace vmeplus {
         trigger.swMargin = ReadMicro();
         trigger.rejMargin = ReadMicro();
         trigger.subTrigger = ReadMicro();
+    }
+
+        // TDC EDGE DETECTION & RESOLUTION
+    void V1190B::WriteDetection(EdgeDetect_t detect) {
+        WriteMicro(Opcode(Command::SET_DETECTION));
+        WriteMicro(static_cast<uint16_t>(detect) & 0x0003);
+    }
+
+    V1190B::EdgeDetect_t V1190B::ReadDetection() {
+        WriteMicro(Opcode(Command::READ_DETECTION));
+        return static_cast<EdgeDetect_t>(ReadMicro() & 0x0003);
+    }
+
+    void V1190B::WriteEdgeRes(TrLeadLSB lsb) {
+        WriteMicro(Opcode(Command::SET_TR_LEAD_LSB));
+        WriteMicro(static_cast<uint16_t>(lsb) & 0x0003);
+    }
+
+    void V1190B::WritePairRes(PairRes pairRes) {
+        WriteMicro(Opcode(Command::SET_PAIR_RES));
+        WriteMicro(((static_cast<uint16_t>(pairRes.width) << 8U) |
+                    (static_cast<uint16_t>(pairRes.edgeTime))) & 0x0F07);
+    }
+
+    V1190B::TrLeadLSB V1190B::ReadEdgeRes() {
+        WriteMicro(Opcode(Command::READ_RES));
+        return static_cast<TrLeadLSB>(ReadMicro() & 0x0003);
+    }
+
+    void V1190B::ReadPairRes(PairRes& pairRes) {
+        WriteMicro(Opcode(Command::READ_RES));
+        uint16_t data = ReadMicro();
+        pairRes.edgeTime = static_cast<ResLeadEdgeTime>(data & 0x0007);
+        pairRes.width = static_cast<ResPulseWidth>((data & 0x0F00) >> 8U);
+    }
+
+    void V1190B::WriteDeadTime(DeadTime time) {
+        WriteMicro(Opcode(Command::SET_DEAD_TIME));
+        WriteMicro(static_cast<uint16_t>(time) & 0x0003);
+    }
+
+    V1190B::DeadTime V1190B::ReadDeadTime() {
+        WriteMicro(Opcode(Command::READ_DEAD_TIME));
+        return static_cast<DeadTime>(ReadMicro() & 0x0003);
     }
 }

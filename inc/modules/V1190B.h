@@ -233,6 +233,108 @@ namespace vmeplus {
         void WriteEnableSubTrigger(bool data);
 
         void ReadTriggerConfiguration(TriggerData &trigger);
+
+        // TDC EDGE DETECTION & RESOLUTION
+    public:
+        enum class EdgeDetect_t {
+            PAIR,
+            TRAILING,
+            LEADING,
+            TRAILINGLEADING
+        };
+
+        enum class TrLeadLSB {
+            ps800,
+            ps200,
+            ps100,
+            UNUSED
+        };
+
+        enum class ResLeadEdgeTime {
+            ps100,
+            ps200,
+            ps400,
+            ps800,
+            ps1600,
+            ps3120,
+            ps6250,
+            ps12500
+        };
+
+        enum class ResPulseWidth {
+            ps100,
+            ps200,
+            ps400,
+            ps800,
+            ps1600,
+            ps3120,
+            ps6250,
+            ps12500,
+            ns25,
+            ns50,
+            ns100,
+            ns200,
+            ns400,
+            ns800,
+            INVALID_1,
+            INVALID_2
+        };
+
+        enum class DeadTime {
+            ns5,
+            ns10,
+            ns30,
+            ns100
+        };
+
+        struct PairRes {
+            ResLeadEdgeTime edgeTime;
+            ResPulseWidth width;
+
+            PairRes(ResLeadEdgeTime edgeTime = ResLeadEdgeTime::ps100,
+                    ResPulseWidth width = ResPulseWidth::ps100) :
+                    edgeTime(edgeTime),
+                    width(width) {}
+        };
+
+//        struct EdgeRes {
+//            TrLeadLSB lsb;
+//            DeadTime deadTime;
+//
+//            EdgeRes(TrLeadLSB lsb = TrLeadLSB::ps100,
+//                    DeadTime deadTime = DeadTime::ns5):
+//                    lsb(lsb),
+//                    deadTime(deadTime) {}
+//        };
+
+//        struct DetectRes {
+//            EdgeDetect_t edgeDetect;
+//            EdgeLeadLSB lsb;
+//            DeadTime time;
+//
+//            DetectRes(EdgeDetect_t edgeDetect,
+//                         EdgeLSB lsb = EdgeLSB::ps100,
+//                         DeadTime time = DeadTime::ns5) :
+//                    edgeDetect(edgeDetect),
+//                    lsb(lsb),
+//                    time(time) {}
+//        };
+
+        void WriteDetection(EdgeDetect_t detect);
+
+        EdgeDetect_t ReadDetection();
+
+        void WriteEdgeRes(TrLeadLSB lsb);
+
+        TrLeadLSB ReadEdgeRes();
+
+        void WritePairRes(PairRes pairRes);
+
+        void ReadPairRes(PairRes& pairRes);
+
+        void WriteDeadTime(DeadTime time);
+
+        DeadTime ReadDeadTime();
     };
 }
 
