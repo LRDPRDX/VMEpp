@@ -6,6 +6,7 @@
 /lib
 /bin
 /obj
+/template
 Main
 
 # Tests
