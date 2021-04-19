@@ -65,6 +65,7 @@ int main()
         assert( dTime == DTime::ns100 );
 
         // Resolution
+        // // PAIR
         PairRes pair;
 
         tdc.WriteDetection( Edge_t::PAIR );
@@ -72,9 +73,37 @@ int main()
         tdc.WritePairRes( PairRes( LeadRes::ps1600, WidthRes::ns25 ) );
         tdc.ReadPairRes( pair );
 
-        std::cout << (int)pair.width << "\n";
         assert( pair.edgeTime == LeadRes::ps1600 );
         assert( pair.width == WidthRes::ns25 );
+
+        tdc.WritePairRes( PairRes( LeadRes::ps6250, WidthRes::INVALID_1 ) );
+        tdc.ReadPairRes( pair );
+
+        assert( pair.edgeTime == LeadRes::ps6250 );
+        assert( pair.width == WidthRes::INVALID_1 );
+        
+        // // EDGE
+        EdgeRes edgeRes; 
+
+        tdc.WriteDetection( Edge_t::TRAILING );
+        tdc.WriteEdgeRes( EdgeRes::ps100 );
+        edgeRes = tdc.ReadEdgeRes();
+        assert( edgeRes == EdgeRes::ps100 );
+
+        tdc.WriteDetection( Edge_t::LEADING );
+        tdc.WriteEdgeRes( EdgeRes::ps200 );
+        edgeRes = tdc.ReadEdgeRes();
+        assert( edgeRes == EdgeRes::ps200 );
+
+        tdc.WriteDetection( Edge_t::TRAILINGLEADING );
+        tdc.WriteEdgeRes( EdgeRes::ps800 );
+        edgeRes = tdc.ReadEdgeRes();
+        assert( edgeRes == EdgeRes::ps800 );
+
+        tdc.WriteDetection( Edge_t::LEADING );
+        tdc.WriteEdgeRes( EdgeRes::UNUSED );
+        edgeRes = tdc.ReadEdgeRes();
+        assert( edgeRes == EdgeRes::UNUSED );
 
         std::cout << "Test has been passed...OK!\n";
     }
