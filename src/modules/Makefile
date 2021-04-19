@@ -1,28 +1,25 @@
 MODULE_SRCS 	:= $(wildcard *.cpp)
-MODULE_HDRS 	:= $(wildcard $(INC_DIR)/modules/*.h)
 MODULE_OBJ_DIR 	:= $(OBJ_DIR)/modules
 
 MODULE_OBJS	:= $(patsubst %,$(MODULE_OBJ_DIR)/%,$(notdir $(MODULE_SRCS:.cpp=.o)))
 
-LIB_SO 		:= libVMEplusM.so 
+LIB_SO 		:= libVMEplusM.so
 TARGET      := $(LIB_DIR)/$(LIB_SO)
 
-all : directories $(TARGET)
+all : $(TARGET)
 
-.PHONY : directories
-directories : $(MODULE_OBJ_DIR)
+$(MODULE_OBJ_DIR)/%.o : %.cpp | $(MODULE_OBJ_DIR)
+	$(CXX) $(DEPFLAGS) -c $(CXXFLAGS) -I$(INC_DIR) $< -o $@ 
 
-$(MODULE_OBJ_DIR) :
-	$(MKDIR_P) $@
+$(MODULE_OBJ_DIR) : ; mkdir -p $@
 
-vpath %.h $(INC_DIR)/modules
-
-$(MODULE_OBJ_DIR)/%.o : %.cpp $(HDRS) %.h
-	$(CC) -c $(CXXFLAGS) -I$(INC_DIR) $< -o $@ 
-
-$(TARGET) : $(MODULE_OBJS)
+$(TARGET) : $(MODULE_OBJS) | $(LIB_DIR)
 	$(info $nShared library compilation...)
-	$(CC) $(LDFLAGS) $^ $(LINKAGE) -o $@
+	$(CXX) $(LDFLAGS) $^ $(LINKAGE) -o $@
+
+$(LIB_DIR) : ; mkdir -p $@
+
+-include $(wildcard $(DEP_DIR)/*.d)
 
 .PHONY : install
 install : $(TARGET)
@@ -31,7 +28,8 @@ install : $(TARGET)
 	ldconfig
 	ldconfig -p | grep $(LIB_SO)
 
+
 .PHONY : clean
 clean :
-	rm -f $(MODULE_OBJS)
+	rm -rf $(MODULE_OBJ_DIR) 
 	rm -f $(TARGET)

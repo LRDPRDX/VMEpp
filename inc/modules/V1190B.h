@@ -47,6 +47,12 @@ namespace vmeplus {
 
     class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor {
 
+        private :
+            static uint8_t const fChNumber                  = 0x40U;    //64
+
+        public :
+            static uint8_t GetChNumber()                    { return fChNumber; }
+
     public:
         enum class Command {
             //ACQUISITION MODE
