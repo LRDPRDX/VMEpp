@@ -317,29 +317,6 @@ namespace vmeplus {
                     width(width) {}
         };
 
-//        struct EdgeRes {
-//            TrLeadLSB lsb;
-//            DeadTime deadTime;
-//
-//            EdgeRes(TrLeadLSB lsb = TrLeadLSB::ps100,
-//                    DeadTime deadTime = DeadTime::ns5):
-//                    lsb(lsb),
-//                    deadTime(deadTime) {}
-//        };
-
-//        struct DetectRes {
-//            EdgeDetect_t edgeDetect;
-//            EdgeLeadLSB lsb;
-//            DeadTime time;
-//
-//            DetectRes(EdgeDetect_t edgeDetect,
-//                         EdgeLSB lsb = EdgeLSB::ps100,
-//                         DeadTime time = DeadTime::ns5) :
-//                    edgeDetect(edgeDetect),
-//                    lsb(lsb),
-//                    time(time) {}
-//        };
-
         void WriteDetection(EdgeDetect_t detect);
 
         EdgeDetect_t ReadDetection();
