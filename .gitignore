@@ -21,3 +21,6 @@ ROOT/
 # rsync script
 /backup.sh
 
+# Backup files
+*.swo
+*.swp
