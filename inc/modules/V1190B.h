@@ -47,11 +47,11 @@ namespace vmeplus {
 
     class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor {
 
-        private :
-            static uint8_t const fChNumber                  = 0x40U;    //64
+    private :
+        static uint8_t const fChNumber = 0x40U;    //64
 
-        public :
-            static uint8_t GetChNumber()                    { return fChNumber; }
+    public :
+        static uint8_t GetChNumber() { return fChNumber; }
 
     public:
         enum class Command {
@@ -242,13 +242,13 @@ namespace vmeplus {
 
             AdjustOffset(uint16_t coarseCounter = 0x0000,
                          uint16_t fineCounter = 0x0000) :
-                         coarseCounter(coarseCounter),
-                         fineCounter(fineCounter) {}
+                    coarseCounter(coarseCounter),
+                    fineCounter(fineCounter) {}
         };
 
         void WriteGlobalOffset(AdjustOffset adjustOffset);
 
-        void ReadGlobalOffset(AdjustOffset& adjustOffset);
+        void ReadGlobalOffset(AdjustOffset &adjustOffset);
 
         void WriteAdjustChannel(uint16_t offset, uint8_t channel);
 
@@ -327,11 +327,55 @@ namespace vmeplus {
 
         void WritePairRes(PairRes pairRes);
 
-        void ReadPairRes(PairRes& pairRes);
+        void ReadPairRes(PairRes &pairRes);
 
         void WriteDeadTime(DeadTime time);
 
         DeadTime ReadDeadTime();
+
+        // TEST AND DEBUG
+    public:
+        struct MicroFirmware {
+            uint16_t revision;
+            uint16_t day;
+            uint16_t month;
+            uint16_t year;
+
+            MicroFirmware(uint16_t revision,
+                          uint16_t day,
+                          uint16_t month,
+                          uint16_t year) :
+                    revision(revision),
+                    day(day),
+                    month(month),
+                    year(year) {}
+        };
+
+        void WriteEEPROM(uint16_t address, uint16_t data);
+
+        uint16_t ReadEEPROM(uint16_t address);
+
+        void ReadMicroFirmware(MicroFirmware &firmware);
+
+        void WriteSpare(uint16_t data);
+
+        uint16_t ReadSpare();
+
+        void EnableTestMode(uint32_t data);
+
+        void DisableTestMode();
+
+        void WriteTDCTestOutput(uint16_t data);
+
+        enum class DLLclock {
+            direct40MHz,
+            PLL40Mhz,
+            PLL160MHz,
+            PLL320MHz
+        };
+
+        void WriteDLLClock(DLLclock dllClock);
+
     };
 }
 

@@ -69,34 +69,34 @@ namespace vmeplus {
     }
 
     // TRIGGER
-     void V1190B::WriteWindowWidth(uint16_t data){
+    void V1190B::WriteWindowWidth(uint16_t data) {
         WriteMicro(Opcode(Command::SET_WIN_WIDTH));
         WriteMicro(data);
     }
 
-    void V1190B::WriteWindowOffset(uint16_t data){
+    void V1190B::WriteWindowOffset(uint16_t data) {
         WriteMicro(Opcode(Command::SET_WIN_OFFS));
         WriteMicro(data);
-     }
+    }
 
-    void V1190B::WriteExtraSearchMargin(uint16_t data){
+    void V1190B::WriteExtraSearchMargin(uint16_t data) {
         WriteMicro(Opcode(Command::SET_SW_MARGIN));
         WriteMicro(data);
-     }
+    }
 
-    void V1190B::WriteRejectMargin(uint16_t data){
+    void V1190B::WriteRejectMargin(uint16_t data) {
         WriteMicro(Opcode(Command::SET_REJ_MARGIN));
         WriteMicro(data);
-     }
+    }
 
-    void V1190B::WriteEnableSubTrigger(bool data){
+    void V1190B::WriteEnableSubTrigger(bool data) {
         if (data)
             WriteMicro(Opcode(Command::EN_SUB_TRG));
-        else 
+        else
             WriteMicro(Opcode(Command::DIS_SUB_TRG));
     }
 
-    void V1190B::ReadTriggerConfiguration(TriggerData& trigger){
+    void V1190B::ReadTriggerConfiguration(TriggerData &trigger) {
         WriteMicro(Opcode(Command::READ_TRG_CONF));
 
         trigger.winWidth = ReadMicro();
@@ -113,7 +113,7 @@ namespace vmeplus {
         WriteMicro(adjustOffset.fineCounter & 0x001F);
     }
 
-    void V1190B::ReadGlobalOffset(AdjustOffset& adjustOffset) {
+    void V1190B::ReadGlobalOffset(AdjustOffset &adjustOffset) {
         WriteMicro(Opcode(Command::READ_GLOB_OFFS));
         adjustOffset.coarseCounter = ReadMicro() & 0x0FFF;
         adjustOffset.fineCounter = ReadMicro() & 0x001F;
@@ -156,7 +156,7 @@ namespace vmeplus {
         return static_cast<TrLeadLSB>(ReadMicro() & 0x0003);
     }
 
-    void V1190B::ReadPairRes(PairRes& pairRes) {
+    void V1190B::ReadPairRes(PairRes &pairRes) {
         WriteMicro(Opcode(Command::READ_RES));
         uint16_t data = ReadMicro();
         pairRes.edgeTime = static_cast<ResLeadEdgeTime>(data & 0x0007);
@@ -171,5 +171,58 @@ namespace vmeplus {
     V1190B::DeadTime V1190B::ReadDeadTime() {
         WriteMicro(Opcode(Command::READ_DEAD_TIME));
         return static_cast<DeadTime>(ReadMicro() & 0x0003);
+    }
+
+    // TEST AND DEBUG
+    void V1190B::WriteEEPROM(uint16_t address, uint16_t data) {
+        WriteMicro(Opcode(Command::WRITE_EEPROM));
+        WriteMicro(address);
+        WriteMicro(data & 0x00FF);
+    }
+
+    uint16_t V1190B::ReadEEPROM(uint16_t address) {
+        WriteMicro(Opcode(Command::READ_EEPROM));
+        WriteMicro(address);
+        return ReadMicro() & 0x00FF;
+    }
+
+    void V1190B::ReadMicroFirmware(MicroFirmware &firmware) {
+        WriteMicro(Opcode(Command::REVISION_DATE_CONTROLLER_FW));
+        firmware.revision = ReadMicro();
+        firmware.day = ReadMicro();
+        firmware.month = ReadMicro();
+        firmware.year = ReadMicro();
+    }
+
+    void V1190B::WriteSpare(uint16_t data) {
+        WriteMicro(Opcode(Command::WRITE_SPARE));
+        WriteMicro(data);
+    }
+
+    uint16_t V1190B::ReadSpare() {
+        WriteMicro(Opcode(Command::READ_SPARE));
+        return ReadMicro();
+    }
+
+    void V1190B::EnableTestMode(uint32_t data) {
+        if () {
+            WriteMicro(Opcode(Command::ENABLE_TEST_MODE));
+            WriteMicro(data);
+            WriteMicro(data >> 8U);
+        }
+    }
+
+    void V1190B::DisableTestMode() {
+        WriteMicro(Opcode(Command::DISABLE_TEST_MODE));
+    }
+
+    void V1190B::WriteTDCTestOutput(uint16_t data) {
+        WriteMicro(Opcode(Command::SET_TDC_TEST_OUTPUT));
+        WriteMicro(data & 0x000F);
+    }
+
+    void V1190B::WriteDLLClock(DLLclock dllClock) {
+        WriteMicro(Opcode(Command::SET_DLL_CLOCK));
+        WriteMicro(static_cast<uint16_t>(dllClock) & 0x0003);
     }
 }
