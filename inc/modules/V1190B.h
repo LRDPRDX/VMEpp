@@ -335,6 +335,44 @@ namespace vmeplus {
 
         // TEST AND DEBUG
     public:
+        struct EEPROMaddress {
+            uint8_t flagEEPROMnotEmpty;
+            uint8_t boardVersion;
+            uint8_t microFirmwareRevision;
+            uint8_t microFirmwareDay;
+            uint8_t microFirmwareMonth;
+            uint8_t microFirmwareYear;
+            uint8_t autoload;
+            uint8_t reserved;
+            uint8_t unused;
+            uint8_t userConfig;
+
+            EEPROMaddress(uint8_t flagEEPROMnotEmpty = 0x02,
+                          uint8_t boardVersion = 0x03,
+                          uint8_t microFirmwareRevision = 0x04,
+                          uint8_t microFirmwareDay = 0x04,
+                          uint8_t microFirmwareMonth = 0x06,
+                          uint8_t microFirmwareYear = 0x07,
+                          uint8_t autoload = 0x08,
+                          uint8_t reserved = 0x09,
+                          uint8_t unused = 0x0E,
+                          uint8_t userConfig = 0x18) :
+                    flagEEPROMnotEmpty(flagEEPROMnotEmpty),
+                    boardVersion(boardVersion),
+                    microFirmwareRevision(microFirmwareRevision),
+                    microFirmwareDay(microFirmwareDay),
+                    microFirmwareMonth(microFirmwareMonth),
+                    microFirmwareYear(microFirmwareYear),
+                    autoload(autoload),
+                    reserved(reserved),
+                    unused(unused),
+                    userConfig(userConfig) {}
+        };
+
+        void WriteEEPROM(uint16_t address, uint16_t data);
+
+        uint16_t ReadEEPROM(uint16_t address);
+
         struct MicroFirmware {
             uint16_t revision;
             uint16_t day;
@@ -350,10 +388,6 @@ namespace vmeplus {
                     month(month),
                     year(year) {}
         };
-
-        void WriteEEPROM(uint16_t address, uint16_t data);
-
-        uint16_t ReadEEPROM(uint16_t address);
 
         void ReadMicroFirmware(MicroFirmware &firmware);
 
