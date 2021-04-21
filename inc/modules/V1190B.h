@@ -38,6 +38,8 @@
 
 #define V1190B_LUB                          0x8FFFUL            //the Last Used Byte 
 
+#include <algorithm>
+
 #include "VException.h"
 #include "VSlaveAcquisitor.h"
 #include "VSlaveInterrupter.h"
@@ -334,41 +336,10 @@ namespace vmeplus {
         DeadTime ReadDeadTime();
 
         // TEST AND DEBUG
+    private:
+        const std::array<uint8_t, 13> fEEPROM = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0D, 0x0E, 0x011, 0x18, 0x28};
+
     public:
-        struct EEPROMaddress {
-            uint8_t flagEEPROMnotEmpty;
-            uint8_t boardVersion;
-            uint8_t microFirmwareRevision;
-            uint8_t microFirmwareDay;
-            uint8_t microFirmwareMonth;
-            uint8_t microFirmwareYear;
-            uint8_t autoload;
-            uint8_t reserved;
-            uint8_t unused;
-            uint8_t userConfig;
-
-            EEPROMaddress(uint8_t flagEEPROMnotEmpty = 0x02,
-                          uint8_t boardVersion = 0x03,
-                          uint8_t microFirmwareRevision = 0x04,
-                          uint8_t microFirmwareDay = 0x04,
-                          uint8_t microFirmwareMonth = 0x06,
-                          uint8_t microFirmwareYear = 0x07,
-                          uint8_t autoload = 0x08,
-                          uint8_t reserved = 0x09,
-                          uint8_t unused = 0x0E,
-                          uint8_t userConfig = 0x18) :
-                    flagEEPROMnotEmpty(flagEEPROMnotEmpty),
-                    boardVersion(boardVersion),
-                    microFirmwareRevision(microFirmwareRevision),
-                    microFirmwareDay(microFirmwareDay),
-                    microFirmwareMonth(microFirmwareMonth),
-                    microFirmwareYear(microFirmwareYear),
-                    autoload(autoload),
-                    reserved(reserved),
-                    unused(unused),
-                    userConfig(userConfig) {}
-        };
-
         void WriteEEPROM(uint16_t address, uint16_t data);
 
         uint16_t ReadEEPROM(uint16_t address);
@@ -409,7 +380,6 @@ namespace vmeplus {
         };
 
         void WriteDLLClock(DLLclock dllClock);
-
     };
 }
 

@@ -176,8 +176,12 @@ namespace vmeplus {
     // TEST AND DEBUG
     void V1190B::WriteEEPROM(uint16_t address, uint16_t data) {
         WriteMicro(Opcode(Command::WRITE_EEPROM));
-        WriteMicro(address);
-        WriteMicro(data & 0x00FF);
+        if (std::find(begin(fEEPROM), end(fEEPROM), address) != end(fEEPROM)) {
+            WriteMicro(address);
+            WriteMicro(data & 0x00FF);
+        }
+        else
+            PrintMessage(Message_t::ERROR, "Invalid EEPROM address");
     }
 
     uint16_t V1190B::ReadEEPROM(uint16_t address) {
@@ -204,8 +208,9 @@ namespace vmeplus {
         return ReadMicro();
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
     void V1190B::EnableTestMode(uint32_t data) {
-        if () {
+        if (ReadAcquisitionMode() == 0x0001) {
             WriteMicro(Opcode(Command::ENABLE_TEST_MODE));
             WriteMicro(data);
             WriteMicro(data >> 8U);
