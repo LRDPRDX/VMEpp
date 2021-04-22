@@ -68,8 +68,66 @@ namespace vmeplus {
         return ReadRegister16(V1190B_MICRO);
     }
 
-    // TRIGGER
-    void V1190B::WriteWindowWidth(uint16_t data) {
+    // ACQUISITION MODE
+    void V1190B::WriteAcqMode( V1190B::TriggerMode_t mode )
+    {
+        switch( mode )
+        {
+            case( TriggerMode_t::MATCHING ) :
+                WriteMicro( Opcode( Command::TRG_MATCH ) );
+                break;
+            case( TriggerMode_t::CONTINUOUS ) :
+                WriteMicro( Opcode( Command::CONT_STOR ) );
+                break;
+        }
+    }
+
+    V1190B::TriggerMode_t V1190B::ReadAcqMode()
+    {
+        WriteMicro( Opcode( Command::READ_ACQ_MOD ) );
+        uint16_t data = ReadMicro();
+        if( 1U & data ) return TriggerMode_t::MATCHING;     //check LSB
+        else            return TriggerMode_t::CONTINUOUS;
+    }
+
+    void V1190B::WriteEnableKeepToken( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::SET_KEEP_TOKEN ) );
+        else         WriteMicro( Opcode( Command::CLEAR_KEEP_TOKEN ) );
+    }
+
+    void V1190B::WriteLoadConfig( V1190B::Config_t config )
+    {
+        switch( config )
+        {
+            case( Config_t::DEFAULT ) :
+                WriteMicro( Opcode( Command::LOAD_DEF_CONFIG ) );
+                break;
+            case( Config_t::USER ) :
+                WriteMicro( Opcode( Command::LOAD_USER_CONFIG ) );
+                break;
+        }
+    }
+
+    void V1190B::WriteAutoLoad( V1190B::Config_t config )
+    {
+        switch( config )
+        {
+            case( Config_t::DEFAULT ) :
+                WriteMicro( Opcode( Command::AUTOLOAD_DEF_CONF ) );
+                break;
+            case( Config_t::USER ) :
+                WriteMicro( Opcode( Command::AUTOLOAD_USER_CONF ) );
+                break;
+        }
+    }
+
+    void V1190B::WriteSaveUserConfig()
+    {
+        WriteMicro( Opcode( Command::SAVE_USER_CONFIG ) );
+    }
+
+    void V1190B::WriteWindowWidth(uint16_t data){
         WriteMicro(Opcode(Command::SET_WIN_WIDTH));
         WriteMicro(data);
     }
