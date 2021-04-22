@@ -225,7 +225,7 @@ namespace vmeplus {
 
     // TEST AND DEBUG
     void V1190B::WriteEEPROM(uint16_t address, uint16_t data) {
-        if (std::find(fEEPROM.begin(), fEEPROM.end(), address) != fEEPROM.end()) {
+        if (std::find(fEEPROM.begin(), fEEPROM.end(), address) == fEEPROM.end()) {
             WriteMicro(Opcode(Command::WRITE_EEPROM));
             WriteMicro(address);
             WriteMicro(data & 0x00FF);
