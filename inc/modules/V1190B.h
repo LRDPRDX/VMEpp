@@ -159,26 +159,11 @@ namespace vmeplus {
                     object(object) {}
         };
 
-        enum class TriggerMode_t    { MATCHING, CONTINUOUS };
-        enum class Config_t         { DEFAULT, USER };
-
-        struct TriggerData {
-            uint16_t winWidth;
-            uint16_t winOffs;
-            uint16_t swMargin;
-            uint16_t rejMargin;
-            uint16_t subTrigger;
-
-            TriggerData(uint16_t winWidth = 0x0014,
-                        uint16_t winOffs = 0xFFD8,
-                        uint16_t swMargin = 0x0008,
-                        uint16_t rejMargin = 0x0004,
-                        uint16_t subTrigger = 0x0000) :
-                    winWidth(winWidth),
-                    winOffs(winOffs),
-                    swMargin(swMargin),
-                    rejMargin(rejMargin),
-                    subTrigger(subTrigger) {}
+        enum class TriggerMode_t {
+            MATCHING, CONTINUOUS
+        };
+        enum class Config_t {
+            DEFAULT, USER
         };
 
     public:
@@ -201,7 +186,7 @@ namespace vmeplus {
 
         bool GetEventAt(uint32_t index, VEvent *event) const override;
 
-        // Interrupts
+        // INTERRUPTS
     public:
         void WriteIRQLevel(uint16_t level) override;
 
@@ -213,7 +198,7 @@ namespace vmeplus {
 
         void ISR(uint16_t vector) override;
 
-        // Misc
+        // MISC
     public:
         void Reset() override;
 
@@ -225,17 +210,41 @@ namespace vmeplus {
 
         uint16_t ReadMicro();
 
-    // ACQUISITION MODE
+        // ACQUISITION MODE
     public :
-        void WriteAcqMode( V1190B::TriggerMode_t mode );
+        void WriteAcqMode(V1190B::TriggerMode_t mode);
+
         V1190B::TriggerMode_t ReadAcqMode();
-        void WriteEnableKeepToken( bool status );
-        void WriteLoadConfig( V1190B::Config_t config );
-        void WriteAutoLoad( V1190B::Config_t config );
+
+        void WriteEnableKeepToken(bool status);
+
+        void WriteLoadConfig(V1190B::Config_t config);
+
+        void WriteAutoLoad(V1190B::Config_t config);
+
         void WriteSaveUserConfig();
 
-        // Trigger functions
+        // TRIGGER
     public:
+        struct TriggerData {
+            uint16_t winWidth;
+            uint16_t winOffs;
+            uint16_t swMargin;
+            uint16_t rejMargin;
+            uint16_t subTrigger;
+
+            TriggerData(uint16_t winWidth = 0x0014,
+                        uint16_t winOffs = 0xFFD8,
+                        uint16_t swMargin = 0x0008,
+                        uint16_t rejMargin = 0x0004,
+                        uint16_t subTrigger = 0x0000) :
+                    winWidth(winWidth),
+                    winOffs(winOffs),
+                    swMargin(swMargin),
+                    rejMargin(rejMargin),
+                    subTrigger(subTrigger) {}
+        };
+
         void WriteWindowWidth(uint16_t data);
 
         void WriteWindowOffset(uint16_t data);
@@ -248,7 +257,7 @@ namespace vmeplus {
 
         void ReadTriggerConfiguration(TriggerData &trigger);
 
-        //Adjust functions
+        // ADJUST
     public:
         struct AdjustOffset {
             uint16_t coarseCounter;
@@ -349,7 +358,9 @@ namespace vmeplus {
 
         // TEST AND DEBUG
     private:
-        const std::array<uint8_t, 13> fEEPROM = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0D, 0x0E, 0x011, 0x18, 0x28};
+        const std::array<uint8_t, 29> fEEPROM = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D,
+                                                 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22,
+                                                 0x23, 0x24, 0x25, 0x26, 0x27, 0x28};
 
     public:
         void WriteEEPROM(uint16_t address, uint16_t data);

@@ -69,65 +69,57 @@ namespace vmeplus {
     }
 
     // ACQUISITION MODE
-    void V1190B::WriteAcqMode( V1190B::TriggerMode_t mode )
-    {
-        switch( mode )
-        {
-            case( TriggerMode_t::MATCHING ) :
-                WriteMicro( Opcode( Command::TRG_MATCH ) );
+    void V1190B::WriteAcqMode(V1190B::TriggerMode_t mode) {
+        switch (mode) {
+            case (TriggerMode_t::MATCHING) :
+                WriteMicro(Opcode(Command::TRG_MATCH));
                 break;
-            case( TriggerMode_t::CONTINUOUS ) :
-                WriteMicro( Opcode( Command::CONT_STOR ) );
+            case (TriggerMode_t::CONTINUOUS) :
+                WriteMicro(Opcode(Command::CONT_STOR));
                 break;
         }
     }
 
-    V1190B::TriggerMode_t V1190B::ReadAcqMode()
-    {
-        WriteMicro( Opcode( Command::READ_ACQ_MOD ) );
+    V1190B::TriggerMode_t V1190B::ReadAcqMode() {
+        WriteMicro(Opcode(Command::READ_ACQ_MOD));
         uint16_t data = ReadMicro();
-        if( 1U & data ) return TriggerMode_t::MATCHING;     //check LSB
-        else            return TriggerMode_t::CONTINUOUS;
+        if (1U & data) return TriggerMode_t::MATCHING;     //check LSB
+        else return TriggerMode_t::CONTINUOUS;
     }
 
-    void V1190B::WriteEnableKeepToken( bool status )
-    {
-        if( status ) WriteMicro( Opcode( Command::SET_KEEP_TOKEN ) );
-        else         WriteMicro( Opcode( Command::CLEAR_KEEP_TOKEN ) );
+    void V1190B::WriteEnableKeepToken(bool status) {
+        if (status) WriteMicro(Opcode(Command::SET_KEEP_TOKEN));
+        else WriteMicro(Opcode(Command::CLEAR_KEEP_TOKEN));
     }
 
-    void V1190B::WriteLoadConfig( V1190B::Config_t config )
-    {
-        switch( config )
-        {
-            case( Config_t::DEFAULT ) :
-                WriteMicro( Opcode( Command::LOAD_DEF_CONFIG ) );
+    void V1190B::WriteLoadConfig(V1190B::Config_t config) {
+        switch (config) {
+            case (Config_t::DEFAULT) :
+                WriteMicro(Opcode(Command::LOAD_DEF_CONFIG));
                 break;
-            case( Config_t::USER ) :
-                WriteMicro( Opcode( Command::LOAD_USER_CONFIG ) );
+            case (Config_t::USER) :
+                WriteMicro(Opcode(Command::LOAD_USER_CONFIG));
                 break;
         }
     }
 
-    void V1190B::WriteAutoLoad( V1190B::Config_t config )
-    {
-        switch( config )
-        {
-            case( Config_t::DEFAULT ) :
-                WriteMicro( Opcode( Command::AUTOLOAD_DEF_CONF ) );
+    void V1190B::WriteAutoLoad(V1190B::Config_t config) {
+        switch (config) {
+            case (Config_t::DEFAULT) :
+                WriteMicro(Opcode(Command::AUTOLOAD_DEF_CONF));
                 break;
-            case( Config_t::USER ) :
-                WriteMicro( Opcode( Command::AUTOLOAD_USER_CONF ) );
+            case (Config_t::USER) :
+                WriteMicro(Opcode(Command::AUTOLOAD_USER_CONF));
                 break;
         }
     }
 
-    void V1190B::WriteSaveUserConfig()
-    {
-        WriteMicro( Opcode( Command::SAVE_USER_CONFIG ) );
+    void V1190B::WriteSaveUserConfig() {
+        WriteMicro(Opcode(Command::SAVE_USER_CONFIG));
     }
 
-    void V1190B::WriteWindowWidth(uint16_t data){
+    // TRIGGER
+    void V1190B::WriteWindowWidth(uint16_t data) {
         WriteMicro(Opcode(Command::SET_WIN_WIDTH));
         WriteMicro(data);
     }
@@ -233,12 +225,11 @@ namespace vmeplus {
 
     // TEST AND DEBUG
     void V1190B::WriteEEPROM(uint16_t address, uint16_t data) {
-        WriteMicro(Opcode(Command::WRITE_EEPROM));
-        if (std::find(begin(fEEPROM), end(fEEPROM), address) != end(fEEPROM)) {
+        if (std::find(fEEPROM.begin(), fEEPROM.end(), address) != fEEPROM.end()) {
+            WriteMicro(Opcode(Command::WRITE_EEPROM));
             WriteMicro(address);
             WriteMicro(data & 0x00FF);
-        }
-        else
+        } else
             PrintMessage(Message_t::ERROR, "Invalid EEPROM address");
     }
 
@@ -266,9 +257,8 @@ namespace vmeplus {
         return ReadMicro();
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
     void V1190B::EnableTestMode(uint32_t data) {
-        if (ReadAcquisitionMode() == 0x0001) {
+        if (ReadAcqMode() == TriggerMode_t::MATCHING) {
             WriteMicro(Opcode(Command::ENABLE_TEST_MODE));
             WriteMicro(data);
             WriteMicro(data >> 8U);
