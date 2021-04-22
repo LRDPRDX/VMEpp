@@ -157,6 +157,9 @@ namespace vmeplus {
                     object(object) {}
         };
 
+        enum class TriggerMode_t    { MATCHING, CONTINUOUS };
+        enum class Config_t         { DEFAULT, USER };
+
         struct TriggerData {
             uint16_t winWidth;
             uint16_t winOffs;
@@ -220,7 +223,16 @@ namespace vmeplus {
 
         uint16_t ReadMicro();
 
-        // TRIGGER
+    // ACQUISITION MODE
+    public :
+        void WriteAcqMode( V1190B::TriggerMode_t mode );
+        V1190B::TriggerMode_t ReadAcqMode();
+        void WriteEnableKeepToken( bool status );
+        void WriteLoadConfig( V1190B::Config_t config );
+        void WriteAutoLoad( V1190B::Config_t config );
+        void WriteSaveUserConfig();
+
+        // Trigger functions
     public:
         void WriteWindowWidth(uint16_t data);
 
