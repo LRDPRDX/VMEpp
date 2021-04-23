@@ -370,7 +370,7 @@ namespace vmeplus {
     public:
         void WriteEEPROM(uint16_t address, uint16_t data);
 
-        static uint16_t ReadEEPROM(uint16_t address);
+        uint16_t ReadEEPROM(uint16_t address);
 
         struct MicroFirmware {
             uint16_t revision;
@@ -378,15 +378,7 @@ namespace vmeplus {
             uint16_t month;
             uint16_t year;
 
-
-            MicroFirmware(uint16_t revision = ReadEEPROM(V1190V_MICRO_FIRMWARE_REVISION),
-                          uint16_t day = ReadEEPROM(V1190B_MICRO_FIRMWARE_DAY),
-                          uint16_t month = ReadEEPROM(V1190B_MICRO_FIRMWARE_MONTH),
-                          uint16_t year = ReadEEPROM(V1190B_MICRO_FIRMWARE_YEAR)) :
-                    revision(revision),
-                    day(day),
-                    month(month),
-                    year(year) {}
+            MicroFirmware() {}
         };
 
         void ReadMicroFirmware(MicroFirmware &firmware);
