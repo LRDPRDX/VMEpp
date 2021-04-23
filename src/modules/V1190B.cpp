@@ -260,8 +260,8 @@ namespace vmeplus {
     void V1190B::EnableTestMode(uint32_t data) {
         if (ReadAcqMode() == TriggerMode_t::MATCHING) {
             WriteMicro(Opcode(Command::ENABLE_TEST_MODE));
-            WriteMicro(data);
-            WriteMicro(data >> 8U);
+            WriteMicro(data & 0x0000FFFF);
+            WriteMicro((data >> 16U) & 0x000000FF);
         }
     }
 
