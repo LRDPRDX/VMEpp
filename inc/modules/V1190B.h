@@ -207,6 +207,12 @@ namespace vmeplus {
         void WriteEnableAll( bool status = true );
         void WriteEnablePattern( V1190B::TDC tdc, uint32_t pattern );
         uint32_t ReadEnablePattern( V1190B::TDC tdc );
+
+        // MISC
+    public :
+        void WriteResetLoops();
+        uint16_t ReadTDC_ID( V1190B::TDC tdc );
+        uint16_t ReadMicroFWRev();
     };
 }
 

@@ -116,4 +116,30 @@ namespace vmeplus {
 
         return ((msb << 16U) & 0xffff0000) | (lsb & 0x0000ffff);
     }
+
+    // MISC
+    uint16_t V1190B::ReadTDC_ID( V1190B::TDC tdc )
+    {
+        switch( tdc )
+        {
+            case( TDC::TDC0 ) :
+                WriteMicro( Opcode( Command::READ_TDC_ID, 0x0000 ) );
+                break;
+            case( TDC::TDC1 ) :
+                WriteMicro( Opcode( Command::READ_TDC_ID, 0x0001 ) );
+                break;
+        }
+        return ReadMicro();
+    }
+
+    uint16_t V1190B::ReadMicroFWRev()
+    {
+        WriteMicro( Opcode( Command::READ_MICRO_REV ) );
+        return (ReadMicro() & 0x00FF );
+    } 
+
+    void V1190B::WriteResetLoops()
+    {
+        WriteMicro( Opcode( Command::RESET_DLL_PLL ) );
+    }
 }
