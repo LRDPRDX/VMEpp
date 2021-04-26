@@ -279,7 +279,7 @@ namespace vmeplus {
         WriteMicro(data & 0x000F);
     }
 
-    void V1190B::WriteDLLClock(DLLclock dllClock) {
+    void V1190B::WriteDLLClock(DLLClock dllClock) {
         WriteMicro(Opcode(Command::SET_DLL_CLOCK));
         WriteMicro(static_cast<uint16_t>(dllClock) & 0x0003);
     }

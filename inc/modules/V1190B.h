@@ -391,14 +391,14 @@ namespace vmeplus {
 
         void WriteTDCTestOutput(uint16_t data);
 
-        enum class DLLclock {
+        enum class DLLClock {
             direct40MHz,
-            PLL40Mhz,
+            PLL40MHz,
             PLL160MHz,
             PLL320MHz
         };
 
-        void WriteDLLClock(DLLclock dllClock);
+        void WriteDLLClock(DLLClock dllClock);
     };
 }
 
