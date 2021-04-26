@@ -363,7 +363,7 @@ namespace vmeplus {
 
         // TEST AND DEBUG
     private:
-        static const std::array<uint8_t, 29> fEEPROM;
+        static const std::array<uint8_t, 39> fEEPROM;
 
     public:
         void WriteEEPROM(uint16_t address, uint16_t data);
