@@ -266,7 +266,8 @@ namespace vmeplus {
             WriteMicro(Opcode(Command::ENABLE_TEST_MODE));
             WriteMicro(data & 0x0000FFFF);
             WriteMicro((data >> 16U) & 0x000000FF);
-        }
+        } else
+            PrintMessage(Message_t::ERROR, "To use this function change trigger mode to TRIGGER MATCHING");
     }
 
     void V1190B::DisableTestMode() {
