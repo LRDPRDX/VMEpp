@@ -30,20 +30,20 @@ int main()
         tdc.WriteRejectMargin(0x05);
         //The margin value can be any 12 bit value (bits [12;15] are meaningless),
         // 0 sets the margin at the beginning of the match window, Default setting: 0x04 -> 100 ns
-        tdc.WriteSubstractionOfTriggerTime(0);
+        tdc.WriteEnableSubTrigger(false);
         ///LSB = 0 -> trigger time subtraction disabled;
         ///LSB = 1 -> trigger time subtraction enabled
         
-        uint16_t WinWidth, WinOffs, SwMargin, RejMargin, SubTrg;
-        tdc.TriggerData trigger(WinWidth, WinOffs, SwMargin, RejMargin, SubTrg);
+        uint16_t winWidth, winOffs, swMargin, rejMargin, subTrg;
+        V1190B::TriggerData trigger(winWidth, winOffs, swMargin, rejMargin, subTrg);
 
-        tdc.ReadTriggerConfiguration(&trigger);
+        tdc.ReadTriggerConfiguration(trigger);
 
-        std::cout << "WIN WIDTH " << tdc.trigger.WinWidth << std::endl;
-        std::cout << "WIN OFFS " << tdc.trigger.WinOffs << std::endl;
-        std::cout << "EXTRA SEARCH MARGIN " << tdc.trigger.SwMargin << std::endl;
-        std::cout << "REJECT MARGIN " << tdc.trigger.RejMargin << std::endl;
-        std::cout << "SUB TRG " << tdc.trigger.SubTrg << std::endl;
+        std::cout << "WIN WIDTH " << trigger.winWidth << std::endl;
+        std::cout << "WIN OFFS " << trigger.winOffs << std::endl;
+        std::cout << "EXTRA SEARCH MARGIN " << trigger.swMargin << std::endl;
+        std::cout << "REJECT MARGIN " << trigger.rejMargin << std::endl;
+        std::cout << "SUB TRG " << trigger.subTrigger << std::endl;
     }
     catch( const VException &e )
     {
