@@ -284,4 +284,52 @@ namespace vmeplus {
         WriteMicro(Opcode(Command::SET_DLL_CLOCK));
         WriteMicro(static_cast<uint16_t>(dllClock) & 0x0003);
     }
+    
+    //CHANNEL
+    void V1190B::WriteEnableChannel( uint8_t n, bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_CHANNEL, n % fChNumber ) );
+        else         WriteMicro( Opcode( Command::DIS_CHANNEL, n % fChNumber ) );
+    }
+
+    void V1190B::WriteEnableAll( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_ALL_CH ) );
+        else         WriteMicro( Opcode( Command::DIS_ALL_CH ) );
+    }
+
+
+    void V1190B::WriteEnablePattern( V1190B::TDC tdc, uint32_t pattern )
+    {
+        switch( tdc )
+        {
+            case( TDC::TDC0 ) :
+                WriteMicro( Opcode( Command::WRITE_EN_PATTERN32, 0x0000 ) );
+                break;
+            case( TDC::TDC1 ) :
+                WriteMicro( Opcode( Command::WRITE_EN_PATTERN32, 0x0001 ) );
+                break;
+        }
+        uint16_t lsb = (pattern & 0x0000ffff ); // ch 0 : 15
+        uint16_t msb = (pattern >> 16U);        // ch 16 : 31
+        WriteMicro( lsb );
+        WriteMicro( msb );
+    }
+
+    uint32_t V1190B::ReadEnablePattern( V1190B::TDC tdc )
+    {
+        switch( tdc )
+        {
+            case( TDC::TDC0 ) :
+                WriteMicro( Opcode( Command::READ_EN_PATTERN32, 0x0000 ) );
+                break;
+            case( TDC::TDC1 ) :
+                WriteMicro( Opcode( Command::READ_EN_PATTERN32, 0x0001 ) );
+                break;
+        }
+        uint32_t lsb = ReadMicro(); // ch 0 : 15
+        uint32_t msb = ReadMicro(); // ch 16 : 31
+
+        return ((msb << 16U) & 0xffff0000) | (lsb & 0x0000ffff);
+    }
 }

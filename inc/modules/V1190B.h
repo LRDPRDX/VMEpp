@@ -399,6 +399,15 @@ namespace vmeplus {
         };
 
         void WriteDLLClock(DLLClock dllClock);
+     
+        //CHANNEL
+    public :
+        enum class TDC { TDC0, TDC1 };
+
+        void WriteEnableChannel( uint8_t n, bool status = true );
+        void WriteEnableAll( bool status = true );
+        void WriteEnablePattern( V1190B::TDC tdc, uint32_t pattern );
+        uint32_t ReadEnablePattern( V1190B::TDC tdc );
     };
 }
 
