@@ -362,6 +362,9 @@ namespace vmeplus {
         DeadTime ReadDeadTime();
 
         // TEST AND DEBUG
+    private:
+        static const std::array<uint8_t, 29> fEEPROM;
+
     public:
         void WriteEEPROM(uint16_t address, uint16_t data);
 
