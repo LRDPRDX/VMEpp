@@ -171,6 +171,37 @@ namespace vmeplus {
             DEFAULT, USER
         };
 
+        enum class MaxHitsPerEvent : uint16_t
+        {
+            n0, n1, n2, n4, n8, n16, n32, n64, n128,
+            NO_LIMIT = 0b1001,
+            INVALID  =  0b1010, // Actually, any number >= INVALID is meaningless
+        };
+
+        enum class FIFOSize : uint16_t
+        {
+            w2, w4, w8, w16, w32, w64, w128, w256
+        };
+
+        enum IError_t : uint16_t
+        {
+            // NB : it is not an enum class because we want to be able
+            // to perform bitwise operations on these enumerations
+            // without complex overloading of bitwise operators and static_cast
+            VERNIER         = 0x0001,
+            CRS_CNTR_PRTY   = 0x0002,
+            SYNC            = 0x0004,
+            L1_BUF_PRTY     = 0x0008,
+            TRG_FIF0_PRTY   = 0x0010,
+            TRG_MTCH        = 0x0020,
+            ROUT_FIFO_PRTY  = 0x0040,
+            ROUT_STATE      = 0x0080,
+            SET_UP_PRTY     = 0x0100,
+            CTRL_PRTY       = 0x0200,
+            JTAG_PRTY       = 0x0400,
+            ALL             = 0x07FF,
+        };
+
     public:
         V1190B(uint32_t address, uint32_t range = V1190B_LUB);
 
@@ -408,6 +439,19 @@ namespace vmeplus {
         void WriteEnableAll( bool status = true );
         void WriteEnablePattern( V1190B::TDC tdc, uint32_t pattern );
         uint32_t ReadEnablePattern( V1190B::TDC tdc );
+        
+        // TDC Readout
+    public :
+        void WriteEnableHeaderTrailer( bool status );
+        bool ReadEnableHeaderTrailer();
+        void WriteMaxHitsPerEvent( V1190B::MaxHitsPerEvent n );
+        V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
+        void WriteEnableErrMark( bool status );
+        void WriteEnableBypass( bool status );
+        void WriteErrorPattern( uint16_t );
+        uint16_t ReadErrorPattern();
+        void WriteEffSizeFIFO( V1190B::FIFOSize size );
+        uint16_t ReadEffSizeFIFO();
     };
 }
 

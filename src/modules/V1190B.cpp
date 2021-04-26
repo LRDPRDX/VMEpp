@@ -225,9 +225,9 @@ namespace vmeplus {
 
     // TEST AND DEBUG
     const std::array<uint8_t, 33> V1190B::fEEPROM = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-                                                     0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,
-                                                     0x11, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E,
-                                                         0x1F, 0x20, 0x21, 0x22,0x23, 0x24, 0x25, 0x26, 0x27, 0x28};
+                                                     0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 
+                                                     0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 
+                                                     0x20, 0x21, 0x22,0x23, 0x24, 0x25, 0x26, 0x27, 0x28};
 
     void V1190B::WriteEEPROM(uint16_t address, uint16_t data) {
         if (std::find(fEEPROM.begin(), fEEPROM.end(), address) == fEEPROM.end()) {
@@ -331,5 +331,76 @@ namespace vmeplus {
         uint32_t msb = ReadMicro(); // ch 16 : 31
 
         return ((msb << 16U) & 0xffff0000) | (lsb & 0x0000ffff);
+    }
+
+    // TDC Readout
+    void V1190B::WriteEnableHeaderTrailer( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_HEAD_TRAILER ) );
+        else         WriteMicro( Opcode( Command::DIS_HEAD_TRAILER ) );
+    }
+
+    bool V1190B::ReadEnableHeaderTrailer()
+    {
+        WriteMicro( Opcode( Command::READ_HEAD_TRAILER ) );
+        uint16_t data = ReadMicro();
+        return (1U & data);
+    }
+
+    void V1190B::WriteMaxHitsPerEvent( V1190B::MaxHitsPerEvent n )
+    {
+        WriteMicro( Opcode( Command::SET_EVENT_SIZE ) );
+        WriteMicro( static_cast<uint16_t>( n ) );
+    }
+
+    V1190B::MaxHitsPerEvent V1190B::ReadMaxHitsPerEvent()
+    {
+        WriteMicro( Opcode( Command::READ_EVENT_SIZE ) );
+        uint16_t data = ReadMicro();
+        data &= 0x0F; // check 4 LSBs
+
+        MaxHitsPerEvent result = MaxHitsPerEvent::INVALID;
+        if( data <= static_cast<uint16_t>( MaxHitsPerEvent::NO_LIMIT ) )
+        {
+            result = static_cast<MaxHitsPerEvent>( data );
+        }
+        return result;
+    }
+
+    void V1190B::WriteEnableErrMark( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_ERROR_MARK ) );
+        else         WriteMicro( Opcode( Command::DIS_ERROR_MARK ) );
+    }
+
+    void V1190B::WriteEnableBypass( bool status )
+    {
+        if( status ) WriteMicro( Opcode( Command::EN_ERROR_BYPASS ) );
+        else         WriteMicro( Opcode( Command::DIS_ERROR_BYPASS ) );
+    }
+
+    void V1190B::WriteErrorPattern( uint16_t pattern )
+    {
+        WriteMicro( Opcode( Command::SET_ERROR_TYPES ) );
+        WriteMicro( pattern & IError_t::ALL );
+    }
+
+    uint16_t V1190B::ReadErrorPattern()
+    {
+        WriteMicro( Opcode( Command::READ_ERROR_TYPES ) );
+        return ReadMicro() & IError_t::ALL; // return only 11 LSBs
+    }
+
+    void V1190B::WriteEffSizeFIFO( V1190B::FIFOSize size )
+    {
+        WriteMicro( Opcode( Command::SET_FIFO_SIZE ) );
+        WriteMicro( static_cast<uint16_t>( size ) );
+    }
+
+    uint16_t V1190B::ReadEffSizeFIFO()
+    {
+        WriteMicro( Opcode( Command::READ_FIFO_SIZE ) );
+        uint16_t data = ReadMicro() & 0x0007; // save only 3 LSB
+        return (2 << data); // starts with 2 (if data == 0) ---  not 1;
     }
 }

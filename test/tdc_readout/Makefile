@@ -1,4 +1,4 @@
-TOP_DIR := /home/sayka/course/VMEpp
+TOP_DIR :=  $(shell pwd)/../..
 INC_DIR     := $(TOP_DIR)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
