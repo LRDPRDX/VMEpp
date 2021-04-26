@@ -10,7 +10,7 @@
 Main
 
 # Tests
-# /test
+#/test
 
 # Documentation
 /doc
@@ -22,4 +22,5 @@ ROOT/
 /backup.sh
 
 # recovery files
+*.swo
 *.swp
