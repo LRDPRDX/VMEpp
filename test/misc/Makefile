@@ -1,8 +1,4 @@
-<<<<<<< HEAD:test/acq_mode/AfterReset/Makefile
-TOP_DIR :=  $(shell pwd)/../../..
-=======
 TOP_DIR :=  $(shell pwd)/../..
->>>>>>> upstream/misc:test/misc/Makefile
 INC_DIR     := $(TOP_DIR)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
