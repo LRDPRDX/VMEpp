@@ -118,18 +118,24 @@ namespace vmeplus {
     }
 
     // MISC
-    uint16_t V1190B::ReadTDC_ID( V1190B::TDC tdc )
+    uint32_t V1190B::ReadTDC_ID( V1190B::TDC tdc )
     {
         switch( tdc )
         {
             case( TDC::TDC0 ) :
-                WriteMicro( Opcode( Command::READ_TDC_ID, 0x0000 ) );
+                WriteMicro( Opcode( Command::READ_TDC_ID, 0x00 ) );
                 break;
             case( TDC::TDC1 ) :
-                WriteMicro( Opcode( Command::READ_TDC_ID, 0x0001 ) );
+                WriteMicro( Opcode( Command::READ_TDC_ID, 0x01 ) );
                 break;
         }
-        return ReadMicro();
+        // NOTE : there is a typo in the doc
+        // After this OPCODE is sent *TWO* 16-bit
+        // words must be read
+        uint32_t lsb = ReadMicro();
+        uint32_t msb = ReadMicro();
+
+        return ((msb << 16U) & 0xffff0000) | (lsb & 0x0000ffff);
     }
 
     uint16_t V1190B::ReadMicroFWRev()

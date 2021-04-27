@@ -211,7 +211,7 @@ namespace vmeplus {
         // MISC
     public :
         void WriteResetLoops();
-        uint16_t ReadTDC_ID( V1190B::TDC tdc );
+        uint32_t ReadTDC_ID( V1190B::TDC tdc );
         uint16_t ReadMicroFWRev();
     };
 }
