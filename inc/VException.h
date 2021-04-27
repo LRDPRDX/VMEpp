@@ -16,6 +16,8 @@ namespace vmeplus
                             vGenericError = cvGenericError,
                             vInvalidParam = cvInvalidParam,
                             vTimeoutError = cvTimeoutError,
+                            vAlreadyOpenError = cvAlreadyOpenError,
+                            vMaxBoardCountError = cvMaxBoardCountError,
                             vBadMaster = -10,
                             vOrphan = -11,
                             vBuffAllocFailed = -12,
@@ -58,6 +60,10 @@ namespace vmeplus
                         fMessage = "VME++ :: ERROR :: Invalid parameter"; break;
                     case( VError_t::vTimeoutError ) :      
                         fMessage = "VME++ :: ERROR :: Timeout error"; break;
+                    case( VError_t::vAlreadyOpenError ) :       
+                        fMessage = "VME++ :: ERROR :: Already open error"; break;
+                    case( VError_t::vMaxBoardCountError ) :       
+                        fMessage = "VME++ :: ERROR :: Max board count error"; break;
                     case( VError_t::vBadMaster ) :
                         fMessage = "VME++ :: ERROR :: Requesting a bad controller";
                         fHint    = "VME++ :: HINT :: Try to register this board to the correct master";
