@@ -22,7 +22,7 @@ make
 
 # TODO
 - [ ] Add the *Advanced* OPCODEs' functions
-- [ ] Add the *Miscellaneous* OPCODEs' functions
+- [x] Add the *Miscellaneous* OPCODEs' functions
 - [ ] Consider to add a delay in case of firmware revision <= 0.3 (EEPROM) 
 
 # Disclaimer
