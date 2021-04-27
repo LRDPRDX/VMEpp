@@ -61,9 +61,9 @@ namespace vmeplus
                     case( VError_t::vTimeoutError ) :      
                         fMessage = "VME++ :: ERROR :: Timeout error"; break;
                     case( VError_t::vAlreadyOpenError ) :       
-                        fMessage = "VME++ :: ERROR :: Already open error"; break;
+                        fMessage = "VME++ :: ERROR :: Device is already open error"; break;
                     case( VError_t::vMaxBoardCountError ) :       
-                        fMessage = "VME++ :: ERROR :: Max board count error"; break;
+                        fMessage = "VME++ :: ERROR :: Maximum device number has been reached"; break;
                     case( VError_t::vBadMaster ) :
                         fMessage = "VME++ :: ERROR :: Requesting a bad controller";
                         fHint    = "VME++ :: HINT :: Try to register this board to the correct master";
