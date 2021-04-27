@@ -403,4 +403,36 @@ namespace vmeplus {
         uint16_t data = ReadMicro() & 0x0007; // save only 3 LSB
         return (2 << data); // starts with 2 (if data == 0) ---  not 1;
     }
+
+    // MISC
+    uint32_t V1190B::ReadTDC_ID( V1190B::TDC tdc )
+    {
+        switch( tdc )
+        {
+            case( TDC::TDC0 ) :
+                WriteMicro( Opcode( Command::READ_TDC_ID, 0x00 ) );
+                break;
+            case( TDC::TDC1 ) :
+                WriteMicro( Opcode( Command::READ_TDC_ID, 0x01 ) );
+                break;
+        }
+        // NOTE : there is a typo in the doc
+        // After this OPCODE is sent *TWO* 16-bit
+        // words must be read
+        uint32_t lsb = ReadMicro();
+        uint32_t msb = ReadMicro();
+
+        return ((msb << 16U) & 0xffff0000) | (lsb & 0x0000ffff);
+    }
+
+    uint16_t V1190B::ReadMicroFWRev()
+    {
+        WriteMicro( Opcode( Command::READ_MICRO_REV ) );
+        return (ReadMicro() & 0x00FF );
+    } 
+
+    void V1190B::WriteResetLoops()
+    {
+        WriteMicro( Opcode( Command::RESET_DLL_PLL ) );
+    }
 }

@@ -452,6 +452,12 @@ namespace vmeplus {
         uint16_t ReadErrorPattern();
         void WriteEffSizeFIFO( V1190B::FIFOSize size );
         uint16_t ReadEffSizeFIFO();
+
+        // MISC
+    public :
+        void WriteResetLoops();
+        uint32_t ReadTDC_ID( V1190B::TDC tdc );
+        uint16_t ReadMicroFWRev();
     };
 }
 
