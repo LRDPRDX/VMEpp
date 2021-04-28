@@ -1,6 +1,9 @@
 # TODO
 
-## Registers
+## TDC Configuration via Microcontroller
+Done.
+
+## TDC Configuration via Registers
 
 - [ ] Output Buffer
 - [ ] Control Register
@@ -39,3 +42,5 @@
 - [x] ADDR (not used)
 
 ## Reading Compensation SRAM
+- [ ] Read compensation table from the module
+- [ ] Draw a graph of compensation values for some channel 
