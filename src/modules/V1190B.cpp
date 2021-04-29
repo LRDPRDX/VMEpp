@@ -5,12 +5,29 @@ namespace vmeplus {
     V1190B::V1190B(uint32_t baseAddress, uint32_t range) :
             VSlave("V1190B", baseAddress, range),
             VSlaveInterrupter("V1190B", baseAddress, range),
-            VSlaveAcquisitor("V1190B", baseAddress, range) {}
+            VSlaveAcquisitor("V1190B", baseAddress, range),
+
+            fFirmwareRevision( "N/A" ),
+            fOUI( 0 ),
+            fVersion( 0 ),
+            fBoardID( 0 ),
+            fRevision( 0 )
+    {}
 
     V1190B::~V1190B() {};
 
     void V1190B::Initialize() {
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...");
+
+        //READ ROM
+        PrintMessage( Message_t::INFO, "Reading ROM of " + fName + "..." );
+        ReadSerialNumber();
+        ReadFirmRevNumber();
+        ReadOUI();
+        ReadVersion();
+        ReadBoardID();
+        ReadRevision();
+
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...OK");
     }
 
@@ -435,4 +452,63 @@ namespace vmeplus {
     {
         WriteMicro( Opcode( Command::RESET_DLL_PLL ) );
     }
+
+    //****** READING ROM + ******
+    uint16_t V1190B::ReadVersion()
+    {
+        //Data seems to be a 1-byte long
+        fVersion = ReadRegister16( V1190B_VERSION, 0x00FFU );
+        return fVersion;
+    }
+
+    uint32_t V1190B::ReadBoardID()
+    {
+        //Data seems to be a 1-byte long
+        uint32_t msb = ReadRegister16( V1190B_BOARD_ID_MSB, 0x00FF );
+        uint32_t middle = ReadRegister16( V1190B_BOARD_ID, 0x00FF );
+        uint32_t lsb = ReadRegister16( V1190B_BOARD_ID_LSB, 0x00FF );
+
+        fBoardID = (lsb & 0xFFUL) | ((middle & 0xFFUL) << 8U) | ((msb & 0xFFUL) << 16);
+
+        return fBoardID;
+    }
+
+    uint32_t V1190B::ReadOUI()
+    {
+        //Data seems to be a 1-byte long
+        uint32_t msb    = ReadRegister16( V1190B_OUI_MSB, 0x00FFU );
+        uint32_t middle = ReadRegister16( V1190B_OUI, 0x00FFU );
+        uint32_t lsb    = ReadRegister16( V1190B_OUI_LSB, 0x00FFU );
+        fOUI = (lsb) | (middle << 8U) | (msb << 16U);
+        return fOUI;
+    } 
+
+    uint32_t V1190B::ReadRevision()
+    {
+        //Data seems to be a 1-byte long
+        uint32_t msb = ReadRegister16( V1190B_REVISION_MSB, 0x00FF );
+        uint32_t mid1 = ReadRegister16( V1190B_REVISION_M1, 0x00FF );
+        uint32_t mid2 = ReadRegister16( V1190B_REVISION_M2, 0x00FF );
+        uint32_t lsb = ReadRegister16( V1190B_REVISION_LSB, 0x00FF );
+        fRevision = (lsb) | (mid2 << 8U) | (mid1 << 12U) | (msb << 16U);
+        return fRevision;
+    }
+
+    uint16_t V1190B::ReadSerialNumber()
+    {
+        uint16_t msb = ReadRegister16( V1190B_SERIAL_MSB, 0x00FFU );
+        uint16_t lsb = ReadRegister16( V1190B_SERIAL_LSB, 0x00FFU );
+        fSerial = (lsb & 0x00FFU) | (msb << 8U); 
+        return fSerial; 
+    }
+
+    uint16_t V1190B::ReadFirmRevNumber()
+    {
+        uint16_t data = ReadRegister16( V1190B_FIRMWARE_REVISION );
+        fFirmwareRevision =  std::to_string( (data & 0x00F0U) >> 4U ) + "." +
+                             std::to_string( (data & 0x000FU) );
+        fFirmware = fFirmwareRevision;
+        return data;
+    }
+    //****** READING ROM - ******
 }

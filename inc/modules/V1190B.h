@@ -1,6 +1,7 @@
 #ifndef V_PLUS_V1190B_H
 #define V_PLUS_V1190B_H
 
+// MEMORY MAP (BEGIN)
 #define V1190B_OUTPUT_BUFFER                0X0000UL
 #define V1190B_OUTPUT_BUFFER_MAX            0x0FFCUL
 #define V1190B_CONTROL_REGISTER             0x1000UL
@@ -40,6 +41,32 @@
 #define V1190B_MICRO_FIRMWARE_DAY           0x0005UL
 #define V1190B_MICRO_FIRMWARE_MONTH         0x0006UL
 #define V1190B_MICRO_FIRMWARE_YEAR          0x0007UL
+
+//****** Read Only Memory Definition ******
+//ROM (The data read from ROM seems to be an 8-bit long)
+#define     V1190B_CHECKSUM                 0x4000UL//A32/D16 R
+#define     V1190B_CKSM_LEN_MSB             0x4004UL//A32/D16 R
+#define     V1190B_CKSM_LEN                 0x4008UL//A32/D16 R
+#define     V1190B_CKSM_LEN_LSB             0x400CUL//A32/D16 R
+#define     V1190B_CONSTANT_MSB             0x4010UL//A32/D16 R
+#define     V1190B_CONSTANT                 0x4014UL//A32/D16 R
+#define     V1190B_CONSTANT_LSB             0x4018UL//A32/D16 R
+#define     V1190B_C_CODE                   0x401CUL//A32/D16 R
+#define     V1190B_R_CODE                   0x4020UL//A32/D16 R
+#define     V1190B_OUI_MSB                  0x4024UL//A32/D16 R   
+#define     V1190B_OUI                      0x4028UL//A32/D16 R
+#define     V1190B_OUI_LSB                  0x402CUL//A32/D16 R
+#define     V1190B_VERSION                  0x4030UL//A32/D16 R
+#define     V1190B_BOARD_ID_MSB             0x4034UL//A32/D16 R
+#define     V1190B_BOARD_ID                 0x4038UL//A32/D16 R
+#define     V1190B_BOARD_ID_LSB             0x403CUL//A32/D16 R
+#define     V1190B_REVISION_MSB             0x4040UL//A32/D16 R
+#define     V1190B_REVISION_M1              0x4044UL//A32/D16 R
+#define     V1190B_REVISION_M2              0x4048UL//A32/D16 R
+#define     V1190B_REVISION_LSB             0x404CUL//A32/D16 R
+#define     V1190B_SERIAL_MSB               0x4080UL//A32/D16 R
+#define     V1190B_SERIAL_LSB               0x4084UL//A32/D16 R
+// MEMORY MAP (END)
 
 #define V1190B_LUB                          0x8FFFUL            //the Last Used Byte 
 
@@ -458,6 +485,32 @@ namespace vmeplus {
         void WriteResetLoops();
         uint32_t ReadTDC_ID( V1190B::TDC tdc );
         uint16_t ReadMicroFWRev();
+
+        // ROM
+   protected :
+       //ROM Data
+       std::string     fFirmwareRevision;
+       uint32_t        fOUI;
+       uint16_t        fVersion;
+       uint32_t        fBoardID;
+       uint32_t        fRevision;
+
+   protected :
+       uint16_t ReadVersion();
+       uint32_t ReadBoardID();
+       uint32_t ReadOUI();
+       uint32_t ReadRevision();
+       uint16_t ReadSerialNumber();
+       uint16_t ReadFirmRevNumber();//Actually not ROM
+
+        //State methods 
+   public :
+        //ROM
+        std::string     GetFirmRevision() const { return fFirmwareRevision; }//Not ROM
+        uint32_t        GetOUI() const { return fOUI; }
+        uint16_t        GetVersion() const { return fVersion; }
+        uint32_t        GetBoardID() const { return fBoardID; }
+        uint32_t        GetRevision() const { return fRevision; }
     };
 }
 
