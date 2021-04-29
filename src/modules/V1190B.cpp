@@ -42,6 +42,16 @@ namespace vmeplus {
     bool V1190B::GetEventAt(uint32_t index, VEvent *event) const { return 0; }
 
     //INTERRUPTER
+    void V1190B::WriteIRQEvents( uint16_t n )
+    {
+        WriteRegister16( V1190B_ALMOST_FULL_LEVEL, (n > 0) ? n : 1 );
+    }
+
+    uint16_t V1190B::ReadIRQEvents()
+    {
+        return ReadRegister16( V1190B_ALMOST_FULL_LEVEL );
+    }
+
     void V1190B::WriteIRQLevel(uint16_t level) {
         WriteRegister16(V1190B_INTERRUPT_LEVEL, level, V1190B_INTERRUPT_LEVEL_MSK);
     }

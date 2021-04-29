@@ -251,6 +251,9 @@ namespace vmeplus {
 
         // INTERRUPTS
     public:
+        void WriteIRQEvents( uint16_t n );
+        uint16_t ReadIRQEvents();
+
         void WriteIRQLevel(uint16_t level) override;
 
         uint16_t ReadIRQLevel() override;
@@ -511,6 +514,7 @@ namespace vmeplus {
         uint16_t        GetVersion() const { return fVersion; }
         uint32_t        GetBoardID() const { return fBoardID; }
         uint32_t        GetRevision() const { return fRevision; }
+
     };
 }
 
