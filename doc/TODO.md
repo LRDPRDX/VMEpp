@@ -21,7 +21,7 @@ Done.
 - [ ] Event Stored
 - [ ] Almost Full Level
 - [ ] BLT event number
-- [ ] Firmware revision
+- [x] Firmware revision
 - [ ] Testreg
 - [ ] Output prog control
 - [x] Micro
