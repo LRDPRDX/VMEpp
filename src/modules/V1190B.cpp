@@ -34,6 +34,16 @@ namespace vmeplus {
     void V1190B::Release() {}
 
     /****** DATA ACQUISITION ******/
+    uint32_t V1190B::ReadEventCounter()
+    {
+        return ReadRegister32( V1190B_EVENT_COUNTER );
+    }
+
+    uint16_t V1190B::ReadEventsStored()
+    {
+        return ReadRegister16( V1190B_EVENT_STORED );
+    }
+
     void V1190B::SendSWTrigger()
     {
         WriteRegister16( V1190B_SOFTWARE_TRIGGER, 1 );

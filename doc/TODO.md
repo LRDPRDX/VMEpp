@@ -17,9 +17,9 @@ Done.
 - [x] Software Clear
 - [ ] Software Event Reset
 - [x] Software Trigger
-- [ ] Event Counter
-- [ ] Event Stored
-- [ ] Almost Full Level
+- [x] Event Counter
+- [x] Event Stored
+- [x] Almost Full Level
 - [ ] BLT event number
 - [x] Firmware revision
 - [ ] Testreg

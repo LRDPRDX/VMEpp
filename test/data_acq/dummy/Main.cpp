@@ -3,6 +3,7 @@
 #include "modules/V1190B.h"
 
 #include <iostream>
+#include <iomanip>
 #include <cassert>
 
 using namespace vmeplus;
@@ -34,6 +35,12 @@ int main()
         tdc.WriteIRQEvents( 0 );
         almostFullN = tdc.ReadIRQEvents();
         assert( almostFullN == 1 );
+
+        uint32_t eCounter = tdc.ReadEventCounter();
+        uint16_t nEvents = tdc.ReadEventsStored();
+
+        std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
+        std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
 
         tdc.Reset();
 

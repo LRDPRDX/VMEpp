@@ -240,6 +240,8 @@ namespace vmeplus {
 
         // DATA ACQUISITION
     public:
+        uint32_t ReadEventCounter();
+        uint16_t ReadEventsStored();
         void SendSWTrigger();
         void AllocateBuffer() override;
         uint32_t ReadBuffer() override;
