@@ -34,6 +34,16 @@ namespace vmeplus {
     void V1190B::Release() {}
 
     /****** DATA ACQUISITION ******/
+    void V1190B::WriteEventsBLT( uint8_t n )
+    {
+        WriteRegister16( V1190B_BLT_EVENT_NUMBER, n, 0x00FF );
+    }
+
+    uint8_t V1190B::ReadEventsBLT()
+    {
+        return ReadRegister16( V1190B_BLT_EVENT_NUMBER, 0x00FF );
+    }
+
     uint32_t V1190B::ReadEventCounter()
     {
         return ReadRegister32( V1190B_EVENT_COUNTER );
@@ -574,12 +584,12 @@ namespace vmeplus {
 
     void V1190B::WritePOut( V1190B::ProgOUT pout )
     {
-        WriteRegister16( V1190B_OUT_PROG_CONTROL, static_cast<uint16_t>( pout ) & 0x0003 );
+        WriteRegister16( V1190B_OUT_PROG_CONTROL, static_cast<uint16_t>( pout ), 0x0003 );
     }
 
     V1190B::ProgOUT V1190B::ReadPOut()
     {
-        uint16_t data = ReadRegister16( V1190B_OUT_PROG_CONTROL );
-        return static_cast<ProgOUT>( data & 0x0003 );
+        uint16_t data = ReadRegister16( V1190B_OUT_PROG_CONTROL, 0x0003 );
+        return static_cast<ProgOUT>( data );
     }
 }

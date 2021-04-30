@@ -20,7 +20,7 @@ Done.
 - [x] Event Counter
 - [x] Event Stored
 - [x] Almost Full Level
-- [ ] BLT event number
+- [x] BLT event number
 - [x] Firmware revision
 - [ ] Testreg
 - [x] Output prog control

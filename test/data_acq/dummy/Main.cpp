@@ -41,6 +41,13 @@ int main()
 
         tdc.Reset();
 
+        uint8_t bltEvents = tdc.ReadEventsBLT();
+        assert( bltEvents == 0 ); // default after reset
+
+        tdc.WriteEventsBLT( 123 );
+        bltEvents = tdc.ReadEventsBLT();
+        assert( bltEvents == 123 );
+
         almostFullN = tdc.ReadIRQEvents();
         assert( almostFullN == 64 ); // default after reset
 
