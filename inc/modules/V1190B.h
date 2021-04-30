@@ -194,6 +194,7 @@ namespace vmeplus {
         enum class TriggerMode_t {
             MATCHING, CONTINUOUS
         };
+
         enum class Config_t {
             DEFAULT, USER
         };
@@ -231,63 +232,48 @@ namespace vmeplus {
 
     public:
         V1190B(uint32_t address, uint32_t range = V1190B_LUB);
-
         virtual ~V1190B();
 
     protected:
         void Initialize() override;
-
         void Release() override;
 
-        // Data acquisition
+        // DATA ACQUISITION
     public:
         void AllocateBuffer() override;
-
         uint32_t ReadBuffer() override;
-
         bool GetEvent(VEvent *event) override;
-
         bool GetEventAt(uint32_t index, VEvent *event) const override;
 
         // INTERRUPTS
     public:
         void WriteIRQEvents( uint16_t n );
         uint16_t ReadIRQEvents();
-
         void WriteIRQLevel(uint16_t level) override;
-
         uint16_t ReadIRQLevel() override;
-
         void WriteIRQVector(uint16_t vector) override;
-
         uint16_t ReadIRQVector() override;
-
         void ISR(uint16_t vector) override;
 
-        // MISC
+        // RESET 
     public:
         void Reset() override;
+        void WriteSoftwareClear();
+        void WriteSingleShotReset();
 
         //MICRO
     public:
         void WriteMicro(uint16_t data);
-
         void WriteMicro(Opcode opcode);
-
         uint16_t ReadMicro();
 
         // ACQUISITION MODE
     public :
         void WriteAcqMode(V1190B::TriggerMode_t mode);
-
         V1190B::TriggerMode_t ReadAcqMode();
-
         void WriteEnableKeepToken(bool status);
-
         void WriteLoadConfig(V1190B::Config_t config);
-
         void WriteAutoLoad(V1190B::Config_t config);
-
         void WriteSaveUserConfig();
 
         // TRIGGER
@@ -312,15 +298,10 @@ namespace vmeplus {
         };
 
         void WriteWindowWidth(uint16_t data);
-
         void WriteWindowOffset(uint16_t data);
-
         void WriteExtraSearchMargin(uint16_t data);
-
         void WriteRejectMargin(uint16_t data);
-
         void WriteEnableSubTrigger(bool data);
-
         void ReadTriggerConfiguration(TriggerData &trigger);
 
         // ADJUST
@@ -336,11 +317,8 @@ namespace vmeplus {
         };
 
         void WriteGlobalOffset(AdjustOffset adjustOffset);
-
         void ReadGlobalOffset(AdjustOffset &adjustOffset);
-
         void WriteAdjustChannel(uint16_t offset, uint8_t channel);
-
         uint16_t ReadAdjustChannel(uint8_t channel);
 
         // TDC EDGE DETECTION & RESOLUTION
@@ -407,19 +385,12 @@ namespace vmeplus {
         };
 
         void WriteDetection(EdgeDetect_t detect);
-
         EdgeDetect_t ReadDetection();
-
         void WriteEdgeRes(TrLeadLSB lsb);
-
         TrLeadLSB ReadEdgeRes();
-
         void WritePairRes(PairRes pairRes);
-
         void ReadPairRes(PairRes &pairRes);
-
         void WriteDeadTime(DeadTime time);
-
         DeadTime ReadDeadTime();
 
         // TEST AND DEBUG
@@ -428,7 +399,6 @@ namespace vmeplus {
 
     public:
         void WriteEEPROM(uint16_t address, uint16_t data);
-
         uint16_t ReadEEPROM(uint16_t address);
 
         struct MicroFirmware {
@@ -441,15 +411,10 @@ namespace vmeplus {
         };
 
         void ReadMicroFirmware(MicroFirmware &firmware);
-
         void WriteSpare(uint16_t data);
-
         uint16_t ReadSpare();
-
         void EnableTestMode(uint32_t data);
-
         void DisableTestMode();
-
         void WriteTDCTestOutput(uint16_t data);
 
         enum class DLLClock {
@@ -514,7 +479,6 @@ namespace vmeplus {
         uint16_t        GetVersion() const { return fVersion; }
         uint32_t        GetBoardID() const { return fBoardID; }
         uint32_t        GetRevision() const { return fRevision; }
-
     };
 }
 

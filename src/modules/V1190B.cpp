@@ -70,7 +70,22 @@ namespace vmeplus {
 
     void V1190B::ISR(uint16_t vector) {}
 
-    void V1190B::Reset() {}
+    /****** RESET ******/
+    void V1190B::Reset()
+    {
+        WriteSoftwareClear();
+        WriteSingleShotReset();
+    }
+
+    void V1190B::WriteSoftwareClear()
+    {
+        WriteRegister16( V1190B_SOFTWARE_CLEAR, 1 );
+    }
+
+    void V1190B::WriteSingleShotReset()
+    {
+        WriteRegister16( V1190B_MODULE_RESET, 1 );
+    }
 
     void V1190B::WriteMicro(uint16_t data) {
         //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register

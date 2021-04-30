@@ -22,6 +22,8 @@ int main()
         controller.RegisterSlave( &tdc );
         controller.Initialize();
 
+        tdc.Reset();
+
         uint16_t almostFullN = tdc.ReadIRQEvents();
         std::cout << "AFL : " << almostFullN << "\n";
 
@@ -32,6 +34,11 @@ int main()
         tdc.WriteIRQEvents( 0 );
         almostFullN = tdc.ReadIRQEvents();
         assert( almostFullN == 1 );
+
+        tdc.Reset();
+
+        almostFullN = tdc.ReadIRQEvents();
+        assert( almostFullN == 64 ); // default after reset
 
         std::cout << "Test has been passed...OK!\n";
     }
