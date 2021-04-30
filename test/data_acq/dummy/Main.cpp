@@ -39,16 +39,25 @@ int main()
         uint32_t eCounter = tdc.ReadEventCounter();
         uint16_t nEvents = tdc.ReadEventsStored();
 
-        std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
-        std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
-
         tdc.Reset();
 
         almostFullN = tdc.ReadIRQEvents();
         assert( almostFullN == 64 ); // default after reset
 
         tdc.WriteAcqMode( V1190B::TriggerMode_t::MATCHING );
-        //tdc.SendSWTrigger();
+
+        tdc.SendSWTrigger();
+        std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
+        std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
+
+        tdc.WriteDummy32( 0x12345678 );
+        uint32_t dummy32 = tdc.ReadDummy32();
+
+        tdc.WriteDummy16( 0x1234 );
+        uint16_t dummy16 = tdc.ReadDummy16();
+
+        assert( dummy32 == 0x12345678 );
+        assert( dummy16 == 0x1234 );
 
         std::cout << "Test has been passed...OK!\n";
     }

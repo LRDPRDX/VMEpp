@@ -552,4 +552,23 @@ namespace vmeplus {
         return data;
     }
     //****** READING ROM - ******
+    void V1190B::WriteDummy32( uint32_t data )
+    {
+        WriteRegister32( V1190B_DUMMY_32, data );
+    }
+
+    uint32_t V1190B::ReadDummy32()
+    {
+        return ReadRegister32( V1190B_DUMMY_32 );
+    }
+
+    void V1190B::WriteDummy16( uint16_t data )
+    {
+        WriteRegister16( V1190B_DUMMY_16, data );
+    }
+
+    uint16_t V1190B::ReadDummy16()
+    {
+        return ReadRegister16( V1190B_DUMMY_16 );
+    }
 }
