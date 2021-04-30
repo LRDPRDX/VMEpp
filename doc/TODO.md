@@ -34,7 +34,7 @@ Done.
 - [ ] Event FIFO Status
 - [x] Dummy32
 - [x] Dummy16
-- [ ] Configuration ROM
+- [x] Configuration ROM (partially)
 - [ ] Compensation Sram
 - [x] ADER 32 (not used)
 - [x] ADER 24 (not used)
