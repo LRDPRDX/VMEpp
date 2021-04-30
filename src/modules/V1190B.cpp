@@ -33,6 +33,12 @@ namespace vmeplus {
 
     void V1190B::Release() {}
 
+    /****** DATA ACQUISITION ******/
+    void V1190B::SendSWTrigger()
+    {
+        WriteRegister16( V1190B_SOFTWARE_TRIGGER, 1 );
+    }
+
     void V1190B::AllocateBuffer() {}
 
     uint32_t V1190B::ReadBuffer() { return 0; }
@@ -41,7 +47,7 @@ namespace vmeplus {
 
     bool V1190B::GetEventAt(uint32_t index, VEvent *event) const { return 0; }
 
-    //INTERRUPTER
+    /****** INTERRUPTER ******/
     void V1190B::WriteIRQEvents( uint16_t n )
     {
         WriteRegister16( V1190B_ALMOST_FULL_LEVEL, (n > 0) ? n : 1 );

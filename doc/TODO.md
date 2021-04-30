@@ -16,7 +16,7 @@ Done.
 - [x] Module Reset
 - [x] Software Clear
 - [ ] Software Event Reset
-- [ ] Software Trigger
+- [x] Software Trigger
 - [ ] Event Counter
 - [ ] Event Stored
 - [ ] Almost Full Level

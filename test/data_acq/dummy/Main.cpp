@@ -40,6 +40,9 @@ int main()
         almostFullN = tdc.ReadIRQEvents();
         assert( almostFullN == 64 ); // default after reset
 
+        tdc.WriteAcqMode( V1190B::TriggerMode_t::MATCHING );
+        //tdc.SendSWTrigger();
+
         std::cout << "Test has been passed...OK!\n";
     }
     catch( const VException &e )
