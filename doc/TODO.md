@@ -10,11 +10,11 @@ Done.
 - [ ] Status Register
 - [x] Interrupt Level
 - [x] Interrupt Vector
-- [ ] Geo Address Register
-- [ ] MCST Base Address
-- [ ] MCST Control
-- [ ] Module Reset
-- [ ] Software Clear
+- [x] Geo Address Register (not used)
+- [x] MCST Base Address (not used)
+- [x] MCST Control (not used)
+- [x] Module Reset
+- [x] Software Clear
 - [ ] Software Event Reset
 - [ ] Software Trigger
 - [ ] Event Counter
