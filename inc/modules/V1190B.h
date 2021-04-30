@@ -474,6 +474,24 @@ namespace vmeplus {
        uint16_t ReadSerialNumber();
        uint16_t ReadFirmRevNumber();//Actually not ROM
 
+        // MISC
+   public :
+        void WriteDummy32( uint32_t data );
+        uint32_t ReadDummy32();
+        void WriteDummy16( uint16_t data );
+        uint16_t ReadDummy16();
+
+        enum class ProgOUT
+        {
+            DATA_READY,
+            FULL,
+            ALM_FULL,
+            ERROR
+        };
+
+        void WritePOut( V1190B::ProgOUT pout );
+        ProgOUT ReadPOut();
+
         //State methods 
    public :
         //ROM
@@ -482,12 +500,6 @@ namespace vmeplus {
         uint16_t        GetVersion() const { return fVersion; }
         uint32_t        GetBoardID() const { return fBoardID; }
         uint32_t        GetRevision() const { return fRevision; }
-
-   public :
-        void WriteDummy32( uint32_t data );
-        uint32_t ReadDummy32();
-        void WriteDummy16( uint16_t data );
-        uint16_t ReadDummy16();
     };
 }
 

@@ -59,6 +59,24 @@ int main()
         assert( dummy32 == 0x12345678 );
         assert( dummy16 == 0x1234 );
 
+        V1190B::ProgOUT pout = V1190B::ProgOUT::DATA_READY;
+
+        tdc.WritePOut( V1190B::ProgOUT::DATA_READY );
+        pout = tdc.ReadPOut();
+        assert( pout == V1190B::ProgOUT::DATA_READY );
+
+        tdc.WritePOut( V1190B::ProgOUT::ALM_FULL );
+        pout = tdc.ReadPOut();
+        assert( pout == V1190B::ProgOUT::ALM_FULL );
+
+        tdc.WritePOut( V1190B::ProgOUT::FULL );
+        pout = tdc.ReadPOut();
+        assert( pout == V1190B::ProgOUT::FULL );
+
+        tdc.WritePOut( V1190B::ProgOUT::ERROR );
+        pout = tdc.ReadPOut();
+        assert( pout == V1190B::ProgOUT::ERROR );
+
         std::cout << "Test has been passed...OK!\n";
     }
     catch( const VException &e )

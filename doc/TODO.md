@@ -23,7 +23,7 @@ Done.
 - [ ] BLT event number
 - [x] Firmware revision
 - [ ] Testreg
-- [ ] Output prog control
+- [x] Output prog control
 - [x] Micro
 - [x] Micro Handshake
 - [ ] Select Flash

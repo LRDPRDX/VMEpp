@@ -571,4 +571,15 @@ namespace vmeplus {
     {
         return ReadRegister16( V1190B_DUMMY_16 );
     }
+
+    void V1190B::WritePOut( V1190B::ProgOUT pout )
+    {
+        WriteRegister16( V1190B_OUT_PROG_CONTROL, static_cast<uint16_t>( pout ) & 0x0003 );
+    }
+
+    V1190B::ProgOUT V1190B::ReadPOut()
+    {
+        uint16_t data = ReadRegister16( V1190B_OUT_PROG_CONTROL );
+        return static_cast<ProgOUT>( data & 0x0003 );
+    }
 }
