@@ -22,7 +22,7 @@ Done.
 - [x] Almost Full Level
 - [x] BLT event number
 - [x] Firmware revision
-- [ ] Testreg
+- [x] Testreg
 - [x] Output prog control
 - [x] Micro
 - [x] Micro Handshake

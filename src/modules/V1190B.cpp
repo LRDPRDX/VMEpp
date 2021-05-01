@@ -34,6 +34,16 @@ namespace vmeplus {
     void V1190B::Release() {}
 
     /****** DATA ACQUISITION ******/
+    void V1190B::WriteTestreg( uint32_t data )
+    {
+        WriteRegister32( V1190B_TESTREG, data );
+    }
+
+    uint32_t V1190B::ReadTestreg()
+    {
+        return ReadRegister32( V1190B_TESTREG );
+    }
+
     void V1190B::WriteEventCountReset()
     {
         WriteRegister16( V1190B_SOFTWARE_EVENT_RESET, 1 );

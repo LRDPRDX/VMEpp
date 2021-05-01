@@ -53,11 +53,16 @@ int main()
 
         tdc.WriteAcqMode( V1190B::TriggerMode_t::MATCHING );
 
-        tdc.SendSWTrigger();
+        tdc.WriteEventCountReset();
         std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
         std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
 
-        tdc.WriteEventCountReset();
+        uint32_t testReg;
+        tdc.WriteTestreg( 0x12345678 );
+        testReg = tdc.ReadTestreg();
+        assert( testReg == 0x12345678 );
+
+        tdc.SendSWTrigger();
         std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
         std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
 

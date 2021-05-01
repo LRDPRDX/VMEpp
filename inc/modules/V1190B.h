@@ -240,6 +240,8 @@ namespace vmeplus {
 
         // DATA ACQUISITION
     public:
+        void WriteTestreg( uint32_t data );
+        uint32_t ReadTestreg();
         void WriteEventCountReset();
         void WriteEventsBLT( uint8_t n );
         uint8_t ReadEventsBLT();
