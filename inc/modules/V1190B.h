@@ -240,6 +240,14 @@ namespace vmeplus {
 
         // DATA ACQUISITION
     public:
+        struct EventFIFO
+        {
+            uint16_t eventCount;
+            uint16_t wordCount;
+        };
+        EventFIFO ReadEventFIFO();
+        uint16_t ReadEventFIFOStored();
+
         void WriteTestreg( uint32_t data );
         uint32_t ReadTestreg();
         void WriteEventCountReset();

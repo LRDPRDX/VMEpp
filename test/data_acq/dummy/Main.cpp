@@ -66,6 +66,13 @@ int main()
         std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
         std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
 
+        V1190B::EventFIFO ef = tdc.ReadEventFIFO();
+        std::cout << "ef.eventCount = " << ef.eventCount << "\n";
+        std::cout << "ef.wordCount  = " << ef.wordCount << "\n";
+
+        uint16_t efStored = tdc.ReadEventFIFOStored();
+        std::cout << "Event FIFO stored : " << efStored << "\n";
+
         tdc.WriteDummy32( 0x12345678 );
         uint32_t dummy32 = tdc.ReadDummy32();
 

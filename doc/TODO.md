@@ -29,8 +29,8 @@ Done.
 - [ ] Select Flash
 - [ ] Flash memory
 - [ ] Sram Page
-- [ ] Event FIFO
-- [ ] Event FIFO Stored
+- [x] Event FIFO
+- [x] Event FIFO Stored
 - [ ] Event FIFO Status
 - [x] Dummy32
 - [x] Dummy16

@@ -34,6 +34,20 @@ namespace vmeplus {
     void V1190B::Release() {}
 
     /****** DATA ACQUISITION ******/
+    V1190B::EventFIFO V1190B::ReadEventFIFO()
+    {
+        uint32_t data = ReadRegister32( V1190B_EVENT_FIFO );
+        EventFIFO ef;
+        ef.eventCount = (data >> 16U) & 0x00FF;
+        ef.wordCount = (data & 0x00FF);
+        return ef;
+    }
+
+    uint16_t V1190B::ReadEventFIFOStored()
+    {
+        return ReadRegister16( V1190B_EVENT_FIFO_STORED );
+    }
+
     void V1190B::WriteTestreg( uint32_t data )
     {
         WriteRegister32( V1190B_TESTREG, data );
