@@ -57,6 +57,10 @@ int main()
         std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
         std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
 
+        tdc.WriteEventCountReset();
+        std::cout << std::setw( 20 ) << "EVENT COUNTER : " << eCounter << "\n";
+        std::cout << std::setw( 20 ) << "EVENTS STORED : " << nEvents << "\n";
+
         tdc.WriteDummy32( 0x12345678 );
         uint32_t dummy32 = tdc.ReadDummy32();
 

@@ -15,7 +15,7 @@ Done.
 - [x] MCST Control (not used)
 - [x] Module Reset
 - [x] Software Clear
-- [ ] Software Event Reset
+- [x] Software Event Reset
 - [x] Software Trigger
 - [x] Event Counter
 - [x] Event Stored

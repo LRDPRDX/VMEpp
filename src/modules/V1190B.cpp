@@ -34,6 +34,11 @@ namespace vmeplus {
     void V1190B::Release() {}
 
     /****** DATA ACQUISITION ******/
+    void V1190B::WriteEventCountReset()
+    {
+        WriteRegister16( V1190B_SOFTWARE_EVENT_RESET, 1 );
+    }
+
     void V1190B::WriteEventsBLT( uint8_t n )
     {
         WriteRegister16( V1190B_BLT_EVENT_NUMBER, n, 0x00FF );
