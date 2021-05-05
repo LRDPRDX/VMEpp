@@ -560,23 +560,23 @@ namespace vmeplus {
 
     void V1190B::CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint16_t> &vector) {
         vector.clear();
-        if (ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK)) {
-            switch (lsb) {
-                case TrLeadLSB::ps100:
-                    WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-                    for (uint16_t i = 0; i < 256; i++)
-                        vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i));
-                    break;
-                case TrLeadLSB::ps200:
-                    WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-                    for (uint16_t i = 0; i < 128; i++)
-                        vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i));
-                    break;
-                default:
-                    PrintMessage(Message_t::WARNING, "INL conpensation not needed for the given values");
-                    break;
-            }
-        } else
-            PrintMessage(Message_t::ERROR, "Read compensation SRAM bit disable");
+        uint32_t bytes = 0;
+        bool status = ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
+        EnableReadoutSRAM(true);
+        switch (lsb) {
+            case TrLeadLSB::ps100:
+                bytes = 256;
+                break;
+            case TrLeadLSB::ps200:
+                bytes = 128;
+                break;
+            default:
+                PrintMessage(Message_t::WARNING,"There is no NLI for the provided resolution. Choose either 100ps or 200ps resolution.");
+                break;
+        }
+        WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
+        for (uint32_t i = 0; i < bytes; i++)
+            vector.push_back(ReadRegister32(V1190B_COMPENSATION_SRAM + i));
+        EnableReadoutSRAM(status);
     }
 }
