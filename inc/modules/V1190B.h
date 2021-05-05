@@ -5,7 +5,7 @@
 #define V1190B_OUTPUT_BUFFER                0X0000UL
 #define V1190B_OUTPUT_BUFFER_MAX            0x0FFCUL
 #define V1190B_CONTROL_REGISTER             0x1000UL
-#define V1190B_READ_COMPENSATION_SRAM_ENABLE 0x0080UL
+#define V1190B_EN_NLI_READ_MSK              0x0080UL
 #define V1190B_STATUS_REGISTER              0X1002UL
 #define V1190B_INTERRUPT_LEVEL              0x100AUL
 #define V1190B_INTERRUPT_LEVEL_MSK          0x0007UL
@@ -31,6 +31,7 @@
 #define V1190B_READ_OK_MSK                  (1<<1)              //the VME (master) tests the READ_OK bit in the Micro Handshake Register  if the RO bit is set to 1, the VME can read a datum
 #define V1190B_SEL_FLASH                    0x1032UL
 #define V1190B_FLASH                        0x1034UL
+#define V1190B_COMPENSATION_SRAM            0x8000UL
 #define V1190B_COMPENSATION_SRAM_PAGE       0x1036UL
 #define V1190B_EVENT_FIFO                   0x1038UL
 #define V1190B_EVENT_FIFO_STORED            0x103CUL
@@ -70,7 +71,6 @@
 // MEMORY MAP (END)
 
 #define V1190B_LUB                          0x8FFFUL            //the Last Used Byte
-#define V1190B_COMPENSATION_SRAM            0x8000UL
 
 #include <algorithm>
 #include <vector>
@@ -239,10 +239,6 @@ namespace vmeplus {
         void Initialize() override;
 
         void Release() override;
-
-        void SetBit16(uint32_t address, uint16_t bit) override;
-
-        void ClearBit16(uint32_t address, uint16_t bit) override;
 
         // DATA ACQUISITION
     public:
@@ -584,6 +580,7 @@ namespace vmeplus {
         //NLI
     public:
         void EnableReadoutSRAM(bool status);
+
         void CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint16_t> &vector);
     };
 

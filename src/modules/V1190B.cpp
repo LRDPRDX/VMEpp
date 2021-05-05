@@ -551,35 +551,30 @@ namespace vmeplus {
     }
 
     //NLI
-
-    void V1190B::SetBit16(uint32_t address, uint16_t bit) {
-        WriteRegister16(address, ReadRegister32(address) | (1 << bit));
-    }
-
-    void V1190B::ClearBit16(uint32_t address, uint16_t bit) {
-        WriteRegister16(address, ReadRegister32(address) & ~(1 << bit));
-    }
-
     void V1190B::EnableReadoutSRAM(bool status) {
         if (status)
-            SetBit16(V1190B_CONTROL_REGISTER, V1190B_READ_COMPENSATION_SRAM_ENABLE);
+            SetBit16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
         else
-            ClearBit16(V1190B_CONTROL_REGISTER, V1190B_READ_COMPENSATION_SRAM_ENABLE);
+            ClearBit16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
     }
 
     void V1190B::CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint16_t> &vector) {
-        if (ReadRegister32(V1190B_CONTROL_REGISTER, V1190B_READ_COMPENSATION_SRAM_ENABLE) == V1190B_READ_COMPENSATION_SRAM_ENABLE) {
+        vector.clear();
+        if (ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK) == V1190B_EN_NLI_READ_MSK) {
             switch (lsb) {
                 case TrLeadLSB::ps100:
                     WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-                    for (int i = 0; i < 256; i++)
-                        vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + static_cast<uint32_t>(i)));
+                    for (uint16_t i = 0; i < 256; i++)
+                        vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i));
+                    break;
                 case TrLeadLSB::ps200:
                     WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-                    for (int i = 0; i < 128; i++)
-                        vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + static_cast<uint32_t>(i)));
+                    for (uint16_t i = 0; i < 128; i++)
+                        vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i));
+                    break;
                 default:
                     PrintMessage(Message_t::WARNING, "INL conpensation not needed for the given values");
+                    break;
             }
         } else
             PrintMessage(Message_t::ERROR, "Read compensation SRAM bit disable");
