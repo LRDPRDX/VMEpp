@@ -560,7 +560,7 @@ namespace vmeplus {
 
     void V1190B::CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint16_t> &vector) {
         vector.clear();
-        if (ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK) == V1190B_EN_NLI_READ_MSK) {
+        if (ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK)) {
             switch (lsb) {
                 case TrLeadLSB::ps100:
                     WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
