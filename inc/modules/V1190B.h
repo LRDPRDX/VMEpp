@@ -31,7 +31,6 @@
 #define V1190B_READ_OK_MSK                  (1<<1)              //the VME (master) tests the READ_OK bit in the Micro Handshake Register  if the RO bit is set to 1, the VME can read a datum
 #define V1190B_SEL_FLASH                    0x1032UL
 #define V1190B_FLASH                        0x1034UL
-#define V1190B_COMPENSATION_SRAM            0x8000UL
 #define V1190B_COMPENSATION_SRAM_PAGE       0x1036UL
 #define V1190B_EVENT_FIFO                   0x1038UL
 #define V1190B_EVENT_FIFO_STORED            0x103CUL
@@ -70,6 +69,7 @@
 #define     V1190B_SERIAL_LSB               0x4084UL//A32/D16 R
 // MEMORY MAP (END)
 
+#define V1190B_COMPENSATION_SRAM            0x8000UL
 #define V1190B_LUB                          0x8FFFUL            //the Last Used Byte
 
 #include <algorithm>
