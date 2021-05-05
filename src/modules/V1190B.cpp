@@ -568,6 +568,7 @@ namespace vmeplus {
                 bytes = 256;
                 break;
             case TrLeadLSB::ps200:
+                channel += 128;
                 bytes = 128;
                 break;
             default:
