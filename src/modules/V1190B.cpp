@@ -558,7 +558,7 @@ namespace vmeplus {
             ClearBit16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
     }
 
-    void V1190B::CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint16_t> &vector) {
+    void V1190B::CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint32_t> &vector) {
         vector.clear();
         uint32_t bytes = 0;
         bool status = ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
