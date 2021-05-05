@@ -581,7 +581,7 @@ namespace vmeplus {
     public:
         void EnableReadoutSRAM(bool status);
 
-        void CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint32_t> &vector);
+        void CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint16_t> &vector);
     };
 
 }
