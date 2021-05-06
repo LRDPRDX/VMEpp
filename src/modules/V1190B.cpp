@@ -572,12 +572,15 @@ namespace vmeplus {
                 bytes = 128;
                 break;
             default:
-                PrintMessage(Message_t::WARNING,"There is no NLI for the provided resolution. Choose either 100ps or 200ps resolution.");
+                PrintMessage(Message_t::WARNING,
+                             "There is no NLI for the provided resolution. Choose either 100ps or 200ps resolution.");
                 break;
         }
         WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-        for (uint32_t i = 0; i < bytes; i++)
+        for (uint32_t i = 0; i < bytes; i += 2) {
+            vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i));
             vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i) >> 8);
+        }
         EnableReadoutSRAM(status);
     }
 }
