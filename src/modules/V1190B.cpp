@@ -560,16 +560,16 @@ namespace vmeplus {
 
     void V1190B::CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint8_t> &vector) {
         vector.clear();
-        uint32_t iterations = 0;
+        uint32_t bytes = 0;
         bool status = ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
         EnableReadoutSRAM(true);
         switch (lsb) {
             case TrLeadLSB::ps100:
-                iterations = 256;
+                bytes = 256;
                 break;
             case TrLeadLSB::ps200:
                 channel += 128;
-                iterations = 128;
+                bytes = 128;
                 break;
             default:
                 PrintMessage(Message_t::WARNING,
@@ -577,9 +577,10 @@ namespace vmeplus {
                 break;
         }
         WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-        for (uint32_t i = 0; i < iterations; i += 2) {
-            vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i));
-            vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i) >> 8);
+        for (uint32_t i = 0; i < bytes; i += 2) {
+            uint16_t data = ReadRegister16(V1190B_COMPENSATION_SRAM + i);
+            vector.push_back(data & 0x00FF);
+            vector.push_back((data >> 8) & 0x00FF);
         }
         EnableReadoutSRAM(status);
     }
