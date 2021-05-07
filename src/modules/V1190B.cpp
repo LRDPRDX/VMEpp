@@ -558,8 +558,8 @@ namespace vmeplus {
             ClearBit16(V1190B_CONTROL_REGISTER, V1190B_EN_LUT_READ_BIT);
     }
 
-    void V1190B::ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<uint8_t> &vector) {
-        vector.clear();
+    void V1190B::ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<int8_t> &data) {
+        data.clear();
         uint32_t bytes = 0;
         bool status = ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_LUT_READ_BIT);
         EnableReadoutSRAM(true);
@@ -576,8 +576,8 @@ namespace vmeplus {
                 break;
         }
         WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-        for (uint32_t i = 0; i < bytes; i += 2)
-            vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i) & 0x00FF);
+        for (uint32_t i = 0; i < bytes; ++i)
+            data.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i) & 0x00FF);
         EnableReadoutSRAM(status);
     }
 }
