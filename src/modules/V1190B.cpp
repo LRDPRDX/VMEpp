@@ -550,18 +550,18 @@ namespace vmeplus {
         return static_cast<ProgOUT>( data );
     }
 
-    //NLI
+    //LUT
     void V1190B::EnableReadoutSRAM(bool status) {
         if (status)
-            SetBit16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
+            SetBit16(V1190B_CONTROL_REGISTER, V1190B_EN_LUT_READ_BIT);
         else
-            ClearBit16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
+            ClearBit16(V1190B_CONTROL_REGISTER, V1190B_EN_LUT_READ_BIT);
     }
 
-    void V1190B::CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint8_t> &vector) {
+    void V1190B::ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<uint8_t> &vector) {
         vector.clear();
         uint32_t bytes = 0;
-        bool status = ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_NLI_READ_MSK);
+        bool status = ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_LUT_READ_BIT);
         EnableReadoutSRAM(true);
         switch (lsb) {
             case TrLeadLSB::ps100:
@@ -572,16 +572,12 @@ namespace vmeplus {
                 bytes = 128;
                 break;
             default:
-                PrintMessage(Message_t::WARNING,
-                             "There is no NLI for the provided resolution. Choose either 100ps or 200ps resolution.");
+                PrintMessage(Message_t::WARNING, "There is no LUT for the provided resolution. Choose either 100ps or 200ps resolution.");
                 break;
         }
         WriteRegister16(V1190B_COMPENSATION_SRAM_PAGE, channel);
-        for (uint32_t i = 0; i < bytes; i += 2) {
-            uint16_t data = ReadRegister16(V1190B_COMPENSATION_SRAM + i);
-            vector.push_back(data & 0x00FF);
-            vector.push_back((data >> 8) & 0x00FF);
-        }
+        for (uint32_t i = 0; i < bytes; i += 2)
+            vector.push_back(ReadRegister16(V1190B_COMPENSATION_SRAM + i) & 0x00FF);
         EnableReadoutSRAM(status);
     }
 }

@@ -5,7 +5,7 @@
 #define V1190B_OUTPUT_BUFFER                0X0000UL
 #define V1190B_OUTPUT_BUFFER_MAX            0x0FFCUL
 #define V1190B_CONTROL_REGISTER             0x1000UL
-#define V1190B_EN_NLI_READ_MSK              0x0080UL
+#define V1190B_EN_LUT_READ_BIT              7U
 #define V1190B_STATUS_REGISTER              0X1002UL
 #define V1190B_INTERRUPT_LEVEL              0x100AUL
 #define V1190B_INTERRUPT_LEVEL_MSK          0x0007UL
@@ -577,11 +577,11 @@ namespace vmeplus {
         uint32_t GetRevision() const { return fRevision; }
 
 
-        //NLI
+        //LUT
     public:
         void EnableReadoutSRAM(bool status);
 
-        void CompensationSRAM(TrLeadLSB lsb, uint8_t channel, std::vector<uint8_t> &vector);
+        void ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<uint8_t> &vector);
     };
 
 }
