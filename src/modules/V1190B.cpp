@@ -559,9 +559,7 @@ namespace vmeplus {
     }
 
     void V1190B::ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector <int8_t> &data) {
-        if (channel % fChNumber > 64)
-            PrintMessage(Message_t::ERROR, "Invalid channel number to read compensation. Choose channel at range from 0 to 64.");
-        else {
+        if (channel % fChNumber) {
             data.clear();
             uint32_t bytes = 0;
             bool status = ReadRegister16(V1190B_CONTROL_REGISTER, V1190B_EN_LUT_READ_BIT);
