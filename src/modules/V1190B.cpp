@@ -559,7 +559,7 @@ namespace vmeplus {
     }
 
     void V1190B::ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector <int8_t> &data) {
-        if ((channel % fChNumber < 0) and (channel % fChNumber > 64))
+        if ((channel % fChNumber > 64))
             PrintMessage(Message_t::ERROR, "Invalid channel number to read compensation. Choose channel at range from 0 to 64.");
         else {
             data.clear();
