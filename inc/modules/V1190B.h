@@ -285,7 +285,7 @@ namespace vmeplus {
         void WriteSingleShotReset();
 
         //MICRO
-    public:
+    protected:
         void WriteMicro(uint16_t data);
 
         void WriteMicro(Opcode opcode);
