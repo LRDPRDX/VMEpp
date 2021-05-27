@@ -21,12 +21,8 @@ int main()
         controller.RegisterSlave( &tdc );
         controller.Initialize();
 
-        tdc.PrintControl();
-
         std::vector<int8_t> inl;
-        tdc.CompensationSRAM( V1190B::TrLeadLSB::ps100, 10, inl );
-
-        tdc.PrintControl();
+        tdc.ReadCompensation( V1190B::TrLeadLSB::ps100, 10, inl );
 
         std::ofstream file;
         file.open( "data.dat" );
