@@ -5,6 +5,7 @@
 #define V1190B_OUTPUT_BUFFER                0X0000UL
 #define V1190B_OUTPUT_BUFFER_MAX            0x0FFCUL
 #define V1190B_CONTROL_REGISTER             0x1000UL
+#define V1190B_EN_LUT_READ_BIT              7U
 #define V1190B_STATUS_REGISTER              0X1002UL
 #define V1190B_INTERRUPT_LEVEL              0x100AUL
 #define V1190B_INTERRUPT_LEVEL_MSK          0x0007UL
@@ -68,9 +69,11 @@
 #define     V1190B_SERIAL_LSB               0x4084UL//A32/D16 R
 // MEMORY MAP (END)
 
-#define V1190B_LUB                          0x8FFFUL            //the Last Used Byte 
+#define V1190B_COMPENSATION_SRAM            0x8000UL
+#define V1190B_LUB                          0x8FFFUL            //the Last Used Byte
 
 #include <algorithm>
+#include <vector>
 
 #include "VException.h"
 #include "VSlaveAcquisitor.h"
@@ -199,43 +202,42 @@ namespace vmeplus {
             DEFAULT, USER
         };
 
-        enum class MaxHitsPerEvent : uint16_t
-        {
+        enum class MaxHitsPerEvent : uint16_t {
             n0, n1, n2, n4, n8, n16, n32, n64, n128,
             NO_LIMIT = 0b1001,
-            INVALID  =  0b1010, // Actually, any number >= INVALID is meaningless
+            INVALID = 0b1010, // Actually, any number >= INVALID is meaningless
         };
 
-        enum class FIFOSize : uint16_t
-        {
+        enum class FIFOSize : uint16_t {
             w2, w4, w8, w16, w32, w64, w128, w256
         };
 
-        enum IError_t : uint16_t
-        {
+        enum IError_t : uint16_t {
             // NB : it is not an enum class because we want to be able
             // to perform bitwise operations on these enumerations
             // without complex overloading of bitwise operators and static_cast
-            VERNIER         = 0x0001,
-            CRS_CNTR_PRTY   = 0x0002,
-            SYNC            = 0x0004,
-            L1_BUF_PRTY     = 0x0008,
-            TRG_FIF0_PRTY   = 0x0010,
-            TRG_MTCH        = 0x0020,
-            ROUT_FIFO_PRTY  = 0x0040,
-            ROUT_STATE      = 0x0080,
-            SET_UP_PRTY     = 0x0100,
-            CTRL_PRTY       = 0x0200,
-            JTAG_PRTY       = 0x0400,
-            ALL             = 0x07FF,
+            VERNIER = 0x0001,
+            CRS_CNTR_PRTY = 0x0002,
+            SYNC = 0x0004,
+            L1_BUF_PRTY = 0x0008,
+            TRG_FIF0_PRTY = 0x0010,
+            TRG_MTCH = 0x0020,
+            ROUT_FIFO_PRTY = 0x0040,
+            ROUT_STATE = 0x0080,
+            SET_UP_PRTY = 0x0100,
+            CTRL_PRTY = 0x0200,
+            JTAG_PRTY = 0x0400,
+            ALL = 0x07FF,
         };
 
     public:
         V1190B(uint32_t address, uint32_t range = V1190B_LUB);
+
         virtual ~V1190B();
 
     protected:
         void Initialize() override;
+
         void Release() override;
 
         // DATA ACQUISITION
@@ -253,43 +255,65 @@ namespace vmeplus {
         void WriteEventCountReset();
         void WriteEventsBLT( uint8_t n );
         uint8_t ReadEventsBLT();
+
         uint32_t ReadEventCounter();
+
         uint16_t ReadEventsStored();
+
         void SendSWTrigger();
+
         void AllocateBuffer() override;
+
         uint32_t ReadBuffer() override;
+
         bool GetEvent(VEvent *event) override;
+
         bool GetEventAt(uint32_t index, VEvent *event) const override;
 
         // INTERRUPTS
     public:
-        void WriteIRQEvents( uint16_t n );
+        void WriteIRQEvents(uint16_t n);
+
         uint16_t ReadIRQEvents();
+
         void WriteIRQLevel(uint16_t level) override;
+
         uint16_t ReadIRQLevel() override;
+
         void WriteIRQVector(uint16_t vector) override;
+
         uint16_t ReadIRQVector() override;
+
         void ISR(uint16_t vector) override;
 
         // RESET 
     public:
         void Reset() override;
+
         void WriteSoftwareClear();
+
         void WriteSingleShotReset();
 
         //MICRO
-    public:
+    protected:
         void WriteMicro(uint16_t data);
+
         void WriteMicro(Opcode opcode);
+
         uint16_t ReadMicro();
 
         // ACQUISITION MODE
     public :
         void WriteAcqMode(V1190B::TriggerMode_t mode);
+
         V1190B::TriggerMode_t ReadAcqMode();
+
         void WriteEnableKeepToken(bool status);
+
         void WriteLoadConfig(V1190B::Config_t config);
+
         void WriteAutoLoad(V1190B::Config_t config);
+
         void WriteSaveUserConfig();
 
         // TRIGGER
@@ -314,10 +338,15 @@ namespace vmeplus {
         };
 
         void WriteWindowWidth(uint16_t data);
+
         void WriteWindowOffset(uint16_t data);
+
         void WriteExtraSearchMargin(uint16_t data);
+
         void WriteRejectMargin(uint16_t data);
+
         void WriteEnableSubTrigger(bool data);
+
         void ReadTriggerConfiguration(TriggerData &trigger);
 
         // ADJUST
@@ -333,8 +362,11 @@ namespace vmeplus {
         };
 
         void WriteGlobalOffset(AdjustOffset adjustOffset);
+
         void ReadGlobalOffset(AdjustOffset &adjustOffset);
+
         void WriteAdjustChannel(uint16_t offset, uint8_t channel);
+
         uint16_t ReadAdjustChannel(uint8_t channel);
 
         // TDC EDGE DETECTION & RESOLUTION
@@ -401,12 +433,19 @@ namespace vmeplus {
         };
 
         void WriteDetection(EdgeDetect_t detect);
+
         EdgeDetect_t ReadDetection();
+
         void WriteEdgeRes(TrLeadLSB lsb);
+
         TrLeadLSB ReadEdgeRes();
+
         void WritePairRes(PairRes pairRes);
+
         void ReadPairRes(PairRes &pairRes);
+
         void WriteDeadTime(DeadTime time);
+
         DeadTime ReadDeadTime();
 
         // TEST AND DEBUG
@@ -415,6 +454,7 @@ namespace vmeplus {
 
     public:
         void WriteEEPROM(uint16_t address, uint16_t data);
+
         uint16_t ReadEEPROM(uint16_t address);
 
         struct MicroFirmware {
@@ -427,10 +467,15 @@ namespace vmeplus {
         };
 
         void ReadMicroFirmware(MicroFirmware &firmware);
+
         void WriteSpare(uint16_t data);
+
         uint16_t ReadSpare();
+
         void EnableTestMode(uint32_t data);
+
         void DisableTestMode();
+
         void WriteTDCTestOutput(uint16_t data);
 
         enum class DLLClock {
@@ -444,76 +489,111 @@ namespace vmeplus {
 
         //CHANNEL
     public :
-        enum class TDC { TDC0, TDC1 };
+        enum class TDC {
+            TDC0, TDC1
+        };
 
-        void WriteEnableChannel( uint8_t n, bool status = true );
-        void WriteEnableAll( bool status = true );
-        void WriteEnablePattern( V1190B::TDC tdc, uint32_t pattern );
-        uint32_t ReadEnablePattern( V1190B::TDC tdc );
+        void WriteEnableChannel(uint8_t n, bool status = true);
+
+        void WriteEnableAll(bool status = true);
+
+        void WriteEnablePattern(V1190B::TDC tdc, uint32_t pattern);
+
+        uint32_t ReadEnablePattern(V1190B::TDC tdc);
 
         // TDC Readout
     public :
-        void WriteEnableHeaderTrailer( bool status );
+        void WriteEnableHeaderTrailer(bool status);
+
         bool ReadEnableHeaderTrailer();
-        void WriteMaxHitsPerEvent( V1190B::MaxHitsPerEvent n );
+
+        void WriteMaxHitsPerEvent(V1190B::MaxHitsPerEvent n);
+
         V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
-        void WriteEnableErrMark( bool status );
-        void WriteEnableBypass( bool status );
-        void WriteErrorPattern( uint16_t );
+
+        void WriteEnableErrMark(bool status);
+
+        void WriteEnableBypass(bool status);
+
+        void WriteErrorPattern(uint16_t);
+
         uint16_t ReadErrorPattern();
-        void WriteEffSizeFIFO( V1190B::FIFOSize size );
+
+        void WriteEffSizeFIFO(V1190B::FIFOSize size);
+
         uint16_t ReadEffSizeFIFO();
 
         // MISC
     public :
         void WriteResetLoops();
-        uint32_t ReadTDC_ID( V1190B::TDC tdc );
+
+        uint32_t ReadTDC_ID(V1190B::TDC tdc);
+
         uint16_t ReadMicroFWRev();
 
         // ROM
-   protected :
-       //ROM Data
-       std::string     fFirmwareRevision;
-       uint32_t        fOUI;
-       uint16_t        fVersion;
-       uint32_t        fBoardID;
-       uint32_t        fRevision;
+    protected :
+        //ROM Data
+        std::string fFirmwareRevision;
+        uint32_t fOUI;
+        uint16_t fVersion;
+        uint32_t fBoardID;
+        uint32_t fRevision;
 
-   protected :
-       uint16_t ReadVersion();
-       uint32_t ReadBoardID();
-       uint32_t ReadOUI();
-       uint32_t ReadRevision();
-       uint16_t ReadSerialNumber();
-       uint16_t ReadFirmRevNumber();//Actually not ROM
+    protected :
+        uint16_t ReadVersion();
+
+        uint32_t ReadBoardID();
+
+        uint32_t ReadOUI();
+
+        uint32_t ReadRevision();
+
+        uint16_t ReadSerialNumber();
+
+        uint16_t ReadFirmRevNumber();//Actually not ROM
 
         // MISC
-   public :
-        void WriteDummy32( uint32_t data );
+    public :
+        void WriteDummy32(uint32_t data);
+
         uint32_t ReadDummy32();
-        void WriteDummy16( uint16_t data );
+
+        void WriteDummy16(uint16_t data);
+
         uint16_t ReadDummy16();
 
-        enum class ProgOUT
-        {
+        enum class ProgOUT {
             DATA_READY,
             FULL,
             ALM_FULL,
             ERROR
         };
 
-        void WritePOut( V1190B::ProgOUT pout );
+        void WritePOut(V1190B::ProgOUT pout);
+
         ProgOUT ReadPOut();
 
         //State methods 
-   public :
+    public :
         //ROM
-        std::string     GetFirmRevision() const { return fFirmwareRevision; }//Not ROM
-        uint32_t        GetOUI() const { return fOUI; }
-        uint16_t        GetVersion() const { return fVersion; }
-        uint32_t        GetBoardID() const { return fBoardID; }
-        uint32_t        GetRevision() const { return fRevision; }
+        std::string GetFirmRevision() const { return fFirmwareRevision; }//Not ROM
+        uint32_t GetOUI() const { return fOUI; }
+
+        uint16_t GetVersion() const { return fVersion; }
+
+        uint32_t GetBoardID() const { return fBoardID; }
+
+        uint32_t GetRevision() const { return fRevision; }
+
+
+        //LUT
+    public:
+        void EnableReadoutSRAM(bool status);
+
+        void ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<int8_t> &data);
     };
+
 }
 
 #endif
