@@ -10,7 +10,9 @@
 Main
 
 # Tests
-# /test
+/test/*
+!/test/V895/
+!/test/V1190B/
 
 # Documentation
 # /doc

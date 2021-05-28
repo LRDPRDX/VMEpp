@@ -27,7 +27,7 @@ namespace vmeplus
         ReadManMType();
         ReadFixedCode();
 
-        for( uint16_t ch; ch < V895_N_CHANNELS; ch++ )
+        for( uint8_t ch = 0; ch < fChNumber; ch++ )
         {
             WriteThreshold( ch, 0xFF );
         }
@@ -47,9 +47,9 @@ namespace vmeplus
     //*********************
     //Channel configuration
     //*********************
-    void V895::WriteThreshold( uint16_t ch, uint16_t thr )
+    void V895::WriteThreshold( uint8_t ch, uint8_t thr )
     {
-        WriteRegister16( V895_THRESHOLD(ch), thr, V895_THRESHOLD_MSK );
+        WriteRegister16( V895_THRESHOLD(ch % fChNumber), thr, V895_THRESHOLD_MSK );
     }
 
     //***************************
@@ -73,7 +73,7 @@ namespace vmeplus
 
     void V895::WriteMajLevel( uint16_t level )
     {
-        uint16_t goodLevel = (level >= 1U) ? ((level <= V895_N_CHANNELS) ? level : V895_N_CHANNELS) : 1U;
+        uint16_t goodLevel = (level >= 1U) ? ((level <= fChNumber) ? level : fChNumber) : 1U;
         uint16_t majThr = lround( (goodLevel * 50. - 25.) / 4 );//See the module's manual
         WriteRegister16( V895_MAJ_THRESHOLD, majThr, V895_MAJ_THR_MSK );
     }
@@ -83,9 +83,9 @@ namespace vmeplus
         WriteRegister16( V895_PAT_INHIBIT, mask );
     }
 
-    void V895::EnableOnly( uint16_t ch )
+    void V895::EnableOnly( uint8_t ch )
     {
-        uint16_t mask = (1 << (ch % V895_N_CHANNELS));
+        uint16_t mask = (1 << (ch % fChNumber));
         WriteRegister16( V895_PAT_INHIBIT, mask );
     }
 
