@@ -19,13 +19,28 @@ namespace vmeplus {
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...");
 
         //READ ROM
-        PrintMessage(Message_t::INFO, "Reading ROM of " + fName + "...");
+        PrintMessage(Message_t::INFO, "\tReading ROM of " + fName + "...");
         ReadSerialNumber();
         ReadFirmRevNumber();
         ReadOUI();
         ReadVersion();
         ReadBoardID();
         ReadRevision();
+        PrintMessage(Message_t::INFO, "\tReading ROM of " + fName + "...OK");
+
+        PrintMessage(Message_t::INFO, "\tControl register of " + fName + "...");
+        WriteControl( Control_t::BERR_EN, false );
+        WriteControl( Control_t::TERM_SW );
+        WriteControl( Control_t::TERM );
+        WriteControl( Control_t::EMPTY_EVENT, false );
+        WriteControl( Control_t::ALIGN64 );
+        WriteControl( Control_t::COMPENSATION_EN );
+        WriteControl( Control_t::TEST_FIFO_EN, false );
+        WriteControl( Control_t::READ_COMPENSATION );
+        WriteControl( Control_t::EVENT_FIFO_EN );
+        WriteControl( Control_t::ETTT_EN );
+        WriteControl( Control_t::MB16_ADDR_EN, false );
+        PrintMessage(Message_t::INFO, "\tControl register of " + fName + "...OK");
 
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...OK");
     }
@@ -131,17 +146,33 @@ namespace vmeplus {
         WriteRegister16(V1190B_MODULE_RESET, 1);
     }
 
-    void V1190B::WriteEnableControl( V1190B::Control_t bit, bool status )
+    void V1190B::WriteControl( V1190B::Control_t bit, bool status )
     {
         if( status ) { SetBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) ); }
         else         { ClearBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) ); }
     }
 
-    bool V1190B::ReadEnableControl( V1190B::Control_t bit )
+    bool V1190B::ReadControl( V1190B::Control_t bit )
     {
         return GetBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) ); 
-    } 
+    }
 
+    uint16_t V1190B::ReadControl()
+    {
+        return ReadRegister16( V1190B_CONTROL_REGISTER );
+    }
+
+    bool V1190B::ReadStatus( V1190B::Status_t bit )
+    {
+        return GetBit16( V1190B_STATUS_REGISTER, static_cast<uint16_t>( bit ) );
+    }
+
+    uint16_t V1190B::ReadStatus()
+    {
+        return ReadRegister16( V1190B_STATUS_REGISTER );
+    }
+
+    /****** MICRO ******/
     void V1190B::WriteMicro(uint16_t data) {
         //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register
         // if the WO bit is set to 1, the VME can write a datum

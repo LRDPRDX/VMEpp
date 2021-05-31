@@ -275,9 +275,9 @@ namespace vmeplus {
             uint16_t ReadIRQVector() override;
             void ISR(uint16_t vector) override;
 
-            /*******************/
-            /****** RESET ******/
-            /*******************/
+            /****************************/
+            /****** RESET & CONTROL******/
+            /****************************/
         public:
             void Reset() override;
             void WriteSoftwareClear();
@@ -288,17 +288,45 @@ namespace vmeplus {
                 TERM,
                 TERM_SW,
                 EMPTY_EVENT,
+
                 ALIGN64,
                 COMPENSATION_EN,
                 TEST_FIFO_EN,
                 READ_COMPENSATION,
+
                 EVENT_FIFO_EN,
                 ETTT_EN,
                 MB16_ADDR_EN = 12
             };
 
-            void WriteEnableControl( V1190B::Control_t bit, bool status = true );
-            bool ReadEnableControl( V1190B::Control_t bit );
+            enum class Status_t : uint16_t {
+                DATA_READY,
+                ALM_FULL,
+                FULL,
+                TRG_MATCH,
+
+                HEADER_EN,
+                TERM_ON,
+                ERROR0,
+                ERROR1,
+
+                ERROR2,
+                ERROR3,
+                BERR_FLAG,
+                PURG,
+
+                RES0,
+                RES1,
+                PAIR,
+                TRIGGER_LOST        
+            };
+
+            void WriteControl( V1190B::Control_t bit, bool status = true );
+            uint16_t ReadControl();
+            bool ReadControl( V1190B::Control_t bit );
+
+            bool ReadStatus( V1190B::Status_t bit );
+            uint16_t ReadStatus();
 
             /*******************/
             /****** MICRO ******/
