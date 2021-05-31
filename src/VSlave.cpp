@@ -106,6 +106,11 @@ namespace vmeplus
         WriteRegister16( address, data );
     }
 
+    bool VSlave::GetBit16( uint32_t address, uint16_t bit )
+    {
+        return ReadRegister16( address ) & (1U << bit);
+    }
+
     //
     void VSlave::SetBaseAddress( uint32_t newAddress )
     {
