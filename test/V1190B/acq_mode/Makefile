@@ -1,4 +1,8 @@
+<<<<<<< HEAD:test/V1190B/acq_mode/Makefile
 TOP_DIR :=  $(shell pwd)/../..
+=======
+TOP_DIR :=  $(shell pwd)/../../..
+>>>>>>> master:test/V895/total/Makefile
 INC_DIR     := $(TOP_DIR)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
@@ -9,8 +13,8 @@ SRC     := $(wildcard *.cpp)
 TARGET  := $(patsubst %.cpp,%,$(SRC))
 
 $(TARGET) : $(SRC)
-	$(CC) -DLINUX $(CXXFLAGS) -I$(INC_DIR) $< $(LINKAGE) -o $@
+		$(CC) -DLINUX $(CXXFLAGS) -I$(INC_DIR) $< $(LINKAGE) -o $@
 
 .PHONY : clean
-clean :
-	rm -f $(TARGET)
+	clean :
+		rm -f $(TARGET)
