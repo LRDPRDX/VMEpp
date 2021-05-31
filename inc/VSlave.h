@@ -38,6 +38,7 @@ namespace vmeplus
             uint32_t            ReadRegister32( uint32_t address, uint32_t msk = 0xFFFFFFFFU ); 
 	        virtual void        SetBit16( uint32_t address, uint16_t bit );
             virtual void        ClearBit16( uint32_t address, uint16_t bit );
+            virtual bool        GetBit16( uint32_t address, uint16_t bit );
 
         public :
             VSlave( std::string name, uint32_t baseAddress, uint32_t range );
