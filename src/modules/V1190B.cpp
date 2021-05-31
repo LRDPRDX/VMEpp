@@ -131,6 +131,17 @@ namespace vmeplus {
         WriteRegister16(V1190B_MODULE_RESET, 1);
     }
 
+    void V1190B::WriteEnableControl( V1190B::Control_t bit, bool status )
+    {
+        if( status ) { SetBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) ); }
+        else         { ClearBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) ); }
+    }
+
+    bool V1190B::ReadEnableControl( V1190B::Control_t bit )
+    {
+        return GetBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) ); 
+    } 
+
     void V1190B::WriteMicro(uint16_t data) {
         //the VME (master) tests the WRITE_OK bit in the Micro Handshake Register
         // if the WO bit is set to 1, the VME can write a datum

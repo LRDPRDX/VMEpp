@@ -216,18 +216,18 @@ namespace vmeplus {
                 // NB : it is not an enum class because we want to be able
                 // to perform bitwise operations on these enumerations
                 // without complex overloading of bitwise operators and static_cast
-                VERNIER = 0x0001,
-                CRS_CNTR_PRTY = 0x0002,
-                SYNC = 0x0004,
-                L1_BUF_PRTY = 0x0008,
-                TRG_FIF0_PRTY = 0x0010,
-                TRG_MTCH = 0x0020,
-                ROUT_FIFO_PRTY = 0x0040,
-                ROUT_STATE = 0x0080,
-                SET_UP_PRTY = 0x0100,
-                CTRL_PRTY = 0x0200,
-                JTAG_PRTY = 0x0400,
-                ALL = 0x07FF,
+                VERNIER         = 0x0001,
+                CRS_CNTR_PRTY   = 0x0002,
+                SYNC            = 0x0004,
+                L1_BUF_PRTY     = 0x0008,
+                TRG_FIF0_PRTY   = 0x0010,
+                TRG_MTCH        = 0x0020,
+                ROUT_FIFO_PRTY  = 0x0040,
+                ROUT_STATE      = 0x0080,
+                SET_UP_PRTY     = 0x0100,
+                CTRL_PRTY       = 0x0200,
+                JTAG_PRTY       = 0x0400,
+                ALL             = 0x07FF, // NB : Use ONLY fully qualified IError_t::ALL
             };
 
         public:
@@ -282,6 +282,23 @@ namespace vmeplus {
             void Reset() override;
             void WriteSoftwareClear();
             void WriteSingleShotReset();
+
+            enum class Control_t : uint16_t {
+                BERR_EN,
+                TERM,
+                TERM_SW,
+                EMPTY_EVENT,
+                ALIGN64,
+                COMPENSATION_EN,
+                TEST_FIFO_EN,
+                READ_COMPENSATION,
+                EVENT_FIFO_EN,
+                ETTT_EN,
+                MB16_ADDR_EN = 12
+            };
+
+            void WriteEnableControl( V1190B::Control_t bit, bool status = true );
+            bool ReadEnableControl( V1190B::Control_t bit );
 
             /*******************/
             /****** MICRO ******/
@@ -537,13 +554,9 @@ namespace vmeplus {
             //ROM
             std::string GetFirmRevision() const { return fFirmwareRevision; }//Not ROM
             uint32_t GetOUI() const { return fOUI; }
-
             uint16_t GetVersion() const { return fVersion; }
-
             uint32_t GetBoardID() const { return fBoardID; }
-
             uint32_t GetRevision() const { return fRevision; }
-
 
             /***********************/
             /****** LUT (INL) ******/
