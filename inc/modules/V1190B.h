@@ -67,10 +67,10 @@
 #define     V1190B_REVISION_LSB             0x404CUL//A32/D16 R
 #define     V1190B_SERIAL_MSB               0x4080UL//A32/D16 R
 #define     V1190B_SERIAL_LSB               0x4084UL//A32/D16 R
-// MEMORY MAP (END)
 
 #define V1190B_COMPENSATION_SRAM            0x8000UL
 #define V1190B_LUB                          0x8FFFUL            //the Last Used Byte
+// MEMORY MAP (END)
 
 #include <algorithm>
 #include <vector>
