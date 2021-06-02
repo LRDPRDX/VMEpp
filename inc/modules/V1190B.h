@@ -249,6 +249,20 @@ namespace vmeplus {
             };
             EventFIFO ReadEventFIFO();
             uint16_t ReadEventFIFOStored();
+
+            enum class Word_t : uint32_t
+            {
+                G_HEADER    = 0x08000000,   // Global Header
+                G_TRAILER   = 0x10000000,   // Global Trailer
+                T_HEADER    = 0x08000000,   // TDC Header
+                T_MEAS      = 0x00000000,   // TDC Measurement
+                T_ERROR     = 0x20000000,   // TDC Error
+                T_TRAILER   = 0x18000000,   // TDC Trailer
+                G_TTT       = 0x88000000,   // Global Trigger Time Tag
+                FILLER      = 0xC0000000,   // FILLER
+                MASK        = 0xf8000000,
+            };
+
             void WriteTestreg( uint32_t data );
             uint32_t ReadTestreg();
             void WriteEventCountReset();
@@ -260,6 +274,7 @@ namespace vmeplus {
 
             void AllocateBuffer() override;
             uint32_t ReadBuffer() override;
+            void DropBuffer( const std::string& fileName );
             bool GetEvent(VEvent *event) override;
             bool GetEventAt(uint32_t index, VEvent *event) const override;
 

@@ -1,3 +1,6 @@
+#include <fstream>
+#include <iostream>
+
 #include "CAENVMElib.h"
 #include "modules/V1190B.h"
 
@@ -97,9 +100,45 @@ namespace vmeplus {
         WriteRegister16(V1190B_SOFTWARE_TRIGGER, 1);
     }
 
-    void V1190B::AllocateBuffer() {}
+    /****** DATA ACQUISITION ******/
+    void V1190B::AllocateBuffer() {
+        ResetIndex();
+        if( fBuffer )
+        {
+            PrintMessage( Message_t::WARNING, "Trying to reallocate buffer (not nullptr)" );
+        }
+        try
+        {
+            fBuffer.reset( new uint32_t[2048 / 4] );
+        }
+        catch( std::bad_alloc &e )
+        {
+            fBuffer.reset();
+            throw VException( VError_t::vBuffAllocFailed, "from V1190B::AllocateBuffer" );
+        }
+    }
 
-    uint32_t V1190B::ReadBuffer() { return 0; }
+    uint32_t V1190B::ReadBuffer() {
+        ResetIndex();
+
+        if( !fBuffer )
+        {
+            PrintMessage( Message_t::WARNING, "Read buffer : buffer is nullptr. Forgot to allocate?" );
+            return 0;
+        }
+        int count;
+        MBLTReadRequest( V1190B_OUTPUT_BUFFER, fBuffer.get(), 2048, &count );
+        return (fReadBytes = (count > 0) ? count : 0);
+    }
+
+    void V1190B::DropBuffer( const std::string& fileName )
+    {
+        std::ofstream file( fileName, std::ofstream::binary );
+        for( size_t i = 0; i < 2048 / 4; i++ )
+        {
+            file.write((char*)&(fBuffer[i]), sizeof(fBuffer[i]));
+        }
+    }
 
     bool V1190B::GetEvent(VEvent *event) { return 0; }
 
