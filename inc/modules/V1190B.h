@@ -316,7 +316,7 @@ namespace vmeplus {
 
             enum class Status_t : uint16_t {
                 DATA_READY,
-                ALM_FULL,
+                ALMOST_FULL,
                 FULL,
                 TRG_MATCH,
 
