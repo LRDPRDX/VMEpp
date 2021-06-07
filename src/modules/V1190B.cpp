@@ -5,6 +5,22 @@
 #include "modules/V1190B.h"
 
 namespace vmeplus {
+
+    /*************************/
+    /****** V1190BEvent ******/
+    /*************************/
+    V1190BEvent::V1190BEvent() :
+        fMeasurements( 0 )
+    {
+    }
+
+    V1190BEvent::~V1190BEvent()
+    {
+    }
+
+    /********************/
+    /****** V1190B ******/
+    /********************/
     V1190B::V1190B(uint32_t baseAddress, uint32_t range) :
             VSlave("V1190B", baseAddress, range),
             VSlaveInterrupter("V1190B", baseAddress, range),
@@ -113,7 +129,7 @@ namespace vmeplus {
         }
         catch( std::bad_alloc &e )
         {
-            fBuffer.reset();
+            fBuffer.reset(); //noexcept
             throw VException( VError_t::vBuffAllocFailed, "from V1190B::AllocateBuffer" );
         }
     }
@@ -123,7 +139,7 @@ namespace vmeplus {
 
         if( !fBuffer )
         {
-            PrintMessage( Message_t::WARNING, "Read buffer : buffer is nullptr. Forgot to allocate?" );
+            PrintMessage( Message_t::WARNING, "V1190B::ReadBuffer() : buffer is nullptr. Forgot to allocate?" );
             return 0;
         }
         int count;
@@ -140,9 +156,61 @@ namespace vmeplus {
         }
     }
 
-    bool V1190B::GetEvent(VEvent *event) { return 0; }
+    bool V1190B::GetEventAt(uint32_t index, VEvent *e) const
+    {
+        V1190BEvent* event = dynamic_cast<V1190BEvent*>( e ); 
+        if( !event )
+        {
+            PrintMessage( Message_t::ERROR, "Bad event pointer has been provided to the V1190B::GetEventAt() function. Must be V1190BEvent*." );
+            return false;
+        }
 
-    bool V1190B::GetEventAt(uint32_t index, VEvent *event) const { return 0; }
+        if( !fBuffer )
+        {
+            PrintMessage( Message_t::WARNING, "V1190B::GetEventAt : buffer is nullptr. Forgot to allocate?" );
+            return false;
+        }
+
+        uint32_t word;
+
+        // Skip fillers if present
+        for( ; index < fReadBytes / 4; ++index )
+        {
+            word = fBuffer[index];
+            if( (word & V1190B::Word_t::MASK) != V1190B::Word_t::FILLER )
+            {
+                break;
+            }
+        }
+
+        uint32_t wordTypeCurrent = word & V1190B::Word_t::MASK;
+
+        // If the first non-filler word is T_MEAS it means we are
+        // collecting data recorded in the CONTINUOUS mode
+        if( wordTypeCurrent == V1190B::Word_t::T_MEAS )
+        {
+            event->fMeasurements.push_back( word );
+            event->fStart = event->fStop = index;
+            return true;
+        }
+
+        //uint32_t wordTypeExpected = V1190B::Word_t::G_HEADER;
+
+        //for( ; index < fReadBytes / 4; ++index )
+        //{
+        //    word = fBuffer[index];
+        //    wordTypeCurrent = word & V1190B::Word_t::MASK;
+
+        //    switch( wordTypeCurrent )
+        //    {
+        //        case( V1190B::Word_t::T_MEAS ) :
+        //            event->fMeasurements.push_back( word );
+        //            break;
+        //    }
+        //}
+
+        return false;
+    }
 
     /****** INTERRUPTER ******/
     void V1190B::WriteIRQEvents(uint16_t n) {

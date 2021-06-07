@@ -82,13 +82,18 @@
 
 namespace vmeplus {
 
+    /********************/
+    /****** V1190B ******/
+    /********************/
     class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor {
 
         private :
-            static uint8_t const fChNumber = 0x40U;    //64
+            static uint8_t const fChNumber = 0x40;    // Number of channels 64
+            static uint8_t const fTDCNumber = 2;      // Number of HPTDC chips
 
         public :
-            static uint8_t GetChNumber() { return fChNumber; }
+            static uint8_t constexpr GetChNumber() { return fChNumber; }
+            static uint8_t constexpr GetTDCNumber() { return fTDCNumber; }
 
         public:
             enum class Command {
@@ -250,17 +255,17 @@ namespace vmeplus {
             EventFIFO ReadEventFIFO();
             uint16_t ReadEventFIFOStored();
 
-            enum class Word_t : uint32_t
+            enum Word_t
             {
-                G_HEADER    = 0x08000000,   // Global Header
-                G_TRAILER   = 0x10000000,   // Global Trailer
-                T_HEADER    = 0x08000000,   // TDC Header
-                T_MEAS      = 0x00000000,   // TDC Measurement
-                T_ERROR     = 0x20000000,   // TDC Error
-                T_TRAILER   = 0x18000000,   // TDC Trailer
-                G_TTT       = 0x88000000,   // Global Trigger Time Tag
-                FILLER      = 0xC0000000,   // FILLER
-                MASK        = 0xf8000000,
+                G_HEADER    = 0x08000000U,   // Global Header
+                G_TRAILER   = 0x10000000U,   // Global Trailer
+                T_HEADER    = 0x08000000U,   // TDC Header
+                T_MEAS      = 0x00000000U,   // TDC Measurement
+                T_ERROR     = 0x20000000U,   // TDC Error
+                T_TRAILER   = 0x18000000U,   // TDC Trailer
+                G_TTT       = 0x88000000U,   // Global Trigger Time Tag
+                FILLER      = 0xC0000000U,   // FILLER
+                MASK        = 0xf8000000U,
             };
 
             void WriteTestreg( uint32_t data );
@@ -275,7 +280,6 @@ namespace vmeplus {
             void AllocateBuffer() override;
             uint32_t ReadBuffer() override;
             void DropBuffer( const std::string& fileName );
-            bool GetEvent(VEvent *event) override;
             bool GetEventAt(uint32_t index, VEvent *event) const override;
 
             /************************/
@@ -607,7 +611,36 @@ namespace vmeplus {
         public:
             void EnableReadoutSRAM(bool status);
             void ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<int8_t> &data);
-        };
-}
+    };
+
+    /*************************/
+    /****** V1190BEvent ******/
+    /*************************/
+    class V1190BEvent : public VEvent
+    {
+        //public :
+        //    struct TDCEvent
+        //    {
+        //        uint32_t                header;
+        //        uint32_t                trailer;
+        //        uint32_t                errors;
+        //    };
+
+        protected :
+            //uint32_t fGlobalHeader;
+            //std::array<TDCEvent, V1190B::GetTDCNumber()> fEvents;
+            //uint32_t fETTT;
+            //uint32_t fGlobalTrailer;
+            std::vector<uint32_t>   fMeasurements;
+
+        public :
+            V1190BEvent();
+            ~V1190BEvent();
+            //V1190BEvent( const V1190BEvent& other );
+            //V1190BEvent& operator=( V1190BEvent other );
+
+        friend class V1190B;
+    };
+}// vmepp
 
 #endif

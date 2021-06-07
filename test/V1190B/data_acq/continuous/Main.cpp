@@ -24,7 +24,7 @@ int main()
         tdc.WriteAcqMode( V1190B::TriggerMode_t::CONTINUOUS );
         tdc.WriteDetection( V1190B::EdgeDetect_t::TRAILING );
 
-        tdc.WriteIRQEvents( 10 );
+        tdc.WriteIRQEvents( 20 );
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 
@@ -37,11 +37,16 @@ int main()
 
         uint16_t status;
         controller.IACK( cvIRQ1, &status, cvD16 );
-        std::cout << "STATUS : " << status << "\n";
 
-        std::cout << "Bytes read : " << tdc.ReadBuffer() << "\n";
+        assert( status == 3 );
 
-        tdc.DropBuffer( "Data.dat" );
+        tdc.ReadBuffer();
+        V1190BEvent e;
+        while( tdc.GetEvent( &e ) ) { ; }
+
+        std::cout << "Number of events read : " << tdc.GetNEventsRead() << "\n";
+
+        //tdc.DropBuffer( "Data.dat" );
 
         std::cout << "Test has been passed...OK!\n";
     }
