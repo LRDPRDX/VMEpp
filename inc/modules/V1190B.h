@@ -618,6 +618,21 @@ namespace vmeplus {
     /*************************/
     class V1190BEvent : public VEvent
     {
+        struct V1190BHit
+        {
+            uint32_t value;
+
+            uint32_t GetEdge() const    { return (value & 0x00007ffffU); }
+            uint32_t GetWidth() const   { return ((value & 0x00007f000U) >> 12U); }
+            uint32_t GetLead() const    { return (value & 0x000000fffU); }
+            uint8_t  GetChannel() const { return ((value & 0x003f80000U) >> 19U); }
+            bool     IsLeading() const  { return (value & (1U << 26U)); }
+
+            V1190BHit( uint32_t value ) :
+                value( value )
+            {
+            }
+        };
         //public :
         //    struct TDCEvent
         //    {
@@ -631,7 +646,12 @@ namespace vmeplus {
             //std::array<TDCEvent, V1190B::GetTDCNumber()> fEvents;
             //uint32_t fETTT;
             //uint32_t fGlobalTrailer;
-            std::vector<uint32_t>   fMeasurements;
+            std::vector<V1190BHit>   fHits;
+
+        public :
+            typedef typename std::vector<V1190BHit>::const_iterator const_iterator;
+            const_iterator cbegin() const noexcept  { return fHits.cbegin(); }
+            const_iterator cend() const noexcept    { return fHits.cend(); }
 
         public :
             V1190BEvent();

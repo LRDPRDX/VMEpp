@@ -9,8 +9,7 @@ namespace vmeplus {
     /*************************/
     /****** V1190BEvent ******/
     /*************************/
-    V1190BEvent::V1190BEvent() :
-        fMeasurements( 0 )
+    V1190BEvent::V1190BEvent()
     {
     }
 
@@ -171,6 +170,8 @@ namespace vmeplus {
             return false;
         }
 
+        event->fHits.clear();
+
         uint32_t word;
 
         // Skip fillers if present
@@ -189,7 +190,7 @@ namespace vmeplus {
         // collecting data recorded in the CONTINUOUS mode
         if( wordTypeCurrent == V1190B::Word_t::T_MEAS )
         {
-            event->fMeasurements.push_back( word );
+            event->fHits.push_back( V1190BEvent::V1190BHit( word ) );
             event->fStart = event->fStop = index;
             return true;
         }

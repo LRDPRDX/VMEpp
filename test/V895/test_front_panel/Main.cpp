@@ -22,16 +22,16 @@ int main()
         //Print some info
         dm.Print();
 
-        dm.WriteOutWidth( 0xFF );
+        dm.WriteOutWidth( 0xDF );
         //Set 10mV threshold on each channel
         //(for test purposes)
-        //and output width to 40ns (see V895's manual)
+        //and output width to 20ns (see V895's manual)
         for( uint16_t ch = 0; ch < 16; ch++ )
         {
             dm.WriteThreshold( ch, 10 );
         }
-        //But enable only the channels 15 and 14
-        dm.Enable( 0xc000 );
+        //But enable only the channels 15 and 13
+        dm.Enable( 0xff00 );
     }
     catch( VException &sw )
     {
