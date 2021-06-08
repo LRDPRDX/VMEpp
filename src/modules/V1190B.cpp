@@ -46,7 +46,8 @@ namespace vmeplus {
         ReadRevision();
         PrintMessage(Message_t::INFO, "\tReading ROM of " + fName + "...OK");
 
-        PrintMessage(Message_t::INFO, "\tControl register of " + fName + "...");
+        //Control register
+        PrintMessage(Message_t::INFO, "\tConfiguration of the Control register of " + fName + "...");
         WriteControl( Control_t::BERR_EN, false );
         WriteControl( Control_t::TERM_SW );
         WriteControl( Control_t::TERM );
@@ -58,7 +59,11 @@ namespace vmeplus {
         WriteControl( Control_t::EVENT_FIFO_EN );
         WriteControl( Control_t::ETTT_EN );
         WriteControl( Control_t::MB16_ADDR_EN, false );
-        PrintMessage(Message_t::INFO, "\tControl register of " + fName + "...OK");
+        PrintMessage(Message_t::INFO, "\tConfiguration of the Control register of " + fName + "...OK");
+
+        WriteIRQLevel( 0 ); // No Interrupt
+
+        WriteSoftwareClear(); // Clear Buffers
 
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...OK");
     }

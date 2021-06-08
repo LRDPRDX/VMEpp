@@ -658,6 +658,7 @@ namespace vmeplus {
             ~V1190BEvent();
             //V1190BEvent( const V1190BEvent& other );
             //V1190BEvent& operator=( V1190BEvent other );
+            size_t GetNHits() { return fHits.size(); }
 
         friend class V1190B;
     };
