@@ -61,6 +61,8 @@ namespace vmeplus {
         WriteControl( Control_t::MB16_ADDR_EN, false );
         PrintMessage(Message_t::INFO, "\tConfiguration of the Control register of " + fName + "...OK");
 
+        WriteEnableHeaderTrailer();
+
         WriteIRQLevel( 0 ); // No Interrupt
 
         WriteSoftwareClear(); // Clear Buffers
@@ -121,7 +123,8 @@ namespace vmeplus {
     }
 
     /****** DATA ACQUISITION ******/
-    void V1190B::AllocateBuffer() {
+    void V1190B::AllocateBuffer()
+    {
         ResetIndex();
         if( fBuffer )
         {
@@ -138,7 +141,8 @@ namespace vmeplus {
         }
     }
 
-    uint32_t V1190B::ReadBuffer() {
+    uint32_t V1190B::ReadBuffer()
+    {
         ResetIndex();
 
         if( !fBuffer )
@@ -153,10 +157,22 @@ namespace vmeplus {
 
     void V1190B::DropBuffer( const std::string& fileName )
     {
-        std::ofstream file( fileName, std::ofstream::binary );
-        for( size_t i = 0; i < 2048 / 4; i++ )
+        if( !fBuffer )
         {
-            file.write((char*)&(fBuffer[i]), sizeof(fBuffer[i]));
+            PrintMessage( Message_t::WARNING, "V1190B::DropBuffer() : buffer is nullptr. Forgot to allocate?" );
+            return;
+        }
+
+        std::ofstream file;
+        file.exceptions( std::ifstream::failbit | std::ifstream::badbit );
+        try
+        {
+            file.open( fileName, std::ios::binary | std::ios::trunc );
+            file.write((char*)fBuffer.get(), fReadBytes);
+        }
+        catch( const std::ofstream::failure& e )
+        {
+            PrintMessage( Message_t::WARNING, "Couldn't write to the file \"" + fileName + "\"." );
         }
     }
 

@@ -361,7 +361,7 @@ namespace vmeplus {
         public :
             void WriteAcqMode(V1190B::TriggerMode_t mode);
             V1190B::TriggerMode_t ReadAcqMode();
-            void WriteEnableKeepToken(bool status);
+            void WriteEnableKeepToken(bool status = true);
             void WriteLoadConfig(V1190B::Config_t config);
             void WriteAutoLoad(V1190B::Config_t config);
             void WriteSaveUserConfig();
@@ -537,14 +537,16 @@ namespace vmeplus {
             void WriteEnablePattern(V1190B::TDC tdc, uint32_t pattern);
             uint32_t ReadEnablePattern(V1190B::TDC tdc);
 
-            // TDC Readout
+            /*************************/
+            /****** TDC READOUT ******/
+            /*************************/
         public :
-            void WriteEnableHeaderTrailer(bool status);
+            void WriteEnableHeaderTrailer(bool status = true);
             bool ReadEnableHeaderTrailer();
             void WriteMaxHitsPerEvent(V1190B::MaxHitsPerEvent n);
             V1190B::MaxHitsPerEvent ReadMaxHitsPerEvent();
-            void WriteEnableErrMark(bool status);
-            void WriteEnableBypass(bool status);
+            void WriteEnableErrMark(bool status = true );
+            void WriteEnableBypass(bool status = true );
             void WriteErrorPattern(uint16_t);
             uint16_t ReadErrorPattern();
             void WriteEffSizeFIFO(V1190B::FIFOSize size);
@@ -609,7 +611,7 @@ namespace vmeplus {
             /****** LUT (INL) ******/
             /***********************/
         public:
-            void EnableReadoutSRAM(bool status);
+            void EnableReadoutSRAM(bool status = true);
             void ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<int8_t> &data);
     };
 

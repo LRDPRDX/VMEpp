@@ -26,7 +26,7 @@ int main()
         V1190B::PairRes pRes = V1190B::PairRes( V1190B::ResLeadEdgeTime::ps100, V1190B::ResPulseWidth::ps800 );
         tdc.WritePairRes( pRes );
 
-        tdc.WriteIRQEvents( 10 );
+        tdc.WriteIRQEvents( 8 );
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 
@@ -54,7 +54,7 @@ int main()
 
         std::cout << "Number of events read : " << tdc.GetNEventsRead() << "\n";
 
-        //tdc.DropBuffer( "Data.dat" );
+        tdc.DropBuffer( "/usr/tmp/dum.dat" );
 
         std::cout << "Test has been passed...OK!\n";
     }
