@@ -21,7 +21,7 @@ Main
 # /doc
 
 # ROOT directories
-ROOT/
+/ROOT
 
 # rsync script
 /backup.sh
