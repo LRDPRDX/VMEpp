@@ -22,7 +22,7 @@ int main()
         //Print some info
         dm.Print();
 
-        dm.WriteOutWidth( 0xF0 );
+        dm.WriteOutWidth( 0xFF );
         //Set 10mV threshold on each channel
         //(for test purposes)
         //and output width to 20ns (see V895's manual)
