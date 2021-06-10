@@ -12,7 +12,7 @@ void DrawWidth()
 {
     gStyle->SetOptFit( true );
 
-    TGraph* g = new TGraph( "V895width.dat" );
+    TGraph* g = new TGraph( "V895width.data" );
         g->SetMarkerStyle( kCircle );
     g->Draw( "AP" );
 
