@@ -86,6 +86,7 @@ namespace vmeplus
             //Channel configuration
             void            WriteThreshold( uint8_t ch, uint8_t thr );
             //Board general configuration
+            uint16_t        GetValueFromWidth( uint16_t width );
             void            WriteOutWidth( uint16_t width );
             void            WriteOutWidthH( uint16_t width );
             void            WriteOutWidthL( uint16_t width );
