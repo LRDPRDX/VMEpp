@@ -21,7 +21,8 @@ Main
 # /doc
 
 # ROOT directories
-/ROOT
+ROOT/
+!/test/V1190B/data_acq/continuous/ROOT/
 
 # rsync script
 /backup.sh
