@@ -55,20 +55,26 @@ namespace vmeplus
     //***************************
     //Board general configuration
     //***************************
+    uint16_t V895::GetValueFromWidth( uint16_t width )
+    {
+        uint16_t w = (width < 5) ? 5 : ((width < 43) ? width : 43);
+        return std::round( 284. * (1. - (4.3 / w)) );
+    }
+
     void V895::WriteOutWidth( uint16_t width )
     {
-        WriteOutWidthL( width );
-        WriteOutWidthH( width );
+        WriteOutWidthL( GetValueFromWidth( width ) );
+        WriteOutWidthH( GetValueFromWidth( width ) );
     }
 
     void V895::WriteOutWidthH( uint16_t width )
     {
-        WriteRegister16( V895_OUT_WIDTH_H, width, V895_OUT_WIDTH_MSK );
+        WriteRegister16( V895_OUT_WIDTH_H, GetValueFromWidth( width ), V895_OUT_WIDTH_MSK );
     }
 
     void V895::WriteOutWidthL( uint16_t width )
     {
-        WriteRegister16( V895_OUT_WIDTH_L, width, V895_OUT_WIDTH_MSK );
+        WriteRegister16( V895_OUT_WIDTH_L, GetValueFromWidth( width ), V895_OUT_WIDTH_MSK );
     }
 
     void V895::WriteMajLevel( uint16_t level )
