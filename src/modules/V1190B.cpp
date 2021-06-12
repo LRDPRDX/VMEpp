@@ -199,37 +199,62 @@ namespace vmeplus {
         for( ; index < fReadBytes / 4; ++index )
         {
             word = fBuffer[index];
-            if( (word & V1190B::Word_t::MASK) != V1190B::Word_t::FILLER )
+            if( (word & V1190BEvent::Word_t::MASK) != V1190BEvent::Word_t::FILLER )
             {
                 break;
             }
         }
 
-        uint32_t wordTypeCurrent = word & V1190B::Word_t::MASK;
+        uint32_t wordTypeCurrent = word & V1190BEvent::Word_t::MASK;
 
         // If the first non-filler word is T_MEAS it means we are
         // collecting data recorded in the CONTINUOUS mode
-        if( wordTypeCurrent == V1190B::Word_t::T_MEAS )
+        if( wordTypeCurrent == V1190BEvent::Word_t::T_MEAS )
         {
             event->fHits.push_back( V1190BEvent::V1190BHit( word ) );
             event->fStart = event->fStop = index;
             return true;
         }
+        else if( wordTypeCurrent == V1190BEvent::Word_t::G_HEADER )
+        {
+            event->fGlobalHeader = word;
+            event->fStart = index;
+            ++index;
+        }
+        else
+        {
+            return false;
+        }
 
-        //uint32_t wordTypeExpected = V1190B::Word_t::G_HEADER;
+        for( ; index < fReadBytes / 4; ++index )
+        {
+            word = fBuffer[index];
+            wordTypeCurrent = word & V1190BEvent::Word_t::MASK;
 
-        //for( ; index < fReadBytes / 4; ++index )
-        //{
-        //    word = fBuffer[index];
-        //    wordTypeCurrent = word & V1190B::Word_t::MASK;
-
-        //    switch( wordTypeCurrent )
-        //    {
-        //        case( V1190B::Word_t::T_MEAS ) :
-        //            event->fMeasurements.push_back( word );
-        //            break;
-        //    }
-        //}
+            switch( wordTypeCurrent )
+            {
+                case( V1190BEvent::Word_t::T_HEADER ) :
+                case( V1190BEvent::Word_t::T_TRAILER ) :
+                    break;
+                case( V1190BEvent::Word_t::T_ERROR ) :
+                    event->fErrors = word;
+                    break;
+                case( V1190BEvent::Word_t::T_MEAS ) :
+                    event->fHits.push_back( V1190BEvent::V1190BHit( word ) );
+                    break;
+                case( V1190BEvent::Word_t::G_TTT ) :
+                    event->fETTT = word;
+                    break;
+                case( V1190BEvent::Word_t::G_TRAILER ) :
+                    event->fGlobalTrailer = word;
+                    event->fStop = index;
+                    return true;
+                    break;
+                default :
+                    return false;
+                    break;
+            }
+        }
 
         return false;
     }

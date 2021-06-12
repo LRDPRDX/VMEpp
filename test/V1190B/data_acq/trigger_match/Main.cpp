@@ -30,7 +30,7 @@ int main()
         tdc.WriteWindowOffset( -10 ); // -250 ns
         tdc.WriteEnableSubTrigger( true ); //
 
-        tdc.WriteIRQEvents( 8 );
+        tdc.WriteIRQEvents( 10 * 8 );
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 
@@ -48,7 +48,18 @@ int main()
 
         tdc.ReadBuffer();
 
+        V1190BEvent e;
+        while( tdc.GetEvent( &e ) )
+        {
+            for( auto hit = e.cbegin(); hit != e.cend(); ++hit )
+            {
+                std::cout << "Channel = " << (int)(hit->GetChannel()) << "\n";
+            }
+        }
+
         tdc.DropBuffer( "Data.dat" );
+
+        std::cout << "Number of events read : " << tdc.GetNEventsRead() << "\n";
 
         std::cout << "Test has been passed...OK!\n";
     }

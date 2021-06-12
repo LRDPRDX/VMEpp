@@ -74,6 +74,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <forward_list>
 
 #include "VException.h"
 #include "VSlaveAcquisitor.h"
@@ -254,19 +255,6 @@ namespace vmeplus {
             };
             EventFIFO ReadEventFIFO();
             uint16_t ReadEventFIFOStored();
-
-            enum Word_t
-            {
-                G_HEADER    = 0x08000000U,   // Global Header
-                G_TRAILER   = 0x10000000U,   // Global Trailer
-                T_HEADER    = 0x08000000U,   // TDC Header
-                T_MEAS      = 0x00000000U,   // TDC Measurement
-                T_ERROR     = 0x20000000U,   // TDC Error
-                T_TRAILER   = 0x18000000U,   // TDC Trailer
-                G_TTT       = 0x88000000U,   // Global Trigger Time Tag
-                FILLER      = 0xC0000000U,   // FILLER
-                MASK        = 0xf8000000U,
-            };
 
             void WriteTestreg( uint32_t data );
             uint32_t ReadTestreg();
@@ -620,34 +608,41 @@ namespace vmeplus {
     /*************************/
     class V1190BEvent : public VEvent
     {
-        struct V1190BHit
-        {
-            uint32_t value;
-
-            uint32_t GetEdge() const    { return (value & 0x00007ffffU); }
-            uint32_t GetWidth() const   { return ((value & 0x00007f000U) >> 12U); }
-            uint32_t GetLead() const    { return (value & 0x000000fffU); }
-            uint8_t  GetChannel() const { return ((value & 0x003f80000U) >> 19U); }
-            bool     IsLeading() const  { return (value & (1U << 26U)); }
-
-            V1190BHit( uint32_t value ) :
-                value( value )
+        public :
+            enum Word_t
             {
-            }
-        };
-        //public :
-        //    struct TDCEvent
-        //    {
-        //        uint32_t                header;
-        //        uint32_t                trailer;
-        //        uint32_t                errors;
-        //    };
+                G_HEADER    = 0x40000000U,   // Global Header
+                G_TRAILER   = 0x80000000U,   // Global Trailer
+                T_HEADER    = 0x08000000U,   // TDC Header
+                T_MEAS      = 0x00000000U,   // TDC Measurement
+                T_ERROR     = 0x20000000U,   // TDC Error
+                T_TRAILER   = 0x18000000U,   // TDC Trailer
+                G_TTT       = 0x88000000U,   // Global Trigger Time Tag
+                FILLER      = 0xC0000000U,   // FILLER
+                MASK        = 0xf8000000U,
+            };
+
+            struct V1190BHit
+            {
+                uint32_t value;
+
+                uint32_t GetEdge() const    { return (value & 0x00007ffffU); }
+                uint32_t GetWidth() const   { return ((value & 0x00007f000U) >> 12U); }
+                uint32_t GetLead() const    { return (value & 0x000000fffU); }
+                uint8_t  GetChannel() const { return ((value & 0x003f80000U) >> 19U); }
+                bool     IsLeading() const  { return (value & (1U << 26U)); }
+
+                V1190BHit( uint32_t value ) :
+                    value( value )
+                {
+                }
+            };
 
         protected :
-            //uint32_t fGlobalHeader;
-            //std::array<TDCEvent, V1190B::GetTDCNumber()> fEvents;
-            //uint32_t fETTT;
-            //uint32_t fGlobalTrailer;
+            uint32_t fGlobalHeader;
+            uint32_t fETTT;
+            uint32_t fErrors;
+            uint32_t fGlobalTrailer;
             std::vector<V1190BHit>   fHits;
 
         public :
@@ -660,7 +655,10 @@ namespace vmeplus {
             ~V1190BEvent();
             //V1190BEvent( const V1190BEvent& other );
             //V1190BEvent& operator=( V1190BEvent other );
-            size_t GetNHits() { return fHits.size(); }
+            size_t GetNHits()           { return fHits.size(); }
+            uint32_t GetEventCount()    { return ((fGlobalHeader & 0x07ffffe0U) >> 5U); }
+            uint32_t GetETTT()          { return (fETTT & 0x07ffffffU); }
+            uint32_t GetWordCount()     { return ((fGlobalTrailer & 0x001fffeU) >> 5U); }
 
         friend class V1190B;
     };
