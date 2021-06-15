@@ -45,6 +45,7 @@ database = None
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
 flags = [
+'-fPIC',
 '-Wall',
 '-Wextra',
 '-Werror',
@@ -89,7 +90,11 @@ get_python_inc(),
 'cpp/ycm/tests/gmock/include',
 '-isystem',
 'cpp/ycm/benchmarks/benchmark/include',
-'-I', '/home/lrdprdx/projects/VME/inc'
+'-I', '/home/lrdprdx/projects/VME/inc',
+'-I', '/usr/include/x86_64-linux-gnu/qt5',
+'-I', '/usr/include/x86_64-linux-gnu/qt5/QtCore',
+'-I', '/usr/include/x86_64-linux-gnu/qt5/QtWidgets',
+'-I', '/usr/include/x86_64-linux-gnu/qt5/QtGui',
 ]
 
 # Clang automatically sets the '-std=' flag to 'c++14' for MSVC 2015 or later,

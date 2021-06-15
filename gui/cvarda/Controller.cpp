@@ -11,23 +11,44 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QMessageBox>
+#include <QCloseEvent>
 
 Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
 {
-    auto *connectAction = new QAction( "&Connect", this );
-    auto *disconnectAction = new QAction( "&Disconnect", this );
-    auto *exitAction = new QAction( "&Exit", this );
+    CreateActions();
+
+    statusBar()->showMessage( "Ready..." );
+}
+
+Controller::~Controller() {}
+
+void Controller::Connect()
+{
+    Connection *con = new Connection( this );
+        con->setModal( true );
+        con->resize( 300, 150 );
+        con->setWindowTitle( "Connection dialog" );
+    con->show();
+}
+
+/****** Constructive methods ******/
+void Controller::CreateActions()
+{
+    fConnectAction = new QAction( "&Connect", this );
+    fDisconnectAction = new QAction( "&Disconnect", this );
+    fExitAction = new QAction( "&Exit", this );
 
     QMenu *fileMenu = menuBar()->addMenu( "&File" );
-        fileMenu->addAction( connectAction );
-        fileMenu->addAction( disconnectAction );
+        fileMenu->addAction( fConnectAction );
+        fileMenu->addAction( fDisconnectAction );
         fileMenu->addSeparator();
-        fileMenu->addAction( exitAction );
+        fileMenu->addAction( fExitAction );
 
-    connect( connectAction, &QAction::triggered, this, &Controller::Connect ); 
-    connect( disconnectAction, &QAction::triggered, this, &Controller::Disconnect ); 
-    connect( exitAction, &QAction::triggered, qApp, &QApplication::quit );
+    connect( fConnectAction, &QAction::triggered, this, &Controller::Connect );
+    connect( fDisconnectAction, &QAction::triggered, this, &Controller::Disconnect );
+    connect( fExitAction, &QAction::triggered, this, &Controller::close );
 
     fViewStatusBarAction = new QAction( "&View statusbar" );
         fViewStatusBarAction->setCheckable( true );
@@ -37,23 +58,29 @@ Controller::Controller( QWidget *parent ) :
         viewMenu->addAction( fViewStatusBarAction );
 
     connect( fViewStatusBarAction, &QAction::triggered, this, &Controller::ToggleStatusBar );
-
-    statusBar()->showMessage( "Ready..." );
-}
-
-Controller::~Controller() {}
-
-void Controller::Connect()
-{
-    Connection *con = new Connection( this ); 
-    con->resize( 300, 150 );
-    con->setWindowTitle( "Connection dialog" );
-    con->show();
 }
 
 void Controller::Disconnect()
 {
     qInfo() << "Disconnecting...";
+}
+
+void Controller::closeEvent( QCloseEvent *event )
+{
+    const QMessageBox::StandardButton ret =
+        QMessageBox::warning( this,
+                              tr( "Exit" ),
+                              tr( "Are you sure?" ),
+                              QMessageBox::Ok | QMessageBox::Cancel );
+    switch( ret )
+    {
+        case( QMessageBox::Ok ) :
+            event->accept();
+            break;
+        default :
+            event->ignore();
+            break;
+    }
 }
 
 void Controller::ToggleStatusBar()
@@ -91,7 +118,7 @@ Connection::Connection( QWidget *parent ) :
 
     auto *extLayout = new QVBoxLayout( this );
         extLayout->addLayout( settingsLayout );
-        extLayout->addLayout( buttonsLayout ); 
+        extLayout->addLayout( buttonsLayout );
 
     setLayout( extLayout );
 }

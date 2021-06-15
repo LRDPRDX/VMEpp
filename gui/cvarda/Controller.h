@@ -15,7 +15,15 @@ class Controller : public QMainWindow
     Q_OBJECT
 
     private :
+        QAction *fConnectAction, *fDisconnectAction, *fExitAction;
         QAction *fViewStatusBarAction;
+
+        /****** Constructive methods ******/
+    private :
+        void CreateActions();
+
+    protected :
+        void closeEvent( QCloseEvent *event ) override;
 
     private slots :
         void ToggleStatusBar();
@@ -37,10 +45,10 @@ class Connection : public QDialog
         QComboBox   *fTypeCombo;
         QSpinBox    *fLinkSpin, *fNodeSpin;
 
-    public : 
+    public :
         Connection( QWidget *parent = nullptr );
 
-    public slots :
+    private slots :
         void Connect();
         void Cancel();
 };
