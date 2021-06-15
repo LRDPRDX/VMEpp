@@ -5,6 +5,12 @@
 #include <QApplication>
 #include <QDebug>
 #include <QStatusBar>
+#include <QPushButton>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
@@ -39,7 +45,10 @@ Controller::~Controller() {}
 
 void Controller::Connect()
 {
-    qInfo() << "Connecting...";
+    Connection *con = new Connection( this ); 
+    con->resize( 300, 150 );
+    con->setWindowTitle( "Connection dialog" );
+    con->show();
 }
 
 void Controller::Disconnect()
@@ -57,4 +66,42 @@ void Controller::ToggleStatusBar()
     {
         statusBar()->hide();
     }
+}
+
+
+Connection::Connection( QWidget *parent ) :
+    QDialog( parent )
+{
+    auto *typeLabel = new QLabel( "Type:", this );
+    QStringList types = { "V2718", "V1718" };
+
+    fTypeCombo = new QComboBox();
+        fTypeCombo->addItems( types );
+
+    auto *settingsLayout = new QHBoxLayout();
+        settingsLayout->addWidget( typeLabel );
+        settingsLayout->addWidget( fTypeCombo );
+
+    fConnectButton = new QPushButton( "Connect", this );
+    fCancelButton = new QPushButton( "Cancel", this );
+
+    auto *buttonsLayout = new QHBoxLayout();
+        buttonsLayout->addWidget( fConnectButton );
+        buttonsLayout->addWidget( fCancelButton );
+
+    auto *extLayout = new QVBoxLayout( this );
+        extLayout->addLayout( settingsLayout );
+        extLayout->addLayout( buttonsLayout ); 
+
+    setLayout( extLayout );
+}
+
+void Connection::Connect()
+{
+    qInfo() << "Connecting...";
+};
+
+void Connection::Cancel()
+{
+    qInfo() << "Connection canceled...";
 }
