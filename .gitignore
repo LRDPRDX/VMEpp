@@ -24,6 +24,10 @@ ROOT/
 # recovery files
 *.swp
 
+#### GUI ####
+#
 # Qt product
 moc_*
 *.pro
+
+cvarda
