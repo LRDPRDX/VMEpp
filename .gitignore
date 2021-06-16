@@ -26,3 +26,4 @@ ROOT/
 
 # Qt product
 moc_*
+*.pro
