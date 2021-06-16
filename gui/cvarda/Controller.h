@@ -5,16 +5,22 @@
 #include <QMainWindow>
 #include <QApplication>
 
+#include "modules/V2718.h"
+
 class QAction;
 class QPushButton;
 class QComboBox;
 class QSpinBox;
+
+class Connection;
 
 class Controller : public QMainWindow
 {
     Q_OBJECT
 
     private :
+        vmeplus::V2718 fController;
+
         QAction *fConnectAction, *fDisconnectAction, *fExitAction;
         QAction *fViewStatusBarAction;
 
@@ -25,30 +31,20 @@ class Controller : public QMainWindow
     protected :
         void closeEvent( QCloseEvent *event ) override;
 
+        void Connect( short link, short conet );
+        void Disconnect();
+
     private slots :
         void ToggleStatusBar();
+        void OpenConnectDialog();
 
-        void Connect();
-        void Disconnect();
+    signals :
+        void Connected();
+        void Disconnected();
 
     public :
         Controller( QWidget *parent = nullptr );
         ~Controller();
-};
 
-class Connection : public QDialog
-{
-    Q_OBJECT
-
-    private :
-        QPushButton *fConnectButton, *fCancelButton;
-        QComboBox   *fTypeCombo;
-        QSpinBox    *fLinkSpin, *fNodeSpin;
-
-    public :
-        Connection( QWidget *parent = nullptr );
-
-    private slots :
-        void Connect();
-        void Cancel();
+    friend class Connection;
 };
