@@ -23,3 +23,6 @@ ROOT/
 
 # recovery files
 *.swp
+
+# Qt product
+moc_*

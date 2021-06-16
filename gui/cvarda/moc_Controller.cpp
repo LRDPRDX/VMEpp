@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'Controller.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.12.8)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.9.7)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'Controller.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.12.8. It"
+#error "This file was generated using the moc from 5.9.7. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -46,7 +46,7 @@ QT_MOC_LITERAL(4, 36, 10) // "Disconnect"
 static const uint qt_meta_data_Controller[] = {
 
  // content:
-       8,       // revision
+       7,       // revision
        0,       // classname
        0,    0, // classinfo
        3,   14, // methods
@@ -72,7 +72,7 @@ static const uint qt_meta_data_Controller[] = {
 void Controller::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<Controller *>(_o);
+        Controller *_t = static_cast<Controller *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->ToggleStatusBar(); break;
@@ -84,14 +84,10 @@ void Controller::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
     Q_UNUSED(_a);
 }
 
-QT_INIT_METAOBJECT const QMetaObject Controller::staticMetaObject = { {
-    &QMainWindow::staticMetaObject,
-    qt_meta_stringdata_Controller.data,
-    qt_meta_data_Controller,
-    qt_static_metacall,
-    nullptr,
-    nullptr
-} };
+const QMetaObject Controller::staticMetaObject = {
+    { &QMainWindow::staticMetaObject, qt_meta_stringdata_Controller.data,
+      qt_meta_data_Controller,  qt_static_metacall, nullptr, nullptr}
+};
 
 
 const QMetaObject *Controller::metaObject() const
@@ -147,7 +143,7 @@ QT_MOC_LITERAL(3, 20, 6) // "Cancel"
 static const uint qt_meta_data_Connection[] = {
 
  // content:
-       8,       // revision
+       7,       // revision
        0,       // classname
        0,    0, // classinfo
        2,   14, // methods
@@ -171,7 +167,7 @@ static const uint qt_meta_data_Connection[] = {
 void Connection::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<Connection *>(_o);
+        Connection *_t = static_cast<Connection *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->Connect(); break;
@@ -182,14 +178,10 @@ void Connection::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
     Q_UNUSED(_a);
 }
 
-QT_INIT_METAOBJECT const QMetaObject Connection::staticMetaObject = { {
-    &QDialog::staticMetaObject,
-    qt_meta_stringdata_Connection.data,
-    qt_meta_data_Connection,
-    qt_static_metacall,
-    nullptr,
-    nullptr
-} };
+const QMetaObject Connection::staticMetaObject = {
+    { &QDialog::staticMetaObject, qt_meta_stringdata_Connection.data,
+      qt_meta_data_Connection,  qt_static_metacall, nullptr, nullptr}
+};
 
 
 const QMetaObject *Connection::metaObject() const
