@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include "Dialogs.h"
 
 #include <QMenu>
 #include <QMenuBar>
@@ -14,6 +15,8 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 
+#include "VException.h"
+
 Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
 {
@@ -23,15 +26,6 @@ Controller::Controller( QWidget *parent ) :
 }
 
 Controller::~Controller() {}
-
-void Controller::Connect()
-{
-    Connection *con = new Connection( this );
-        con->setModal( true );
-        con->resize( 300, 150 );
-        con->setWindowTitle( "Connection dialog" );
-    con->show();
-}
 
 /****** Constructive methods ******/
 void Controller::CreateActions()
@@ -46,7 +40,7 @@ void Controller::CreateActions()
         fileMenu->addSeparator();
         fileMenu->addAction( fExitAction );
 
-    connect( fConnectAction, &QAction::triggered, this, &Controller::Connect );
+    connect( fConnectAction, &QAction::triggered, this, &Controller::OpenConnectDialog );
     connect( fDisconnectAction, &QAction::triggered, this, &Controller::Disconnect );
     connect( fExitAction, &QAction::triggered, this, &Controller::close );
 
@@ -58,6 +52,25 @@ void Controller::CreateActions()
         viewMenu->addAction( fViewStatusBarAction );
 
     connect( fViewStatusBarAction, &QAction::triggered, this, &Controller::ToggleStatusBar );
+}
+
+void Controller::OpenConnectDialog()
+{
+    Connection *con = new Connection( this );
+        con->setModal( true );
+        con->resize( 300, 150 );
+        con->setWindowTitle( "Connection dialog" );
+    con->show();
+}
+
+void Controller::Connect( short link, short conet )
+{
+    qInfo() << "Openning controller...";
+    //Exception may be thrown here
+    fController.Open( link, conet );
+    qInfo() << "\n...OK";
+
+    emit Connected(); 
 }
 
 void Controller::Disconnect()
@@ -93,42 +106,4 @@ void Controller::ToggleStatusBar()
     {
         statusBar()->hide();
     }
-}
-
-
-Connection::Connection( QWidget *parent ) :
-    QDialog( parent )
-{
-    auto *typeLabel = new QLabel( "Type:", this );
-    QStringList types = { "V2718", "V1718" };
-
-    fTypeCombo = new QComboBox();
-        fTypeCombo->addItems( types );
-
-    auto *settingsLayout = new QHBoxLayout();
-        settingsLayout->addWidget( typeLabel );
-        settingsLayout->addWidget( fTypeCombo );
-
-    fConnectButton = new QPushButton( "Connect", this );
-    fCancelButton = new QPushButton( "Cancel", this );
-
-    auto *buttonsLayout = new QHBoxLayout();
-        buttonsLayout->addWidget( fConnectButton );
-        buttonsLayout->addWidget( fCancelButton );
-
-    auto *extLayout = new QVBoxLayout( this );
-        extLayout->addLayout( settingsLayout );
-        extLayout->addLayout( buttonsLayout );
-
-    setLayout( extLayout );
-}
-
-void Connection::Connect()
-{
-    qInfo() << "Connecting...";
-};
-
-void Connection::Cancel()
-{
-    qInfo() << "Connection canceled...";
 }
