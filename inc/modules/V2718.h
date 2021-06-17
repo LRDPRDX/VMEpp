@@ -43,8 +43,8 @@ namespace vmeplus
             unsigned char       GetPeriod() const                 { return fPeriod; }
             void                SetWidth( unsigned char width )   { fWidth = width; }
             unsigned char       GetWidth() const                  { return fWidth; }
-            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }  
-            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }  
+            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }
+            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }
             void                SetNPulses( unsigned char n )     { fNPulses = n; }
             unsigned char       GetNPulses() const                { return fNPulses; }
             void                SetStartSource( CVIOSources src ) { fStartSource = src; }
@@ -63,7 +63,7 @@ namespace vmeplus
 
             friend class V2718;
     };
-    
+
 
     class V2718Scaler
     {
@@ -101,7 +101,7 @@ namespace vmeplus
             CVIOSources     GetGateSource()                     { return fGateSource; }
             void            SetStopSource( CVIOSources src )    { fStopSource = src; }
             CVIOSources     GetStopSource()                     { return fStopSource; }
-            
+
         public :
             void Write();
             void Read();
@@ -110,13 +110,20 @@ namespace vmeplus
 
             friend class V2718;
     };
-    
+
     class V2718 : public VController
     {
         protected :
             V2718Pulser     fPulserA;
             V2718Pulser     fPulserB;
             V2718Scaler     fScaler;
+
+            static uint8_t const fNInputs = 2;
+            static uint8_t const fNOutputs = 5;
+
+        public :
+            static uint8_t constexpr GetNInputs() { return fNInputs; }
+            static uint8_t constexpr GetNOutputs() { return fNOutputs; }
 
         public :
             V2718 ();
@@ -129,7 +136,7 @@ namespace vmeplus
 
             void WriteOutputConfig( CVOutputSelect outputNo, CVIOSources src, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadOutputConfig( CVOutputSelect outputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity, CVIOSources &src );
-    
+
             void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity );
     };

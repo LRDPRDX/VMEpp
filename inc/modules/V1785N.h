@@ -264,7 +264,7 @@ namespace vmeplus
             V1785N( uint32_t baseAddress, uint32_t range = V1785N_LUB );
             virtual         ~V1785N();
 
-        protected : 
+        protected :
             //Read ROM
             uint16_t        ReadVersion();
             uint32_t        ReadBoardID();
@@ -369,7 +369,7 @@ namespace vmeplus
             {
                 i %= (V1785N_N_CHANNELS * 2U);
                 return (fData[i] & V1785N_WORD_TYPE_DT_CH_MSK) >> 18U;
-            }   
+            }
 
             bool GetChannelUnder( uint16_t i ) const
             {
