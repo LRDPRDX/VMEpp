@@ -30,4 +30,4 @@ ROOT/
 moc_*
 *.pro
 
-cvarda
+/gui/cvarda/cvarda
