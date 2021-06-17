@@ -19,6 +19,7 @@
 #include <QTabWidget>
 
 #include "VException.h"
+#include "qnamespace.h"
 
 Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
@@ -96,11 +97,11 @@ void Controller::CreateIOTab()
         fOutLedCombo[i] = new QComboBox();
             fOutLedCombo[i]->addItems( leds );
 
-        outLayout->addWidget( srcLabel, i + 1, 0 );
+        outLayout->addWidget( srcLabel, i + 1, 0, Qt::AlignRight );
         outLayout->addWidget( fOutSrcCombo[i], i + 1, 1 );
-        outLayout->addWidget( polLabel, i + 1, 2 );
+        outLayout->addWidget( polLabel, i + 1, 2, Qt::AlignRight  );
         outLayout->addWidget( fOutPolCombo[i], i + 1, 3 );
-        outLayout->addWidget( ledLabel, i + 1, 4 );
+        outLayout->addWidget( ledLabel, i + 1, 4, Qt::AlignRight );
         outLayout->addWidget( fOutLedCombo[i], i + 1, 5 );
     }
     outGroup->setLayout( outLayout );
@@ -117,9 +118,9 @@ void Controller::CreateIOTab()
         fInLedCombo[i] = new QComboBox();
             fInLedCombo[i]->addItems( leds );
 
-        inLayout->addWidget( polLabel, i + 1, 0 );
+        inLayout->addWidget( polLabel, i + 1, 0, Qt::AlignRight );
         inLayout->addWidget( fInPolCombo[i], i + 1, 1 );
-        inLayout->addWidget( ledLabel, i + 1, 2 );
+        inLayout->addWidget( ledLabel, i + 1, 2, Qt::AlignRight );
         inLayout->addWidget( fInLedCombo[i], i + 1, 3 );
     }
     inGroup->setLayout( inLayout );
@@ -133,6 +134,56 @@ void Controller::CreatePulserTab()
 {
     QWidget* tab = new QWidget();
     fMainTab->addTab( tab, tr("Pulser && Scaler") );
+
+    QVBoxLayout *vLayout = new QVBoxLayout();
+
+    QStringList startSrcs = { "SW", "Input 0", "Input 1", "Coincidence" };
+    QStringList stopSrcs[N_PULSERS] = { { "SW", "Input 0" }, { "SW", "Input 1" } };
+    for( uint8_t i = 0; i < N_PULSERS; ++ i )
+    {
+        QString pulserName = (i == cvPulserA) ? "Pulser A" : "Pulser B";
+
+        QGroupBox *pulserGroup = new QGroupBox( pulserName );
+        QGridLayout *pulLayout = new QGridLayout();
+
+        QLabel* freqLabel = new QLabel( tr("Frequency(Hz):") );
+        fPulFreqSpin[i] = new QSpinBox();
+            fPulFreqSpin[i]->setRange( 0, 10000000 );
+
+        QLabel* dutyLabel = new QLabel( tr("Duty(%):" ) );
+        fPulDutySpin[i] = new QSpinBox();
+            fPulDutySpin[i]->setRange( 1, 99 );
+
+        QLabel* nLabel = new QLabel( tr("Number of pulses:" ) );
+            nLabel->setToolTip( "0 = infinite" );
+        fPulNSpin[i] = new QSpinBox();
+            fPulNSpin[i]->setRange( 0, 1023 );
+            fPulNSpin[i]->setToolTip( "0 = infinite" );
+
+        QLabel* startLabel = new QLabel( tr("Start source:") );
+        fPulStartCombo[i] = new QComboBox();
+            fPulStartCombo[i]->addItems( startSrcs );
+
+        QLabel* stopLabel = new QLabel( tr("Stop source:") );
+        fPulStopCombo[i] = new QComboBox();
+            fPulStopCombo[i]->addItems( stopSrcs[i] );
+
+        pulLayout->addWidget( freqLabel, 0, 0, Qt::AlignRight );
+        pulLayout->addWidget( fPulFreqSpin[i], 0, 1 );
+        pulLayout->addWidget( dutyLabel, 0, 2, Qt::AlignRight );
+        pulLayout->addWidget( fPulDutySpin[i], 0, 3 );
+        pulLayout->addWidget( nLabel, 0, 4, Qt::AlignRight );
+        pulLayout->addWidget( fPulNSpin[i], 0, 5 );
+        pulLayout->addWidget( startLabel, 1, 0, Qt::AlignRight );
+        pulLayout->addWidget( fPulStartCombo[i], 1, 1 );
+        pulLayout->addWidget( stopLabel, 1, 2, Qt::AlignRight );
+        pulLayout->addWidget( fPulStopCombo[i], 1, 3 );
+
+        pulserGroup->setLayout( pulLayout );
+
+        vLayout->addWidget( pulserGroup );
+    }
+    tab->setLayout( vLayout );
 }
 
 void Controller::OpenConnectDialog()

@@ -18,6 +18,7 @@ class Connection;
 
 static constexpr uint8_t N_INS = vmeplus::V2718::GetNInputs();
 static constexpr uint8_t N_OUTS = vmeplus::V2718::GetNOutputs();
+static constexpr uint8_t N_PULSERS = 2;
 
 class Controller : public QMainWindow
 {
@@ -34,6 +35,11 @@ class Controller : public QMainWindow
         // Inputs and Outputs tab
         QComboBox *fOutSrcCombo[N_OUTS], *fOutPolCombo[N_OUTS], *fOutLedCombo[N_OUTS];
         QComboBox *fInPolCombo[N_INS], *fInLedCombo[N_INS];
+
+        //Pulser and Scaler tab
+        QSpinBox  *fPulFreqSpin[N_PULSERS], *fPulDutySpin[N_PULSERS], *fPulNSpin[N_PULSERS];
+        QComboBox *fPulStartCombo[N_PULSERS], *fPulStopCombo[N_PULSERS];
+        QPushButton *fPulStartButton[N_PULSERS], *fPulStopButton[N_PULSERS];
 
         /****** Constructive methods ******/
     private :
