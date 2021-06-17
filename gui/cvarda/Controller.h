@@ -11,6 +11,8 @@ class QAction;
 class QPushButton;
 class QComboBox;
 class QSpinBox;
+class QTabWidget;
+class QVBoxLayout;
 
 class Connection;
 
@@ -24,9 +26,14 @@ class Controller : public QMainWindow
         QAction *fConnectAction, *fDisconnectAction, *fExitAction;
         QAction *fViewStatusBarAction;
 
+        QTabWidget *fMainTab;
+
         /****** Constructive methods ******/
     private :
         void CreateActions();
+        void CreateMainTab();
+        void CreateIOTab();
+        void CreatePulserTab();
 
     protected :
         void closeEvent( QCloseEvent *event ) override;
@@ -39,8 +46,7 @@ class Controller : public QMainWindow
         void OpenConnectDialog();
 
     signals :
-        void Connected();
-        void Disconnected();
+        void Connected( bool );
 
     public :
         Controller( QWidget *parent = nullptr );

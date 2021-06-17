@@ -17,18 +17,18 @@ Connection::Connection( Controller *parent ) :
     fParent( parent )
 {
     // Upper layout (connection settings)
-    auto *typeLabel = new QLabel( "Type:", this );
+    auto *typeLabel = new QLabel( "Type:" );
     QStringList types = { "V2718", "V1718" };
 
-    fTypeCombo = new QComboBox( this );
+    fTypeCombo = new QComboBox();
         fTypeCombo->addItems( types );
 
-    auto *linkLabel = new QLabel( "Link:", this );
-    fLinkSpin = new QSpinBox( this );
+    auto *linkLabel = new QLabel( "Link:" );
+    fLinkSpin = new QSpinBox();
         fLinkSpin->setRange( 0, 10 );
 
-    auto *conetLabel = new QLabel( "Conet:", this );
-    fConetSpin = new QSpinBox( this );
+    auto *conetLabel = new QLabel( "Conet:" );
+    fConetSpin = new QSpinBox();
         fConetSpin->setRange( 0, 10 );
 
     auto *settingsLayout = new QHBoxLayout();
@@ -40,17 +40,17 @@ Connection::Connection( Controller *parent ) :
         settingsLayout->addWidget( fConetSpin );
 
     // Lower layout (buttons)
-    fConnectButton = new QPushButton( "Connect", this );
+    fConnectButton = new QPushButton( "Connect" );
     connect( fConnectButton, &QPushButton::clicked, this, &Connection::Connect );
 
-    fCancelButton = new QPushButton( "Cancel", this );
+    fCancelButton = new QPushButton( "Cancel" );
     connect( fCancelButton, &QPushButton::clicked, this, &Connection::Cancel );
 
     auto *buttonsLayout = new QHBoxLayout();
         buttonsLayout->addWidget( fConnectButton );
         buttonsLayout->addWidget( fCancelButton );
 
-    auto *extLayout = new QVBoxLayout( this );
+    auto *extLayout = new QVBoxLayout();
         extLayout->addLayout( settingsLayout );
         extLayout->addLayout( buttonsLayout );
 
