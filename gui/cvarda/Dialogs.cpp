@@ -77,5 +77,5 @@ void Connection::Connect()
 
 void Connection::Cancel()
 {
-    qInfo() << "Connection canceled...";
+    this->close();
 }
