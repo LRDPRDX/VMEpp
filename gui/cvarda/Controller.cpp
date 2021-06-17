@@ -12,6 +12,8 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGridLayout>
+#include <QGroupBox>
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTabWidget>
@@ -72,6 +74,59 @@ void Controller::CreateIOTab()
 {
     QWidget* tab = new QWidget();
     fMainTab->addTab( tab, tr("Inputs && Outputs") );
+
+    QVBoxLayout *vLayout = new QVBoxLayout();
+
+    QGroupBox *outGroup = new QGroupBox( tr("Outputs") );
+    QGridLayout *outLayout = new QGridLayout();
+    QStringList srcs = { "VME", "Coincidence", "P && S", "SW" };
+    QStringList pols = { "Direct", "Inverted" };
+    QStringList leds = { "Active high", "Active low" };
+    for( uint8_t i = 0; i < N_OUTS; ++i )
+    {
+        QLabel* srcLabel = new QLabel( tr("Source ") + QString::number(i) + ":" );
+        fOutSrcCombo[i] = new QComboBox();
+            fOutSrcCombo[i]->addItems( srcs );
+
+        QLabel* polLabel = new QLabel( tr("Polarity:") );
+        fOutPolCombo[i] = new QComboBox();
+            fOutPolCombo[i]->addItems( pols );
+
+        QLabel* ledLabel = new QLabel( tr("LED polarity:") );
+        fOutLedCombo[i] = new QComboBox();
+            fOutLedCombo[i]->addItems( leds );
+
+        outLayout->addWidget( srcLabel, i + 1, 0 );
+        outLayout->addWidget( fOutSrcCombo[i], i + 1, 1 );
+        outLayout->addWidget( polLabel, i + 1, 2 );
+        outLayout->addWidget( fOutPolCombo[i], i + 1, 3 );
+        outLayout->addWidget( ledLabel, i + 1, 4 );
+        outLayout->addWidget( fOutLedCombo[i], i + 1, 5 );
+    }
+    outGroup->setLayout( outLayout );
+
+    QGroupBox *inGroup = new QGroupBox( tr("Inputs") );
+    QGridLayout *inLayout = new QGridLayout();
+    for( uint8_t i = 0; i < N_INS; ++i )
+    {
+        QLabel* polLabel = new QLabel( tr("Polarity:") );
+        fInPolCombo[i] = new QComboBox();
+            fInPolCombo[i]->addItems( pols );
+
+        QLabel* ledLabel = new QLabel( tr("LED polarity:") );
+        fInLedCombo[i] = new QComboBox();
+            fInLedCombo[i]->addItems( leds );
+
+        inLayout->addWidget( polLabel, i + 1, 0 );
+        inLayout->addWidget( fInPolCombo[i], i + 1, 1 );
+        inLayout->addWidget( ledLabel, i + 1, 2 );
+        inLayout->addWidget( fInLedCombo[i], i + 1, 3 );
+    }
+    inGroup->setLayout( inLayout );
+
+    vLayout->addWidget( outGroup );
+    vLayout->addWidget( inGroup );
+    tab->setLayout( vLayout );
 }
 
 void Controller::CreatePulserTab()
@@ -100,7 +155,7 @@ void Controller::Connect( short link, short conet )
     setWindowTitle( "gVME++ (V2718)" );
     statusBar()->showMessage( "Connected..." );
 
-    emit Connected( true ); 
+    emit Connected( true );
 }
 
 void Controller::Disconnect()

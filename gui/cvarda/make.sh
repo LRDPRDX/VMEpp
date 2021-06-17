@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-qmake-qt5 -project "QT += widgets" "LIBS += -lVMEplusM -lVMEplus" "INCLUDEPATH += ../../inc"
-qmake-qt5
+qmake -project "QT += widgets" "LIBS += -lVMEplusM -lVMEplus" "INCLUDEPATH += ../../inc"
+qmake
 make

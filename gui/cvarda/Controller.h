@@ -16,6 +16,9 @@ class QVBoxLayout;
 
 class Connection;
 
+static constexpr uint8_t N_INS = vmeplus::V2718::GetNInputs();
+static constexpr uint8_t N_OUTS = vmeplus::V2718::GetNOutputs();
+
 class Controller : public QMainWindow
 {
     Q_OBJECT
@@ -27,6 +30,10 @@ class Controller : public QMainWindow
         QAction *fViewStatusBarAction;
 
         QTabWidget *fMainTab;
+
+        // Inputs and Outputs tab
+        QComboBox *fOutSrcCombo[N_OUTS], *fOutPolCombo[N_OUTS], *fOutLedCombo[N_OUTS];
+        QComboBox *fInPolCombo[N_INS], *fInLedCombo[N_INS];
 
         /****** Constructive methods ******/
     private :
