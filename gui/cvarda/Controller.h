@@ -66,6 +66,7 @@ class Controller : public QMainWindow
 
     signals :
         void Connected( bool );
+        void Programmed( bool );
 
     public :
         Controller( QWidget *parent = nullptr );
