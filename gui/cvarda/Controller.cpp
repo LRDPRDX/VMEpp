@@ -26,7 +26,7 @@ Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
 {
     CreateActions();
-    CreateMainTab();
+    CreateCentralWidget();
 
     emit Connected( false );
     statusBar()->showMessage( "Ready..." );
@@ -63,14 +63,24 @@ void Controller::CreateActions()
     connect( fViewStatusBarAction, &QAction::triggered, this, &Controller::ToggleStatusBar );
 }
 
-void Controller::CreateMainTab()
+void Controller::CreateCentralWidget()
 {
+    QWidget *centralWidget = new QWidget();
+    QVBoxLayout *vLayout = new QVBoxLayout();
+
     fMainTab = new QTabWidget();
 
     CreateIOTab();
     CreatePulserTab();
 
-    setCentralWidget( fMainTab );
+    fProgramButton = new QPushButton( "PROGRAM" );
+        connect( this, &Controller::Connected, fProgramButton, &QPushButton::setEnabled );
+
+    vLayout->addWidget( fMainTab );
+    vLayout->addWidget( fProgramButton );
+    centralWidget->setLayout( vLayout );
+
+    setCentralWidget( centralWidget );
 }
 
 void Controller::CreateIOTab()
@@ -79,7 +89,7 @@ void Controller::CreateIOTab()
     fMainTab->addTab( tab, tr("Inputs && Outputs") );
 
     QGridLayout *gridLayout = new QGridLayout();
-    QStringList srcs = { "VME", "Coincidence", "P && S", "SW" };
+    QStringList srcs = { "VME", "Coincidence", "P & S", "SW" };
     QStringList pols = { "Direct", "Inverted" };
     QStringList leds = { "Active high", "Active low" };
 

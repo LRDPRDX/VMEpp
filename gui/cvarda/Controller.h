@@ -32,6 +32,7 @@ class Controller : public QMainWindow
         QAction *fViewStatusBarAction;
 
         QTabWidget *fMainTab;
+        QPushButton *fProgramButton;
 
         // Inputs and Outputs tab
         QComboBox *fOutSrcCombo[N_OUTS], *fOutPolCombo[N_OUTS], *fOutLedCombo[N_OUTS];
@@ -49,7 +50,7 @@ class Controller : public QMainWindow
         /****** Constructive methods ******/
     private :
         void CreateActions();
-        void CreateMainTab();
+        void CreateCentralWidget();
         void CreateIOTab();
         void CreatePulserTab();
 
