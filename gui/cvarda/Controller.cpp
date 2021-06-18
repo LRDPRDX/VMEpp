@@ -83,21 +83,20 @@ void Controller::CreateCentralWidget()
     setCentralWidget( centralWidget );
 }
 
+
 void Controller::CreateIOTab()
 {
     QWidget* tab = new QWidget();
     fMainTab->addTab( tab, tr("Inputs && Outputs") );
 
-    QGridLayout *gridLayout = new QGridLayout();
+    QVBoxLayout *vLayout = new QVBoxLayout();
+
+    QGroupBox *outGroup = new QGroupBox( tr("Outputs") );
+    QGridLayout *outLayout = new QGridLayout();
     QStringList srcs = { "VME", "Coincidence", "P & S", "SW" };
     QStringList pols = { "Direct", "Inverted" };
     QStringList leds = { "Active high", "Active low" };
-
-    uint8_t row = 0;
-    QLabel* outLabel = new QLabel( "Outputs:" );
-    gridLayout->addWidget( outLabel, row++, 0, 1, -1, Qt::AlignLeft );
-
-    for( uint8_t i = 0; i < N_OUTS; ++i, ++row )
+    for( uint8_t i = 0; i < N_OUTS; ++i )
     {
         QLabel* srcLabel = new QLabel( tr("Source:") );
         fOutSrcCombo[i] = new QComboBox();
@@ -111,17 +110,18 @@ void Controller::CreateIOTab()
         fOutLedCombo[i] = new QComboBox();
             fOutLedCombo[i]->addItems( leds );
 
-        gridLayout->addWidget( srcLabel, row, 0, Qt::AlignRight );
-        gridLayout->addWidget( fOutSrcCombo[i], row, 1 );
-        gridLayout->addWidget( polLabel, row, 2, Qt::AlignRight  );
-        gridLayout->addWidget( fOutPolCombo[i], row, 3 );
-        gridLayout->addWidget( ledLabel, row, 4, Qt::AlignRight );
-        gridLayout->addWidget( fOutLedCombo[i], row, 5 );
+        outLayout->addWidget( srcLabel, i + 1, 0, Qt::AlignRight );
+        outLayout->addWidget( fOutSrcCombo[i], i + 1, 1 );
+        outLayout->addWidget( polLabel, i + 1, 2, Qt::AlignRight );
+        outLayout->addWidget( fOutPolCombo[i], i + 1, 3 );
+        outLayout->addWidget( ledLabel, i + 1, 4, Qt::AlignRight );
+        outLayout->addWidget( fOutLedCombo[i], i + 1, 5 );
     }
+    outGroup->setLayout( outLayout );
 
-    QLabel* inLabel = new QLabel( "Inputs:" );
-    gridLayout->addWidget( inLabel, row++, 0, 1, -1, Qt::AlignLeft );
-    for( uint8_t i = 0; i < N_INS; ++i, ++row )
+    QGroupBox *inGroup = new QGroupBox( tr("Inputs") );
+    QGridLayout *inLayout = new QGridLayout();
+    for( uint8_t i = 0; i < N_INS; ++i )
     {
         QLabel* polLabel = new QLabel( tr("Polarity:") );
         fInPolCombo[i] = new QComboBox();
@@ -131,12 +131,16 @@ void Controller::CreateIOTab()
         fInLedCombo[i] = new QComboBox();
             fInLedCombo[i]->addItems( leds );
 
-        gridLayout->addWidget( polLabel, row, 0, 1, 3, Qt::AlignRight );
-        gridLayout->addWidget( fInPolCombo[i], row, 3 );
-        gridLayout->addWidget( ledLabel, row, 4, Qt::AlignRight );
-        gridLayout->addWidget( fInLedCombo[i], row, 5 );
+        inLayout->addWidget( polLabel, i, 0, Qt::AlignRight );
+        inLayout->addWidget( fInPolCombo[i], i, 1 );
+        inLayout->addWidget( ledLabel, i, 2, Qt::AlignRight );
+        inLayout->addWidget( fInLedCombo[i], i, 3 );
     }
-    tab->setLayout( gridLayout );
+    inGroup->setLayout( inLayout );
+
+    vLayout->addWidget( outGroup );
+    vLayout->addWidget( inGroup );
+    tab->setLayout( vLayout );
 }
 
 void Controller::CreatePulserTab()
