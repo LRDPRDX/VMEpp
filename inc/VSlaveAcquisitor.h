@@ -11,8 +11,6 @@ namespace vmeplus
     class VSlaveAcquisitor : virtual public VSlave
     {
         protected :
-            //uint32_t           *fBuffer;
-            
             std::unique_ptr<uint32_t[]> fBuffer;
             uint32_t                    fReadBytes;
             uint32_t                    fNEventsRead;

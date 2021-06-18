@@ -1,5 +1,5 @@
 #ifndef V_PLUS_ARBITER_H 
-#define V_PLUS_ARBITER_H 
+#define V_PLUS_ARBITER_H
 
 #include <CAENVMEtypes.h>
 

@@ -48,7 +48,7 @@ namespace vmeplus
             uint32_t            GetBaseAddress() const { return fBaseAddress; }
             void                SetBaseAddress( uint32_t newAddress );
             uint32_t            GetRange() const { return fRange; }
-            std::string         GetName() const { return fName; } 
+            std::string         GetName() const { return fName; }
             std::string         GetFirmware() const { return fFirmware; }
             uint16_t            GetSerialNumber() const { return fSerial; }
 

@@ -20,7 +20,7 @@ namespace vmeplus
                         virtual public VInterruptHandler
     {
         protected :
-            int32_t                 fHandle; 
+            int32_t                 fHandle;
 
         public :
             VController();

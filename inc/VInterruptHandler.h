@@ -16,6 +16,8 @@ namespace vmeplus
 
         public :
             VInterruptHandler();
+            VInterruptHandler( const VInterruptHandler &other ) = delete;
+            VInterruptHandler& operator=( const VInterruptHandler &other ) = delete;
             virtual ~VInterruptHandler();
 
         public :

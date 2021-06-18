@@ -1,5 +1,5 @@
 #ifndef V_PLUS_SLAVE_INTERRUPTER_H 
-#define V_PLUS_SLAVE_INTERRUPTER_H 
+#define V_PLUS_SLAVE_INTERRUPTER_H
 
 #include "VSlave.h"
 

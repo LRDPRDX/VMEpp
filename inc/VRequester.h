@@ -1,5 +1,5 @@
 #ifndef V_PLUS_REQUESTER_H 
-#define V_PLUS_REQUESTER_H 
+#define V_PLUS_REQUESTER_H
 
 #include <CAENVMEtypes.h>
 
