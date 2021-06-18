@@ -13,6 +13,7 @@ class QComboBox;
 class QSpinBox;
 class QTabWidget;
 class QVBoxLayout;
+class QCheckBox;
 
 class Connection;
 
@@ -40,6 +41,10 @@ class Controller : public QMainWindow
         QSpinBox  *fPulFreqSpin[N_PULSERS], *fPulDutySpin[N_PULSERS], *fPulNSpin[N_PULSERS];
         QComboBox *fPulStartCombo[N_PULSERS], *fPulStopCombo[N_PULSERS];
         QPushButton *fPulStartButton[N_PULSERS], *fPulStopButton[N_PULSERS];
+        QSpinBox  *fScalLimitSpin;
+        QComboBox *fScalHitCombo, *fScalGateCombo, *fScalResetCombo;
+        QCheckBox *fScalAutoCheck;
+        QPushButton *fScalStartButton, *fScalGateButton, *fScalResetButton;
 
         /****** Constructive methods ******/
     private :

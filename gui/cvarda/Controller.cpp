@@ -14,6 +14,7 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QCheckBox>
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTabWidget>
@@ -27,6 +28,7 @@ Controller::Controller( QWidget *parent ) :
     CreateActions();
     CreateMainTab();
 
+    emit Connected( false );
     statusBar()->showMessage( "Ready..." );
 }
 
@@ -76,16 +78,18 @@ void Controller::CreateIOTab()
     QWidget* tab = new QWidget();
     fMainTab->addTab( tab, tr("Inputs && Outputs") );
 
-    QVBoxLayout *vLayout = new QVBoxLayout();
-
-    QGroupBox *outGroup = new QGroupBox( tr("Outputs") );
-    QGridLayout *outLayout = new QGridLayout();
+    QGridLayout *gridLayout = new QGridLayout();
     QStringList srcs = { "VME", "Coincidence", "P && S", "SW" };
     QStringList pols = { "Direct", "Inverted" };
     QStringList leds = { "Active high", "Active low" };
-    for( uint8_t i = 0; i < N_OUTS; ++i )
+
+    uint8_t row = 0;
+    QLabel* outLabel = new QLabel( "Outputs:" );
+    gridLayout->addWidget( outLabel, row++, 0, 1, -1, Qt::AlignLeft );
+
+    for( uint8_t i = 0; i < N_OUTS; ++i, ++row )
     {
-        QLabel* srcLabel = new QLabel( tr("Source ") + QString::number(i) + ":" );
+        QLabel* srcLabel = new QLabel( tr("Source:") );
         fOutSrcCombo[i] = new QComboBox();
             fOutSrcCombo[i]->addItems( srcs );
 
@@ -97,18 +101,17 @@ void Controller::CreateIOTab()
         fOutLedCombo[i] = new QComboBox();
             fOutLedCombo[i]->addItems( leds );
 
-        outLayout->addWidget( srcLabel, i + 1, 0, Qt::AlignRight );
-        outLayout->addWidget( fOutSrcCombo[i], i + 1, 1 );
-        outLayout->addWidget( polLabel, i + 1, 2, Qt::AlignRight  );
-        outLayout->addWidget( fOutPolCombo[i], i + 1, 3 );
-        outLayout->addWidget( ledLabel, i + 1, 4, Qt::AlignRight );
-        outLayout->addWidget( fOutLedCombo[i], i + 1, 5 );
+        gridLayout->addWidget( srcLabel, row, 0, Qt::AlignRight );
+        gridLayout->addWidget( fOutSrcCombo[i], row, 1 );
+        gridLayout->addWidget( polLabel, row, 2, Qt::AlignRight  );
+        gridLayout->addWidget( fOutPolCombo[i], row, 3 );
+        gridLayout->addWidget( ledLabel, row, 4, Qt::AlignRight );
+        gridLayout->addWidget( fOutLedCombo[i], row, 5 );
     }
-    outGroup->setLayout( outLayout );
 
-    QGroupBox *inGroup = new QGroupBox( tr("Inputs") );
-    QGridLayout *inLayout = new QGridLayout();
-    for( uint8_t i = 0; i < N_INS; ++i )
+    QLabel* inLabel = new QLabel( "Inputs:" );
+    gridLayout->addWidget( inLabel, row++, 0, 1, -1, Qt::AlignLeft );
+    for( uint8_t i = 0; i < N_INS; ++i, ++row )
     {
         QLabel* polLabel = new QLabel( tr("Polarity:") );
         fInPolCombo[i] = new QComboBox();
@@ -118,16 +121,12 @@ void Controller::CreateIOTab()
         fInLedCombo[i] = new QComboBox();
             fInLedCombo[i]->addItems( leds );
 
-        inLayout->addWidget( polLabel, i + 1, 0, Qt::AlignRight );
-        inLayout->addWidget( fInPolCombo[i], i + 1, 1 );
-        inLayout->addWidget( ledLabel, i + 1, 2, Qt::AlignRight );
-        inLayout->addWidget( fInLedCombo[i], i + 1, 3 );
+        gridLayout->addWidget( polLabel, row, 0, 1, 3, Qt::AlignRight );
+        gridLayout->addWidget( fInPolCombo[i], row, 3 );
+        gridLayout->addWidget( ledLabel, row, 4, Qt::AlignRight );
+        gridLayout->addWidget( fInLedCombo[i], row, 5 );
     }
-    inGroup->setLayout( inLayout );
-
-    vLayout->addWidget( outGroup );
-    vLayout->addWidget( inGroup );
-    tab->setLayout( vLayout );
+    tab->setLayout( gridLayout );
 }
 
 void Controller::CreatePulserTab()
@@ -137,6 +136,7 @@ void Controller::CreatePulserTab()
 
     QVBoxLayout *vLayout = new QVBoxLayout();
 
+    // Pulsers
     QStringList startSrcs = { "SW", "Input 0", "Input 1", "Coincidence" };
     QStringList stopSrcs[N_PULSERS] = { { "SW", "Input 0" }, { "SW", "Input 1" } };
     for( uint8_t i = 0; i < N_PULSERS; ++ i )
@@ -168,6 +168,11 @@ void Controller::CreatePulserTab()
         fPulStopCombo[i] = new QComboBox();
             fPulStopCombo[i]->addItems( stopSrcs[i] );
 
+        fPulStartButton[i] = new QPushButton( "START" ); 
+            connect( this, &Controller::Connected, fPulStartButton[i], &QPushButton::setEnabled );
+        fPulStopButton[i] = new QPushButton( "STOP" );
+            connect( this, &Controller::Connected, fPulStopButton[i], &QPushButton::setEnabled );
+
         pulLayout->addWidget( freqLabel, 0, 0, Qt::AlignRight );
         pulLayout->addWidget( fPulFreqSpin[i], 0, 1 );
         pulLayout->addWidget( dutyLabel, 0, 2, Qt::AlignRight );
@@ -178,11 +183,57 @@ void Controller::CreatePulserTab()
         pulLayout->addWidget( fPulStartCombo[i], 1, 1 );
         pulLayout->addWidget( stopLabel, 1, 2, Qt::AlignRight );
         pulLayout->addWidget( fPulStopCombo[i], 1, 3 );
+        pulLayout->addWidget( fPulStartButton[i], 1, 4 );
+        pulLayout->addWidget( fPulStopButton[i], 1, 5 );
 
         pulserGroup->setLayout( pulLayout );
 
         vLayout->addWidget( pulserGroup );
     }
+    // Scaler
+    QGroupBox *scalerGroup = new QGroupBox( "Scaler" );
+    QGridLayout *scalLayout = new QGridLayout();
+
+    QLabel *limitLabel = new QLabel( "Limit:" );
+    fScalLimitSpin = new QSpinBox();
+        fScalLimitSpin->setRange( 0, 1023 );
+    fScalAutoCheck = new QCheckBox( "Auto reset" );    
+    fScalGateButton = new QPushButton( "GATE" );
+        connect( this, &Controller::Connected, fScalGateButton, &QPushButton::setEnabled );
+    fScalStartButton = new QPushButton( "START" );
+        connect( this, &Controller::Connected, fScalStartButton, &QPushButton::setEnabled );
+    fScalResetButton = new QPushButton( "RESET" );
+        connect( this, &Controller::Connected, fScalResetButton, &QPushButton::setEnabled );
+
+    QStringList hits = { "Input 0", "Coincidence" };
+    QLabel *hitLabel = new QLabel( "Hit source:" );
+    fScalHitCombo = new QComboBox();
+        fScalHitCombo->addItems( hits );
+    QStringList gates = { "SW", "Input 1" };
+    QLabel *gateLabel = new QLabel( "Gate source:" );
+    fScalGateCombo = new QComboBox();
+        fScalGateCombo->addItems( gates );
+    QLabel *resetLabel = new QLabel( "Reset source:" );
+    fScalResetCombo = new QComboBox();
+        fScalResetCombo->addItems( gates );
+
+    scalLayout->addWidget( limitLabel, 0, 0, Qt::AlignRight );
+    scalLayout->addWidget( fScalLimitSpin, 0, 1 );
+    scalLayout->addWidget( fScalGateButton, 0, 3 );
+    scalLayout->addWidget( fScalStartButton, 0, 4 );
+    scalLayout->addWidget( fScalResetButton, 0, 5 );
+    scalLayout->addWidget( hitLabel, 1, 0, Qt::AlignRight );
+    scalLayout->addWidget( fScalHitCombo, 1, 1 );
+    scalLayout->addWidget( gateLabel, 1, 2, Qt::AlignRight );
+    scalLayout->addWidget( fScalGateCombo, 1, 3 );
+    scalLayout->addWidget( resetLabel, 1, 4, Qt::AlignRight );
+    scalLayout->addWidget( fScalResetCombo, 1, 5 );
+    scalLayout->addWidget( fScalAutoCheck, 2, 0, 1, 6, Qt::AlignRight );
+
+    scalerGroup->setLayout( scalLayout );
+
+    vLayout->addWidget( scalerGroup );
+
     tab->setLayout( vLayout );
 }
 
