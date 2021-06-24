@@ -37,12 +37,6 @@ namespace vmeplus
         return;
     }
 
-    void V895::Release()
-    {
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "..." );
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "...OK" );
-        return;
-    }
 
     //*********************
     //Channel configuration

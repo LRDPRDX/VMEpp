@@ -17,7 +17,10 @@ namespace vmeplus
         fSerial( 0 )
     {};
 
-    VSlave::~VSlave() {};
+    VSlave::~VSlave()
+    {
+        Release();
+    };
 
     void VSlave::ReadRequest( uint32_t address, void *data, CVDataWidth dw, CVAddressModifier am )
     {
@@ -161,5 +164,13 @@ namespace vmeplus
         std::cout << std::right << "   |" << std::setfill('=') << std::setw(60) << "=" <<                                                                       "|/\n";
         std::cout << std::setfill(' ');
         std::cout << "\n";
+    }
+
+    void VSlave::Release()
+    {
+        if( fMaster != nullptr )
+        {
+            fMaster->UnregisterSlave( this );
+        }
     }
 }

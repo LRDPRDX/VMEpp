@@ -73,7 +73,6 @@ namespace vmeplus
     {
         protected :
             virtual void    Initialize() override;
-            virtual void    Release() override;
 
         protected :
             uint16_t        fChannels;

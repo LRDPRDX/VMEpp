@@ -16,9 +16,7 @@ namespace vmeplus
             std::vector<VSlave*>        fSlaves;
 
         public :
-            VMaster() :
-                fSlaves( 0 )
-            { };
+            VMaster() { } 
             VMaster( const VMaster &other ) = delete;
             VMaster& operator=( const VMaster &other ) = delete;
             virtual ~VMaster() {};
@@ -27,6 +25,7 @@ namespace vmeplus
             void                        RegisterSlave( VSlave *slave );
             void                        UnregisterSlave( VSlave *slave );
             void                        Initialize();
+            size_t                      GetNSlaves() const { return fSlaves.size(); }
 
         public :
             virtual void                ReadCycle( uint32_t address, void* data, CVAddressModifier am, CVDataWidth dw ) = 0;
