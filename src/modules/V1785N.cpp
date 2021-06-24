@@ -69,13 +69,6 @@ namespace vmeplus
         return;
     }
 
-    void V1785N::Release()
-    {
-        std::cout << "Releasing " << fName << "...";
-        std::cout << "Releasing " << fName << "...OK";
-        return;
-    }
-
     void V1785N::SetBit16( uint32_t address, uint16_t bit )
     {
         //This function is overriding the base class function in some cases

@@ -29,7 +29,6 @@ namespace vmeplus
             void                FIFOMBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am = cvA32_U_MBLT );
 
             virtual void        Initialize() = 0;
-            virtual void        Release() = 0;
 
         protected :
             void                WriteRegister16( uint32_t address, uint16_t data, uint16_t msk = 0xFFFFU );
@@ -54,6 +53,8 @@ namespace vmeplus
 
             virtual void        Print() const;
             virtual void        Reset();
+
+            void                Release();
 
             friend class VMaster;
     };

@@ -35,13 +35,6 @@ namespace vmeplus
         return;
     }
 
-    void V6533N::Release()
-    {
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "..." );
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "...OK" );
-        return;
-    }
-
     //****************
     //Board parameters
     //****************
