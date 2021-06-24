@@ -51,13 +51,17 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = Controller.cpp \
+		Devices.cpp \
 		Dialogs.cpp \
 		main.cpp moc_Controller.cpp \
+		moc_Devices.cpp \
 		moc_Dialogs.cpp
 OBJECTS       = Controller.o \
+		Devices.o \
 		Dialogs.o \
 		main.o \
 		moc_Controller.o \
+		moc_Devices.o \
 		moc_Dialogs.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/common/unix.conf \
@@ -133,7 +137,9 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
 		/usr/lib64/qt5/mkspecs/features/lex.prf \
 		cvarda.pro Controller.h \
+		Devices.h \
 		Dialogs.h Controller.cpp \
+		Devices.cpp \
 		Dialogs.cpp \
 		main.cpp
 QMAKE_TARGET  = cvarda
@@ -317,8 +323,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents Controller.h Dialogs.h $(DISTDIR)/
-	$(COPY_FILE) --parents Controller.cpp Dialogs.cpp main.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents Controller.h Devices.h Dialogs.h $(DISTDIR)/
+	$(COPY_FILE) --parents Controller.cpp Devices.cpp Dialogs.cpp main.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -349,9 +355,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_Controller.cpp moc_Dialogs.cpp
+compiler_moc_header_make_all: moc_Controller.cpp moc_Devices.cpp moc_Dialogs.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_Controller.cpp moc_Dialogs.cpp
+	-$(DEL_FILE) moc_Controller.cpp moc_Devices.cpp moc_Dialogs.cpp
 moc_Controller.cpp: ../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
@@ -362,6 +368,13 @@ moc_Controller.cpp: ../../inc/modules/V2718.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
 	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include Controller.h -o moc_Controller.cpp
+
+moc_Devices.cpp: ../../inc/modules/V895.h \
+		../../inc/VSlave.h \
+		Devices.h \
+		moc_predefs.h \
+		/usr/lib64/qt5/bin/moc
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include Devices.h -o moc_Devices.cpp
 
 moc_Dialogs.cpp: Controller.h \
 		../../inc/modules/V2718.h \
@@ -400,6 +413,11 @@ Controller.o: Controller.cpp Controller.h \
 		../../inc/VException.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Controller.o Controller.cpp
 
+Devices.o: Devices.cpp Devices.h \
+		../../inc/modules/V895.h \
+		../../inc/VSlave.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Devices.o Devices.cpp
+
 Dialogs.o: Dialogs.cpp Dialogs.h \
 		Controller.h \
 		../../inc/modules/V2718.h \
@@ -408,7 +426,10 @@ Dialogs.o: Dialogs.cpp Dialogs.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-		../../inc/VException.h
+		../../inc/VException.h \
+		Devices.h \
+		../../inc/modules/V895.h \
+		../../inc/VSlave.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Dialogs.o Dialogs.cpp
 
 main.o: main.cpp Controller.h \
@@ -422,6 +443,9 @@ main.o: main.cpp Controller.h \
 
 moc_Controller.o: moc_Controller.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Controller.o moc_Controller.cpp
+
+moc_Devices.o: moc_Devices.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Devices.o moc_Devices.cpp
 
 moc_Dialogs.o: moc_Dialogs.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Dialogs.o moc_Dialogs.cpp

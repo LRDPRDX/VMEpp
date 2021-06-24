@@ -7,6 +7,7 @@
 class QPushButton;
 class QComboBox;
 class QSpinBox;
+class QTextEdit;
 
 class Connection : public QDialog
 {
@@ -25,4 +26,27 @@ class Connection : public QDialog
     private slots :
         void Connect();
         void Cancel();
+};
+
+class DeviceDialog : public QDialog
+{
+    Q_OBJECT
+
+    public :
+        enum Device { V895 };
+
+    private :
+        Controller  *fParent;
+
+        QComboBox   *fDeviceCombo;
+        QSpinBox    *fAddressSpin;
+        QPushButton *fAddButton, *fCancelButton;
+        QTextEdit   *fInfoText;
+
+    public :
+        DeviceDialog( Controller *parent );
+
+    private slots :
+        void Cancel();
+        void Add();
 };

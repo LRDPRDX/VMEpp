@@ -5,6 +5,8 @@
 #include <QMainWindow>
 #include <QApplication>
 
+#include "Devices.h"
+
 #include "modules/V2718.h"
 
 class QAction;
@@ -30,6 +32,7 @@ class Controller : public QMainWindow
 
         QAction *fConnectAction, *fDisconnectAction, *fExitAction;
         QAction *fViewStatusBarAction;
+        QAction *fAddDeviceAction;
 
         QTabWidget *fMainTab;
         QPushButton *fProgramButton;
@@ -63,6 +66,7 @@ class Controller : public QMainWindow
     private slots :
         void ToggleStatusBar();
         void OpenConnectDialog();
+        void OpenDeviceDialog();
 
     signals :
         void Connected( bool );
@@ -73,4 +77,5 @@ class Controller : public QMainWindow
         ~Controller();
 
     friend class Connection;
+    friend void DeviceV895::Connect();
 };

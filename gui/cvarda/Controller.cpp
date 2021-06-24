@@ -37,6 +37,7 @@ Controller::~Controller() {}
 /****** Constructive methods ******/
 void Controller::CreateActions()
 {
+    // Main actions
     fConnectAction = new QAction( "&Connect", this );
         connect( this, &Controller::Connected, fConnectAction, &QAction::setDisabled );
     fDisconnectAction = new QAction( "&Disconnect", this );
@@ -48,19 +49,25 @@ void Controller::CreateActions()
         fileMenu->addAction( fDisconnectAction );
         fileMenu->addSeparator();
         fileMenu->addAction( fExitAction );
-
     connect( fConnectAction, &QAction::triggered, this, &Controller::OpenConnectDialog );
     connect( fDisconnectAction, &QAction::triggered, this, &Controller::Disconnect );
     connect( fExitAction, &QAction::triggered, this, &Controller::close );
 
+    // View actions
     fViewStatusBarAction = new QAction( "&View statusbar" );
         fViewStatusBarAction->setCheckable( true );
         fViewStatusBarAction->setChecked( true );
 
     QMenu *viewMenu = menuBar()->addMenu( "&View" );
         viewMenu->addAction( fViewStatusBarAction );
-
     connect( fViewStatusBarAction, &QAction::triggered, this, &Controller::ToggleStatusBar );
+
+    // Add actions
+    fAddDeviceAction = new QAction( "Device" );
+        connect( this, &Controller::Connected, fAddDeviceAction, &QAction::setEnabled );
+    QMenu *addMenu = menuBar()->addMenu( "&Add" );
+        addMenu->addAction( fAddDeviceAction );
+    connect( fAddDeviceAction, &QAction::triggered, this, &Controller::OpenDeviceDialog );
 }
 
 void Controller::CreateCentralWidget()
@@ -258,6 +265,7 @@ void Controller::CreatePulserTab()
     tab->setLayout( vLayout );
 }
 
+/****** SLOTS ******/
 void Controller::OpenConnectDialog()
 {
     Connection *cDialog = new Connection( this );
@@ -266,6 +274,15 @@ void Controller::OpenConnectDialog()
         cDialog->resize( 300, 150 );
         cDialog->setWindowTitle( "Connection dialog" );
     cDialog->show();
+}
+
+void Controller::OpenDeviceDialog()
+{
+    DeviceDialog *devDialog = new DeviceDialog( this );
+        devDialog->setAttribute( Qt::WA_DeleteOnClose, true );
+        devDialog->setModal( true );
+        devDialog->setWindowTitle( "Device dialog" );
+    devDialog->show();
 }
 
 void Controller::Connect( short link, short conet )

@@ -10,6 +10,7 @@
 #include <QMessageBox>
 
 #include "VException.h"
+#include "Devices.h"
 
 Connection::Connection( Controller *parent ) :
     QDialog( parent ),
@@ -76,6 +77,72 @@ void Connection::Connect()
 }
 
 void Connection::Cancel()
+{
+    this->close();
+}
+
+
+/****** DEVICE DIALOG ******/
+
+DeviceDialog::DeviceDialog( Controller *parent ) :
+    QDialog( parent ),
+
+    fParent( parent )
+{
+    // Upper layout (connection settings)
+    auto *devLabel = new QLabel( "Device:" );
+
+    fDeviceCombo = new QComboBox();
+        fDeviceCombo->addItem( "V895", Device::V895 );
+
+    auto *addressLabel = new QLabel( "Address [31:16]:" );
+    fAddressSpin = new QSpinBox();
+        fAddressSpin->setPrefix( "0x" );
+        fAddressSpin->setSuffix( " 0000" );
+        fAddressSpin->setDisplayIntegerBase( 16 );
+        fAddressSpin->setRange( 0, 0xffff );
+        QFont font( "monospace" );
+        fAddressSpin->setFont( font );
+
+    QHBoxLayout *settingsLayout = new QHBoxLayout();
+        settingsLayout->addWidget( devLabel, Qt::AlignRight );
+        settingsLayout->addWidget( fDeviceCombo );
+        settingsLayout->addWidget( addressLabel, Qt::AlignRight );
+        settingsLayout->addWidget( fAddressSpin );
+        settingsLayout->setStretchFactor( fAddressSpin, 1  );
+
+    // Lower layout (buttons)
+    fAddButton = new QPushButton( "Add" );
+    connect( fAddButton, &QPushButton::clicked, this, &DeviceDialog::Add );
+
+    fCancelButton = new QPushButton( "Cancel" );
+    connect( fCancelButton, &QPushButton::clicked, this, &DeviceDialog::Cancel );
+
+    auto *buttonsLayout = new QHBoxLayout();
+        buttonsLayout->addWidget( fAddButton );
+        buttonsLayout->addWidget( fCancelButton );
+
+    auto *extLayout = new QVBoxLayout();
+        extLayout->addLayout( settingsLayout );
+        extLayout->addLayout( buttonsLayout );
+
+    setLayout( extLayout );
+}
+
+void DeviceDialog::Add()
+{
+    uint32_t address = fAddressSpin->value() << 16U;
+    switch( fDeviceCombo->currentData().toInt() )
+    {
+        case( Device::V895 ) :
+            DeviceV895 *d = new DeviceV895( address, fParent );
+                d->show();
+            this->close();
+            break;
+    }
+}
+
+void DeviceDialog::Cancel()
 {
     this->close();
 }
