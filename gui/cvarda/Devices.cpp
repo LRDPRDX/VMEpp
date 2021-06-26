@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QFormLayout>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QCheckBox>
@@ -33,6 +34,7 @@ DeviceV895::DeviceV895( uint32_t address, Controller *parent ) :
     connect( fParent, &Controller::Connected, this, &DeviceV895::OnControllerDisconnect );
 
     CreateActions();
+    CreateCentralWidget();
 
     emit Connected( false );
 }
@@ -58,6 +60,61 @@ void DeviceV895::CreateActions()
     connect( fConnectAction, &QAction::triggered, this, &DeviceV895::Connect );
     connect( fDisconnectAction, &QAction::triggered, this, &DeviceV895::Disconnect );
     connect( fExitAction, &QAction::triggered, this, &DeviceV895::close );
+}
+
+void DeviceV895::CreateCentralWidget()
+{
+    QWidget *centralWidget = new QWidget();
+    QVBoxLayout *vLayout = new QVBoxLayout();
+
+    QHBoxLayout *chLayout = new QHBoxLayout();
+    QGroupBox *chGroup = new QGroupBox( "Channels" );
+
+    for( int nG = 0; nG < N_GROUPS; ++nG )
+    {
+        QGroupBox *group = new QGroupBox( QString::number(nG * N_CH_IN_GROUP) +
+                                          "-" + QString::number((nG + 1) * N_CH_IN_GROUP - 1) );
+        QGridLayout *gridLayout = new QGridLayout();
+        for( uint8_t i = 0; i < N_CH_IN_GROUP; ++i )
+        {
+            uint8_t ch = i + N_CH_IN_GROUP * nG;
+            QLabel* thrLabel = new QLabel( tr("Threshold :") );
+            fThrSpin[ch] = new QSpinBox();
+                fThrSpin[ch]->setRange( 0, 0xFF );
+
+            fEnableCheck[ch] = new QCheckBox( "Enable" );
+
+            gridLayout->addWidget( thrLabel, i, 0, Qt::AlignRight );
+            gridLayout->addWidget( fThrSpin[ch], i, 1 );
+            gridLayout->addWidget( fEnableCheck[ch], i, 2 );
+            if( i == N_CH_IN_GROUP - 1 )
+            {
+                QLabel* widthLabel = new QLabel( "Width :" );
+                fWidthSpin[nG] = new QSpinBox();
+                    fWidthSpin[nG]->setRange( 4, 40 );
+                gridLayout->addWidget( widthLabel, i, 3, Qt::AlignRight );
+                gridLayout->addWidget( fWidthSpin[nG], i, 4 );
+            }
+        }
+        group->setLayout( gridLayout );
+        chLayout->addWidget( group );
+    }
+    chGroup->setLayout( chLayout );
+    vLayout->addWidget( chGroup );
+
+    QGroupBox *commonGroup = new QGroupBox( "Common" );
+    QFormLayout *commLayout = new QFormLayout();
+    QLabel *majLevel = new QLabel( "Majority level: " );
+    fMajLevelSpin = new QSpinBox();
+        fMajLevelSpin->setRange( 0, N_CH );
+    commLayout->addRow( majLevel, fMajLevelSpin );
+    commonGroup->setLayout( commLayout );
+
+    vLayout->addWidget( commonGroup );
+
+    centralWidget->setLayout( vLayout );
+
+    setCentralWidget( centralWidget );
 }
 
 void DeviceV895::OnControllerDisconnect( bool status )
@@ -91,6 +148,8 @@ void DeviceV895::Connect()
 
 void DeviceV895::Disconnect()
 {
+    fDevice.Release();
+
     statusBar()->showMessage( "Disconnected..." );
     emit Connected( false );
 }

@@ -15,6 +15,10 @@ class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
 
+static constexpr uint8_t N_CH = vmeplus::V895::GetChNumber(); // 16 channels
+static constexpr uint8_t N_GROUPS = 2;
+static constexpr uint8_t N_CH_IN_GROUP = N_CH / N_GROUPS; // 8 channels in group
+
 class Controller;
 
 class DeviceV895 : public QMainWindow
@@ -29,9 +33,14 @@ class DeviceV895 : public QMainWindow
 
     protected :
         QAction *fConnectAction, *fDisconnectAction, *fExitAction;
+        QSpinBox *fThrSpin[N_CH];
+        QCheckBox *fEnableCheck[N_CH];
+        QSpinBox *fWidthSpin[N_GROUPS];
+        QSpinBox *fMajLevelSpin;
 
     protected :
         void CreateActions();
+        void CreateCentralWidget();
 
     protected :
         void closeEvent( QCloseEvent *event ) override;
