@@ -37,6 +37,7 @@ class DeviceV895 : public QMainWindow
         QCheckBox *fEnableCheck[N_CH];
         QSpinBox *fWidthSpin[N_GROUPS];
         QSpinBox *fMajLevelSpin;
+        QPushButton *fProgramButton, *fTestButton;
 
     protected :
         void CreateActions();
@@ -45,7 +46,8 @@ class DeviceV895 : public QMainWindow
     protected :
         void closeEvent( QCloseEvent *event ) override;
 
-    public :
+    public slots:
+        void SendTest();  
         void Connect();
         void Disconnect();
         void OnControllerDisconnect( bool );

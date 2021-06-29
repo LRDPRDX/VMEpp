@@ -72,8 +72,8 @@ void DeviceV895::CreateCentralWidget()
 
     for( int nG = 0; nG < N_GROUPS; ++nG )
     {
-        QGroupBox *group = new QGroupBox( QString::number(nG * N_CH_IN_GROUP) +
-                                          "-" + QString::number((nG + 1) * N_CH_IN_GROUP - 1) );
+        QGroupBox *groupOfEight = new QGroupBox( QString::number(nG * N_CH_IN_GROUP) +
+                                                 "-" + QString::number((nG + 1) * N_CH_IN_GROUP - 1) );
         QGridLayout *gridLayout = new QGridLayout();
         for( uint8_t i = 0; i < N_CH_IN_GROUP; ++i )
         {
@@ -96,21 +96,34 @@ void DeviceV895::CreateCentralWidget()
                 gridLayout->addWidget( fWidthSpin[nG], i, 4 );
             }
         }
-        group->setLayout( gridLayout );
-        chLayout->addWidget( group );
+        groupOfEight->setLayout( gridLayout );
+        chLayout->addWidget( groupOfEight );
     }
     chGroup->setLayout( chLayout );
     vLayout->addWidget( chGroup );
 
     QGroupBox *commonGroup = new QGroupBox( "Common" );
-    QFormLayout *commLayout = new QFormLayout();
-    QLabel *majLevel = new QLabel( "Majority level: " );
+    QHBoxLayout *commLayout = new QHBoxLayout();
+
+    QLabel *majLabel = new QLabel( "Majority level: " );
+
     fMajLevelSpin = new QSpinBox();
         fMajLevelSpin->setRange( 0, N_CH );
-    commLayout->addRow( majLevel, fMajLevelSpin );
-    commonGroup->setLayout( commLayout );
 
+    fTestButton = new QPushButton( "TEST" );
+        connect( this, &DeviceV895::Connected, fTestButton, &QPushButton::setEnabled );
+        connect( fTestButton, &QPushButton::clicked, this, &DeviceV895::SendTest );
+
+    commLayout->addWidget( majLabel, 1, Qt::AlignRight );
+    commLayout->addWidget( fMajLevelSpin, 10 );
+    commLayout->addWidget( fTestButton, 1 );
+    commonGroup->setLayout( commLayout );
     vLayout->addWidget( commonGroup );
+
+    fProgramButton = new QPushButton( "PROGRAM" );
+        connect( this, &DeviceV895::Connected, fProgramButton, &QPushButton::setEnabled );
+
+    vLayout->addWidget( fProgramButton );
 
     centralWidget->setLayout( vLayout );
 
@@ -123,6 +136,11 @@ void DeviceV895::OnControllerDisconnect( bool status )
     {
         Disconnect();
     }
+}
+
+void DeviceV895::SendTest()
+{
+    fDevice.SendTest();
 }
 
 void DeviceV895::Connect()
