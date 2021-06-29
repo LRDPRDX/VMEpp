@@ -242,7 +242,6 @@ namespace vmeplus {
 
         protected:
             void Initialize() override;
-            void Release() override;
 
             /******************************/
             /****** DATA ACQUISITION ******/

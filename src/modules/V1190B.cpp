@@ -70,8 +70,6 @@ namespace vmeplus {
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...OK");
     }
 
-    void V1190B::Release() {}
-
     /****** DATA ACQUISITION ******/
     V1190B::EventFIFO V1190B::ReadEventFIFO()
     {
