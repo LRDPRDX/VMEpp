@@ -1,4 +1,5 @@
 # Compilation results
+.idea/
 *.[od]
 *.pcm
 *.so
@@ -11,15 +12,21 @@ Main
 # Tests
 /test/*
 !/test/V895/
+!/test/V1190B/
+
+# Data
+*.dat
 
 # Documentation
-/doc
+# /doc
 
 # ROOT directories
 ROOT/
+!/test/V1190B/data_acq/continuous/ROOT/
 
 # rsync script
 /backup.sh
 
 # recovery files
+*.swo
 *.swp
