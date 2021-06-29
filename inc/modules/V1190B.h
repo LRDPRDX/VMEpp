@@ -1,6 +1,29 @@
 #ifndef V_PLUS_V1190B_H
 #define V_PLUS_V1190B_H
 
+//*******************************************************************
+//
+// Description :
+//      Header for the CAEN V1190B module.
+//      V1190B is a 64 channel VME Time to Digital Converter 
+// Author :
+//      Polina Sayfudinova & Sikach Bogdan
+// Location :
+//      Budker Institute of Nuclear Physics. Room 210/2, Phone 51-57
+// Feedback :
+//      p.saifudinova@g.nsu.ru, paradox1859@gmail.com
+//
+//*******************************************************************
+//
+//
+//*******************************************************************
+// Comments description
+// D32, D16, ...    = Data size
+// A32, A24, ...    = Address modifier (however, it's always A32 here)
+// R, W, RW         = Read, Write or Read-Write access modes
+// Aux              = Auxiliary data
+//*******************************************************************
+
 // MEMORY MAP (BEGIN)
 #define V1190B_OUTPUT_BUFFER                0X0000UL
 #define V1190B_OUTPUT_BUFFER_MAX            0x0FFCUL
