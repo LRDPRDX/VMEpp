@@ -1,4 +1,5 @@
 #include <QMessageBox>
+#include <QPushButton>
 #include <QCloseEvent>
 #include <QStatusBar>
 
@@ -17,6 +18,9 @@ DeviceWindow::DeviceWindow( Controller *parent ) :
     setWindowTitle( "V895" );
 
     connect( fParent, &Controller::Connected, this, &DeviceWindow::OnControllerDisconnect );
+
+    fProgramButton = new QPushButton( "PROGRAM" );
+        connect( this, &DeviceWindow::Connected, fProgramButton, &QPushButton::setEnabled );
 
     emit Connected( false );
 

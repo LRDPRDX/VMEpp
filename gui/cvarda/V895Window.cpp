@@ -119,9 +119,6 @@ void V895Window::CreateCentralWidget()
     commonGroup->setLayout( commLayout );
     vLayout->addWidget( commonGroup );
 
-    fProgramButton = new QPushButton( "PROGRAM" );
-        connect( this, &V895Window::Connected, fProgramButton, &QPushButton::setEnabled );
-
     vLayout->addWidget( fProgramButton );
 
     centralWidget->setLayout( vLayout );

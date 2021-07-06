@@ -26,7 +26,7 @@ class V895Window : public DeviceWindow
         QCheckBox *fEnableCheck[N_CH];
         QSpinBox *fWidthSpin[N_GROUPS];
         QSpinBox *fMajLevelSpin;
-        QPushButton *fProgramButton, *fTestButton;
+        QPushButton *fTestButton;
 
     protected :
         void CreateActions();
