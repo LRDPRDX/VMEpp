@@ -1,5 +1,6 @@
 #include "Controller.h"
-#include "Devices.h"
+#include "V895Window.h"
+#include "modules/V895.h"
 
 #include <QMenu>
 #include <QMenuBar>
@@ -23,33 +24,31 @@
 #include "VException.h"
 #include "qnamespace.h"
 
-DeviceV895::DeviceV895( uint32_t address, Controller *parent ) :
-    QMainWindow( parent ),
-    fParent( parent ),
-    fDevice( address )
+V895Window::V895Window( uint32_t address, Controller *parent ) :
+    DeviceWindow( parent )
 {
-    resize( 300, 150 );
+    fDevice = new vmeplus::V895( address );
+
     setWindowTitle( "V895" );
-
-    connect( fParent, &Controller::Connected, this, &DeviceV895::OnControllerDisconnect );
-
     CreateActions();
     CreateCentralWidget();
 
     emit Connected( false );
+
+    statusBar()->showMessage( "Ready..." );
 }
 
-DeviceV895::~DeviceV895()
+V895Window::~V895Window()
 {
 }
 
-void DeviceV895::CreateActions()
+void V895Window::CreateActions()
 {
     // Main actions
     fConnectAction = new QAction( "&Connect", this );
-        connect( this, &DeviceV895::Connected, fConnectAction, &QAction::setDisabled );
+        connect( this, &V895Window::Connected, fConnectAction, &QAction::setDisabled );
     fDisconnectAction = new QAction( "&Disconnect", this );
-        connect( this, &DeviceV895::Connected, fDisconnectAction, &QAction::setEnabled );
+        connect( this, &V895Window::Connected, fDisconnectAction, &QAction::setEnabled );
     fExitAction = new QAction( "&Exit", this );
 
     QMenu *fileMenu = menuBar()->addMenu( "&File" );
@@ -57,12 +56,12 @@ void DeviceV895::CreateActions()
         fileMenu->addAction( fDisconnectAction );
         fileMenu->addSeparator();
         fileMenu->addAction( fExitAction );
-    connect( fConnectAction, &QAction::triggered, this, &DeviceV895::Connect );
-    connect( fDisconnectAction, &QAction::triggered, this, &DeviceV895::Disconnect );
-    connect( fExitAction, &QAction::triggered, this, &DeviceV895::close );
+    connect( fConnectAction, &QAction::triggered, this, &V895Window::Connect );
+    connect( fDisconnectAction, &QAction::triggered, this, &V895Window::Disconnect );
+    connect( fExitAction, &QAction::triggered, this, &V895Window::close );
 }
 
-void DeviceV895::CreateCentralWidget()
+void V895Window::CreateCentralWidget()
 {
     QWidget *centralWidget = new QWidget();
     QVBoxLayout *vLayout = new QVBoxLayout();
@@ -111,8 +110,8 @@ void DeviceV895::CreateCentralWidget()
         fMajLevelSpin->setRange( 0, N_CH );
 
     fTestButton = new QPushButton( "TEST" );
-        connect( this, &DeviceV895::Connected, fTestButton, &QPushButton::setEnabled );
-        connect( fTestButton, &QPushButton::clicked, this, &DeviceV895::SendTest );
+        connect( this, &V895Window::Connected, fTestButton, &QPushButton::setEnabled );
+        connect( fTestButton, &QPushButton::clicked, this, &V895Window::SendTest );
 
     commLayout->addWidget( majLabel, 1, Qt::AlignRight );
     commLayout->addWidget( fMajLevelSpin, 10 );
@@ -121,7 +120,7 @@ void DeviceV895::CreateCentralWidget()
     vLayout->addWidget( commonGroup );
 
     fProgramButton = new QPushButton( "PROGRAM" );
-        connect( this, &DeviceV895::Connected, fProgramButton, &QPushButton::setEnabled );
+        connect( this, &V895Window::Connected, fProgramButton, &QPushButton::setEnabled );
 
     vLayout->addWidget( fProgramButton );
 
@@ -130,63 +129,14 @@ void DeviceV895::CreateCentralWidget()
     setCentralWidget( centralWidget );
 }
 
-void DeviceV895::OnControllerDisconnect( bool status )
+void V895Window::SendTest()
 {
-    if( not status )
-    {
-        Disconnect();
-    }
-}
-
-void DeviceV895::SendTest()
-{
-    fDevice.SendTest();
-}
-
-void DeviceV895::Connect()
-{
-    bool success = true;
     try
     {
-        fParent->fController.RegisterSlave( &fDevice );
+        static_cast<vmeplus::V895*>(fDevice)->SendTest();
     }
-    catch( const vmeplus::VException &e )
+    catch( vmeplus::VException &e )
     {
-        success = false;
-
-        QMessageBox::warning( this,
-                              tr( "Connection FAILED" ),
-                              tr( e.what() ),
-                              QMessageBox::Ok );
-    }
-
-    statusBar()->showMessage( success ? "Connected..." : "Disconnected..." );
-    emit Connected( success );
-}
-
-void DeviceV895::Disconnect()
-{
-    fDevice.Release();
-
-    statusBar()->showMessage( "Disconnected..." );
-    emit Connected( false );
-}
-
-void DeviceV895::closeEvent( QCloseEvent *event )
-{
-    const QMessageBox::StandardButton ret =
-        QMessageBox::warning( this,
-                              tr( "Exit" ),
-                              tr( "Are you sure?" ),
-                              QMessageBox::Ok | QMessageBox::Cancel );
-    switch( ret )
-    {
-        case( QMessageBox::Ok ) :
-            Disconnect();
-            event->accept();
-            break;
-        default :
-            event->ignore();
-            break;
     }
 }
+

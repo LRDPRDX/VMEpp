@@ -10,7 +10,7 @@
 #include <QMessageBox>
 
 #include "VException.h"
-#include "Devices.h"
+#include "V895Window.h"
 
 Connection::Connection( Controller *parent ) :
     QDialog( parent ),
@@ -135,7 +135,7 @@ void DeviceDialog::Add()
     switch( fDeviceCombo->currentData().toInt() )
     {
         case( Device::V895 ) :
-            DeviceV895 *d = new DeviceV895( address, fParent );
+            V895Window *d = new V895Window( address, fParent );
                 d->show();
             this->close();
             break;

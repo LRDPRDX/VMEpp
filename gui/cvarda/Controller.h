@@ -1,13 +1,10 @@
 #pragma once
 
-#include <QWidget>
-#include <QDialog>
 #include <QMainWindow>
-#include <QApplication>
-
-#include "Devices.h"
 
 #include "modules/V2718.h"
+
+#include "DeviceWindow.h"
 
 class QAction;
 class QPushButton;
@@ -16,8 +13,6 @@ class QSpinBox;
 class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
-
-class Connection;
 
 static constexpr uint8_t N_INS = vmeplus::V2718::GetNInputs();
 static constexpr uint8_t N_OUTS = vmeplus::V2718::GetNOutputs();
@@ -77,5 +72,5 @@ class Controller : public QMainWindow
         ~Controller();
 
     friend class Connection;
-    friend void DeviceV895::Connect();
+    friend void DeviceWindow::Connect();
 };

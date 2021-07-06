@@ -1,6 +1,3 @@
-#include "Controller.h"
-#include "Dialogs.h"
-
 #include <QMenu>
 #include <QMenuBar>
 #include <QApplication>
@@ -18,9 +15,12 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTabWidget>
+#include "qnamespace.h"
+
+#include "Controller.h"
+#include "Dialogs.h"
 
 #include "VException.h"
-#include "qnamespace.h"
 
 Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
@@ -29,6 +29,7 @@ Controller::Controller( QWidget *parent ) :
     CreateCentralWidget();
 
     emit Connected( false );
+
     statusBar()->showMessage( "Ready..." );
 }
 
