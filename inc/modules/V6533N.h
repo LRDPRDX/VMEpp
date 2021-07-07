@@ -75,7 +75,7 @@ namespace vmeplus
             static uint8_t const fChNumber = 0x06U;   // 6
 
         public :
-            static uint8_t GetChNumber() { return fChNumber; }
+            static uint8_t constexpr GetChNumber() { return fChNumber; }
 
         protected :
             virtual void    Initialize() override;
