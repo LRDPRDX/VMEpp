@@ -2,6 +2,9 @@
 #include <QPushButton>
 #include <QCloseEvent>
 #include <QStatusBar>
+#include <QAction>
+#include <QMenuBar>
+#include <QDebug>
 
 #include <VException.h>
 
@@ -15,21 +18,37 @@ DeviceWindow::DeviceWindow( Controller *parent ) :
     fDevice( nullptr )
 {
     resize( 300, 150 );
-    setWindowTitle( "V895" );
 
     connect( fParent, &Controller::Connected, this, &DeviceWindow::OnControllerDisconnect );
 
     fProgramButton = new QPushButton( "PROGRAM" );
         connect( this, &DeviceWindow::Connected, fProgramButton, &QPushButton::setEnabled );
+        connect( fProgramButton, &QPushButton::clicked, this, &DeviceWindow::Program );
 
-    emit Connected( false );
-
-    statusBar()->showMessage( "Ready..." );
+    CreateFileMenu();
 }
 
 DeviceWindow::~DeviceWindow()
 {
     delete fDevice;
+}
+
+void DeviceWindow::CreateFileMenu()
+{
+    fConnectAction = new QAction( "&Connect", this );
+        connect( this, &DeviceWindow::Connected, fConnectAction, &QAction::setDisabled );
+    fDisconnectAction = new QAction( "&Disconnect", this );
+        connect( this, &DeviceWindow::Connected, fDisconnectAction, &QAction::setEnabled );
+    fExitAction = new QAction( "&Exit", this );
+
+    QMenu *fileMenu = menuBar()->addMenu( "&File" );
+        fileMenu->addAction( fConnectAction );
+        fileMenu->addAction( fDisconnectAction );
+        fileMenu->addSeparator();
+        fileMenu->addAction( fExitAction );
+    connect( fConnectAction, &QAction::triggered, this, &DeviceWindow::Connect );
+    connect( fDisconnectAction, &QAction::triggered, this, &DeviceWindow::Disconnect );
+    connect( fExitAction, &QAction::triggered, this, &DeviceWindow::close );
 }
 
 void DeviceWindow::Connect()

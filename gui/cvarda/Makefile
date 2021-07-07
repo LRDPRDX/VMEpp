@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -O2 -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I../../inc -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib64/qt5/mkspecs/linux-g++
+INCPATH       = -I. -I../../inc -Iinc -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib64/qt5/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake-qt5
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -50,11 +50,11 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = Controller.cpp \
-		DeviceWindow.cpp \
-		Dialogs.cpp \
-		main.cpp \
-		V895Window.cpp moc_Controller.cpp \
+SOURCES       = src/Controller.cpp \
+		src/DeviceWindow.cpp \
+		src/Dialogs.cpp \
+		src/main.cpp \
+		src/V895Window.cpp moc_Controller.cpp \
 		moc_DeviceWindow.cpp \
 		moc_Dialogs.cpp \
 		moc_V895Window.cpp
@@ -140,14 +140,14 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
 		/usr/lib64/qt5/mkspecs/features/lex.prf \
-		cvarda.pro Controller.h \
-		DeviceWindow.h \
-		Dialogs.h \
-		V895Window.h Controller.cpp \
-		DeviceWindow.cpp \
-		Dialogs.cpp \
-		main.cpp \
-		V895Window.cpp
+		cvarda.pro inc/Controller.h \
+		inc/DeviceWindow.h \
+		inc/Dialogs.h \
+		inc/V895Window.h src/Controller.cpp \
+		src/DeviceWindow.cpp \
+		src/Dialogs.cpp \
+		src/main.cpp \
+		src/V895Window.cpp
 QMAKE_TARGET  = cvarda
 DESTDIR       = 
 TARGET        = cvarda
@@ -329,8 +329,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents Controller.h DeviceWindow.h Dialogs.h V895Window.h $(DISTDIR)/
-	$(COPY_FILE) --parents Controller.cpp DeviceWindow.cpp Dialogs.cpp main.cpp V895Window.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents inc/Controller.h inc/DeviceWindow.h inc/Dialogs.h inc/V895Window.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/Controller.cpp src/DeviceWindow.cpp src/Dialogs.cpp src/main.cpp src/V895Window.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -370,40 +370,40 @@ moc_Controller.cpp: ../../inc/modules/V2718.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-		DeviceWindow.h \
+		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
-		Controller.h \
+		inc/Controller.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include Controller.h -o moc_Controller.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/Controller.h -o moc_Controller.cpp
 
 moc_DeviceWindow.cpp: ../../inc/VSlave.h \
-		DeviceWindow.h \
+		inc/DeviceWindow.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include DeviceWindow.h -o moc_DeviceWindow.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/DeviceWindow.h -o moc_DeviceWindow.cpp
 
-moc_Dialogs.cpp: Controller.h \
+moc_Dialogs.cpp: inc/Controller.h \
 		../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-		DeviceWindow.h \
+		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
-		Dialogs.h \
+		inc/Dialogs.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include Dialogs.h -o moc_Dialogs.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/Dialogs.h -o moc_Dialogs.cpp
 
 moc_V895Window.cpp: ../../inc/modules/V895.h \
 		../../inc/VSlave.h \
-		DeviceWindow.h \
-		V895Window.h \
+		inc/DeviceWindow.h \
+		inc/V895Window.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include V895Window.h -o moc_V895Window.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/V895Window.h -o moc_V895Window.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -419,69 +419,70 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
-Controller.o: Controller.cpp Controller.h \
+Controller.o: src/Controller.cpp inc/Controller.h \
 		../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-		DeviceWindow.h \
+		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
-		Dialogs.h \
+		inc/Dialogs.h \
 		../../inc/VException.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Controller.o Controller.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Controller.o src/Controller.cpp
 
-DeviceWindow.o: DeviceWindow.cpp DeviceWindow.h \
+DeviceWindow.o: src/DeviceWindow.cpp ../../inc/VException.h \
+		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
-		Controller.h \
+		inc/Controller.h \
 		../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DeviceWindow.o DeviceWindow.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DeviceWindow.o src/DeviceWindow.cpp
 
-Dialogs.o: Dialogs.cpp Dialogs.h \
-		Controller.h \
+Dialogs.o: src/Dialogs.cpp inc/Dialogs.h \
+		inc/Controller.h \
 		../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-		DeviceWindow.h \
+		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		../../inc/VException.h \
-		V895Window.h \
+		inc/V895Window.h \
 		../../inc/modules/V895.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Dialogs.o Dialogs.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Dialogs.o src/Dialogs.cpp
 
-main.o: main.cpp Controller.h \
+main.o: src/main.cpp inc/Controller.h \
 		../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-		DeviceWindow.h \
+		inc/DeviceWindow.h \
 		../../inc/VSlave.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
-V895Window.o: V895Window.cpp Controller.h \
+V895Window.o: src/V895Window.cpp inc/Controller.h \
 		../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-		DeviceWindow.h \
+		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
-		V895Window.h \
+		inc/V895Window.h \
 		../../inc/modules/V895.h \
 		../../inc/VException.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o V895Window.o V895Window.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o V895Window.o src/V895Window.cpp
 
 moc_Controller.o: moc_Controller.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Controller.o moc_Controller.cpp

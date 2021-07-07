@@ -5,6 +5,7 @@
 #include "VSlave.h"
 
 class QPushButton;
+class QAction;
 
 class Controller;
 
@@ -21,14 +22,17 @@ class DeviceWindow : public QMainWindow
 
     protected :
         void closeEvent( QCloseEvent *event ) override;
+        void CreateFileMenu();
 
     protected :
+        QAction         *fConnectAction, *fDisconnectAction, *fExitAction;
         QPushButton     *fProgramButton;
 
     public slots :
         void Connect();
         void Disconnect();
         void OnControllerDisconnect( bool );
+        virtual void Program() = 0;
 
     signals :
         void Connected( bool );

@@ -44,21 +44,6 @@ V895Window::~V895Window()
 
 void V895Window::CreateActions()
 {
-    // Main actions
-    fConnectAction = new QAction( "&Connect", this );
-        connect( this, &V895Window::Connected, fConnectAction, &QAction::setDisabled );
-    fDisconnectAction = new QAction( "&Disconnect", this );
-        connect( this, &V895Window::Connected, fDisconnectAction, &QAction::setEnabled );
-    fExitAction = new QAction( "&Exit", this );
-
-    QMenu *fileMenu = menuBar()->addMenu( "&File" );
-        fileMenu->addAction( fConnectAction );
-        fileMenu->addAction( fDisconnectAction );
-        fileMenu->addSeparator();
-        fileMenu->addAction( fExitAction );
-    connect( fConnectAction, &QAction::triggered, this, &V895Window::Connect );
-    connect( fDisconnectAction, &QAction::triggered, this, &V895Window::Disconnect );
-    connect( fExitAction, &QAction::triggered, this, &V895Window::close );
 }
 
 void V895Window::CreateCentralWidget()
@@ -134,6 +119,12 @@ void V895Window::SendTest()
     }
     catch( vmeplus::VException &e )
     {
+        qInfo() << "Error";
     }
 }
 
+void V895Window::Program()
+{
+    qInfo() << "Programming V895...\n";
+    emit Programmed( true );
+}

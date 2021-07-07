@@ -21,7 +21,6 @@ class V895Window : public DeviceWindow
     Q_OBJECT
 
     protected :
-        QAction *fConnectAction, *fDisconnectAction, *fExitAction;
         QSpinBox *fThrSpin[N_CH];
         QCheckBox *fEnableCheck[N_CH];
         QSpinBox *fWidthSpin[N_GROUPS];
@@ -36,6 +35,8 @@ class V895Window : public DeviceWindow
         void SendTest();  
 
     public :
+        void Program() override;
+
         V895Window( uint32_t address, Controller *parent );
         ~V895Window();
 };
