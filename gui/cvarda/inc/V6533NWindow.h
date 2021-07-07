@@ -3,9 +3,7 @@
 #include "modules/V6533N.h"
 #include "DeviceWindow.h"
 
-static constexpr uint8_t N_CH = vmeplus::V895::GetChNumber(); // 16 channels
-static constexpr uint8_t N_GROUPS = 2;
-static constexpr uint8_t N_CH_IN_GROUP = N_CH / N_GROUPS; // 8 channels in group
+static constexpr uint8_t N_CH = vmeplus::V6533N::GetChNumber(); // 6 channels
 
 class QAction;
 class QPushButton;
@@ -16,27 +14,22 @@ class QVBoxLayout;
 class QCheckBox;
 
 
-class V895Window : public DeviceWindow
+class V6533NWindow : public DeviceWindow
 {
     Q_OBJECT
 
     protected :
-        QSpinBox *fThrSpin[N_CH];
-        QCheckBox *fEnableCheck[N_CH];
-        QSpinBox *fWidthSpin[N_GROUPS];
-        QSpinBox *fMajLevelSpin;
-        QPushButton *fTestButton;
+        QSpinBox    *fVoltSpin[N_CH], *fCurSpin[N_CH], *fUpSpin[N_CH], *fDownSpin[N_CH], fSWMaxSpin[N_CH];
+        QComboBox   *fOffCombo[N_CH];
+        QPushButton *fOnButton, *fOffButton, *fKillButton;
 
     protected :
         void CreateActions();
         void CreateCentralWidget();
 
-    public slots :
-        void SendTest();  
-
     public :
         void Program() override;
 
-        V895Window( uint32_t address, Controller *parent );
-        ~V895Window();
+        V6533NWindow( uint32_t address, Controller *parent );
+        ~V6533NWindow();
 };
