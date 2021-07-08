@@ -147,6 +147,7 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		cvarda.pro inc/Controller.h \
 		inc/DeviceWindow.h \
 		inc/Dialogs.h \
+		inc/Style.h \
 		inc/V6533NWindow.h \
 		inc/V895Window.h src/Controller.cpp \
 		src/DeviceWindow.cpp \
@@ -335,7 +336,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents inc/Controller.h inc/DeviceWindow.h inc/Dialogs.h inc/V6533NWindow.h inc/V895Window.h $(DISTDIR)/
+	$(COPY_FILE) --parents inc/Controller.h inc/DeviceWindow.h inc/Dialogs.h inc/Style.h inc/V6533NWindow.h inc/V895Window.h $(DISTDIR)/
 	$(COPY_FILE) --parents src/Controller.cpp src/DeviceWindow.cpp src/Dialogs.cpp src/main.cpp src/V6533NWindow.cpp src/V895Window.cpp $(DISTDIR)/
 
 
@@ -443,6 +444,7 @@ Controller.o: src/Controller.cpp inc/Controller.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/Dialogs.h \
+		inc/Style.h \
 		../../inc/VException.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Controller.o src/Controller.cpp
 
@@ -470,7 +472,9 @@ Dialogs.o: src/Dialogs.cpp inc/Dialogs.h \
 		../../inc/VSlave.h \
 		../../inc/VException.h \
 		inc/V895Window.h \
-		../../inc/modules/V895.h
+		../../inc/modules/V895.h \
+		inc/V6533NWindow.h \
+		../../inc/modules/V6533N.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Dialogs.o src/Dialogs.cpp
 
 main.o: src/main.cpp inc/Controller.h \
@@ -495,6 +499,7 @@ V6533NWindow.o: src/V6533NWindow.cpp inc/Controller.h \
 		../../inc/VSlave.h \
 		inc/V6533NWindow.h \
 		../../inc/modules/V6533N.h \
+		inc/Style.h \
 		../../inc/VException.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o V6533NWindow.o src/V6533NWindow.cpp
 

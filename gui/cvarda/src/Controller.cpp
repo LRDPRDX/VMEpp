@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLabel>
+#include <QFrame>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -19,6 +20,7 @@
 
 #include "Controller.h"
 #include "Dialogs.h"
+#include "Style.h"
 
 #include "VException.h"
 
@@ -196,10 +198,20 @@ void Controller::CreatePulserTab()
             fPulStopCombo[i]->addItem( "SW", cvManualSW );
             fPulStopCombo[i]->addItem( "Input " + QString::number( i ), (i == 0) ? cvInputSrc0 : cvInputSrc1 );
 
+        QFrame *buttonFrame = new QFrame(); 
+            buttonFrame->setFrameShape( QFrame::StyledPanel );
+        QHBoxLayout *buttonLayout = new QHBoxLayout();
+
         fPulStartButton[i] = new QPushButton( "START" ); 
+            fPulStartButton[i]->setStyleSheet( style::button::good );
             connect( this, &Controller::Connected, fPulStartButton[i], &QPushButton::setEnabled );
         fPulStopButton[i] = new QPushButton( "STOP" );
+            fPulStopButton[i]->setStyleSheet( style::button::bad );
             connect( this, &Controller::Connected, fPulStopButton[i], &QPushButton::setEnabled );
+
+        buttonLayout->addWidget( fPulStartButton[i] );
+        buttonLayout->addWidget( fPulStopButton[i] );
+        buttonFrame->setLayout( buttonLayout );
 
         pulLayout->addWidget( freqLabel, 0, 0, Qt::AlignRight );
         pulLayout->addWidget( fPulFreqSpin[i], 0, 1 );
@@ -211,8 +223,7 @@ void Controller::CreatePulserTab()
         pulLayout->addWidget( fPulStartCombo[i], 1, 1 );
         pulLayout->addWidget( stopLabel, 1, 2, Qt::AlignRight );
         pulLayout->addWidget( fPulStopCombo[i], 1, 3 );
-        pulLayout->addWidget( fPulStartButton[i], 1, 4 );
-        pulLayout->addWidget( fPulStopButton[i], 1, 5 );
+        pulLayout->addWidget( buttonFrame, 1, 4, 1, 2 );
 
         pulserGroup->setLayout( pulLayout );
 
@@ -226,12 +237,26 @@ void Controller::CreatePulserTab()
     fScalLimitSpin = new QSpinBox();
         fScalLimitSpin->setRange( 0, 1023 );
     fScalAutoCheck = new QCheckBox( "Auto reset" );    
+
+
+    QFrame *buttonFrame = new QFrame(); 
+        buttonFrame->setFrameShape( QFrame::StyledPanel );
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+
     fScalGateButton = new QPushButton( "GATE" );
+        fScalGateButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalGateButton, &QPushButton::setEnabled );
     fScalStartButton = new QPushButton( "START" );
+        fScalStartButton->setStyleSheet( style::button::good );
         connect( this, &Controller::Connected, fScalStartButton, &QPushButton::setEnabled );
     fScalResetButton = new QPushButton( "RESET" );
+        fScalResetButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalResetButton, &QPushButton::setEnabled );
+
+    buttonLayout->addWidget( fScalGateButton );
+    buttonLayout->addWidget( fScalStartButton );
+    buttonLayout->addWidget( fScalResetButton );
+    buttonFrame->setLayout( buttonLayout );
 
     QLabel *hitLabel = new QLabel( "Hit source:" );
     fScalHitCombo = new QComboBox();
@@ -248,9 +273,7 @@ void Controller::CreatePulserTab()
 
     scalLayout->addWidget( limitLabel, 0, 0, Qt::AlignRight );
     scalLayout->addWidget( fScalLimitSpin, 0, 1 );
-    scalLayout->addWidget( fScalGateButton, 0, 3 );
-    scalLayout->addWidget( fScalStartButton, 0, 4 );
-    scalLayout->addWidget( fScalResetButton, 0, 5 );
+    scalLayout->addWidget( buttonFrame, 0, 3, 1, 3 );
     scalLayout->addWidget( hitLabel, 1, 0, Qt::AlignRight );
     scalLayout->addWidget( fScalHitCombo, 1, 1 );
     scalLayout->addWidget( gateLabel, 1, 2, Qt::AlignRight );

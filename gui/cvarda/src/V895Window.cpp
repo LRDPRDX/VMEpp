@@ -1,7 +1,3 @@
-#include "Controller.h"
-#include "V895Window.h"
-#include "modules/V895.h"
-
 #include <QMenu>
 #include <QMenuBar>
 #include <QApplication>
@@ -20,9 +16,14 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTabWidget>
+#include "qnamespace.h"
+
+#include "Controller.h"
+#include "V895Window.h"
+#include "Style.h"
 
 #include "VException.h"
-#include "qnamespace.h"
+#include "modules/V895.h"
 
 V895Window::V895Window( uint32_t address, Controller *parent ) :
     DeviceWindow( parent )
@@ -95,6 +96,7 @@ void V895Window::CreateCentralWidget()
         fMajLevelSpin->setRange( 0, N_CH );
 
     fTestButton = new QPushButton( "TEST" );
+        fTestButton->setStyleSheet( style::button::good );
         connect( this, &V895Window::Connected, fTestButton, &QPushButton::setEnabled );
         connect( fTestButton, &QPushButton::clicked, this, &V895Window::SendTest );
 

@@ -10,6 +10,7 @@
 
 #include "DeviceWindow.h"
 #include "Controller.h"
+#include "Style.h"
 
 
 DeviceWindow::DeviceWindow( Controller *parent ) :
@@ -22,6 +23,7 @@ DeviceWindow::DeviceWindow( Controller *parent ) :
     connect( fParent, &Controller::Connected, this, &DeviceWindow::OnControllerDisconnect );
 
     fProgramButton = new QPushButton( "PROGRAM" );
+        fProgramButton->setStyleSheet( style::button::neutral );
         connect( this, &DeviceWindow::Connected, fProgramButton, &QPushButton::setEnabled );
         connect( fProgramButton, &QPushButton::clicked, this, &DeviceWindow::Program );
 

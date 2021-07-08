@@ -3,7 +3,6 @@
 #include "modules/V6533N.h"
 #include "DeviceWindow.h"
 
-static constexpr uint8_t N_CH = vmeplus::V6533N::GetChNumber(); // 6 channels
 
 class QAction;
 class QPushButton;
@@ -19,11 +18,17 @@ class V6533NWindow : public DeviceWindow
     Q_OBJECT
 
     protected :
-        QSpinBox    *fVoltSpin[N_CH], *fCurSpin[N_CH], *fUpSpin[N_CH], *fDownSpin[N_CH], fSWMaxSpin[N_CH];
+        // Auxiliary
+        static constexpr uint8_t N_CH = vmeplus::V6533N::GetChNumber(); // 6 channels
+
+    protected :
+        // Widgets
+        QSpinBox    *fVoltSpin[N_CH], *fCurSpin[N_CH], *fUpSpin[N_CH], *fDownSpin[N_CH], *fSWMaxSpin[N_CH];
         QComboBox   *fOffCombo[N_CH];
         QPushButton *fOnButton, *fOffButton, *fKillButton;
 
     protected :
+        // Creational member functions
         void CreateActions();
         void CreateCentralWidget();
 

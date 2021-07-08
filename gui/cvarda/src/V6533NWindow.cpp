@@ -11,6 +11,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLabel>
+#include <QFrame>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -20,6 +21,8 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTabWidget>
+
+#include "Style.h"
 
 #include "VException.h"
 #include "qnamespace.h"
@@ -53,7 +56,7 @@ void V6533NWindow::CreateCentralWidget()
 
     for( uint8_t ch = 0; ch < N_CH; ++ch )
     {
-        QGroupBox *chGroup = new QGroupBox( QString::number( ch ) );
+        QGroupBox *chGroup = new QGroupBox( QString( "Channel %1" ).arg( ch ) );
         QGridLayout *gridLayout = new QGridLayout();
 
         QLabel *voltLabel = new QLabel( "U (V):" );
@@ -81,6 +84,21 @@ void V6533NWindow::CreateCentralWidget()
             fOffCombo[ch]->addItem( "OFF", 0 );
             fOffCombo[ch]->addItem( "KILL", 1 );
 
+        QFrame *buttonFrame = new QFrame(); 
+            buttonFrame->setFrameShape( QFrame::StyledPanel );
+        QVBoxLayout *buttonLayout = new QVBoxLayout();
+
+        fOnButton = new QPushButton( "ON" );
+           fOnButton->setStyleSheet( style::button::good );
+           connect( this, &DeviceWindow::Connected, fOnButton, &QPushButton::setEnabled );
+        fOffButton = new QPushButton( "OFF" );
+           fOffButton->setStyleSheet( style::button::bad );
+           connect( this, &DeviceWindow::Connected, fOffButton, &QPushButton::setEnabled );
+
+        buttonLayout->addWidget( fOnButton );
+        buttonLayout->addWidget( fOffButton );
+        buttonFrame->setLayout( buttonLayout );
+
         gridLayout->addWidget( voltLabel, 0, 0, Qt::AlignRight ); 
         gridLayout->addWidget( fVoltSpin[ch], 0, 1 );
         gridLayout->addWidget( curLabel, 0, 2, Qt::AlignRight ); 
@@ -93,6 +111,8 @@ void V6533NWindow::CreateCentralWidget()
         gridLayout->addWidget( fDownSpin[ch], 1, 3 );
         gridLayout->addWidget( offLabel, 1, 4, Qt::AlignRight ); 
         gridLayout->addWidget( fOffCombo[ch], 1, 5 );
+
+        gridLayout->addWidget( buttonFrame, 0, 6, 2, 1 );
 
         chGroup->setLayout( gridLayout );
         vLayout->addWidget( chGroup );
