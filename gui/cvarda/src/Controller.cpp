@@ -130,11 +130,34 @@ void Controller::CreateIOTab()
         outLayout->addWidget( fOutLedCombo[i], i + 1, 5 );
     }
     outGroup->setLayout( outLayout );
+    outGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
 
     QGroupBox *inGroup = new QGroupBox( tr("Inputs") );
     QGridLayout *inLayout = new QGridLayout();
     for( uint8_t i = 0; i < N_INS; ++i )
     {
+        if( i == 0 )
+        {
+            QLabel* dumLabel = new QLabel( tr("Source:") );
+            QSizePolicy dumPolicy = dumLabel->sizePolicy();
+                dumPolicy.setRetainSizeWhenHidden( true );
+            dumLabel->setSizePolicy( dumPolicy );
+            dumLabel->hide();
+
+            QComboBox *dumCombo = new QComboBox();
+                dumCombo->addItem( "VME", cvVMESignals );
+                dumCombo->addItem( "Coincidence", cvCoincidence );
+                dumCombo->addItem( "P & S", cvMiscSignals );
+                dumCombo->addItem( "SW", cvManualSW );
+            dumPolicy = dumCombo->sizePolicy(); 
+                dumPolicy.setRetainSizeWhenHidden( true );
+            dumCombo->setSizePolicy( dumPolicy );
+            dumCombo->hide();
+
+            inLayout->addWidget( dumLabel, i, 0, Qt::AlignRight );
+            inLayout->addWidget( dumCombo, i, 1 );
+        }
+
         QLabel* polLabel = new QLabel( tr("Polarity:") );
         fInPolCombo[i] = new QComboBox();
             fInPolCombo[i]->addItem( "Direct", cvDirect  );
@@ -145,12 +168,13 @@ void Controller::CreateIOTab()
             fInLedCombo[i]->addItem( "Active high", cvActiveHigh );
             fInLedCombo[i]->addItem( "Active low", cvActiveLow );
 
-        inLayout->addWidget( polLabel, i, 0, Qt::AlignRight );
-        inLayout->addWidget( fInPolCombo[i], i, 1 );
-        inLayout->addWidget( ledLabel, i, 2, Qt::AlignRight );
-        inLayout->addWidget( fInLedCombo[i], i, 3 );
+        inLayout->addWidget( polLabel, i, 2, Qt::AlignRight );
+        inLayout->addWidget( fInPolCombo[i], i, 3 );
+        inLayout->addWidget( ledLabel, i, 4, Qt::AlignRight );
+        inLayout->addWidget( fInLedCombo[i], i, 5 );
     }
     inGroup->setLayout( inLayout );
+    inGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
 
     vLayout->addWidget( outGroup );
     vLayout->addWidget( inGroup );
