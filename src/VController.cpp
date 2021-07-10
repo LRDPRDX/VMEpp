@@ -123,6 +123,24 @@ namespace vmeplus
         }
     }
 
+    void VController::ADOCycle( uint32_t address, CVAddressModifier am )
+    {
+        auto ec = CAENVME_ADOCycle( fHandle, address, am );
+        if( ec )
+        {
+            throw VException( static_cast<VError_t>(ec), "ADOCycle" );
+        }
+    }
+
+    void VController::ADOHCycle( uint32_t address, CVAddressModifier am )
+    {
+        auto ec = CAENVME_ADOHCycle( fHandle, address, am );
+        if( ec )
+        {
+            throw VException( static_cast<VError_t>(ec), "ADOHCycle" );
+        }
+    }
+
     void VController::WriteFIFOMode( short value )
     {
         auto ec = CAENVME_SetFIFOMode( fHandle, value );

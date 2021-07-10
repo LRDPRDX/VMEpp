@@ -39,6 +39,9 @@ namespace vmeplus
             void    BLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, CVDataWidth dw, int *count ) override;//throws
             void    MBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) override;//throws
             void    FIFOMBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) override;//throws
+            void    ADOCycle( uint32_t address, CVAddressModifier am ) override;
+            void    ADOHCycle( uint32_t address, CVAddressModifier am ) override;
+
             void    WriteFIFOMode( short value ) override;
             short   ReadFIFOMode() override;
 
