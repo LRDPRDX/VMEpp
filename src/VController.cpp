@@ -281,4 +281,15 @@ namespace vmeplus
     //*************************
     //****** REQUESTER + ******
     //*************************
+
+    CVDisplay VController::ReadDisplay()
+    {
+        CVDisplay display;
+        auto ec = CAENVME_ReadDisplay( fHandle, &display );
+        if( ec )
+        {
+            throw VException( static_cast<VError_t>(ec), "ReadDisplay" );
+        }
+        return display;
+    }
 }
