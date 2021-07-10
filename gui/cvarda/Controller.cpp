@@ -64,7 +64,7 @@ void Controller::CreateActions()
 
     // Add actions
     fAddDeviceAction = new QAction( "Device" );
-        connect( this, &Controller::Connected, fAddDeviceAction, &QAction::setEnabled );
+        //connect( this, &Controller::Connected, fAddDeviceAction, &QAction::setEnabled );
     QMenu *addMenu = menuBar()->addMenu( "&Add" );
         addMenu->addAction( fAddDeviceAction );
     connect( fAddDeviceAction, &QAction::triggered, this, &Controller::OpenDeviceDialog );
