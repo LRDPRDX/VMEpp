@@ -49,6 +49,7 @@ class Controller : public QMainWindow
     private :
         void CreateActions();
         void CreateCentralWidget();
+        void CreateDockWidget();
         void CreateIOTab();
         void CreatePulserTab();
 
@@ -73,4 +74,29 @@ class Controller : public QMainWindow
 
     friend class Connection;
     friend void DeviceWindow::Connect();
+};
+
+class Display : public QWidget
+{
+    Q_OBJECT
+
+    protected :
+        static const int N_A    = 32;
+        static const int N_D    = 32;
+        static const int N_AM   = 6;
+        static const int N_IRQ  = 7;
+        static const int N_DS   = 2;
+
+    protected :
+        QCheckBox   *fAddressLED[N_A], *fDataLED[N_D], *fAddressModLED[N_AM], *fIRQLED[N_IRQ], *fDSLED[N_DS];
+        QCheckBox   *fASLED, *fIACKLED, *fWriteLED, *fLwordLED;
+        QCheckBox   *fBreqLED, *fBgntLED, *fSresLED, *fDTKLED, *fBERRLED;
+        QPushButton *fUpdateButton;
+
+    protected :
+        void CreateDisplay();
+
+    public :
+        Display( QWidget *parent = nullptr );
+        ~Display();
 };

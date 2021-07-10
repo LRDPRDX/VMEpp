@@ -14,6 +14,7 @@
 #include <QGroupBox>
 #include <QCheckBox>
 #include <QMessageBox>
+#include <QDockWidget>
 #include <QCloseEvent>
 #include <QTabWidget>
 #include "qnamespace.h"
@@ -29,6 +30,7 @@ Controller::Controller( QWidget *parent ) :
 {
     CreateActions();
     CreateCentralWidget();
+    CreateDockWidget();
 
     emit Connected( false );
 
@@ -91,6 +93,14 @@ void Controller::CreateCentralWidget()
     centralWidget->setLayout( vLayout );
 
     setCentralWidget( centralWidget );
+}
+
+void Controller::CreateDockWidget()
+{
+    QDockWidget *dock = new QDockWidget( "Display", this );
+    Display *display = new Display( dock );
+    dock->setWidget( display );
+    addDockWidget( Qt::RightDockWidgetArea, dock );
 }
 
 
@@ -393,4 +403,112 @@ void Controller::ToggleStatusBar()
     {
         statusBar()->hide();
     }
+}
+
+
+Display::Display( QWidget *parent ) :
+    QWidget( parent )
+{
+    CreateDisplay();
+}
+
+Display::~Display()
+{
+}
+
+void Display::CreateDisplay()
+{
+    QVBoxLayout *layout = new QVBoxLayout();
+
+    QFrame *upperFrame = new QFrame();
+    QGridLayout *upperLayout = new QGridLayout();
+
+    for( int i = 0; i < N_A; ++i )
+    {
+        fAddressLED[i] = new QCheckBox( QString( "A%1" ).arg( i ) );
+        fAddressLED[i]->setStyleSheet( style::check::led );
+        upperLayout->addWidget( fAddressLED[i], i, 0 );
+    }
+
+    for( int i = 0; i < N_D; ++i )
+    {
+        fDataLED[i] = new QCheckBox( QString( "D%1" ).arg( i ) );
+        fDataLED[i]->setStyleSheet( style::check::led );
+        upperLayout->addWidget( fDataLED[i], i, 1 );
+    }
+
+    upperLayout->setSpacing( 1 );
+    upperFrame->setLayout( upperLayout );
+    layout->addWidget( upperFrame );
+
+    QFrame *lowerFrame = new QFrame();
+    QGridLayout *lowerLayout = new QGridLayout();
+
+    int row = 0;
+    for( int i = 0; i < N_AM; ++i, ++row )
+    {
+        fAddressModLED[i] = new QCheckBox( QString( "AM%1" ).arg( i ) );
+        fAddressModLED[i]->setStyleSheet( style::check::led );
+        lowerLayout->addWidget( fAddressModLED[i], i, 0 );
+    }
+
+    for( int i = 0; i < N_DS; ++i, ++row )
+    {
+        fDSLED[i] = new QCheckBox( QString( "DS%1" ).arg( i ) );
+        fDSLED[i]->setStyleSheet( style::check::led );
+        lowerLayout->addWidget( fDSLED[i], row, 0 );
+    }
+
+    fASLED = new QCheckBox( "AS" );
+    fASLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fASLED, row++, 0 );
+
+    fIACKLED = new QCheckBox( "IACK" );
+    fIACKLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fIACKLED, row++, 0 );
+
+    fWriteLED = new QCheckBox( "WRITE" );
+    fWriteLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fWriteLED, row++, 0 );
+
+    fLwordLED = new QCheckBox( "LWORD" );
+    fLwordLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fLwordLED, row++, 0 );
+
+    row = 0;
+    for( int i = 0; i < N_IRQ; ++i, ++row )
+    {
+        fIRQLED[i] = new QCheckBox( QString( "IRQ%1" ).arg( i + 1 ) );
+        fIRQLED[i]->setStyleSheet( style::check::led );
+        lowerLayout->addWidget( fIRQLED[i], i, 1 );
+    }
+
+    fBreqLED = new QCheckBox( "BREQ" );
+    fBreqLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fBreqLED, row++, 1 );
+
+    fBgntLED = new QCheckBox( "BGNT" );
+    fBgntLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fBgntLED, row++, 1 );
+
+    fSresLED = new QCheckBox( "SRES" );
+    fSresLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fSresLED, row++, 1 );
+
+    fDTKLED = new QCheckBox( "DTK" );
+    fDTKLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fDTKLED, row++, 1 );
+
+    fBERRLED = new QCheckBox( "BERR" );
+    fBERRLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fBERRLED, row++, 1 );
+
+    lowerLayout->setSpacing( 1 );
+    lowerFrame->setLayout( lowerLayout );
+    layout->addWidget( lowerFrame );
+
+    fUpdateButton = new QPushButton( "UPDATE" );
+    layout->addWidget( fUpdateButton );
+
+    setLayout( layout );
 }
