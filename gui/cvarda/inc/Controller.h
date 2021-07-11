@@ -1,13 +1,10 @@
 #pragma once
 
-#include <QWidget>
-#include <QDialog>
 #include <QMainWindow>
-#include <QApplication>
-
-#include "Devices.h"
 
 #include "modules/V2718.h"
+
+#include "DeviceWindow.h"
 
 class QAction;
 class QPushButton;
@@ -16,8 +13,6 @@ class QSpinBox;
 class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
-
-class Connection;
 
 static constexpr uint8_t N_INS = vmeplus::V2718::GetNInputs();
 static constexpr uint8_t N_OUTS = vmeplus::V2718::GetNOutputs();
@@ -54,6 +49,7 @@ class Controller : public QMainWindow
     private :
         void CreateActions();
         void CreateCentralWidget();
+        void CreateDockWidget();
         void CreateIOTab();
         void CreatePulserTab();
 
@@ -77,5 +73,30 @@ class Controller : public QMainWindow
         ~Controller();
 
     friend class Connection;
-    friend void DeviceV895::Connect();
+    friend void DeviceWindow::Connect();
+};
+
+class Display : public QWidget
+{
+    Q_OBJECT
+
+    protected :
+        static const int N_A    = 32;
+        static const int N_D    = 32;
+        static const int N_AM   = 6;
+        static const int N_IRQ  = 7;
+        static const int N_DS   = 2;
+
+    protected :
+        QCheckBox   *fAddressLED[N_A], *fDataLED[N_D], *fAddressModLED[N_AM], *fIRQLED[N_IRQ], *fDSLED[N_DS];
+        QCheckBox   *fASLED, *fIACKLED, *fWriteLED, *fLwordLED;
+        QCheckBox   *fBreqLED, *fBgntLED, *fSresLED, *fDTKLED, *fBERRLED;
+        QPushButton *fUpdateButton;
+
+    protected :
+        void CreateDisplay();
+
+    public :
+        Display( QWidget *parent = nullptr );
+        ~Display();
 };

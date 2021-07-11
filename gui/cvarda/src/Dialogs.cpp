@@ -10,7 +10,8 @@
 #include <QMessageBox>
 
 #include "VException.h"
-#include "Devices.h"
+#include "V895Window.h"
+#include "V6533NWindow.h"
 
 Connection::Connection( Controller *parent ) :
     QDialog( parent ),
@@ -94,6 +95,7 @@ DeviceDialog::DeviceDialog( Controller *parent ) :
 
     fDeviceCombo = new QComboBox();
         fDeviceCombo->addItem( "V895", Device::V895 );
+        fDeviceCombo->addItem( "V6533N", Device::V6533N );
 
     auto *addressLabel = new QLabel( "Address [31:16]:" );
     fAddressSpin = new QSpinBox();
@@ -132,14 +134,22 @@ DeviceDialog::DeviceDialog( Controller *parent ) :
 void DeviceDialog::Add()
 {
     uint32_t address = fAddressSpin->value() << 16U;
+    DeviceWindow *dw = nullptr;
     switch( fDeviceCombo->currentData().toInt() )
     {
         case( Device::V895 ) :
-            DeviceV895 *d = new DeviceV895( address, fParent );
-                d->show();
-            this->close();
+            dw = new V895Window( address, fParent );
+            break;
+        case( Device::V6533N ) :
+            dw = new V6533NWindow( address, fParent );
             break;
     }
+    if( dw ) { dw->show(); }
+    else
+    {
+        qInfo() << "ERROR :: DeviceDialog::Add() :: The pointer is nullptr";
+    }
+    this->close();
 }
 
 void DeviceDialog::Cancel()

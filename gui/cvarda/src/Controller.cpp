@@ -1,6 +1,3 @@
-#include "Controller.h"
-#include "Dialogs.h"
-
 #include <QMenu>
 #include <QMenuBar>
 #include <QApplication>
@@ -10,25 +7,33 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLabel>
+#include <QFrame>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QCheckBox>
 #include <QMessageBox>
+#include <QDockWidget>
 #include <QCloseEvent>
 #include <QTabWidget>
+#include "qnamespace.h"
+
+#include "Controller.h"
+#include "Dialogs.h"
+#include "Style.h"
 
 #include "VException.h"
-#include "qnamespace.h"
 
 Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
 {
     CreateActions();
     CreateCentralWidget();
+    CreateDockWidget();
 
     emit Connected( false );
+
     statusBar()->showMessage( "Ready..." );
 }
 
@@ -90,6 +95,14 @@ void Controller::CreateCentralWidget()
     setCentralWidget( centralWidget );
 }
 
+void Controller::CreateDockWidget()
+{
+    QDockWidget *dock = new QDockWidget( "Display", this );
+    Display *display = new Display( dock );
+    dock->setWidget( display );
+    addDockWidget( Qt::RightDockWidgetArea, dock );
+}
+
 
 void Controller::CreateIOTab()
 {
@@ -127,11 +140,34 @@ void Controller::CreateIOTab()
         outLayout->addWidget( fOutLedCombo[i], i + 1, 5 );
     }
     outGroup->setLayout( outLayout );
+    outGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
 
     QGroupBox *inGroup = new QGroupBox( tr("Inputs") );
     QGridLayout *inLayout = new QGridLayout();
     for( uint8_t i = 0; i < N_INS; ++i )
     {
+        if( i == 0 )
+        {
+            QLabel* dumLabel = new QLabel( tr("Source:") );
+            QSizePolicy dumPolicy = dumLabel->sizePolicy();
+                dumPolicy.setRetainSizeWhenHidden( true );
+            dumLabel->setSizePolicy( dumPolicy );
+            dumLabel->hide();
+
+            QComboBox *dumCombo = new QComboBox();
+                dumCombo->addItem( "VME", cvVMESignals );
+                dumCombo->addItem( "Coincidence", cvCoincidence );
+                dumCombo->addItem( "P & S", cvMiscSignals );
+                dumCombo->addItem( "SW", cvManualSW );
+            dumPolicy = dumCombo->sizePolicy(); 
+                dumPolicy.setRetainSizeWhenHidden( true );
+            dumCombo->setSizePolicy( dumPolicy );
+            dumCombo->hide();
+
+            inLayout->addWidget( dumLabel, i, 0, Qt::AlignRight );
+            inLayout->addWidget( dumCombo, i, 1 );
+        }
+
         QLabel* polLabel = new QLabel( tr("Polarity:") );
         fInPolCombo[i] = new QComboBox();
             fInPolCombo[i]->addItem( "Direct", cvDirect  );
@@ -142,12 +178,13 @@ void Controller::CreateIOTab()
             fInLedCombo[i]->addItem( "Active high", cvActiveHigh );
             fInLedCombo[i]->addItem( "Active low", cvActiveLow );
 
-        inLayout->addWidget( polLabel, i, 0, Qt::AlignRight );
-        inLayout->addWidget( fInPolCombo[i], i, 1 );
-        inLayout->addWidget( ledLabel, i, 2, Qt::AlignRight );
-        inLayout->addWidget( fInLedCombo[i], i, 3 );
+        inLayout->addWidget( polLabel, i, 2, Qt::AlignRight );
+        inLayout->addWidget( fInPolCombo[i], i, 3 );
+        inLayout->addWidget( ledLabel, i, 4, Qt::AlignRight );
+        inLayout->addWidget( fInLedCombo[i], i, 5 );
     }
     inGroup->setLayout( inLayout );
+    inGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
 
     vLayout->addWidget( outGroup );
     vLayout->addWidget( inGroup );
@@ -195,10 +232,20 @@ void Controller::CreatePulserTab()
             fPulStopCombo[i]->addItem( "SW", cvManualSW );
             fPulStopCombo[i]->addItem( "Input " + QString::number( i ), (i == 0) ? cvInputSrc0 : cvInputSrc1 );
 
+        QFrame *buttonFrame = new QFrame(); 
+            buttonFrame->setFrameShape( QFrame::StyledPanel );
+        QHBoxLayout *buttonLayout = new QHBoxLayout();
+
         fPulStartButton[i] = new QPushButton( "START" ); 
+            fPulStartButton[i]->setStyleSheet( style::button::good );
             connect( this, &Controller::Connected, fPulStartButton[i], &QPushButton::setEnabled );
         fPulStopButton[i] = new QPushButton( "STOP" );
+            fPulStopButton[i]->setStyleSheet( style::button::bad );
             connect( this, &Controller::Connected, fPulStopButton[i], &QPushButton::setEnabled );
+
+        buttonLayout->addWidget( fPulStartButton[i] );
+        buttonLayout->addWidget( fPulStopButton[i] );
+        buttonFrame->setLayout( buttonLayout );
 
         pulLayout->addWidget( freqLabel, 0, 0, Qt::AlignRight );
         pulLayout->addWidget( fPulFreqSpin[i], 0, 1 );
@@ -210,8 +257,7 @@ void Controller::CreatePulserTab()
         pulLayout->addWidget( fPulStartCombo[i], 1, 1 );
         pulLayout->addWidget( stopLabel, 1, 2, Qt::AlignRight );
         pulLayout->addWidget( fPulStopCombo[i], 1, 3 );
-        pulLayout->addWidget( fPulStartButton[i], 1, 4 );
-        pulLayout->addWidget( fPulStopButton[i], 1, 5 );
+        pulLayout->addWidget( buttonFrame, 1, 4, 1, 2 );
 
         pulserGroup->setLayout( pulLayout );
 
@@ -225,12 +271,26 @@ void Controller::CreatePulserTab()
     fScalLimitSpin = new QSpinBox();
         fScalLimitSpin->setRange( 0, 1023 );
     fScalAutoCheck = new QCheckBox( "Auto reset" );    
+
+
+    QFrame *buttonFrame = new QFrame(); 
+        buttonFrame->setFrameShape( QFrame::StyledPanel );
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+
     fScalGateButton = new QPushButton( "GATE" );
+        fScalGateButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalGateButton, &QPushButton::setEnabled );
     fScalStartButton = new QPushButton( "START" );
+        fScalStartButton->setStyleSheet( style::button::good );
         connect( this, &Controller::Connected, fScalStartButton, &QPushButton::setEnabled );
     fScalResetButton = new QPushButton( "RESET" );
+        fScalResetButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalResetButton, &QPushButton::setEnabled );
+
+    buttonLayout->addWidget( fScalGateButton );
+    buttonLayout->addWidget( fScalStartButton );
+    buttonLayout->addWidget( fScalResetButton );
+    buttonFrame->setLayout( buttonLayout );
 
     QLabel *hitLabel = new QLabel( "Hit source:" );
     fScalHitCombo = new QComboBox();
@@ -247,9 +307,7 @@ void Controller::CreatePulserTab()
 
     scalLayout->addWidget( limitLabel, 0, 0, Qt::AlignRight );
     scalLayout->addWidget( fScalLimitSpin, 0, 1 );
-    scalLayout->addWidget( fScalGateButton, 0, 3 );
-    scalLayout->addWidget( fScalStartButton, 0, 4 );
-    scalLayout->addWidget( fScalResetButton, 0, 5 );
+    scalLayout->addWidget( buttonFrame, 0, 3, 1, 3 );
     scalLayout->addWidget( hitLabel, 1, 0, Qt::AlignRight );
     scalLayout->addWidget( fScalHitCombo, 1, 1 );
     scalLayout->addWidget( gateLabel, 1, 2, Qt::AlignRight );
@@ -345,4 +403,112 @@ void Controller::ToggleStatusBar()
     {
         statusBar()->hide();
     }
+}
+
+
+Display::Display( QWidget *parent ) :
+    QWidget( parent )
+{
+    CreateDisplay();
+}
+
+Display::~Display()
+{
+}
+
+void Display::CreateDisplay()
+{
+    QVBoxLayout *layout = new QVBoxLayout();
+
+    QFrame *upperFrame = new QFrame();
+    QGridLayout *upperLayout = new QGridLayout();
+
+    for( int i = 0; i < N_A; ++i )
+    {
+        fAddressLED[i] = new QCheckBox( QString( "A%1" ).arg( i ) );
+        fAddressLED[i]->setStyleSheet( style::check::led );
+        upperLayout->addWidget( fAddressLED[i], i, 0 );
+    }
+
+    for( int i = 0; i < N_D; ++i )
+    {
+        fDataLED[i] = new QCheckBox( QString( "D%1" ).arg( i ) );
+        fDataLED[i]->setStyleSheet( style::check::led );
+        upperLayout->addWidget( fDataLED[i], i, 1 );
+    }
+
+    upperLayout->setSpacing( 1 );
+    upperFrame->setLayout( upperLayout );
+    layout->addWidget( upperFrame );
+
+    QFrame *lowerFrame = new QFrame();
+    QGridLayout *lowerLayout = new QGridLayout();
+
+    int row = 0;
+    for( int i = 0; i < N_AM; ++i, ++row )
+    {
+        fAddressModLED[i] = new QCheckBox( QString( "AM%1" ).arg( i ) );
+        fAddressModLED[i]->setStyleSheet( style::check::led );
+        lowerLayout->addWidget( fAddressModLED[i], i, 0 );
+    }
+
+    for( int i = 0; i < N_DS; ++i, ++row )
+    {
+        fDSLED[i] = new QCheckBox( QString( "DS%1" ).arg( i ) );
+        fDSLED[i]->setStyleSheet( style::check::led );
+        lowerLayout->addWidget( fDSLED[i], row, 0 );
+    }
+
+    fASLED = new QCheckBox( "AS" );
+    fASLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fASLED, row++, 0 );
+
+    fIACKLED = new QCheckBox( "IACK" );
+    fIACKLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fIACKLED, row++, 0 );
+
+    fWriteLED = new QCheckBox( "WRITE" );
+    fWriteLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fWriteLED, row++, 0 );
+
+    fLwordLED = new QCheckBox( "LWORD" );
+    fLwordLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fLwordLED, row++, 0 );
+
+    row = 0;
+    for( int i = 0; i < N_IRQ; ++i, ++row )
+    {
+        fIRQLED[i] = new QCheckBox( QString( "IRQ%1" ).arg( i + 1 ) );
+        fIRQLED[i]->setStyleSheet( style::check::led );
+        lowerLayout->addWidget( fIRQLED[i], i, 1 );
+    }
+
+    fBreqLED = new QCheckBox( "BREQ" );
+    fBreqLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fBreqLED, row++, 1 );
+
+    fBgntLED = new QCheckBox( "BGNT" );
+    fBgntLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fBgntLED, row++, 1 );
+
+    fSresLED = new QCheckBox( "SRES" );
+    fSresLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fSresLED, row++, 1 );
+
+    fDTKLED = new QCheckBox( "DTK" );
+    fDTKLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fDTKLED, row++, 1 );
+
+    fBERRLED = new QCheckBox( "BERR" );
+    fBERRLED->setStyleSheet( style::check::led );
+    lowerLayout->addWidget( fBERRLED, row++, 1 );
+
+    lowerLayout->setSpacing( 1 );
+    lowerFrame->setLayout( lowerLayout );
+    layout->addWidget( lowerFrame );
+
+    fUpdateButton = new QPushButton( "UPDATE" );
+    layout->addWidget( fUpdateButton );
+
+    setLayout( layout );
 }

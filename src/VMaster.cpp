@@ -6,6 +6,14 @@
 
 namespace vmeplus
 {
+    VMaster::~VMaster()
+    {
+        for( auto it = fSlaves.begin(); it != fSlaves.end(); )
+        {
+            UnregisterSlave( *it );
+        }
+    }
+
     void VMaster::RegisterSlave( VSlave *slave )
     {
         if( slave == nullptr )

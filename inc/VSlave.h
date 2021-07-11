@@ -33,7 +33,9 @@ namespace vmeplus
         protected :
             void                WriteRegister16( uint32_t address, uint16_t data, uint16_t msk = 0xFFFFU );
             uint16_t            ReadRegister16( uint32_t address, uint16_t msk = 0xFFFFU );
-            virtual void        SetBit16( uint32_t address, uint16_t bit );
+            void                WriteRegister32( uint32_t address, uint32_t data, uint32_t msk = 0xFFFFFFFFU);
+            uint32_t            ReadRegister32( uint32_t address, uint32_t msk = 0xFFFFFFFFU ); 
+	        virtual void        SetBit16( uint32_t address, uint16_t bit );
             virtual void        ClearBit16( uint32_t address, uint16_t bit );
             virtual bool        GetBit16( uint32_t address, uint16_t bit );
 

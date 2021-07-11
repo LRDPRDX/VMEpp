@@ -95,6 +95,17 @@ namespace vmeplus
         WriteRequest( address, &data );//D16 by default
     }
 
+    uint32_t VSlave::ReadRegister32( uint32_t address, uint32_t msk ){
+        uint32_t data;
+        ReadRequest( address, &data, cvD32 );
+        return (data & msk);
+    }
+
+    void VSlave::WriteRegister32( uint32_t address, uint32_t data, uint32_t msk ) {
+        data &= msk;
+        WriteRequest( address, &data, cvD32 );
+    }
+
     void VSlave::SetBit16( uint32_t address, uint16_t bit )
     {
         uint16_t data = ReadRegister16( address );

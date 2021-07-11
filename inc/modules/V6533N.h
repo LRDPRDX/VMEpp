@@ -34,21 +34,21 @@
 #define     V6533N_MC_MJR_REL_MSK   0xFF00UL//Aux
 
 //Channel parameters
-#define     V6533N_VSET(x)         ((0x0080UL * ((x) % 6UL)) + 0x0080UL)//A32/D16 RW
-#define     V6533N_ISET(x)         ((0x0080UL * ((x) % 6UL)) + 0x0084UL)//A32/D16 RW
-#define     V6533N_VMON(x)         ((0x0080UL * ((x) % 6UL)) + 0x0088UL)//A32/D16 R
-#define     V6533N_IMONH(x)        ((0x0080UL * ((x) % 6UL)) + 0x008CUL)//A32/D16 R
-#define     V6533N_PW(x)           ((0x0080UL * ((x) % 6UL)) + 0x0090UL)//A32/D16 RW
-#define     V6533N_CHSTATUS(x)     ((0x0080UL * ((x) % 6UL)) + 0x0094UL)//A32/D16 R
-#define     V6533N_TRIP_TIME(x)    ((0x0080UL * ((x) % 6UL)) + 0x0098UL)//A32/D16 RW
-#define     V6533N_SVMAX(x)        ((0x0080UL * ((x) % 6UL)) + 0x009CUL)//A32/D16 RW
-#define     V6533N_RAMP_DOWN(x)    ((0x0080UL * ((x) % 6UL)) + 0x00A0UL)//A32/D16 RW
-#define     V6533N_RAMP_UP(x)      ((0x0080UL * ((x) % 6UL)) + 0x00A4UL)//A32/D16 RW
-#define     V6533N_PWDOWN(x)       ((0x0080UL * ((x) % 6UL)) + 0x00A8UL)//A32/D16 RW
-#define     V6533N_POLARITY(x)     ((0x0080UL * ((x) % 6UL)) + 0x00ACUL)//A32/D16 R
-#define     V6533N_TEMPERATURE(x)  ((0x0080UL * ((x) % 6UL)) + 0x00B0UL)//A32/D16 R
-#define     V6533N_IMON_RANGE(x)   ((0x0080UL * ((x) % 6UL)) + 0x00B4UL)//A32/D16 RW
-#define     V6533N_IMONL(x)        ((0x0080UL * ((x) % 6UL)) + 0x00B8UL)//A32/D16 R
+#define     V6533N_VSET(x)         ((0x0080UL * (x)) + 0x0080UL)//A32/D16 RW
+#define     V6533N_ISET(x)         ((0x0080UL * (x)) + 0x0084UL)//A32/D16 RW
+#define     V6533N_VMON(x)         ((0x0080UL * (x)) + 0x0088UL)//A32/D16 R
+#define     V6533N_IMONH(x)        ((0x0080UL * (x)) + 0x008CUL)//A32/D16 R
+#define     V6533N_PW(x)           ((0x0080UL * (x)) + 0x0090UL)//A32/D16 RW
+#define     V6533N_CHSTATUS(x)     ((0x0080UL * (x)) + 0x0094UL)//A32/D16 R
+#define     V6533N_TRIP_TIME(x)    ((0x0080UL * (x)) + 0x0098UL)//A32/D16 RW
+#define     V6533N_SVMAX(x)        ((0x0080UL * (x)) + 0x009CUL)//A32/D16 RW
+#define     V6533N_RAMP_DOWN(x)    ((0x0080UL * (x)) + 0x00A0UL)//A32/D16 RW
+#define     V6533N_RAMP_UP(x)      ((0x0080UL * (x)) + 0x00A4UL)//A32/D16 RW
+#define     V6533N_PWDOWN(x)       ((0x0080UL * (x)) + 0x00A8UL)//A32/D16 RW
+#define     V6533N_POLARITY(x)     ((0x0080UL * (x)) + 0x00ACUL)//A32/D16 R
+#define     V6533N_TEMPERATURE(x)  ((0x0080UL * (x)) + 0x00B0UL)//A32/D16 R
+#define     V6533N_IMON_RANGE(x)   ((0x0080UL * (x)) + 0x00B4UL)//A32/D16 RW
+#define     V6533N_IMONL(x)        ((0x0080UL * (x)) + 0x00B8UL)//A32/D16 R
 
 //Board configuration
 #define     V6533N_CHNUM            0x8100UL//A32/D16 R  
@@ -71,6 +71,12 @@ namespace vmeplus
 {
     class V6533N : public VSlave
     {
+        protected :
+            static uint8_t const fChNumber = 0x06U;   // 6
+
+        public :
+            static uint8_t constexpr GetChNumber() { return fChNumber; }
+
         protected :
             virtual void    Initialize() override;
 

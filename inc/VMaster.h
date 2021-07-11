@@ -19,7 +19,7 @@ namespace vmeplus
             VMaster() { } 
             VMaster( const VMaster &other ) = delete;
             VMaster& operator=( const VMaster &other ) = delete;
-            virtual ~VMaster() {};
+            virtual ~VMaster();
 
         public :
             void                        RegisterSlave( VSlave *slave );
@@ -33,6 +33,8 @@ namespace vmeplus
             virtual void                BLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, CVDataWidth dw, int *count ) = 0;
             virtual void                MBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) = 0;
             virtual void                FIFOMBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) = 0;
+            virtual void                ADOCycle( uint32_t address, CVAddressModifier am ) = 0;
+            virtual void                ADOHCycle( uint32_t address, CVAddressModifier am ) = 0;
             virtual void                WriteFIFOMode( short value ) = 0;
             virtual short               ReadFIFOMode() = 0;
 

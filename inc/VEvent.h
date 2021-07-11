@@ -16,8 +16,6 @@ namespace vmeplus
             virtual     ~VEvent();
 
         public :
-            virtual uint32_t GetSize() const = 0;
-
             uint32_t GetStart() const { return fStart; }
             uint32_t GetStop() const { return fStop; }
             void     Reset() { fStart= 0; fStop = 0; }
