@@ -58,10 +58,11 @@
 
 
 #include "VSlave.h"
+#include "UConfigurable.h"
 
 namespace vmeplus
 {
-    class V895 : public VSlave
+    class V895 : public VSlave, public UConfigurable
     {
         protected :
             static uint8_t const fChNumber = 0x10U;   // 16
@@ -116,6 +117,10 @@ namespace vmeplus
 
         public :
             virtual void    Print() const override;
+
+        public :
+            virtual void    ReadConfig( nlohmann::json &config ) override;
+            virtual void    WriteConfig( const nlohmann::json &config ) override;
     };
 }
 #endif

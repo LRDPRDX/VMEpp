@@ -268,7 +268,13 @@ namespace vmeplus
             throw VException( static_cast<VError_t>(ec), "GetInputConf" );
         }
     }
+
+    void V2718::ReadConfig( nlohmann::json &config )
+    {
+        config.clear();
+        config
+    }
     //*********************//
-    //****** V2718 + ******//
+    //****** V2718 - ******//
     //*********************//
 }

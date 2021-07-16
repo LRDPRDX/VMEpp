@@ -3,6 +3,7 @@
 
 #include <CAENVMEtypes.h>
 #include "VController.h"
+#include "UConfigurable.h"
 
 namespace vmeplus
 {
@@ -111,7 +112,7 @@ namespace vmeplus
             friend class V2718;
     };
     
-    class V2718 : public VController
+    class V2718 : public VController, public UConfigurable
     {
         protected :
             V2718Pulser     fPulserA;
@@ -132,6 +133,10 @@ namespace vmeplus
     
             void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity );
+
+        public :
+            virtual void    ReadConfig( nlohmann::json &config ) override;
+            virtual void    WriteConfig( const nlohmann::json &config ) override;
     };
 }
 #endif

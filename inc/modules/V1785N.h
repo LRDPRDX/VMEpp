@@ -230,6 +230,7 @@
 #include "VSlaveAcquisitor.h"
 #include "VSlaveInterrupter.h"
 #include "VEvent.h"
+#include "UConfigurable.h"
 
 #include <string>
 
@@ -238,7 +239,7 @@ namespace vmeplus
     class V1785NEvent;
 
     //****** V1785N Part ******
-    class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter
+    class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter, public UConfigurable
     {
         public :
             enum class Range_t : uint8_t { HIGH, LOW };
@@ -328,6 +329,10 @@ namespace vmeplus
 
             //Printing
             virtual void    Print() const override;
+
+        public :
+            virtual void    ReadConfig( nlohmann::json &config ) override;
+            virtual void    WriteConfig( const nlohmann::json &config ) override;
     };
 
     //****** V1785NEvent Part ******
