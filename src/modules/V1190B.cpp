@@ -806,4 +806,12 @@ namespace vmeplus {
         EnableReadoutSRAM(status);
 
     }
+
+    void V1190B::ReadConfig( nlohmann::json &config )
+    {
+    }
+
+    void V1190B::WriteConfig( const nlohmann::json &config )
+    {
+    }
 }
