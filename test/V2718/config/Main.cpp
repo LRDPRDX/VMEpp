@@ -12,20 +12,12 @@ int main()
 {
     V2718 controller;
     
-    try
-    {
         controller.Open( 0, 0 ); 
 
-        json config;
+        json j;
 
-        controller.ReadConfig( config );
+        std::cout << controller.GetDefaultConfig().dump( 2 ) << "\n";
 
-        std::cout << config.dump( 2 );
-    }
-    catch( const VException& e )
-    {
-        std::cerr << e.what() << "\n"; 
-        std::cerr << e.GetInfo() << "\n"; 
-    }
+        controller.ReadConfig( j );
     return 0;
 }

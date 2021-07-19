@@ -70,7 +70,7 @@
 
 namespace vmeplus
 {
-    class V6533N : public VSlave, public UConfigurable
+    class V6533N : public VSlave, public UConfigurable<V6533N>
     {
         protected :
             static uint8_t const fChNumber = 0x06U;   // 6

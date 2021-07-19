@@ -181,6 +181,7 @@ namespace vmeplus
     //*********************//
     V2718::V2718() :
         VController(),
+        UConfigurable<V2718>(),
         fPulserA( cvPulserA ),
         fPulserB( cvPulserB ),
         fScaler()
@@ -189,6 +190,14 @@ namespace vmeplus
         fPulserB.fOwner = this;
         fScaler.fOwner  = this;
     }
+
+    template<>
+    json UConfigurable<V2718>::fDefaultConfig = []() {
+        json j = json::object({});
+        j["name"] = "V2718";
+        j["settings"] = { {"inputs", {}}, {"outputs", {}}, {"pulsers", {}}, {"scaler", {}} };
+        return j;
+    }();
 
     V2718::~V2718() { }
 
@@ -272,36 +281,7 @@ namespace vmeplus
     void V2718::ReadConfig( nlohmann::json &config )
     {
         using json = nlohmann::json;
-
         config.clear();
-
-        config = json::object_t();
-
-        config["name"] = "V2718";
-        config["settings"] = { {"inputs",{}},  {"outputs",{}}, {"pulsers",{}}, {"scaler",{}} };
-
-        json::array_t j_inputs = {};
-        for( int i = 0; i < 2; ++i )
-        {
-            CVIOPolarity pol;
-            CVLEDPolarity ledPol;
-            ReadInputConfig( static_cast<CVInputSelect>( i ), pol, ledPol );
-            json::object_t j_input = { {"polarity", pol}, {"led_polarity", ledPol } };
-            j_inputs.push_back( j_input );
-        } 
-        config["settings"]["inputs"] = j_inputs;
-
-        json::array_t j_outputs = {};
-        for( int i = 0; i < 5; ++i )
-        {
-            CVIOPolarity pol;
-            CVLEDPolarity ledPol;
-            CVIOSources src;
-            ReadOutputConfig( static_cast<CVOutputSelect>( i ), pol, ledPol, src );
-            json::object_t j_output = { {"polarity", pol}, {"led_polarity", ledPol}, {"source", src} };
-            j_outputs.push_back( j_output );
-        } 
-        config["settings"]["outputs"] = j_outputs;
     }
 
     void V2718::WriteConfig( const nlohmann::json &config )

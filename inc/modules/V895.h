@@ -62,7 +62,7 @@
 
 namespace vmeplus
 {
-    class V895 : public VSlave, public UConfigurable
+    class V895 : public VSlave, public UConfigurable<V895>
     {
         protected :
             static uint8_t const fChNumber = 0x10U;   // 16

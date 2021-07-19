@@ -110,7 +110,7 @@ namespace vmeplus {
     /********************/
     /****** V1190B ******/
     /********************/
-    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable {
+    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1190B> {
 
         private :
             static uint8_t const fChNumber = 0x40;    // Number of channels 64

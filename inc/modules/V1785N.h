@@ -239,7 +239,7 @@ namespace vmeplus
     class V1785NEvent;
 
     //****** V1785N Part ******
-    class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter, public UConfigurable
+    class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter, public UConfigurable<V1785N>
     {
         public :
             enum class Range_t : uint8_t { HIGH, LOW };

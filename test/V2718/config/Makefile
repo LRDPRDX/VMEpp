@@ -9,8 +9,8 @@ SRC     := $(wildcard *.cpp)
 TARGET  := $(patsubst %.cpp,%,$(SRC))
 
 $(TARGET) : $(SRC)
-		$(CC) -DLINUX $(CXXFLAGS) -I$(INC_DIR) $< $(LINKAGE) -o $@
+		$(CC) -DLINUX $(CXXFLAGS) -g -I$(INC_DIR) $< $(LINKAGE) -o $@
 
 .PHONY : clean
-	clean :
-		rm -f $(TARGET)
+clean :
+	rm -f $(TARGET)
