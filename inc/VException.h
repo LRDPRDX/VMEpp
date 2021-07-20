@@ -19,7 +19,8 @@ namespace vmeplus
                             vBadMaster = -10,
                             vOrphan = -11,
                             vBuffAllocFailed = -12,
-                            vBadSlave = -13
+                            vBadSlave = -13,
+                            vConfigError = -14
                         };
 
     enum class Message_t {  INFO,
@@ -72,6 +73,9 @@ namespace vmeplus
                     case( VError_t::vBadSlave ) :
                         fMessage = "VME++ :: ERROR :: Bad master (base address, nullptr, etc.)";
                         break;
+                    case( VError_t::vConfigError ) :
+                        fMessage = "VME++ :: ERROR :: Error occured while write/read JSON config";
+                        fHint = "VME++ :: HINT :: Call ::GetDefaultConfig() member function to see how a config should look";
                 }
             }
 
