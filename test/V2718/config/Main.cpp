@@ -32,11 +32,17 @@ int main()
 
         controller.ReadConfig( j );
 
+        controller.WriteConfig( j );
+
         std::cout << j.dump( 2 ) << "\n";
+
+        controller.WriteConfig( V2718::GetDefaultConfig() );
     }
     catch( const VException& e )
     {
         std::cout << e.what() << "\n";
+        std::cout << e.GetInfo() << "\n";
+        std::cout << e.GetHint() << "\n";
     }
     return 0;
 }

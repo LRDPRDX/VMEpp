@@ -251,7 +251,12 @@ namespace vmeplus
 
         // Scaler
         j["settings"] += {"scaler", {}}; 
-        json j_scaler = json::object( { {"limit", {}}, {"hit", {}}, {"gate", {}}, {"reset", {}} } );
+        json j_scaler = json::object( {} );
+            j_scaler += {"limit", {}};
+            j_scaler += {"hit", {}};
+            j_scaler += {"gate", {}};
+            j_scaler += {"stop", {}};
+            j_scaler += {"auto_reset", {}};
         j["/settings/scaler"_json_pointer] = j_scaler;
 
         return j;
@@ -383,18 +388,89 @@ namespace vmeplus
             // Scaler
             fScaler.Read();
             j.at("settings").at("scaler").at("gate") = fScaler.GetGateSource();
-            j.at("settings").at("scaler").at("reset") = fScaler.GetStopSource();
+            j.at("settings").at("scaler").at("stop") = fScaler.GetStopSource();
             j.at("settings").at("scaler").at("hit") = fScaler.GetHitSource();
             j.at("settings").at("scaler").at("limit") = fScaler.GetLimit();
+            j.at("settings").at("scaler").at("auto_reset") = fScaler.GetAutoReset();
         }
         catch( const json::exception &e )
         {
-            std::cout << e.what() << "\n";
+            throw VException( VError_t::vConfigError, e.what() );
         }
     }
 
-    void V2718::WriteConfig( const nlohmann::json &config )
+    void V2718::WriteConfig( const nlohmann::json &j )
     {
+        try
+        {
+            // In's and Out's
+            CVIOPolarity pol;
+            CVLEDPolarity ledPol;
+            CVIOSources src;
+            for( uint8_t i = 0; i < fInNumber; ++i )
+            {
+                j.at("settings").at("inputs").at( i ).at("polarity").get_to<CVIOPolarity>(pol);
+                j.at("settings").at("inputs").at( i ).at("led_polarity").get_to<CVLEDPolarity>(ledPol);
+                WriteInputConfig( static_cast<CVInputSelect>(i), pol, ledPol );
+            }
+
+            for( uint8_t i = 0; i < fOutNumber; ++i )
+            {
+                j.at("settings").at("outputs").at( i ).at("polarity").get_to<CVIOPolarity>(pol);
+                j.at("settings").at("outputs").at( i ).at("led_polarity").get_to<CVLEDPolarity>(ledPol);
+                j.at("settings").at("outputs").at( i ).at("source").get_to<CVIOSources>(src);
+                WriteOutputConfig( static_cast<CVOutputSelect>(i), src, pol, ledPol );
+            }
+
+            // Pulsers
+            uint32_t freq = 0;
+            uint8_t  duty = 0;
+            uint8_t  count = 0;
+            CVIOSources start = cvManualSW;
+            CVIOSources stop = cvManualSW;
+            j.at("settings").at("pulsers").at("A").at("frequency").get_to<uint32_t>(freq);
+            j.at("settings").at("pulsers").at("A").at("duty").get_to<uint8_t>(duty);
+                fPulserA.SetSquare( freq, duty );
+            j.at("settings").at("pulsers").at("A").at("count").get_to<uint8_t>(count);
+                fPulserA.SetNPulses( count );
+            j.at("settings").at("pulsers").at("A").at("start").get_to<CVIOSources>(start);
+                fPulserA.SetStartSource( start );
+            j.at("settings").at("pulsers").at("A").at("stop").get_to<CVIOSources>(stop);
+                fPulserA.SetStopSource( stop );
+            fPulserA.Write();
+            
+            j.at("settings").at("pulsers").at("B").at("frequency").get_to<uint32_t>(freq);
+            j.at("settings").at("pulsers").at("B").at("duty").get_to<uint8_t>(duty);
+                fPulserB.SetSquare( freq, duty );
+            j.at("settings").at("pulsers").at("B").at("count").get_to<uint8_t>(count);
+                fPulserB.SetNPulses( count );
+            j.at("settings").at("pulsers").at("B").at("start").get_to<CVIOSources>(start);
+                fPulserB.SetStartSource( start );
+            j.at("settings").at("pulsers").at("B").at("stop").get_to<CVIOSources>(stop);
+                fPulserB.SetStopSource( stop );
+            fPulserB.Write();
+
+            // Scaler
+            CVIOSources gate = cvManualSW;
+            CVIOSources hit = cvInputSrc0;
+            short limit = 0;
+            short autoReset = 0;
+            j.at("settings").at("scaler").at("gate").get_to<CVIOSources>( gate );
+                fScaler.SetGateSource( gate );
+            j.at("settings").at("scaler").at("stop").get_to<CVIOSources>( stop );
+                fScaler.SetStopSource( stop );
+            j.at("settings").at("scaler").at("hit").get_to<CVIOSources>( hit );
+                fScaler.SetHitSource( hit );
+            j.at("settings").at("scaler").at("limit").get_to<short>( limit );
+                fScaler.SetLimit( limit );
+            j.at("settings").at("scaler").at("auto_reset").get_to<short>( autoReset );
+                fScaler.SetAutoReset( autoReset );
+            fScaler.Write();
+        }
+        catch( const json::exception &e )
+        {
+            throw VException( VError_t::vConfigError, e.what() );
+        }
     }
     //*********************//
     //****** V2718 - ******//
