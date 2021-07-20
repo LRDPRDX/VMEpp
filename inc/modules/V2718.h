@@ -130,13 +130,6 @@ namespace vmeplus
             V2718Pulser     fPulserB;
             V2718Scaler     fScaler;
 
-            static uint8_t const fNInputs = 2;
-            static uint8_t const fNOutputs = 5;
-
-        public :
-            static uint8_t constexpr GetNInputs() { return fNInputs; }
-            static uint8_t constexpr GetNOutputs() { return fNOutputs; }
-
         public :
             V2718 ();
             virtual ~V2718 ();
