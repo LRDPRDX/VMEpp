@@ -1,3 +1,6 @@
+#ifndef V_PLUS_UCONFIGURABLE_H
+#define V_PLUS_UCONFIGURABLE_H
+
 #include <nlohmann/json.hpp>
 
 
@@ -20,3 +23,4 @@ namespace vmeplus
             static nlohmann::json GetDefaultConfig() { return fDefaultConfig; }
     };
 }
+#endif
