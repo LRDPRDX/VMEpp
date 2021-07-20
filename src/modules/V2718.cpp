@@ -39,6 +39,24 @@ namespace vmeplus
         }
     }
 
+    void V2718Pulser::GetSquare( uint32_t &freq, uint8_t &duty )
+    {
+        uint32_t expo, num;
+
+        switch( fTimeUnit )
+        {
+            case( cvUnit25ns ) :    expo = 1000000000;  num = 25; break;
+            case( cvUnit1600ns ) :  expo = 10000000;    num = 16; break;
+            case( cvUnit410us ) :   expo = 100000;      num = 41; break;
+            case( cvUnit104ms ) :   expo = 1000;        num = 104; break;
+        }
+        if( fPeriod )
+        {
+            freq = expo / num / fPeriod; 
+            duty = fWidth * 100 / fPeriod;
+        }
+    }
+
     void V2718Pulser::Write()
     {
         if( fOwner != nullptr )
@@ -193,22 +211,48 @@ namespace vmeplus
 
     template<>
     json UConfigurable<V2718>::fDefaultConfig = []() {
-        json j = json::object({});
+        json j = json::object( {} );
         j["name"] = "V2718";
-        j["settings"] = { {"inputs", {}}, {"outputs", {}}, {"pulsers", {}}, {"scaler", {}} };
+
+        j["settings"] = json::object( {} ); 
+
+        // Outputs and inputs
+        j["settings"] += {"inputs", {}};
         json j_inputs = json::array( {} );
         for( uint8_t i = 0; i < V2718::GetInNumber(); ++i )
         {
             j_inputs.push_back( {{"polarity", {}}, {"led_polarity", {}}} );
         }
-        j["settings"]["inputs"] = j_inputs;
+        j["/settings/inputs"_json_pointer] = j_inputs;
 
+        j["settings"] += {"outputs", {}}; 
         json j_outputs = json::array( {} );
         for( uint8_t i = 0; i < V2718::GetOutNumber(); ++i )
         {
             j_outputs.push_back( {{"polarity", {}}, {"led_polarity", {}}, {"source", {}}} );
         }
-        j["settings"]["outputs"] = j_outputs;
+        j["/settings/outputs"_json_pointer] = j_outputs;
+
+        // Pulsers
+        j["settings"] += {"pulsers", {}}; 
+        json j_pulsers = json::object( {} );
+            j_pulsers += {"A", {}};
+            j_pulsers += {"B", {}};
+        json j_pulser = json::object( {} ); 
+        j_pulser += {"frequency", {}};
+        j_pulser += {"duty", {}};
+        j_pulser += {"count", {}};
+        j_pulser += {"start", {}};
+        j_pulser += {"stop", {}};
+
+        j_pulsers["A"] = j_pulser;
+        j_pulsers["B"] = j_pulser;
+        j["/settings/pulsers"_json_pointer] = j_pulsers;
+
+        // Scaler
+        j["settings"] += {"scaler", {}}; 
+        json j_scaler = json::object( { {"limit", {}}, {"hit", {}}, {"gate", {}}, {"reset", {}} } );
+        j["/settings/scaler"_json_pointer] = j_scaler;
 
         return j;
     }();
@@ -292,10 +336,61 @@ namespace vmeplus
         }
     }
 
-    void V2718::ReadConfig( nlohmann::json &config )
+    void V2718::ReadConfig( nlohmann::json &j )
     {
-        using json = nlohmann::json;
-        config.clear();
+        j = fDefaultConfig;
+
+        try
+        {
+            // In's and Out's
+            CVIOPolarity pol;
+            CVLEDPolarity ledPol;
+            CVIOSources src;
+            for( uint8_t i = 0; i < fInNumber; ++i )
+            {
+                ReadInputConfig( static_cast<CVInputSelect>(i), pol, ledPol );
+                j.at("settings").at("inputs").at( i ).at("polarity") = pol;
+                j.at("settings").at("inputs").at( i ).at("led_polarity") = ledPol;
+            }
+
+            for( uint8_t i = 0; i < fOutNumber; ++i )
+            {
+                ReadOutputConfig( static_cast<CVOutputSelect>(i), pol, ledPol, src );
+                j.at("settings").at("outputs").at( i ).at("polarity") = pol;
+                j.at("settings").at("outputs").at( i ).at("led_polarity") = ledPol;
+                j.at("settings").at("outputs").at( i ).at("source") = src;
+            }
+
+            // Pulsers
+            uint32_t freq = 0;
+            uint8_t  duty = 0;
+            fPulserA.Read();
+            fPulserA.GetSquare( freq, duty );
+            j.at("settings").at("pulsers").at("A").at("frequency") = freq;
+            j.at("settings").at("pulsers").at("A").at("duty") = duty;
+            j.at("settings").at("pulsers").at("A").at("count") = fPulserA.GetNPulses();
+            j.at("settings").at("pulsers").at("A").at("start") = fPulserA.GetStartSource();
+            j.at("settings").at("pulsers").at("A").at("stop") = fPulserA.GetStopSource();
+
+            fPulserB.Read();
+            fPulserB.GetSquare( freq, duty );
+            j.at("settings").at("pulsers").at("B").at("frequency") = freq;
+            j.at("settings").at("pulsers").at("B").at("duty") = duty;
+            j.at("settings").at("pulsers").at("B").at("count") = fPulserB.GetNPulses();
+            j.at("settings").at("pulsers").at("B").at("start") = fPulserB.GetStartSource();
+            j.at("settings").at("pulsers").at("B").at("stop") = fPulserB.GetStopSource();
+
+            // Scaler
+            fScaler.Read();
+            j.at("settings").at("scaler").at("gate") = fScaler.GetGateSource();
+            j.at("settings").at("scaler").at("reset") = fScaler.GetStopSource();
+            j.at("settings").at("scaler").at("hit") = fScaler.GetHitSource();
+            j.at("settings").at("scaler").at("limit") = fScaler.GetLimit();
+        }
+        catch( const json::exception &e )
+        {
+            std::cout << e.what() << "\n";
+        }
     }
 
     void V2718::WriteConfig( const nlohmann::json &config )
