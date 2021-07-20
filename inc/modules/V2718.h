@@ -122,8 +122,8 @@ namespace vmeplus
             static uint8_t const fOutNumber = 5;
 
         public :
-            static uint8_t constexpr GetInNumber() { return fInNumber; }  
-            static uint8_t constexpr GetOutNumber() { return fOutNumber; }  
+            static uint8_t constexpr GetInNumber() { return fInNumber; }
+            static uint8_t constexpr GetOutNumber() { return fOutNumber; }
 
         protected :
             V2718Pulser     fPulserA;
@@ -141,7 +141,7 @@ namespace vmeplus
 
             void WriteOutputConfig( CVOutputSelect outputNo, CVIOSources src, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadOutputConfig( CVOutputSelect outputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity, CVIOSources &src );
-    
+
             void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity );
 

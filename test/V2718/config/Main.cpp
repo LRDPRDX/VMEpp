@@ -11,13 +11,20 @@ using json = nlohmann::json;
 int main()
 {
     V2718 controller;
-    
-        controller.Open( 0, 0 ); 
+
+    try
+    {
+        //controller.Open( 0, 0 );
 
         json j;
 
         std::cout << controller.GetDefaultConfig().dump( 2 ) << "\n";
 
         controller.ReadConfig( j );
+    }
+    catch( const VException& e )
+    {
+        std::cout << e.what() << "\n";
+    }
     return 0;
 }

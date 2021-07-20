@@ -31,7 +31,7 @@ namespace vmeplus
             fPeriod = period;
             duty = ((duty > 0) ? ((duty < 100) ? duty : 99) : 1);
             uint32_t width = period * duty / 100;// < 256
-            fWidth = (width ? width : 1); 
+            fWidth = (width ? width : 1);
         }
         else
         {
@@ -196,6 +196,20 @@ namespace vmeplus
         json j = json::object({});
         j["name"] = "V2718";
         j["settings"] = { {"inputs", {}}, {"outputs", {}}, {"pulsers", {}}, {"scaler", {}} };
+        json j_inputs = json::array( {} );
+        for( uint8_t i = 0; i < V2718::GetInNumber(); ++i )
+        {
+            j_inputs.push_back( {{"polarity", {}}, {"led_polarity", {}}} );
+        }
+        j["settings"]["inputs"] = j_inputs;
+
+        json j_outputs = json::array( {} );
+        for( uint8_t i = 0; i < V2718::GetOutNumber(); ++i )
+        {
+            j_outputs.push_back( {{"polarity", {}}, {"led_polarity", {}}, {"source", {}}} );
+        }
+        j["settings"]["outputs"] = j_outputs;
+
         return j;
     }();
 
