@@ -18,7 +18,10 @@ namespace vmeplus
         uint32_t period = 0;
         for( int i = 0; i < 4; i++ )
         {
-            period = ss[i].expo / ss[i].num / freq;
+            if( freq > 0 )
+            {
+                period = ss[i].expo / ss[i].num / freq;
+            }
             if( period && (period < 256) )
             {
                 fTimeUnit = ss[i].unit;
