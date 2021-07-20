@@ -18,8 +18,8 @@ class QLedIndicatorWithLabel;
 class QLineEdit;
 
 
-static constexpr uint8_t N_INS = vmeplus::V2718::GetNInputs();
-static constexpr uint8_t N_OUTS = vmeplus::V2718::GetNOutputs();
+static constexpr uint8_t N_INS = vmeplus::V2718::GetInNumber();
+static constexpr uint8_t N_OUTS = vmeplus::V2718::GetOutNumber();
 static constexpr uint8_t N_PULSERS = 2;
 
 class Display;
@@ -31,6 +31,7 @@ class Controller : public QMainWindow
 
     private :
         vmeplus::V2718 fController;
+        json fConfig;
 
         Display *fDisplay;
 
@@ -73,9 +74,12 @@ class Controller : public QMainWindow
         void ToggleStatusBar();
         void OpenConnectDialog();
         void OpenDeviceDialog();
+        void Program();
 
     public slots :
         void UpdateDisplay();
+        void CollectConfig();
+        void SpreadConfig();
 
     signals :
         void Connected( bool );

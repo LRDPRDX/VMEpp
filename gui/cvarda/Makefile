@@ -383,6 +383,7 @@ moc_Controller.cpp: ../../inc/modules/V2718.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/Controller.h \
@@ -403,6 +404,7 @@ moc_Dialogs.cpp: inc/Controller.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/Dialogs.h \
@@ -417,6 +419,7 @@ moc_qledindicator.cpp: inc/qledindicator.h \
 
 moc_V6533NWindow.cpp: ../../inc/modules/V6533N.h \
 		../../inc/VSlave.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		inc/V6533NWindow.h \
 		moc_predefs.h \
@@ -425,6 +428,7 @@ moc_V6533NWindow.cpp: ../../inc/modules/V6533N.h \
 
 moc_V895Window.cpp: ../../inc/modules/V895.h \
 		../../inc/VSlave.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		inc/V895Window.h \
 		moc_predefs.h \
@@ -452,6 +456,7 @@ Controller.o: src/Controller.cpp inc/Controller.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/Dialogs.h \
@@ -470,6 +475,7 @@ DeviceWindow.o: src/DeviceWindow.cpp ../../inc/VException.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/Style.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DeviceWindow.o src/DeviceWindow.cpp
 
@@ -481,6 +487,7 @@ Dialogs.o: src/Dialogs.cpp inc/Dialogs.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		../../inc/VException.h \
@@ -497,6 +504,7 @@ main.o: src/main.cpp inc/Controller.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
@@ -511,6 +519,7 @@ V6533NWindow.o: src/V6533NWindow.cpp inc/Controller.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/V6533NWindow.h \
@@ -526,6 +535,7 @@ V895Window.o: src/V895Window.cpp inc/Controller.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
+		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/V895Window.h \

@@ -90,6 +90,7 @@ void Controller::CreateCentralWidget()
     fProgramButton = new QPushButton( "PROGRAM" );
         fProgramButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fProgramButton, &QPushButton::setEnabled );
+        connect( fProgramButton, &QPushButton::clicked, this, &Controller::Program );
 
     vLayout->addWidget( fMainTab );
     vLayout->addWidget( fProgramButton );
@@ -361,6 +362,61 @@ void Controller::UpdateDisplay()
     {
         qInfo() << e.what();
     }
+}
+
+void Controller::Program()
+{
+    CollectConfig();
+
+    try
+    {
+        fController.WriteConfig( fConfig );
+    }
+    catch( vmeplus::VException &e )
+    {
+        qInfo() << e.what();
+    }
+}
+
+void Controller::CollectConfig()
+{
+    fConfig = vmeplus::V2718::GetDefaultConfig();
+
+    // In's and Out's
+    for( uint8_t i = 0; i < N_INS; ++i )
+    {
+        fConfig.at("settings").at("inputs").at( i ).at("polarity") = fInPolCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("inputs").at( i ).at("led_polarity") = fInLedCombo[i]->currentData().toInt();
+    }
+
+    for( uint8_t i = 0; i < N_OUTS; ++i )
+    {
+        fConfig.at("settings").at("outputs").at( i ).at("polarity") = fOutPolCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("outputs").at( i ).at("led_polarity") = fOutLedCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("outputs").at( i ).at("source") = fOutSrcCombo[i]->currentData().toInt();
+    }
+
+    // Pulsers
+    for( uint8_t i = 0; i < N_PULSERS; ++i )
+    {
+        json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
+        fConfig.at("settings").at("pulsers").at(id).at("frequency") = fPulFreqSpin[i]->value();
+        fConfig.at("settings").at("pulsers").at(id).at("duty") = fPulDutySpin[i]->value();
+        fConfig.at("settings").at("pulsers").at(id).at("count") = fPulNSpin[i]->value();
+        fConfig.at("settings").at("pulsers").at(id).at("start") = fPulStartCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("pulsers").at(id).at("stop") = fPulStopCombo[i]->currentData().toInt();
+    }
+
+    // Scaler
+    fConfig.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
+    fConfig.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+}
+
+void Controller::SpreadConfig()
+{
 }
 
 void Controller::Connect( short link, short conet )
