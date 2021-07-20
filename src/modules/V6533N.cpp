@@ -285,4 +285,12 @@ namespace vmeplus
         std::cout << std::setfill(' ');
         std::cout << "\n";
     } 
+
+    void V6533N::ReadConfig( nlohmann::json &config )
+    {
+    }
+
+    void V6533N::WriteConfig( const nlohmann::json &config )
+    {
+    }
 }

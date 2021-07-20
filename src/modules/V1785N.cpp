@@ -503,4 +503,12 @@ namespace vmeplus
         ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_CLR_DATA_BIT );
     }
     //****** DATA ACQUISITION - ******
+    //
+    void V1785N::ReadConfig( nlohmann::json &config )
+    {
+    }
+
+    void V1785N::WriteConfig( const nlohmann::json &config )
+    {
+    }
 }

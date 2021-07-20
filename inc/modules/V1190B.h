@@ -103,13 +103,14 @@
 #include "VSlaveAcquisitor.h"
 #include "VSlaveInterrupter.h"
 #include "VEvent.h"
+#include "UConfigurable.h"
 
 namespace vmeplus {
 
     /********************/
     /****** V1190B ******/
     /********************/
-    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor {
+    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1190B> {
 
         private :
             static uint8_t const fChNumber = 0x40;    // Number of channels 64
@@ -623,7 +624,11 @@ namespace vmeplus {
         public:
             void EnableReadoutSRAM(bool status = true);
             void ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<int8_t> &data);
-    };
+
+        public :
+            virtual void    ReadConfig( nlohmann::json &config ) override;
+            virtual void    WriteConfig( const nlohmann::json &config ) override;
+    };// V1190B
 
     /*************************/
     /****** V1190BEvent ******/
