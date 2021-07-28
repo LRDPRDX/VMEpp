@@ -35,8 +35,9 @@ class Controller : public QMainWindow
 
         Display *fDisplay;
 
-        QMenu   *fViewMenu;
+        QMenu   *fViewMenu, *fConfigMenu;
         QAction *fConnectAction, *fDisconnectAction, *fExitAction;
+        QAction *fSaveConfigAction, *fLoadConfigAction;
         QAction *fViewStatusBarAction;
         QAction *fAddDeviceAction;
 
@@ -80,6 +81,8 @@ class Controller : public QMainWindow
         void UpdateDisplay();
         void CollectConfig();
         void SpreadConfig();
+        void SaveConfig();
+        void LoadConfig();
 
     signals :
         void Connected( bool );

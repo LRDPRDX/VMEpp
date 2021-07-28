@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QStatusBar>
+#include <QFileDialog>
 #include <QPushButton>
 #include <QComboBox>
 #include <QSpinBox>
@@ -28,7 +29,8 @@
 #include "VException.h"
 
 Controller::Controller( QWidget *parent ) :
-    QMainWindow( parent )
+    QMainWindow( parent ),
+    fConfig( vmeplus::V2718::GetDefaultConfig() )
 {
     CreateActions();
     CreateCentralWidget();
@@ -68,6 +70,16 @@ void Controller::CreateActions()
     fViewMenu = menuBar()->addMenu( "&View" );
         fViewMenu->addAction( fViewStatusBarAction );
     connect( fViewStatusBarAction, &QAction::triggered, this, &Controller::ToggleStatusBar );
+
+    // Config actions
+    fSaveConfigAction = new QAction( "Save config" );
+    fLoadConfigAction = new QAction( "Load config" );
+
+    fConfigMenu = menuBar()->addMenu( "&Config" );
+        fConfigMenu->addAction( fSaveConfigAction );
+        fConfigMenu->addAction( fLoadConfigAction );
+    connect( fSaveConfigAction, &QAction::triggered, this, &Controller::SaveConfig );
+    connect( fLoadConfigAction, &QAction::triggered, this, &Controller::LoadConfig );
 
     // Add actions
     fAddDeviceAction = new QAction( "Device" );
@@ -417,6 +429,95 @@ void Controller::CollectConfig()
 
 void Controller::SpreadConfig()
 {
+    auto changeCombo = [this]( QComboBox* c, std::string s ) {
+        int data;
+        json::json_pointer p( s );
+        int index = c->findData( fConfig.at( p ).get_to( data ) );
+        c->setCurrentIndex( index );
+    };
+    // In's and Out's
+    for( uint8_t i = 0; i < N_INS; ++i )
+    {
+        changeCombo( fInPolCombo[i], "/settings/inputs/" + std::to_string(i) + "polarity" );
+        changeCombo( fInLedCombo[i], "/settings/inputs/" + std::to_string(i) + "led_polarity" );
+    }
+
+    for( uint8_t i = 0; i < N_OUTS; ++i )
+    {
+        changeCombo( fOutPolCombo[i], "/settings/outputs/" + std::to_string(i) + "polarity" );
+        changeCombo( fOutLedCombo[i], "/settings/outputs/" + std::to_string(i) + "led_polarity" );
+        changeCombo( fOutSrcCombo[i], "/settings/outputs/" + std::to_string(i) + "source" );
+    }
+
+    //// Pulsers
+    //for( uint8_t i = 0; i < N_PULSERS; ++i )
+    //{
+    //    json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
+    //    fConfig.at("settings").at("pulsers").at(id).at("frequency") = fPulFreqSpin[i]->value();
+    //    fConfig.at("settings").at("pulsers").at(id).at("duty") = fPulDutySpin[i]->value();
+    //    fConfig.at("settings").at("pulsers").at(id).at("count") = fPulNSpin[i]->value();
+    //    fConfig.at("settings").at("pulsers").at(id).at("start") = fPulStartCombo[i]->currentData().toInt();
+    //    fConfig.at("settings").at("pulsers").at(id).at("stop") = fPulStopCombo[i]->currentData().toInt();
+    //}
+
+    //// Scaler
+    //fConfig.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
+    //fConfig.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
+    //fConfig.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
+    //fConfig.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
+    //fConfig.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+}
+
+void Controller::SaveConfig()
+{
+    QString fileName = QFileDialog::getSaveFileName( this, "Save Config file", "./", "Text files (*.json)" );
+
+    if( fileName.isEmpty() )
+    {
+        return;
+    }
+    else
+    {
+        CollectConfig();
+
+        QFile file( fileName );
+
+        if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
+        {
+            return;
+        }
+
+        QTextStream out( &file );
+        out << fConfig.dump( 2 ).c_str();
+        file.close();
+    }
+}
+
+void Controller::LoadConfig()
+{
+    QString fileName = QFileDialog::getOpenFileName( this, "Load Config file", "./", "Text files (*.json)" );
+
+    if( fileName.isEmpty() )
+    {
+        return;
+    }
+    else
+    {
+        QFile file( fileName );
+
+        if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
+        {
+            return;
+        }
+
+        QTextStream in( &file );
+
+        QString s = in.readAll();
+
+        fConfig = json::parse( s.toStdString() );
+
+        SpreadConfig();
+    }
 }
 
 void Controller::Connect( short link, short conet )
