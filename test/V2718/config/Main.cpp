@@ -14,29 +14,34 @@ int main()
 
     try
     {
-        controller.Open( 0, 0 );
+        //controller.Open( 0, 0 );
 
         controller.GetPulser( cvPulserA ).SetSquare( 10, 50 );
         controller.GetPulser( cvPulserA ).SetNPulses( 88 );
         controller.GetPulser( cvPulserA ).SetStartSource( cvManualSW );
         controller.GetPulser( cvPulserA ).SetStopSource( cvManualSW );
-        controller.GetPulser( cvPulserA ).Write();
+        //controller.GetPulser( cvPulserA ).Write();
 
         controller.GetPulser( cvPulserB ).SetSquare( 10000, 20 );
         controller.GetPulser( cvPulserB ).SetNPulses( 200 );
         controller.GetPulser( cvPulserB ).SetStartSource( cvManualSW );
         controller.GetPulser( cvPulserB ).SetStopSource( cvManualSW );
-        controller.GetPulser( cvPulserB ).Write();
+        //controller.GetPulser( cvPulserB ).Write();
 
         json j;
 
-        controller.ReadConfig( j );
+        //controller.ReadConfig( j );
 
-        controller.WriteConfig( j );
+        //WriteConfigToFile( j, "./config.json" );
 
-        std::cout << j.dump( 2 ) << "\n";
+        json j2 = ReadConfigFromFile( "./config.json" );
+        std::cout << j2.dump( 2 ) << "\n";
 
-        controller.WriteConfig( V2718::GetDefaultConfig() );
+        //controller.WriteConfig( j );
+
+        //std::cout << j.dump( 2 ) << "\n";
+
+        //controller.WriteConfig( V2718::GetDefaultConfig() );
     }
     catch( const VException& e )
     {

@@ -1,14 +1,18 @@
 #include <nlohmann/json.hpp>
 
+#include "VException.h"
+
 
 namespace vmeplus
 {
+    using json = nlohmann::json;
+
     // Curiously recurring template pattern
     template <typename T>
     class UConfigurable
     {
         protected :
-            static nlohmann::json   fDefaultConfig;
+            static json   fDefaultConfig;
     
         public :
             UConfigurable() {};
@@ -17,6 +21,10 @@ namespace vmeplus
             virtual void ReadConfig( nlohmann::json &config ) = 0;
             virtual void WriteConfig( const nlohmann::json &config ) = 0;
     
-            static nlohmann::json GetDefaultConfig() { return fDefaultConfig; }
+            static json GetDefaultConfig() { return fDefaultConfig; }
     };
+
+    void WriteConfigToFile( const json& j, const std::string& path );
+
+    json ReadConfigFromFile( const std::string& path );
 }
