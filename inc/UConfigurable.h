@@ -1,3 +1,6 @@
+#ifndef V_PLUS_CONFIGURABLE_H
+#define V_PLUS_CONFIGURABLE_H
+
 #include <nlohmann/json.hpp>
 
 #include "VException.h"
@@ -13,14 +16,14 @@ namespace vmeplus
     {
         protected :
             static json   fDefaultConfig;
-    
+
         public :
             UConfigurable() {};
             virtual ~UConfigurable() {};
-    
+
             virtual void ReadConfig( nlohmann::json &config ) = 0;
             virtual void WriteConfig( const nlohmann::json &config ) = 0;
-    
+
             static json GetDefaultConfig() { return fDefaultConfig; }
     };
 
@@ -28,3 +31,4 @@ namespace vmeplus
 
     json ReadConfigFromFile( const std::string& path );
 }
+#endif
