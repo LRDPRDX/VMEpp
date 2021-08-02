@@ -16,11 +16,41 @@ namespace vmeplus
     {
     }
 
+    template<>
+    json UConfigurable<V6533N>::fDefaultConfig = []() {
+        json j = json::object( {} );
+        j["name"] = "V6533N";
+
+        j["settings"] = json::object( {} );
+        j["settings"] += { "channels", {} };
+
+        json j_channels = json::array( {} );
+
+        for( uint8_t i = 0; i < V6533N::GetChNumber(); ++i )
+        {
+            json j_channel = json::object( {} );
+
+            j_channel.push_back( {"voltage", {}} );
+            j_channel.push_back( {"current", {}} );
+            j_channel.push_back( {"trip", {}} );
+            j_channel.push_back( {"sw_max", {}} );
+            j_channel.push_back( {"ramp", {{"down", {}}, {"up", {}}}} );
+            j_channel.push_back( {"imon", {}} );
+            j_channel.push_back( {"pw_down", {}} );
+
+            j_channels.push_back( j_channel );
+        }
+
+        j["/settings/channels"_json_pointer] = j_channels;
+
+        return j;
+    }();
+
     V6533N::~V6533N()
     {
     }
 
-    void V6533N::Initialize() 
+    void V6533N::Initialize()
     {
         PrintMessage( Message_t::INFO, "Initializing " + fName + "..." );
 
