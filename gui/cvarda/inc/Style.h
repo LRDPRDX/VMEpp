@@ -15,10 +15,4 @@ namespace style
         static const QString good =     "QPushButton {background-color:#0000ff; color:#ffffff}"
                                         "QPushButton:disabled {background-color:#8888ff;}";
     }
-
-    namespace check
-    {
-        static const QString led =      "QCheckBox {font-size:10px}"
-                                        "QCheckBox::indicator {width:10px; height:10px;}";
-    }
 }

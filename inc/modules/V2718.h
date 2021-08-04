@@ -3,6 +3,10 @@
 
 #include <CAENVMEtypes.h>
 #include "VController.h"
+#include "UConfigurable.h"
+
+using json = nlohmann::json;
+
 
 namespace vmeplus
 {
@@ -111,19 +115,20 @@ namespace vmeplus
             friend class V2718;
     };
 
-    class V2718 : public VController
+    class V2718 : public VController, public UConfigurable<V2718>
     {
+        protected :
+            static uint8_t const fInNumber = 2;
+            static uint8_t const fOutNumber = 5;
+
+        public :
+            static uint8_t constexpr GetInNumber() { return fInNumber; }
+            static uint8_t constexpr GetOutNumber() { return fOutNumber; }
+
         protected :
             V2718Pulser     fPulserA;
             V2718Pulser     fPulserB;
             V2718Scaler     fScaler;
-
-            static uint8_t const fNInputs = 2;
-            static uint8_t const fNOutputs = 5;
-
-        public :
-            static uint8_t constexpr GetNInputs() { return fNInputs; }
-            static uint8_t constexpr GetNOutputs() { return fNOutputs; }
 
         public :
             V2718 ();
@@ -139,6 +144,10 @@ namespace vmeplus
 
             void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity );
+
+        public :
+            virtual void    ReadConfig( nlohmann::json &config ) override;
+            virtual void    WriteConfig( const nlohmann::json &config ) override;
     };
 }
 #endif

@@ -13,6 +13,7 @@ Main
 /test/*
 !/test/V895/
 !/test/V1190B/
+!/test/V2718/
 
 # Data
 *.dat

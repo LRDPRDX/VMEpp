@@ -15,6 +15,7 @@
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QDockWidget>
+#include <QLineEdit>
 #include <QCloseEvent>
 #include <QTabWidget>
 #include "qnamespace.h"
@@ -22,6 +23,7 @@
 #include "Controller.h"
 #include "Dialogs.h"
 #include "Style.h"
+#include "qledindicator.h"
 
 #include "VException.h"
 
@@ -63,8 +65,8 @@ void Controller::CreateActions()
         fViewStatusBarAction->setCheckable( true );
         fViewStatusBarAction->setChecked( true );
 
-    QMenu *viewMenu = menuBar()->addMenu( "&View" );
-        viewMenu->addAction( fViewStatusBarAction );
+    fViewMenu = menuBar()->addMenu( "&View" );
+        fViewMenu->addAction( fViewStatusBarAction );
     connect( fViewStatusBarAction, &QAction::triggered, this, &Controller::ToggleStatusBar );
 
     // Add actions
@@ -86,7 +88,9 @@ void Controller::CreateCentralWidget()
     CreatePulserTab();
 
     fProgramButton = new QPushButton( "PROGRAM" );
+        fProgramButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fProgramButton, &QPushButton::setEnabled );
+        connect( fProgramButton, &QPushButton::clicked, this, &Controller::Program );
 
     vLayout->addWidget( fMainTab );
     vLayout->addWidget( fProgramButton );
@@ -98,9 +102,10 @@ void Controller::CreateCentralWidget()
 void Controller::CreateDockWidget()
 {
     QDockWidget *dock = new QDockWidget( "Display", this );
-    Display *display = new Display( dock );
-    dock->setWidget( display );
+    fDisplay = new Display( this, dock );
+    dock->setWidget( fDisplay );
     addDockWidget( Qt::RightDockWidgetArea, dock );
+    fViewMenu->addAction( dock->toggleViewAction() );
 }
 
 
@@ -113,13 +118,15 @@ void Controller::CreateIOTab()
 
     QGroupBox *outGroup = new QGroupBox( tr("Outputs") );
     QGridLayout *outLayout = new QGridLayout();
+    QString vmeNames[N_OUTS] = { "DS", "AS", "DTACK", "BERR", "LMON" };
+    QString miscNames[N_OUTS] = { "Pulser A", "Pulser A", "Pulser B", "Pulser B", "Scaler END" };
     for( uint8_t i = 0; i < N_OUTS; ++i )
     {
         QLabel* srcLabel = new QLabel( tr("Source:") );
         fOutSrcCombo[i] = new QComboBox();
-            fOutSrcCombo[i]->addItem( "VME", cvVMESignals );
+            fOutSrcCombo[i]->addItem( vmeNames[i], cvVMESignals );
             fOutSrcCombo[i]->addItem( "Coincidence", cvCoincidence );
-            fOutSrcCombo[i]->addItem( "P & S", cvMiscSignals );
+            fOutSrcCombo[i]->addItem( miscNames[i], cvMiscSignals );
             fOutSrcCombo[i]->addItem( "SW", cvManualSW );
 
         QLabel* polLabel = new QLabel( tr("Polarity:") );
@@ -190,6 +197,7 @@ void Controller::CreateIOTab()
     vLayout->addWidget( inGroup );
     tab->setLayout( vLayout );
 }
+
 
 void Controller::CreatePulserTab()
 {
@@ -343,6 +351,74 @@ void Controller::OpenDeviceDialog()
     devDialog->show();
 }
 
+void Controller::UpdateDisplay()
+{
+    try
+    {
+        CVDisplay displayInfo = fController.ReadDisplay();
+        fDisplay->Update( displayInfo );
+    }
+    catch( vmeplus::VException &e )
+    {
+        qInfo() << e.what();
+    }
+}
+
+void Controller::Program()
+{
+    CollectConfig();
+
+    try
+    {
+        fController.WriteConfig( fConfig );
+    }
+    catch( vmeplus::VException &e )
+    {
+        qInfo() << e.what();
+    }
+}
+
+void Controller::CollectConfig()
+{
+    fConfig = vmeplus::V2718::GetDefaultConfig();
+
+    // In's and Out's
+    for( uint8_t i = 0; i < N_INS; ++i )
+    {
+        fConfig.at("settings").at("inputs").at( i ).at("polarity") = fInPolCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("inputs").at( i ).at("led_polarity") = fInLedCombo[i]->currentData().toInt();
+    }
+
+    for( uint8_t i = 0; i < N_OUTS; ++i )
+    {
+        fConfig.at("settings").at("outputs").at( i ).at("polarity") = fOutPolCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("outputs").at( i ).at("led_polarity") = fOutLedCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("outputs").at( i ).at("source") = fOutSrcCombo[i]->currentData().toInt();
+    }
+
+    // Pulsers
+    for( uint8_t i = 0; i < N_PULSERS; ++i )
+    {
+        json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
+        fConfig.at("settings").at("pulsers").at(id).at("frequency") = fPulFreqSpin[i]->value();
+        fConfig.at("settings").at("pulsers").at(id).at("duty") = fPulDutySpin[i]->value();
+        fConfig.at("settings").at("pulsers").at(id).at("count") = fPulNSpin[i]->value();
+        fConfig.at("settings").at("pulsers").at(id).at("start") = fPulStartCombo[i]->currentData().toInt();
+        fConfig.at("settings").at("pulsers").at(id).at("stop") = fPulStopCombo[i]->currentData().toInt();
+    }
+
+    // Scaler
+    fConfig.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
+    fConfig.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+}
+
+void Controller::SpreadConfig()
+{
+}
+
 void Controller::Connect( short link, short conet )
 {
     qInfo() << "Openning controller...";
@@ -406,8 +482,9 @@ void Controller::ToggleStatusBar()
 }
 
 
-Display::Display( QWidget *parent ) :
-    QWidget( parent )
+Display::Display( Controller *controller, QWidget *parent ) :
+    QWidget( parent ),
+    fController( controller )
 {
     CreateDisplay();
 }
@@ -423,84 +500,70 @@ void Display::CreateDisplay()
     QFrame *upperFrame = new QFrame();
     QGridLayout *upperLayout = new QGridLayout();
 
-    for( int i = 0; i < N_A; ++i )
-    {
-        fAddressLED[i] = new QCheckBox( QString( "A%1" ).arg( i ) );
-        fAddressLED[i]->setStyleSheet( style::check::led );
-        upperLayout->addWidget( fAddressLED[i], i, 0 );
-    }
+    QLabel *addressLabel = new QLabel( "Address:" );
+    fAddressText = new QLineEdit();
+        fAddressText->setReadOnly( true );
 
-    for( int i = 0; i < N_D; ++i )
-    {
-        fDataLED[i] = new QCheckBox( QString( "D%1" ).arg( i ) );
-        fDataLED[i]->setStyleSheet( style::check::led );
-        upperLayout->addWidget( fDataLED[i], i, 1 );
-    }
+    QLabel *dataLabel = new QLabel( "Data:" );
+    fDataText = new QLineEdit();
+        fDataText->setReadOnly( true );
 
-    upperLayout->setSpacing( 1 );
+    upperLayout->addWidget( addressLabel, 0, 0, Qt::AlignRight );    
+    upperLayout->addWidget( fAddressText, 0, 1 );
+    upperLayout->addWidget( dataLabel, 1, 0, Qt::AlignRight );    
+    upperLayout->addWidget( fDataText, 1, 1 );
+
     upperFrame->setLayout( upperLayout );
     layout->addWidget( upperFrame );
 
     QFrame *lowerFrame = new QFrame();
     QGridLayout *lowerLayout = new QGridLayout();
 
+    int ledSize = 14;
     int row = 0;
     for( int i = 0; i < N_AM; ++i, ++row )
     {
-        fAddressModLED[i] = new QCheckBox( QString( "AM%1" ).arg( i ) );
-        fAddressModLED[i]->setStyleSheet( style::check::led );
+        fAddressModLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "AM%1" ).arg( i ) );
         lowerLayout->addWidget( fAddressModLED[i], i, 0 );
     }
 
-    for( int i = 0; i < N_DS; ++i, ++row )
-    {
-        fDSLED[i] = new QCheckBox( QString( "DS%1" ).arg( i ) );
-        fDSLED[i]->setStyleSheet( style::check::led );
-        lowerLayout->addWidget( fDSLED[i], row, 0 );
-    }
+    fDS1LED = new QLedIndicatorWithLabel( ledSize, "DS1" );
+    fDS2LED = new QLedIndicatorWithLabel( ledSize, "DS2" );
+    lowerLayout->addWidget( fDS1LED, row++, 0 );
+    lowerLayout->addWidget( fDS2LED, row++, 0 );
 
-    fASLED = new QCheckBox( "AS" );
-    fASLED->setStyleSheet( style::check::led );
+    fASLED = new QLedIndicatorWithLabel( ledSize, "AS" );
     lowerLayout->addWidget( fASLED, row++, 0 );
 
-    fIACKLED = new QCheckBox( "IACK" );
-    fIACKLED->setStyleSheet( style::check::led );
+    fIACKLED = new QLedIndicatorWithLabel( ledSize, "IACK" );
     lowerLayout->addWidget( fIACKLED, row++, 0 );
 
-    fWriteLED = new QCheckBox( "WRITE" );
-    fWriteLED->setStyleSheet( style::check::led );
+    fWriteLED = new QLedIndicatorWithLabel( ledSize, "WRITE" );
     lowerLayout->addWidget( fWriteLED, row++, 0 );
 
-    fLwordLED = new QCheckBox( "LWORD" );
-    fLwordLED->setStyleSheet( style::check::led );
+    fLwordLED = new QLedIndicatorWithLabel( ledSize, "LWORD" );
     lowerLayout->addWidget( fLwordLED, row++, 0 );
 
     row = 0;
     for( int i = 0; i < N_IRQ; ++i, ++row )
     {
-        fIRQLED[i] = new QCheckBox( QString( "IRQ%1" ).arg( i + 1 ) );
-        fIRQLED[i]->setStyleSheet( style::check::led );
+        fIRQLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "IRQ%1" ).arg( i + 1 ) );
         lowerLayout->addWidget( fIRQLED[i], i, 1 );
     }
 
-    fBreqLED = new QCheckBox( "BREQ" );
-    fBreqLED->setStyleSheet( style::check::led );
+    fBreqLED = new QLedIndicatorWithLabel( ledSize, "BREQ" );
     lowerLayout->addWidget( fBreqLED, row++, 1 );
 
-    fBgntLED = new QCheckBox( "BGNT" );
-    fBgntLED->setStyleSheet( style::check::led );
+    fBgntLED = new QLedIndicatorWithLabel( ledSize, "BGNT" );
     lowerLayout->addWidget( fBgntLED, row++, 1 );
 
-    fSresLED = new QCheckBox( "SRES" );
-    fSresLED->setStyleSheet( style::check::led );
+    fSresLED = new QLedIndicatorWithLabel( ledSize, "SRES" );
     lowerLayout->addWidget( fSresLED, row++, 1 );
 
-    fDTKLED = new QCheckBox( "DTK" );
-    fDTKLED->setStyleSheet( style::check::led );
+    fDTKLED = new QLedIndicatorWithLabel( ledSize, "DTK" );
     lowerLayout->addWidget( fDTKLED, row++, 1 );
 
-    fBERRLED = new QCheckBox( "BERR" );
-    fBERRLED->setStyleSheet( style::check::led );
+    fBERRLED = new QLedIndicatorWithLabel( ledSize, "BERR" );
     lowerLayout->addWidget( fBERRLED, row++, 1 );
 
     lowerLayout->setSpacing( 1 );
@@ -508,7 +571,39 @@ void Display::CreateDisplay()
     layout->addWidget( lowerFrame );
 
     fUpdateButton = new QPushButton( "UPDATE" );
+        fUpdateButton->setStyleSheet( style::button::neutral );
+    connect( fUpdateButton, &QPushButton::clicked, fController, &Controller::UpdateDisplay );
+    connect( fController, &Controller::Connected, fUpdateButton, &QPushButton::setEnabled );
     layout->addWidget( fUpdateButton );
 
     setLayout( layout );
+}
+
+
+void Display::Update( const CVDisplay &display )
+{
+    fAddressText->setText( QString().setNum( display.cvAddress, 16 ) );
+    fDataText->setText( QString().setNum( display.cvData, 16 ) );
+
+    for( unsigned i = 0; i < N_AM; ++i )
+    {
+        fAddressModLED[i]->SetChecked( ((1 << i) & display.cvAM) ? Qt::Checked : Qt::Unchecked );
+    }
+
+    for( unsigned i = 0; i < N_IRQ; ++i )
+    {
+        fIRQLED[i]->SetChecked( ((1 << i) & display.cvIRQ) ? Qt::Checked : Qt::Unchecked );
+    }
+
+    fASLED->SetChecked( display.cvAS ? Qt::Checked : Qt::Unchecked );
+    fIACKLED->SetChecked( display.cvIACK ? Qt::Checked : Qt::Unchecked );
+    fDS1LED->SetChecked( display.cvDS0 ? Qt::Checked : Qt::Unchecked );
+    fDS2LED->SetChecked( display.cvDS1 ? Qt::Checked : Qt::Unchecked );
+    fWriteLED->SetChecked( display.cvWRITE ? Qt::Checked : Qt::Unchecked );
+    fLwordLED->SetChecked( display.cvLWORD ? Qt::Checked : Qt::Unchecked );
+    fBreqLED->SetChecked( display.cvBR ? Qt::Checked : Qt::Unchecked );
+    fBgntLED->SetChecked( display.cvBG ? Qt::Checked : Qt::Unchecked );
+    fSresLED->SetChecked( display.cvSYSRES ? Qt::Checked : Qt::Unchecked );
+    fDTKLED->SetChecked( display.cvDTACK ? Qt::Checked : Qt::Unchecked );
+    fBERRLED->SetChecked( display.cvBERR ? Qt::Checked : Qt::Unchecked );
 }
