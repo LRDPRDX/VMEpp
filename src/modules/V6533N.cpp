@@ -71,18 +71,18 @@ namespace vmeplus
     float V6533N::ReadVMax()
     {
         return (float)ReadRegister16( V6533N_VMAX ); //[V]
-    }  
+    }
 
     float V6533N::ReadIMax()
     {
         return (float)ReadRegister16( V6533N_IMAX );// [uA]
-    }  
+    }
 
 
     uint16_t V6533N::ReadStatus()
     {
         return ReadRegister16( V6533N_STATUS );
-    }  
+    }
 
 
     uint16_t V6533N::ReadFWRel()
@@ -133,7 +133,7 @@ namespace vmeplus
         //Restore old range
         WriteIMonRange( ch % fChNumber, old_range );
 
-        return (float)rawI * scale; 
+        return (float)rawI * scale;
     }
 
 
@@ -222,7 +222,7 @@ namespace vmeplus
     {
         uint16_t data = (range == V6533N::IMonRange_t::RANGE_HIGH) ? 0 : 1;
         WriteRegister16( V6533N_IMON_RANGE(ch % fChNumber), data );
-    } 
+    }
 
     V6533N::Polarity_t V6533N::ReadPolarity( uint16_t ch )
     {
@@ -249,7 +249,7 @@ namespace vmeplus
         uint16_t buffer[10];
         for( uint32_t i = 0; i < 10; i++ )
         {
-            buffer[i] = ReadRegister16( V6533N_DESCR + 0x0002U * i );   
+            buffer[i] = ReadRegister16( V6533N_DESCR + 0x0002U * i );
         }
         fDescription = std::string( reinterpret_cast<char*>( buffer ) );
         return fDescription;
@@ -314,13 +314,71 @@ namespace vmeplus
         std::cout << std::right << "   |" << std::setfill('=') << std::setw(60) << "=" <<                                                                       "|/\n";
         std::cout << std::setfill(' ');
         std::cout << "\n";
-    } 
-
-    void V6533N::ReadConfig( nlohmann::json &config )
-    {
     }
 
-    void V6533N::WriteConfig( const nlohmann::json &config )
+    void V6533N::ReadConfig( nlohmann::json &j )
     {
+        j = fDefaultConfig;
+
+        try
+        {
+            IMonRange_t iMon;
+            for( uint8_t i = 0; i < fChNumber; ++i )
+            {
+                j.at("settings").at("channels").at(i).at("voltage") = ReadVoltage( i );
+
+                iMon = ReadIMonRange( i );
+                j.at("settings").at("channels").at(i).at("imon") = iMon;
+                j.at("settings").at("channels").at(i).at("current") = ReadCurrent( i, iMon );
+
+                j.at("settings").at("channels").at(i).at("trip") = ReadTripTime( i );
+                j.at("settings").at("channels").at(i).at("sw_max") = ReadSWVMax( i );
+                j.at("settings").at("channels").at(i).at("ramp").at("down") =
+                    ReadRampDown( i );
+                j.at("settings").at("channels").at(i).at("ramp").at("up") =
+                    ReadRampUp( i );
+                j.at("settings").at("channels").at(i).at("pw_down") = ReadPWDown( i );
+            }
+        }
+        catch( const json::exception& e )
+        {
+            throw VException( VError_t::vConfigError, e.what() );
+        }
+    }
+
+    void V6533N::WriteConfig( const nlohmann::json &j )
+    {
+        try
+        {
+            float voltage, current, ttime, vmax;
+            uint16_t rampd, rampu;
+            bool kill;
+            IMonRange_t iMon;
+            for( uint8_t i = 0; i < fChNumber; ++i )
+            {
+                j.at("settings").at("channels").at(i).at("voltage").get_to<float>( voltage );
+                j.at("settings").at("channels").at(i).at("imon").get_to<IMonRange_t>( iMon );
+                j.at("settings").at("channels").at(i).at("current").get_to<float>( current );
+                j.at("settings").at("channels").at(i).at("ttime").get_to<float>( ttime );
+                j.at("settings").at("channels").at(i).at("sw_max").get_to<float>( vmax );
+
+                j.at("settings").at("channels").at(i).at("ramp").at("down").get_to<uint16_t>( rampd );
+                j.at("settings").at("channels").at(i).at("ramp").at("up").get_to<uint16_t>( rampu );
+                j.at("settings").at("channels").at(i).at("pw_down").get_to<bool>( kill );
+
+                WriteVoltage( i, voltage );
+                WriteCurrent( i, current );
+                WriteTripTime( i, ttime );
+                WriteSWVMax( i, vmax );
+                WriteRampUp( i, rampu );
+                WriteRampDown( i, rampd );
+                WritePWDown( i, kill );
+                WriteIMonRange( i, iMon );
+            }
+        }
+        catch( const json::exception& e )
+        {
+            throw VException( VError_t::vConfigError, e.what() );
+        }
     }
 }

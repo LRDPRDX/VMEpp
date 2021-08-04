@@ -3,7 +3,6 @@
 
 namespace vmeplus
 {
-
     void WriteConfigToFile( const json& j, const std::string& path )
     {
         std::ofstream file;
@@ -39,5 +38,5 @@ namespace vmeplus
             PrintMessage( Message_t::ERROR, e.what() );
         }
         return j;
-    }  
+    }
 }
