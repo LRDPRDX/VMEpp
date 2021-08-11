@@ -109,7 +109,7 @@ namespace vmeplus
             uint16_t        GetManNumber() const { return (fManMType & V895_MAN_MSK) >> 10; }
             uint16_t        GetMType() const { return fManMType & V895_MTYPE_MSK; }
 
-            uint16_t        GetFixedCode() const { return fFixedCode; } 
+            uint16_t        GetFixedCode() const { return fFixedCode; }
             uint16_t        GetFAFixedCode() const { return (fFixedCode & V895_FA_MSK) >> 8; }
             uint16_t        GetF5FixedCode() const { return fFixedCode & V895_F5_MSK; }
 

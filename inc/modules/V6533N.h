@@ -150,7 +150,7 @@ namespace vmeplus
             std::string     GetModel() const { return fModel; }
             std::string     GetVMEFirmware() const { return fVMEFirmware; }
 
-        public : 
+        public :
             virtual void    Print() const override;
 
         public :

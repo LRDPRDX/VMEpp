@@ -31,12 +31,9 @@ int main()
         json j;
 
         controller.ReadConfig( j );
-
         controller.WriteConfig( j );
 
         std::cout << j.dump( 2 ) << "\n";
-
-        controller.WriteConfig( V2718::GetDefaultConfig() );
     }
     catch( const VException& e )
     {

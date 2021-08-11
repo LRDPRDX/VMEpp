@@ -55,7 +55,7 @@ namespace vmeplus
         }
         if( fPeriod )
         {
-            freq = expo / num / fPeriod; 
+            freq = expo / num / fPeriod;
             duty = fWidth * 100 / fPeriod;
         }
     }
@@ -217,7 +217,7 @@ namespace vmeplus
         json j = json::object( {} );
         j["name"] = "V2718";
 
-        j["settings"] = json::object( {} ); 
+        j["settings"] = json::object( {} );
 
         // Outputs and inputs
         j["settings"] += {"inputs", {}};
@@ -228,7 +228,7 @@ namespace vmeplus
         }
         j["/settings/inputs"_json_pointer] = j_inputs;
 
-        j["settings"] += {"outputs", {}}; 
+        j["settings"] += {"outputs", {}};
         json j_outputs = json::array( {} );
         for( uint8_t i = 0; i < V2718::GetOutNumber(); ++i )
         {
@@ -237,11 +237,11 @@ namespace vmeplus
         j["/settings/outputs"_json_pointer] = j_outputs;
 
         // Pulsers
-        j["settings"] += {"pulsers", {}}; 
+        j["settings"] += {"pulsers", {}};
         json j_pulsers = json::object( {} );
             j_pulsers += {"A", {}};
             j_pulsers += {"B", {}};
-        json j_pulser = json::object( {} ); 
+        json j_pulser = json::object( {} );
         j_pulser += {"frequency", {}};
         j_pulser += {"duty", {}};
         j_pulser += {"count", {}};
@@ -253,7 +253,7 @@ namespace vmeplus
         j["/settings/pulsers"_json_pointer] = j_pulsers;
 
         // Scaler
-        j["settings"] += {"scaler", {}}; 
+        j["settings"] += {"scaler", {}};
         json j_scaler = json::object( {} );
             j_scaler += {"limit", {}};
             j_scaler += {"hit", {}};
@@ -441,7 +441,7 @@ namespace vmeplus
             j.at("settings").at("pulsers").at("A").at("stop").get_to<CVIOSources>(stop);
                 fPulserA.SetStopSource( stop );
             fPulserA.Write();
-            
+
             j.at("settings").at("pulsers").at("B").at("frequency").get_to<uint32_t>(freq);
             j.at("settings").at("pulsers").at("B").at("duty").get_to<uint8_t>(duty);
                 fPulserB.SetSquare( freq, duty );
