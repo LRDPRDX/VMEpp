@@ -439,15 +439,15 @@ void Controller::SpreadConfig()
     // In's and Out's
     for( uint8_t i = 0; i < N_INS; ++i )
     {
-        changeCombo( fInPolCombo[i], "/settings/inputs/" + std::to_string(i) + "polarity" );
-        changeCombo( fInLedCombo[i], "/settings/inputs/" + std::to_string(i) + "led_polarity" );
+        changeCombo( fInPolCombo[i], "/settings/inputs/" + std::to_string(i) + "/polarity" );
+        changeCombo( fInLedCombo[i], "/settings/inputs/" + std::to_string(i) + "/led_polarity" );
     }
 
     for( uint8_t i = 0; i < N_OUTS; ++i )
     {
-        changeCombo( fOutPolCombo[i], "/settings/outputs/" + std::to_string(i) + "polarity" );
-        changeCombo( fOutLedCombo[i], "/settings/outputs/" + std::to_string(i) + "led_polarity" );
-        changeCombo( fOutSrcCombo[i], "/settings/outputs/" + std::to_string(i) + "source" );
+        changeCombo( fOutPolCombo[i], "/settings/outputs/" + std::to_string(i) + "/polarity" );
+        changeCombo( fOutLedCombo[i], "/settings/outputs/" + std::to_string(i) + "/led_polarity" );
+        changeCombo( fOutSrcCombo[i], "/settings/outputs/" + std::to_string(i) + "/source" );
     }
 
     // Pulsers
@@ -464,16 +464,21 @@ void Controller::SpreadConfig()
         fConfig.at("settings").at("pulsers").at(id).at("count").get_to<uint8_t>( count );
             fPulNSpin[i]->setValue( count );
 
-        changeCombo( fPulStartCombo[i], "/settings/pulsers/" + id.to_string() + "/start" );
-        changeCombo( fPulStopCombo[i], "/settings/pulsers/" + id.to_string() + "/stop" );
+        changeCombo( fPulStartCombo[i], "/settings/pulsers" + id.to_string() + "/start" );
+        changeCombo( fPulStopCombo[i], "/settings/pulsers" + id.to_string() + "/stop" );
     }
 
     // Scaler
-    fConfig.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
-    fConfig.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
-    fConfig.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
-    fConfig.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
-    fConfig.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+    changeCombo( fScalGateCombo, "/settings/scaler/gate" );
+    changeCombo( fScalResetCombo, "/settings/scaler/stop" );
+    changeCombo( fScalHitCombo, "/settings/scaler/hit" );
+
+    short limit = 0;
+    short autoreset = 0;
+    fConfig.at("settings").at("scaler").at("limit").get_to<short>( limit );
+        fScalLimitSpin->setValue( limit );
+    fConfig.at("settings").at("scaler").at("auto_reset").get_to<short>( autoreset );
+        fScalAutoCheck->setChecked( autoreset );
 }
 
 void Controller::SaveConfig()
