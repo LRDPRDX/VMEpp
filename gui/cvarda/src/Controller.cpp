@@ -83,7 +83,7 @@ void Controller::CreateActions()
 
     // Add actions
     fAddDeviceAction = new QAction( "Device" );
-        connect( this, &Controller::Connected, fAddDeviceAction, &QAction::setEnabled );
+        //connect( this, &Controller::Connected, fAddDeviceAction, &QAction::setEnabled );
     QMenu *addMenu = menuBar()->addMenu( "&Add" );
         addMenu->addAction( fAddDeviceAction );
     connect( fAddDeviceAction, &QAction::triggered, this, &Controller::OpenDeviceDialog );
@@ -609,9 +609,9 @@ void Display::CreateDisplay()
     fDataText = new QLineEdit();
         fDataText->setReadOnly( true );
 
-    upperLayout->addWidget( addressLabel, 0, 0, Qt::AlignRight );    
+    upperLayout->addWidget( addressLabel, 0, 0, Qt::AlignRight );
     upperLayout->addWidget( fAddressText, 0, 1 );
-    upperLayout->addWidget( dataLabel, 1, 0, Qt::AlignRight );    
+    upperLayout->addWidget( dataLabel, 1, 0, Qt::AlignRight );
     upperLayout->addWidget( fDataText, 1, 1 );
 
     upperFrame->setLayout( upperLayout );
