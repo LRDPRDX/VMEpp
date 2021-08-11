@@ -343,15 +343,9 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-<<<<<<< HEAD
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents inc/Controller.h inc/DeviceWindow.h inc/Dialogs.h inc/Style.h inc/V6533NWindow.h inc/V895Window.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/Controller.cpp src/DeviceWindow.cpp src/Dialogs.cpp src/main.cpp src/V6533NWindow.cpp src/V895Window.cpp $(DISTDIR)/
-=======
-	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents inc/Controller.h inc/DeviceWindow.h inc/Dialogs.h inc/qledindicator.h inc/Style.h inc/V6533NWindow.h inc/V895Window.h $(DISTDIR)/
 	$(COPY_FILE) --parents src/Controller.cpp src/DeviceWindow.cpp src/Dialogs.cpp src/main.cpp src/qledindicator.cpp src/V6533NWindow.cpp src/V895Window.cpp $(DISTDIR)/
->>>>>>> refs/remotes/origin/gui
 
 
 clean: compiler_clean 
@@ -384,14 +378,9 @@ moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
 compiler_moc_header_make_all: moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_qledindicator.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
 compiler_moc_header_clean:
-<<<<<<< HEAD
-	-$(DEL_FILE) moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
+	-$(DEL_FILE) moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_qledindicator.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
 moc_Controller.cpp: inc/Controller.h \
 		../../inc/modules/V2718.h \
-=======
-	-$(DEL_FILE) moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_qledindicator.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
-moc_Controller.cpp: ../../inc/modules/V2718.h \
->>>>>>> refs/remotes/origin/gui
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
 		../../inc/VMaster.h \
@@ -425,17 +414,13 @@ moc_Dialogs.cpp: inc/Dialogs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/lrdprdx/projects/VME/gui/cvarda/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/lrdprdx/projects/VME/gui/cvarda -I/home/lrdprdx/projects/VME/inc -I/home/lrdprdx/projects/VME/gui/cvarda/inc -I/home/lrdprdx/projects/VME/gui/cvarda -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/Dialogs.h -o moc_Dialogs.cpp
 
-<<<<<<< HEAD
-moc_V6533NWindow.cpp: inc/V6533NWindow.h \
-		../../inc/modules/V6533N.h \
-=======
 moc_qledindicator.cpp: inc/qledindicator.h \
 		moc_predefs.h \
-		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/qledindicator.h -o moc_qledindicator.cpp
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/lrdprdx/projects/VME/gui/cvarda/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/lrdprdx/projects/VME/gui/cvarda -I/home/lrdprdx/projects/VME/inc -I/home/lrdprdx/projects/VME/gui/cvarda/inc -I/home/lrdprdx/projects/VME/gui/cvarda -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/qledindicator.h -o moc_qledindicator.cpp
 
-moc_V6533NWindow.cpp: ../../inc/modules/V6533N.h \
->>>>>>> refs/remotes/origin/gui
+moc_V6533NWindow.cpp: inc/V6533NWindow.h \
+		../../inc/modules/V6533N.h \
 		../../inc/VSlave.h \
 		../../inc/UConfigurable.h \
 		inc/DeviceWindow.h \
@@ -494,10 +479,7 @@ DeviceWindow.o: src/DeviceWindow.cpp ../../inc/VException.h \
 		../../inc/VMaster.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
-<<<<<<< HEAD
-=======
 		../../inc/UConfigurable.h \
->>>>>>> refs/remotes/origin/gui
 		inc/Style.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DeviceWindow.o src/DeviceWindow.cpp
 
