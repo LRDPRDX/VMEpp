@@ -182,6 +182,8 @@ namespace vmeplus
 
     void V895::ReadConfig( nlohmann::json &j )
     {
+        // There is no way to read the configuration for this module
+        // so the default one
         j = fDefaultConfig;
     }
 
