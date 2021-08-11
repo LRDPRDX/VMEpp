@@ -15,7 +15,7 @@
       {
         "led_polarity": 0,
         "polarity": 0,
-        "source": 3
+        "source": 4
       },
       {
         "led_polarity": 0,
@@ -40,18 +40,18 @@
     ],
     "pulsers": {
       "A": {
-        "count": 0,
-        "duty": 1,
-        "frequency": 0,
-        "start": 0,
-        "stop": 0
+        "count": 6,
+        "duty": 12,
+        "frequency": 2000,
+        "start": 1,
+        "stop": 1
       },
       "B": {
-        "count": 0,
-        "duty": 1,
-        "frequency": 0,
-        "start": 0,
-        "stop": 0
+        "count": 10,
+        "duty": 80,
+        "frequency": 8,
+        "start": 3,
+        "stop": 2
       }
     },
     "scaler": {

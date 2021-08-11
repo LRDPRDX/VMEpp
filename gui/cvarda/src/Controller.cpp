@@ -449,23 +449,30 @@ void Controller::SpreadConfig()
         changeCombo( fOutSrcCombo[i], "/settings/outputs/" + std::to_string(i) + "source" );
     }
 
-    //// Pulsers
-    //for( uint8_t i = 0; i < N_PULSERS; ++i )
-    //{
-    //    json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
-    //    fConfig.at("settings").at("pulsers").at(id).at("frequency") = fPulFreqSpin[i]->value();
-    //    fConfig.at("settings").at("pulsers").at(id).at("duty") = fPulDutySpin[i]->value();
-    //    fConfig.at("settings").at("pulsers").at(id).at("count") = fPulNSpin[i]->value();
-    //    fConfig.at("settings").at("pulsers").at(id).at("start") = fPulStartCombo[i]->currentData().toInt();
-    //    fConfig.at("settings").at("pulsers").at(id).at("stop") = fPulStopCombo[i]->currentData().toInt();
-    //}
+    // Pulsers
+    uint32_t freq = 0;
+    uint8_t duty = 0;
+    uint8_t count = 0;
+    for( uint8_t i = 0; i < N_PULSERS; ++i )
+    {
+        json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
+        fConfig.at("settings").at("pulsers").at(id).at("frequency").get_to<uint32_t>( freq );
+            fPulFreqSpin[i]->setValue( freq );
+        fConfig.at("settings").at("pulsers").at(id).at("duty").get_to<uint8_t>( duty );
+            fPulDutySpin[i]->setValue( duty );
+        fConfig.at("settings").at("pulsers").at(id).at("count").get_to<uint8_t>( count );
+            fPulNSpin[i]->setValue( count );
 
-    //// Scaler
-    //fConfig.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
-    //fConfig.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
-    //fConfig.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
-    //fConfig.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
-    //fConfig.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+        changeCombo( fPulStartCombo[i], "/settings/pulsers/" + id.to_string() + "/start" );
+        changeCombo( fPulStopCombo[i], "/settings/pulsers/" + id.to_string() + "/stop" );
+    }
+
+    // Scaler
+    fConfig.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
+    fConfig.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
+    fConfig.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
 }
 
 void Controller::SaveConfig()
@@ -484,6 +491,7 @@ void Controller::SaveConfig()
 
         if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
         {
+            qInfo() << "Cannot write to file\n";
             return;
         }
 
@@ -513,6 +521,8 @@ void Controller::LoadConfig()
         QTextStream in( &file );
 
         QString s = in.readAll();
+
+        std::cout << s.toStdString() << "\n";
 
         fConfig = json::parse( s.toStdString() );
 
