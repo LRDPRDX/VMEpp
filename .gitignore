@@ -33,6 +33,9 @@ ROOT/
 *.swo
 *.swp
 
+# config files
+*.json
+
 #### GUI ####
 #
 # Qt product
