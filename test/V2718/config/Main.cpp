@@ -33,7 +33,11 @@ int main()
         controller.ReadConfig( j );
         controller.WriteConfig( j );
 
-        std::cout << j.dump( 2 ) << "\n";
+        WriteConfigToFile( j, "./config.json" );
+        j = ReadConfigFromFile( "./config.json" );
+
+        std::cout << j.dump( 2 ) << std::endl;
+
     }
     catch( const VException& e )
     {
