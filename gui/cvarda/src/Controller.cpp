@@ -22,6 +22,7 @@
 #include "qnamespace.h"
 
 #include "Controller.h"
+#include "UConfigurable.h"
 #include "Dialogs.h"
 #include "Style.h"
 #include "qledindicator.h"
@@ -487,17 +488,19 @@ void Controller::SaveConfig()
     {
         CollectConfig();
 
-        QFile file( fileName );
+        //QFile file( fileName );
 
-        if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
-        {
-            qInfo() << "Cannot write to file\n";
-            return;
-        }
+        //if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
+        //{
+        //    qInfo() << "Cannot write to file\n";
+        //    return;
+        //}
 
-        QTextStream out( &file );
-        out << fConfig.dump( 2 ).c_str();
-        file.close();
+        //QTextStream out( &file );
+        //out << fConfig.dump( 2 ).c_str();
+        //file.close();
+
+        vmeplus::WriteConfigToFile(  fConfig, fileName.toStdString() );
     }
 }
 
@@ -511,20 +514,19 @@ void Controller::LoadConfig()
     }
     else
     {
-        QFile file( fileName );
+        //QFile file( fileName );
 
-        if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
-        {
-            return;
-        }
+        //if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
+        //{
+        //    return;
+        //}
 
-        QTextStream in( &file );
+        //QTextStream in( &file );
 
-        QString s = in.readAll();
+        //QString s = in.readAll();
 
-        std::cout << s.toStdString() << "\n";
-
-        fConfig = json::parse( s.toStdString() );
+        fConfig = vmeplus::ReadConfigFromFile( fileName.toStdString() );
+        //fConfig = json::parse( s.toStdString() );
 
         SpreadConfig();
     }
