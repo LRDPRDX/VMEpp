@@ -25,7 +25,8 @@
 #include "UConfigurable.h"
 #include "Dialogs.h"
 #include "Style.h"
-#include "qledindicator.h"
+//#include "qledindicator.h"
+#include "QLedIndicator.h"
 
 #include "VException.h"
 
@@ -641,25 +642,25 @@ void Display::CreateDisplay()
     int row = 0;
     for( int i = 0; i < N_AM; ++i, ++row )
     {
-        fAddressModLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "AM%1" ).arg( i ) );
+        fAddressModLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "AM%1" ).arg( i ), false );
         lowerLayout->addWidget( fAddressModLED[i], i, 0 );
     }
 
-    fDS1LED = new QLedIndicatorWithLabel( ledSize, "DS1" );
-    fDS2LED = new QLedIndicatorWithLabel( ledSize, "DS2" );
+    fDS1LED = new QLedIndicatorWithLabel( ledSize, "DS1", false );
+    fDS2LED = new QLedIndicatorWithLabel( ledSize, "DS2", false );
     lowerLayout->addWidget( fDS1LED, row++, 0 );
     lowerLayout->addWidget( fDS2LED, row++, 0 );
 
-    fASLED = new QLedIndicatorWithLabel( ledSize, "AS" );
+    fASLED = new QLedIndicatorWithLabel( ledSize, "AS", false );
     lowerLayout->addWidget( fASLED, row++, 0 );
 
-    fIACKLED = new QLedIndicatorWithLabel( ledSize, "IACK" );
+    fIACKLED = new QLedIndicatorWithLabel( ledSize, "IACK", false );
     lowerLayout->addWidget( fIACKLED, row++, 0 );
 
-    fWriteLED = new QLedIndicatorWithLabel( ledSize, "WRITE" );
+    fWriteLED = new QLedIndicatorWithLabel( ledSize, "WRITE", false );
     lowerLayout->addWidget( fWriteLED, row++, 0 );
 
-    fLwordLED = new QLedIndicatorWithLabel( ledSize, "LWORD" );
+    fLwordLED = new QLedIndicatorWithLabel( ledSize, "LWORD", false );
     lowerLayout->addWidget( fLwordLED, row++, 0 );
 
     row = 0;

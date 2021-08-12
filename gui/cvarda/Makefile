@@ -54,25 +54,25 @@ SOURCES       = src/Controller.cpp \
 		src/DeviceWindow.cpp \
 		src/Dialogs.cpp \
 		src/main.cpp \
-		src/qledindicator.cpp \
+		src/QLedIndicator.cpp \
 		src/V6533NWindow.cpp \
 		src/V895Window.cpp moc_Controller.cpp \
 		moc_DeviceWindow.cpp \
 		moc_Dialogs.cpp \
-		moc_qledindicator.cpp \
+		moc_QLedIndicator.cpp \
 		moc_V6533NWindow.cpp \
 		moc_V895Window.cpp
 OBJECTS       = Controller.o \
 		DeviceWindow.o \
 		Dialogs.o \
 		main.o \
-		qledindicator.o \
+		QLedIndicator.o \
 		V6533NWindow.o \
 		V895Window.o \
 		moc_Controller.o \
 		moc_DeviceWindow.o \
 		moc_Dialogs.o \
-		moc_qledindicator.o \
+		moc_QLedIndicator.o \
 		moc_V6533NWindow.o \
 		moc_V895Window.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
@@ -152,14 +152,14 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		inc/DeviceWindow.h \
 		inc/Dialogs.h \
 		inc/ProgrammableWindow.h \
-		inc/qledindicator.h \
+		inc/QLedIndicator.h \
 		inc/Style.h \
 		inc/V6533NWindow.h \
 		inc/V895Window.h src/Controller.cpp \
 		src/DeviceWindow.cpp \
 		src/Dialogs.cpp \
 		src/main.cpp \
-		src/qledindicator.cpp \
+		src/QLedIndicator.cpp \
 		src/V6533NWindow.cpp \
 		src/V895Window.cpp
 QMAKE_TARGET  = cvarda
@@ -343,8 +343,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents inc/Controller.h inc/DeviceWindow.h inc/Dialogs.h inc/ProgrammableWindow.h inc/qledindicator.h inc/Style.h inc/V6533NWindow.h inc/V895Window.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/Controller.cpp src/DeviceWindow.cpp src/Dialogs.cpp src/main.cpp src/qledindicator.cpp src/V6533NWindow.cpp src/V895Window.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents inc/Controller.h inc/DeviceWindow.h inc/Dialogs.h inc/ProgrammableWindow.h inc/QLedIndicator.h inc/Style.h inc/V6533NWindow.h inc/V895Window.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/Controller.cpp src/DeviceWindow.cpp src/Dialogs.cpp src/main.cpp src/QLedIndicator.cpp src/V6533NWindow.cpp src/V895Window.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -375,9 +375,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_qledindicator.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
+compiler_moc_header_make_all: moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_QLedIndicator.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_qledindicator.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
+	-$(DEL_FILE) moc_Controller.cpp moc_DeviceWindow.cpp moc_Dialogs.cpp moc_QLedIndicator.cpp moc_V6533NWindow.cpp moc_V895Window.cpp
 moc_Controller.cpp: ../../inc/modules/V2718.h \
 		../../inc/VController.h \
 		../../inc/VArbiter.h \
@@ -385,6 +385,7 @@ moc_Controller.cpp: ../../inc/modules/V2718.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/Controller.h \
@@ -406,6 +407,7 @@ moc_Dialogs.cpp: inc/Controller.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/Dialogs.h \
@@ -413,14 +415,15 @@ moc_Dialogs.cpp: inc/Controller.h \
 		/usr/lib64/qt5/bin/moc
 	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/Dialogs.h -o moc_Dialogs.cpp
 
-moc_qledindicator.cpp: inc/qledindicator.h \
+moc_QLedIndicator.cpp: inc/QLedIndicator.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/qledindicator.h -o moc_qledindicator.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/home/csi/Local/Sikach/projects/VMEpp/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda/inc -I/home/csi/Local/Sikach/projects/VMEpp/gui/cvarda -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/home/csi/Tools/CAEN/CAENOO/inc -I/usr/include/c++/4.8.5 -I/usr/include/c++/4.8.5/x86_64-redhat-linux -I/usr/include/c++/4.8.5/backward -I/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include -I/usr/local/include -I/usr/include inc/QLedIndicator.h -o moc_QLedIndicator.cpp
 
 moc_V6533NWindow.cpp: ../../inc/modules/V6533N.h \
 		../../inc/VSlave.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		inc/V6533NWindow.h \
 		moc_predefs.h \
@@ -430,6 +433,7 @@ moc_V6533NWindow.cpp: ../../inc/modules/V6533N.h \
 moc_V895Window.cpp: ../../inc/modules/V895.h \
 		../../inc/VSlave.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		inc/V895Window.h \
 		moc_predefs.h \
@@ -458,12 +462,12 @@ Controller.o: src/Controller.cpp inc/Controller.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/Dialogs.h \
 		inc/Style.h \
-		inc/qledindicator.h \
-		../../inc/VException.h
+		inc/QLedIndicator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Controller.o src/Controller.cpp
 
 DeviceWindow.o: src/DeviceWindow.cpp ../../inc/VException.h \
@@ -489,9 +493,9 @@ Dialogs.o: src/Dialogs.cpp inc/Dialogs.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
-		../../inc/VException.h \
 		inc/V895Window.h \
 		../../inc/modules/V895.h \
 		inc/V6533NWindow.h \
@@ -506,12 +510,13 @@ main.o: src/main.cpp inc/Controller.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
-qledindicator.o: src/qledindicator.cpp inc/qledindicator.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qledindicator.o src/qledindicator.cpp
+QLedIndicator.o: src/QLedIndicator.cpp inc/QLedIndicator.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o QLedIndicator.o src/QLedIndicator.cpp
 
 V6533NWindow.o: src/V6533NWindow.cpp inc/Controller.h \
 		../../inc/modules/V2718.h \
@@ -521,12 +526,12 @@ V6533NWindow.o: src/V6533NWindow.cpp inc/Controller.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/V6533NWindow.h \
 		../../inc/modules/V6533N.h \
-		inc/Style.h \
-		../../inc/VException.h
+		inc/Style.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o V6533NWindow.o src/V6533NWindow.cpp
 
 V895Window.o: src/V895Window.cpp inc/Controller.h \
@@ -537,12 +542,12 @@ V895Window.o: src/V895Window.cpp inc/Controller.h \
 		../../inc/VRequester.h \
 		../../inc/VInterruptHandler.h \
 		../../inc/UConfigurable.h \
+		../../inc/VException.h \
 		inc/DeviceWindow.h \
 		../../inc/VSlave.h \
 		inc/V895Window.h \
 		../../inc/modules/V895.h \
-		inc/Style.h \
-		../../inc/VException.h
+		inc/Style.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o V895Window.o src/V895Window.cpp
 
 moc_Controller.o: moc_Controller.cpp 
@@ -554,8 +559,8 @@ moc_DeviceWindow.o: moc_DeviceWindow.cpp
 moc_Dialogs.o: moc_Dialogs.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Dialogs.o moc_Dialogs.cpp
 
-moc_qledindicator.o: moc_qledindicator.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_qledindicator.o moc_qledindicator.cpp
+moc_QLedIndicator.o: moc_QLedIndicator.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_QLedIndicator.o moc_QLedIndicator.cpp
 
 moc_V6533NWindow.o: moc_V6533NWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_V6533NWindow.o moc_V6533NWindow.cpp

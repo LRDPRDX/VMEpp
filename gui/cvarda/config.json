@@ -55,11 +55,11 @@
       }
     },
     "scaler": {
-      "auto_reset": false,
-      "gate": 0,
-      "hit": 1,
+      "auto_reset": true,
+      "gate": 2,
+      "hit": 3,
       "limit": 0,
-      "stop": 0
+      "stop": 2
     }
   }
 }
