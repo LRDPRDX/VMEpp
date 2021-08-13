@@ -1,1 +1,65 @@
-[null
+{
+  "name": "V2718",
+  "settings": {
+    "inputs": [
+      {
+        "led_polarity": 0,
+        "polarity": 0
+      },
+      {
+        "led_polarity": 0,
+        "polarity": 0
+      }
+    ],
+    "outputs": [
+      {
+        "led_polarity": 1,
+        "polarity": 0,
+        "source": 4
+      },
+      {
+        "led_polarity": 1,
+        "polarity": 0,
+        "source": 4
+      },
+      {
+        "led_polarity": 1,
+        "polarity": 0,
+        "source": 4
+      },
+      {
+        "led_polarity": 1,
+        "polarity": 0,
+        "source": 4
+      },
+      {
+        "led_polarity": 0,
+        "polarity": 0,
+        "source": 4
+      }
+    ],
+    "pulsers": {
+      "A": {
+        "count": 88,
+        "duty": 49,
+        "frequency": 10,
+        "start": 0,
+        "stop": 0
+      },
+      "B": {
+        "count": 200,
+        "duty": 19,
+        "frequency": 10080,
+        "start": 0,
+        "stop": 0
+      }
+    },
+    "scaler": {
+      "auto_reset": 0,
+      "gate": 0,
+      "hit": 1,
+      "limit": 0,
+      "stop": 0
+    }
+  }
+}

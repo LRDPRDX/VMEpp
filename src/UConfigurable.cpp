@@ -8,17 +8,10 @@ namespace vmeplus
         std::ofstream file;
         file.exceptions( std::ios::failbit | std::ios::badbit );
 
-        try
-        {
-            file.open( path );
-            std::string s = j.dump( 2 );
-            file << s << std::endl;
-            file.close();
-        }
-        catch( std::ofstream::failure& e )
-        {
-            PrintMessage( Message_t::ERROR, e.what() );
-        }
+        file.open( path );
+        std::string s = j.dump( 2 );
+        file << s << std::endl;
+        file.close();
     }
 
     json ReadConfigFromFile( const std::string& path )
@@ -27,16 +20,10 @@ namespace vmeplus
         file.exceptions( std::ios::failbit | std::ios::badbit );
         json j;
 
-        try
-        {
-            file.open( path );
-            j = json::parse( file );
-            file.close();
-        }
-        catch( std::ifstream::failure& e )
-        {
-            PrintMessage( Message_t::ERROR, e.what() );
-        }
+        file.open( path );
+        j = json::parse( file );
+        file.close();
+
         return j;
     }
 }

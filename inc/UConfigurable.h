@@ -3,8 +3,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include "VException.h"
-
 
 namespace vmeplus
 {

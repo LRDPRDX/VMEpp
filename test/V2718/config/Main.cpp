@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 
 #include <iostream>
+#include <fstream>
 #include <unistd.h>
 
 using namespace vmeplus;
@@ -33,7 +34,19 @@ int main()
         controller.ReadConfig( j );
         controller.WriteConfig( j );
 
-        std::cout << j.dump( 2 ) << "\n";
+        try
+        {
+            //WriteConfigToFile( j, "/usr/config.json" ); // causes catch
+            WriteConfigToFile( j, "./config.json" );
+            j = ReadConfigFromFile( "./config.json" );
+        }
+        catch( std::fstream::failure& e )
+        {
+            std::cout << "File reading writing failed\n" << std::endl;
+        }
+
+        std::cout << j.dump( 2 ) << std::endl;
+
     }
     catch( const VException& e )
     {
