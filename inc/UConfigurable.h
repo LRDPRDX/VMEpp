@@ -23,7 +23,15 @@ namespace vmeplus
             virtual void WriteConfig( const nlohmann::json &config ) = 0;
 
             static json GetDefaultConfig() { return fDefaultConfig; }
+            static bool Validate( const json& source );
     };
+
+    template<typename T>
+    bool UConfigurable<T>::Validate( const json& source )
+    {
+        json patch = json::diff( fDefaultConfig, source ); 
+        return true;
+    }
 
     void WriteConfigToFile( const json& j, const std::string& path );
 
