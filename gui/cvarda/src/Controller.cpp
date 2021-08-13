@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include <QMenu>
 #include <QMenuBar>
 #include <QApplication>
@@ -494,19 +496,17 @@ void Controller::SaveConfig()
     {
         CollectConfig();
 
-        //QFile file( fileName );
-
-        //if( !file.open( QIODevice::WriteOnly | QIODevice::Text ) )
-        //{
-        //    qInfo() << "Cannot write to file\n";
-        //    return;
-        //}
-
-        //QTextStream out( &file );
-        //out << fConfig.dump( 2 ).c_str();
-        //file.close();
-
-        vmeplus::WriteConfigToFile(  fConfig, fileName.toStdString() );
+        try
+        {
+            vmeplus::WriteConfigToFile(  fConfig, fileName.toStdString() );
+        }
+        catch( std::fstream::failure& e)
+        {
+            QMessageBox::warning( this,
+                                  "Saving config failed!",
+                                  "Couldn't write to the file!",
+                                  QMessageBox::Ok );
+        }
     }
 }
 
@@ -520,21 +520,18 @@ void Controller::LoadConfig()
     }
     else
     {
-        //QFile file( fileName );
-
-        //if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
-        //{
-        //    return;
-        //}
-
-        //QTextStream in( &file );
-
-        //QString s = in.readAll();
-
-        fConfig = vmeplus::ReadConfigFromFile( fileName.toStdString() );
-        //fConfig = json::parse( s.toStdString() );
-
-        SpreadConfig();
+        try
+        {
+            fConfig = vmeplus::ReadConfigFromFile( fileName.toStdString() );
+            SpreadConfig();
+        }
+        catch( std::fstream::failure& e )
+        {
+            QMessageBox::warning( this,
+                                  "Reading config failed!",
+                                  "Couldn't read from the file!",
+                                  QMessageBox::Ok );
+        }
     }
 }
 
@@ -601,6 +598,9 @@ void Controller::ToggleStatusBar()
 }
 
 
+/*********************/
+/****** DISPLAY ******/
+/*********************/
 Display::Display( Controller *controller, QWidget *parent ) :
     QWidget( parent ),
     fController( controller )
