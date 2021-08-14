@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include <cassert>
 
 using namespace vmeplus;
 using json = nlohmann::json;
@@ -45,7 +46,13 @@ int main()
             std::cout << "File reading writing failed\n" << std::endl;
         }
 
-        std::cout << j.dump( 2 ) << std::endl;
+        json jDefault = V2718::GetDefaultConfig();
+        json jInvalid = R"({"name" : "V895"})"; 
+        assert( controller.Validate( jDefault ) == true );
+        assert( controller.Validate( j ) == true );
+        assert( controller.Validate( jInvalid ) == false );
+
+        //std::cout << j.dump( 2 ) << std::endl;
 
     }
     catch( const VException& e )
