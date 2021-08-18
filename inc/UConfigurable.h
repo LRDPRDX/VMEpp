@@ -35,7 +35,6 @@ namespace vmeplus
     template<typename T>
     bool UConfigurable<T>::Validate( const json& source )
     {
-        bool verdict = true;
         json patch = json::diff( source, fDefaultConfig ); 
         for( auto it = patch.begin(); it != patch.end(); ++it )
         {
@@ -48,17 +47,15 @@ namespace vmeplus
                 // if "op" is "replace" then there MUST be the "value" key
                 if( not (it->at("value").is_null()) )
                 {
-                    verdict = false;
-                    break;
+                    return false;
                 }
             }
             else
             {
-                verdict = false;
-                break;
+                return false;
             }
         }
-        return verdict;
+        return true;
     }
 
     template<typename T>
