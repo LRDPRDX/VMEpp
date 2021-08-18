@@ -1,6 +1,8 @@
 #ifndef V_PLUS_CONFIGURABLE_H
 #define V_PLUS_CONFIGURABLE_H
 
+#include "VException.h"
+
 #include <nlohmann/json.hpp>
 #include <iostream>
 
@@ -16,12 +18,15 @@ namespace vmeplus
         protected :
             static json   fDefaultConfig;
 
+            virtual void ReadConfigImpl( nlohmann::json &config ) = 0;
+            virtual void WriteConfigImpl( const nlohmann::json &config ) = 0;
+
         public :
             UConfigurable() {};
             virtual ~UConfigurable() {};
 
-            virtual void ReadConfig( nlohmann::json &config ) = 0;
-            virtual void WriteConfig( const nlohmann::json &config ) = 0;
+            void ReadConfig( nlohmann::json &config );
+            void WriteConfig( const nlohmann::json &config );
 
             static json GetDefaultConfig() { return fDefaultConfig; }
             static bool Validate( const json& source );
@@ -55,6 +60,47 @@ namespace vmeplus
         }
         return verdict;
     }
+
+    template<typename T>
+    void UConfigurable<T>::ReadConfig( json &config )
+    {
+        if( Validate( config ) )
+        {
+            try
+            {
+                this->ReadConfigImpl( config );
+            }
+            catch( json::exception &e )
+            {
+                throw VException( VError_t::vConfigError, "JSON exception (must be changed)" );
+            }
+        }
+        else
+        {
+            throw VException( VError_t::vConfigError, "Config validation failed" );
+        }
+    }    
+
+    template<typename T>
+    void UConfigurable<T>::WriteConfig( const json &config )
+    {
+        if( Validate( config ) )
+        {
+            try
+            {
+                this->WriteConfigImpl( config );
+            }
+            catch( json::exception &e )
+            {
+                throw VException( VError_t::vConfigError, "JSON exception (must be changed)" );
+            }
+        }
+        else
+        {
+            throw VException( VError_t::vConfigError, "Config validation failed" );
+        }
+    }    
+
 
     void WriteConfigToFile( const json& j, const std::string& path );
 

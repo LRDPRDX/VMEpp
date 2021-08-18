@@ -145,9 +145,9 @@ namespace vmeplus
             void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity );
 
-        public :
-            virtual void    ReadConfig( nlohmann::json &config ) override;
-            virtual void    WriteConfig( const nlohmann::json &config ) override;
+        protected :
+            virtual void    ReadConfigImpl( nlohmann::json &config ) override;
+            virtual void    WriteConfigImpl( const nlohmann::json &config ) override;
     };
 }
 #endif

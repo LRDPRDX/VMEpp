@@ -180,37 +180,30 @@ namespace vmeplus
         std::cout << "\n";
     }
 
-    void V895::ReadConfig( nlohmann::json &j )
+    void V895::ReadConfigImpl( nlohmann::json &j )
     {
         // There is no way to read the configuration for this module
         // so the default one
         j = fDefaultConfig;
     }
 
-    void V895::WriteConfig( const nlohmann::json &j )
+    void V895::WriteConfigImpl( const nlohmann::json &j )
     {
-        try
+        uint8_t th;
+        for( uint8_t i = 0; i < fChNumber; ++i )
         {
-            uint8_t th;
-            for( uint8_t i = 0; i < fChNumber; ++i )
-            {
-                j.at("settings").at("channels").at(i).at("threshold").get_to<uint8_t>( th );
-                WriteThreshold( i, th );
-            }
-            uint16_t widthH, widthL, maj, mask;
-            j.at("settings").at("majority").get_to<uint16_t>( maj );
-            j.at("settings").at("width").at("high").get_to<uint16_t>( widthH );
-            j.at("settings").at("width").at("low").get_to<uint16_t>( widthL );
-            j.at("settings").at("mask").get_to<uint16_t>( mask );
+            j.at("settings").at("channels").at(i).at("threshold").get_to<uint8_t>( th );
+            WriteThreshold( i, th );
+        }
+        uint16_t widthH, widthL, maj, mask;
+        j.at("settings").at("majority").get_to<uint16_t>( maj );
+        j.at("settings").at("width").at("high").get_to<uint16_t>( widthH );
+        j.at("settings").at("width").at("low").get_to<uint16_t>( widthL );
+        j.at("settings").at("mask").get_to<uint16_t>( mask );
 
-            WriteMajLevel( maj );
-            WriteOutWidthH( widthH );
-            WriteOutWidthL( widthL );
-            Enable( mask );
-        }
-        catch( const VException& e )
-        {
-            throw VException( VError_t::vConfigError, e.what() );
-        }
+        WriteMajLevel( maj );
+        WriteOutWidthH( widthH );
+        WriteOutWidthL( widthL );
+        Enable( mask );
     }
 }

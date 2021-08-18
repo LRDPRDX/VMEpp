@@ -32,6 +32,8 @@ int main()
         j.at("settings").at("width").at("low") = 50;
         j.at("settings").at("mask") = 0xff;
 
+        //j.at("settings")["imposter"] = 0xff;
+
         desc.WriteConfig( j );
 
         std::cout << j.dump( 2 ) << std::endl;

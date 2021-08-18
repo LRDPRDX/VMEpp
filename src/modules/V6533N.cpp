@@ -316,69 +316,55 @@ namespace vmeplus
         std::cout << "\n";
     }
 
-    void V6533N::ReadConfig( nlohmann::json &j )
+    void V6533N::ReadConfigImpl( nlohmann::json &j )
     {
         j = fDefaultConfig;
 
-        try
+        IMonRange_t iMon;
+        for( uint8_t i = 0; i < fChNumber; ++i )
         {
-            IMonRange_t iMon;
-            for( uint8_t i = 0; i < fChNumber; ++i )
-            {
-                j.at("settings").at("channels").at(i).at("voltage") = ReadVoltage( i );
+            j.at("settings").at("channels").at(i).at("voltage") = ReadVoltage( i );
 
-                iMon = ReadIMonRange( i );
-                j.at("settings").at("channels").at(i).at("imon") = iMon;
-                j.at("settings").at("channels").at(i).at("current") = ReadCurrent( i, iMon );
+            iMon = ReadIMonRange( i );
+            j.at("settings").at("channels").at(i).at("imon") = iMon;
+            j.at("settings").at("channels").at(i).at("current") = ReadCurrent( i, iMon );
 
-                j.at("settings").at("channels").at(i).at("trip") = ReadTripTime( i );
-                j.at("settings").at("channels").at(i).at("sw_max") = ReadSWVMax( i );
-                j.at("settings").at("channels").at(i).at("ramp").at("down") =
-                    ReadRampDown( i );
-                j.at("settings").at("channels").at(i).at("ramp").at("up") =
-                    ReadRampUp( i );
-                j.at("settings").at("channels").at(i).at("pw_down") = ReadPWDown( i );
-            }
-        }
-        catch( const json::exception& e )
-        {
-            throw VException( VError_t::vConfigError, e.what() );
+            j.at("settings").at("channels").at(i).at("trip") = ReadTripTime( i );
+            j.at("settings").at("channels").at(i).at("sw_max") = ReadSWVMax( i );
+            j.at("settings").at("channels").at(i).at("ramp").at("down") =
+                ReadRampDown( i );
+            j.at("settings").at("channels").at(i).at("ramp").at("up") =
+                ReadRampUp( i );
+            j.at("settings").at("channels").at(i).at("pw_down") = ReadPWDown( i );
         }
     }
 
-    void V6533N::WriteConfig( const nlohmann::json &j )
+    void V6533N::WriteConfigImpl( const nlohmann::json &j )
     {
-        try
+        float voltage, current, ttime, vmax;
+        uint16_t rampd, rampu;
+        bool kill;
+        IMonRange_t iMon;
+        for( uint8_t i = 0; i < fChNumber; ++i )
         {
-            float voltage, current, ttime, vmax;
-            uint16_t rampd, rampu;
-            bool kill;
-            IMonRange_t iMon;
-            for( uint8_t i = 0; i < fChNumber; ++i )
-            {
-                j.at("settings").at("channels").at(i).at("voltage").get_to<float>( voltage );
-                j.at("settings").at("channels").at(i).at("imon").get_to<IMonRange_t>( iMon );
-                j.at("settings").at("channels").at(i).at("current").get_to<float>( current );
-                j.at("settings").at("channels").at(i).at("ttime").get_to<float>( ttime );
-                j.at("settings").at("channels").at(i).at("sw_max").get_to<float>( vmax );
+            j.at("settings").at("channels").at(i).at("voltage").get_to<float>( voltage );
+            j.at("settings").at("channels").at(i).at("imon").get_to<IMonRange_t>( iMon );
+            j.at("settings").at("channels").at(i).at("current").get_to<float>( current );
+            j.at("settings").at("channels").at(i).at("ttime").get_to<float>( ttime );
+            j.at("settings").at("channels").at(i).at("sw_max").get_to<float>( vmax );
 
-                j.at("settings").at("channels").at(i).at("ramp").at("down").get_to<uint16_t>( rampd );
-                j.at("settings").at("channels").at(i).at("ramp").at("up").get_to<uint16_t>( rampu );
-                j.at("settings").at("channels").at(i).at("pw_down").get_to<bool>( kill );
+            j.at("settings").at("channels").at(i).at("ramp").at("down").get_to<uint16_t>( rampd );
+            j.at("settings").at("channels").at(i).at("ramp").at("up").get_to<uint16_t>( rampu );
+            j.at("settings").at("channels").at(i).at("pw_down").get_to<bool>( kill );
 
-                WriteVoltage( i, voltage );
-                WriteCurrent( i, current );
-                WriteTripTime( i, ttime );
-                WriteSWVMax( i, vmax );
-                WriteRampUp( i, rampu );
-                WriteRampDown( i, rampd );
-                WritePWDown( i, kill );
-                WriteIMonRange( i, iMon );
-            }
-        }
-        catch( const json::exception& e )
-        {
-            throw VException( VError_t::vConfigError, e.what() );
+            WriteVoltage( i, voltage );
+            WriteCurrent( i, current );
+            WriteTripTime( i, ttime );
+            WriteSWVMax( i, vmax );
+            WriteRampUp( i, rampu );
+            WriteRampDown( i, rampd );
+            WritePWDown( i, kill );
+            WriteIMonRange( i, iMon );
         }
     }
 }
