@@ -625,9 +625,9 @@ namespace vmeplus {
             void EnableReadoutSRAM(bool status = true);
             void ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<int8_t> &data);
 
-        public :
-            virtual void    ReadConfig( nlohmann::json &config ) override;
-            virtual void    WriteConfig( const nlohmann::json &config ) override;
+        protected :
+            virtual void    ReadConfigImpl( nlohmann::json &config ) override;
+            virtual void    WriteConfigImpl( const nlohmann::json &config ) override;
     };// V1190B
 
     /*************************/

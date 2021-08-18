@@ -21,7 +21,7 @@ namespace vmeplus
                             vBuffAllocFailed = -12,
                             vBadSlave = -13,
                             vConfigError = -14,
-                            vAccessError = 15
+                            vAccessError = -15
                         };
 
     enum class Message_t {  INFO,
@@ -77,9 +77,11 @@ namespace vmeplus
                     case( VError_t::vConfigError ) :
                         fMessage = "VME++ :: ERROR :: Error occured while writing/reading JSON config";
                         fHint = "VME++ :: HINT :: Call ::GetDefaultConfig() member function to see how a config should look";
+                        break;
                     case( VError_t::vAccessError ) :
                         fMessage = "VME++ :: ERROR :: Data access error";
                         fHint = "VME++ :: HINT :: Check the permissions";
+                        break;
                 }
             }
 

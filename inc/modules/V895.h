@@ -118,9 +118,9 @@ namespace vmeplus
         public :
             virtual void    Print() const override;
 
-        public :
-            virtual void    ReadConfig( nlohmann::json &config ) override;
-            virtual void    WriteConfig( const nlohmann::json &config ) override;
+        protected :
+            virtual void    ReadConfigImpl( nlohmann::json &config ) override;
+            virtual void    WriteConfigImpl( const nlohmann::json &config ) override;
     };
 }
 #endif
