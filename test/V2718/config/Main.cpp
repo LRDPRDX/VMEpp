@@ -33,18 +33,19 @@ int main()
         json j;
 
         controller.ReadConfig( j );
-        controller.WriteConfig( j );
 
         try
         {
             //WriteConfigToFile( j, "/usr/config.json" ); // causes catch
-            WriteConfigToFile( j, "./config.json" );
+            //WriteConfigToFile( j, "./config.json" );
             j = ReadConfigFromFile( "./config.json" );
         }
         catch( std::fstream::failure& e )
         {
             std::cout << "File reading writing failed\n" << std::endl;
         }
+
+        controller.WriteConfig( j );
 
         json jDefault = V2718::GetDefaultConfig();
         json jInvalid = R"({"name" : "V895"})"; 

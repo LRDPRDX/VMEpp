@@ -61,6 +61,8 @@ namespace vmeplus
     template<typename T>
     void UConfigurable<T>::ReadConfig( json &config )
     {
+        config = this->fDefaultConfig;
+
         if( Validate( config ) )
         {
             try
@@ -69,7 +71,7 @@ namespace vmeplus
             }
             catch( json::exception &e )
             {
-                throw VException( VError_t::vConfigError, "JSON exception (must be changed)" );
+                throw VException( VError_t::vConfigError, e.what() );
             }
         }
         else
@@ -89,7 +91,7 @@ namespace vmeplus
             }
             catch( json::exception &e )
             {
-                throw VException( VError_t::vConfigError, "JSON exception (must be changed)" );
+                throw VException( VError_t::vConfigError, e.what() );
             }
         }
         else
