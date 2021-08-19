@@ -209,59 +209,6 @@ namespace vmeplus
         fScaler.fOwner  = this;
     }
 
-    template<>
-    json UConfigurable<V2718>::fDefaultConfig = []() {
-        json j = json::object( {} );
-        j["name"] = "V2718";
-
-        j["settings"] = json::object( {} );
-
-        // Outputs and inputs
-        j["settings"] += {"inputs", {}};
-        json j_inputs = json::array( {} );
-        for( uint8_t i = 0; i < V2718::GetInNumber(); ++i )
-        {
-            j_inputs.push_back( {{"polarity", {}}, {"led_polarity", {}}} );
-        }
-        j["/settings/inputs"_json_pointer] = j_inputs;
-
-        j["settings"] += {"outputs", {}};
-        json j_outputs = json::array( {} );
-        for( uint8_t i = 0; i < V2718::GetOutNumber(); ++i )
-        {
-            j_outputs.push_back( {{"polarity", {}}, {"led_polarity", {}}, {"source", {}}} );
-        }
-        j["/settings/outputs"_json_pointer] = j_outputs;
-
-        // Pulsers
-        j["settings"] += {"pulsers", {}};
-        json j_pulsers = json::object( {} );
-            j_pulsers += {"A", {}};
-            j_pulsers += {"B", {}};
-        json j_pulser = json::object( {} );
-        j_pulser += {"frequency", {}};
-        j_pulser += {"duty", {}};
-        j_pulser += {"count", {}};
-        j_pulser += {"start", {}};
-        j_pulser += {"stop", {}};
-
-        j_pulsers["A"] = j_pulser;
-        j_pulsers["B"] = j_pulser;
-        j["/settings/pulsers"_json_pointer] = j_pulsers;
-
-        // Scaler
-        j["settings"] += {"scaler", {}};
-        json j_scaler = json::object( {} );
-            j_scaler += {"limit", {}};
-            j_scaler += {"hit", {}};
-            j_scaler += {"gate", {}};
-            j_scaler += {"stop", {}};
-            j_scaler += {"auto_reset", {}};
-        j["/settings/scaler"_json_pointer] = j_scaler;
-
-        return j;
-    }();
-
     V2718::~V2718() { }
 
     void V2718::Open( short link, short bdNum )
@@ -341,10 +288,8 @@ namespace vmeplus
         }
     }
 
-    void V2718::ReadConfigImpl( nlohmann::json &j )
+    void V2718::ReadConfig( UConfig<V2718>& cfg )
     {
-        j = fDefaultConfig;
-
         // In's and Out's
         CVIOPolarity pol;
         CVLEDPolarity ledPol;
@@ -352,16 +297,13 @@ namespace vmeplus
         for( uint8_t i = 0; i < fInNumber; ++i )
         {
             ReadInputConfig( static_cast<CVInputSelect>(i), pol, ledPol );
-            j.at("settings").at("inputs").at( i ).at("polarity") = pol;
-            j.at("settings").at("inputs").at( i ).at("led_polarity") = ledPol;
+            cfg.INPUTS.at( i ) = { pol, ledPol };
         }
 
         for( uint8_t i = 0; i < fOutNumber; ++i )
         {
             ReadOutputConfig( static_cast<CVOutputSelect>(i), pol, ledPol, src );
-            j.at("settings").at("outputs").at( i ).at("polarity") = pol;
-            j.at("settings").at("outputs").at( i ).at("led_polarity") = ledPol;
-            j.at("settings").at("outputs").at( i ).at("source") = src;
+            cfg.OUTPUTS.at( i ) = { pol, ledPol, src };
         }
 
         // Pulsers
@@ -369,93 +311,68 @@ namespace vmeplus
         uint8_t  duty = 0;
         fPulserA.Read();
         fPulserA.GetSquare( freq, duty );
-        j.at("settings").at("pulsers").at("A").at("frequency") = freq;
-        j.at("settings").at("pulsers").at("A").at("duty") = duty;
-        j.at("settings").at("pulsers").at("A").at("count") = fPulserA.GetNPulses();
-        j.at("settings").at("pulsers").at("A").at("start") = fPulserA.GetStartSource();
-        j.at("settings").at("pulsers").at("A").at("stop") = fPulserA.GetStopSource();
+
+        cfg.PULSER_A.FREQUENCY      = freq;
+        cfg.PULSER_A.DUTY           = duty;
+        cfg.PULSER_A.N_PULSES       = fPulserA.GetNPulses();
+        cfg.PULSER_A.START_SOURCE   = fPulserA.GetStartSource();
+        cfg.PULSER_A.STOP_SOURCE    = fPulserA.GetStopSource();
 
         fPulserB.Read();
         fPulserB.GetSquare( freq, duty );
-        j.at("settings").at("pulsers").at("B").at("frequency") = freq;
-        j.at("settings").at("pulsers").at("B").at("duty") = duty;
-        j.at("settings").at("pulsers").at("B").at("count") = fPulserB.GetNPulses();
-        j.at("settings").at("pulsers").at("B").at("start") = fPulserB.GetStartSource();
-        j.at("settings").at("pulsers").at("B").at("stop") = fPulserB.GetStopSource();
+
+        cfg.PULSER_B.FREQUENCY      = freq;
+        cfg.PULSER_B.DUTY           = duty;
+        cfg.PULSER_B.N_PULSES       = fPulserB.GetNPulses();
+        cfg.PULSER_B.START_SOURCE   = fPulserB.GetStartSource();
+        cfg.PULSER_B.STOP_SOURCE    = fPulserB.GetStopSource();
 
         // Scaler
         fScaler.Read();
-        j.at("settings").at("scaler").at("gate") = fScaler.GetGateSource();
-        j.at("settings").at("scaler").at("stop") = fScaler.GetStopSource();
-        j.at("settings").at("scaler").at("hit") = fScaler.GetHitSource();
-        j.at("settings").at("scaler").at("limit") = fScaler.GetLimit();
-        j.at("settings").at("scaler").at("auto_reset") = fScaler.GetAutoReset();
+        cfg.SCALER.GATE_SOURCE  = fScaler.GetGateSource();
+        cfg.SCALER.STOP_SOURCE  = fScaler.GetStopSource();
+        cfg.SCALER.HIT_SOURCE   = fScaler.GetHitSource();
+        cfg.SCALER.LIMIT        = fScaler.GetLimit();
+        cfg.SCALER.AUTO_RESET   = fScaler.GetAutoReset();
     }
 
-    void V2718::WriteConfigImpl( const nlohmann::json &j )
+    void V2718::WriteConfig( const UConfig<V2718>& cfg )
     {
         // In's and Out's
-        CVIOPolarity pol;
-        CVLEDPolarity ledPol;
-        CVIOSources src;
         for( uint8_t i = 0; i < fInNumber; ++i )
         {
-            j.at("settings").at("inputs").at( i ).at("polarity").get_to<CVIOPolarity>(pol);
-            j.at("settings").at("inputs").at( i ).at("led_polarity").get_to<CVLEDPolarity>(ledPol);
-            WriteInputConfig( static_cast<CVInputSelect>(i), pol, ledPol );
+            WriteInputConfig( static_cast<CVInputSelect>(i),
+                              cfg.INPUTS.at( i ).POLARITY,
+                              cfg.INPUTS.at( i ).LED_POLARITY );
         }
 
         for( uint8_t i = 0; i < fOutNumber; ++i )
         {
-            j.at("settings").at("outputs").at( i ).at("polarity").get_to<CVIOPolarity>(pol);
-            j.at("settings").at("outputs").at( i ).at("led_polarity").get_to<CVLEDPolarity>(ledPol);
-            j.at("settings").at("outputs").at( i ).at("source").get_to<CVIOSources>(src);
-            WriteOutputConfig( static_cast<CVOutputSelect>(i), src, pol, ledPol );
+            WriteOutputConfig( static_cast<CVOutputSelect>(i),
+                               cfg.OUTPUTS.at( i ).SOURCE,
+                               cfg.OUTPUTS.at( i ).POLARITY,
+                               cfg.OUTPUTS.at( i ).LED_POLARITY );
         }
 
         // Pulsers
-        uint32_t freq = 0;
-        uint8_t  duty = 0;
-        uint8_t  count = 0;
-        CVIOSources start = cvManualSW;
-        CVIOSources stop = cvManualSW;
-        j.at("settings").at("pulsers").at("A").at("frequency").get_to<uint32_t>(freq);
-        j.at("settings").at("pulsers").at("A").at("duty").get_to<uint8_t>(duty);
-            fPulserA.SetSquare( freq, duty );
-        j.at("settings").at("pulsers").at("A").at("count").get_to<uint8_t>(count);
-            fPulserA.SetNPulses( count );
-        j.at("settings").at("pulsers").at("A").at("start").get_to<CVIOSources>(start);
-            fPulserA.SetStartSource( start );
-        j.at("settings").at("pulsers").at("A").at("stop").get_to<CVIOSources>(stop);
-            fPulserA.SetStopSource( stop );
+        fPulserA.SetSquare( cfg.PULSER_A.FREQUENCY, cfg.PULSER_A.DUTY );
+        fPulserA.SetNPulses( cfg.PULSER_A.N_PULSES );
+        fPulserA.SetStartSource( cfg.PULSER_A.START_SOURCE );
+        fPulserA.SetStopSource( cfg.PULSER_A.STOP_SOURCE );
         fPulserA.Write();
 
-        j.at("settings").at("pulsers").at("B").at("frequency").get_to<uint32_t>(freq);
-        j.at("settings").at("pulsers").at("B").at("duty").get_to<uint8_t>(duty);
-            fPulserB.SetSquare( freq, duty );
-        j.at("settings").at("pulsers").at("B").at("count").get_to<uint8_t>(count);
-            fPulserB.SetNPulses( count );
-        j.at("settings").at("pulsers").at("B").at("start").get_to<CVIOSources>(start);
-            fPulserB.SetStartSource( start );
-        j.at("settings").at("pulsers").at("B").at("stop").get_to<CVIOSources>(stop);
-            fPulserB.SetStopSource( stop );
+        fPulserB.SetSquare( cfg.PULSER_B.FREQUENCY, cfg.PULSER_B.DUTY );
+        fPulserB.SetNPulses( cfg.PULSER_B.N_PULSES );
+        fPulserB.SetStartSource( cfg.PULSER_B.START_SOURCE );
+        fPulserB.SetStopSource( cfg.PULSER_B.STOP_SOURCE );
         fPulserB.Write();
 
         // Scaler
-        CVIOSources gate = cvManualSW;
-        CVIOSources hit = cvInputSrc0;
-        short limit = 0;
-        short autoReset = 0;
-        j.at("settings").at("scaler").at("gate").get_to<CVIOSources>( gate );
-            fScaler.SetGateSource( gate );
-        j.at("settings").at("scaler").at("stop").get_to<CVIOSources>( stop );
-            fScaler.SetStopSource( stop );
-        j.at("settings").at("scaler").at("hit").get_to<CVIOSources>( hit );
-            fScaler.SetHitSource( hit );
-        j.at("settings").at("scaler").at("limit").get_to<short>( limit );
-            fScaler.SetLimit( limit );
-        j.at("settings").at("scaler").at("auto_reset").get_to<short>( autoReset );
-            fScaler.SetAutoReset( autoReset );
+        fScaler.SetGateSource( cfg.SCALER.GATE_SOURCE );
+        fScaler.SetStopSource( cfg.SCALER.STOP_SOURCE );
+        fScaler.SetHitSource( cfg.SCALER.HIT_SOURCE );
+        fScaler.SetLimit( cfg.SCALER.LIMIT );
+        fScaler.SetAutoReset( cfg.SCALER.AUTO_RESET );
         fScaler.Write();
     }
     //*********************//

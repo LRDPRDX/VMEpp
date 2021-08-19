@@ -107,6 +107,12 @@
 
 namespace vmeplus {
 
+    class V1190B;
+
+    template<>
+    struct UConfig<V1190B>
+    {
+    };
     /********************/
     /****** V1190B ******/
     /********************/
@@ -348,7 +354,7 @@ namespace vmeplus {
                 RES0,
                 RES1,
                 PAIR,
-                TRIGGER_LOST        
+                TRIGGER_LOST
             };
 
             void WriteControl( V1190B::Control_t bit, bool status = true );
@@ -625,9 +631,9 @@ namespace vmeplus {
             void EnableReadoutSRAM(bool status = true);
             void ReadCompensation(TrLeadLSB lsb, uint8_t channel, std::vector<int8_t> &data);
 
-        protected :
-            virtual void    ReadConfigImpl( nlohmann::json &config ) override;
-            virtual void    WriteConfigImpl( const nlohmann::json &config ) override;
+        public :
+            void    ReadConfig( UConfig<V1190B>& config ) override;
+            void    WriteConfig( const UConfig<V1190B>& config ) override;
     };// V1190B
 
     /*************************/

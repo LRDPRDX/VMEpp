@@ -504,11 +504,11 @@ namespace vmeplus
     }
     //****** DATA ACQUISITION - ******
     //
-    void V1785N::ReadConfigImpl( nlohmann::json &config )
+    void V1785N::ReadConfig( UConfig<V1785N>& config )
     {
     }
 
-    void V1785N::WriteConfigImpl( const nlohmann::json &config )
+    void V1785N::WriteConfig( const UConfig<V1785N>& config )
     {
     }
 }

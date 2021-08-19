@@ -62,6 +62,13 @@
 
 namespace vmeplus
 {
+    class V895;
+
+    template<>
+    class UConfig<V895>
+    {
+    };
+
     class V895 : public VSlave, public UConfigurable<V895>
     {
         protected :
@@ -119,8 +126,8 @@ namespace vmeplus
             virtual void    Print() const override;
 
         protected :
-            virtual void    ReadConfigImpl( nlohmann::json &config ) override;
-            virtual void    WriteConfigImpl( const nlohmann::json &config ) override;
+            void    ReadConfig( UConfig<V895>& config ) override;
+            void    WriteConfig( const UConfig<V895>& config ) override;
     };
 }
 #endif
