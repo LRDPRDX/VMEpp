@@ -515,7 +515,8 @@ main.o: src/main.cpp inc/Controller.h \
 		../../inc/VSlave.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
-QLedIndicator.o: src/QLedIndicator.cpp inc/QLedIndicator.h
+QLedIndicator.o: src/QLedIndicator.cpp inc/QLedIndicator.h \
+		inc/Style.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o QLedIndicator.o src/QLedIndicator.cpp
 
 V6533NWindow.o: src/V6533NWindow.cpp inc/Controller.h \

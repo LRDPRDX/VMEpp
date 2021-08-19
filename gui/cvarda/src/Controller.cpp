@@ -439,49 +439,60 @@ void Controller::SpreadConfig()
         int index = c->findData( fConfig.at( p ).get_to( data ) );
         c->setCurrentIndex( index );
     };
-    // In's and Out's
-    for( uint8_t i = 0; i < N_INS; ++i )
+
+    try
     {
-        changeCombo( fInPolCombo[i], "/settings/inputs/" + std::to_string(i) + "/polarity" );
-        changeCombo( fInLedCombo[i], "/settings/inputs/" + std::to_string(i) + "/led_polarity" );
-    }
+        // In's and Out's
+        for( uint8_t i = 0; i < N_INS; ++i )
+        {
+            changeCombo( fInPolCombo[i], "/settings/inputs/" + std::to_string(i) + "/polarity" );
+            changeCombo( fInLedCombo[i], "/settings/inputs/" + std::to_string(i) + "/led_polarity" );
+        }
 
-    for( uint8_t i = 0; i < N_OUTS; ++i )
+        for( uint8_t i = 0; i < N_OUTS; ++i )
+        {
+            changeCombo( fOutPolCombo[i], "/settings/outputs/" + std::to_string(i) + "/polarity" );
+            changeCombo( fOutLedCombo[i], "/settings/outputs/" + std::to_string(i) + "/led_polarity" );
+            changeCombo( fOutSrcCombo[i], "/settings/outputs/" + std::to_string(i) + "/source" );
+        }
+
+        // Pulsers
+        uint32_t freq = 0;
+        uint8_t duty = 0;
+        uint8_t count = 0;
+        for( uint8_t i = 0; i < N_PULSERS; ++i )
+        {
+            json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
+            fConfig.at("settings").at("pulsers").at(id).at("frequency").get_to<uint32_t>( freq );
+                fPulFreqSpin[i]->setValue( freq );
+            fConfig.at("settings").at("pulsers").at(id).at("duty").get_to<uint8_t>( duty );
+                fPulDutySpin[i]->setValue( duty );
+            fConfig.at("settings").at("pulsers").at(id).at("count").get_to<uint8_t>( count );
+                fPulNSpin[i]->setValue( count );
+
+            changeCombo( fPulStartCombo[i], "/settings/pulsers" + id.to_string() + "/start" );
+            changeCombo( fPulStopCombo[i], "/settings/pulsers" + id.to_string() + "/stop" );
+        }
+
+        // Scaler
+        changeCombo( fScalGateCombo, "/settings/scaler/gate" );
+        changeCombo( fScalResetCombo, "/settings/scaler/stop" );
+        changeCombo( fScalHitCombo, "/settings/scaler/hit" );
+
+        short limit = 0;
+        short autoreset = 0;
+        fConfig.at("settings").at("scaler").at("limit").get_to<short>( limit );
+            fScalLimitSpin->setValue( limit );
+        fConfig.at("settings").at("scaler").at("auto_reset").get_to<short>( autoreset );
+            fScalAutoCheck->setChecked( autoreset );
+    }
+    catch( const json::exception& e )
     {
-        changeCombo( fOutPolCombo[i], "/settings/outputs/" + std::to_string(i) + "/polarity" );
-        changeCombo( fOutLedCombo[i], "/settings/outputs/" + std::to_string(i) + "/led_polarity" );
-        changeCombo( fOutSrcCombo[i], "/settings/outputs/" + std::to_string(i) + "/source" );
+            QMessageBox::warning( this,
+                                  "Spreading config failed!",
+                                  e.what(),
+                                  QMessageBox::Ok );
     }
-
-    // Pulsers
-    uint32_t freq = 0;
-    uint8_t duty = 0;
-    uint8_t count = 0;
-    for( uint8_t i = 0; i < N_PULSERS; ++i )
-    {
-        json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
-        fConfig.at("settings").at("pulsers").at(id).at("frequency").get_to<uint32_t>( freq );
-            fPulFreqSpin[i]->setValue( freq );
-        fConfig.at("settings").at("pulsers").at(id).at("duty").get_to<uint8_t>( duty );
-            fPulDutySpin[i]->setValue( duty );
-        fConfig.at("settings").at("pulsers").at(id).at("count").get_to<uint8_t>( count );
-            fPulNSpin[i]->setValue( count );
-
-        changeCombo( fPulStartCombo[i], "/settings/pulsers" + id.to_string() + "/start" );
-        changeCombo( fPulStopCombo[i], "/settings/pulsers" + id.to_string() + "/stop" );
-    }
-
-    // Scaler
-    changeCombo( fScalGateCombo, "/settings/scaler/gate" );
-    changeCombo( fScalResetCombo, "/settings/scaler/stop" );
-    changeCombo( fScalHitCombo, "/settings/scaler/hit" );
-
-    short limit = 0;
-    short autoreset = 0;
-    fConfig.at("settings").at("scaler").at("limit").get_to<short>( limit );
-        fScalLimitSpin->setValue( limit );
-    fConfig.at("settings").at("scaler").at("auto_reset").get_to<short>( autoreset );
-        fScalAutoCheck->setChecked( autoreset );
 }
 
 void Controller::SaveConfig()
@@ -500,7 +511,7 @@ void Controller::SaveConfig()
         {
             vmeplus::WriteConfigToFile(  fConfig, fileName.toStdString() );
         }
-        catch( std::fstream::failure& e )
+        catch( const std::fstream::failure& e )
         {
             QMessageBox::warning( this,
                                   "Saving config failed!",
@@ -523,9 +534,16 @@ void Controller::LoadConfig()
         try
         {
             fConfig = vmeplus::ReadConfigFromFile( fileName.toStdString() );
-            SpreadConfig();
+            if( vmeplus::V2718::Validate( fConfig ) )
+            {
+                SpreadConfig();
+            }
+            else
+            {
+                fConfig = vmeplus::V2718::GetDefaultConfig();
+            }
         }
-        catch( std::fstream::failure& e )
+        catch( const std::fstream::failure& e )
         {
             QMessageBox::warning( this,
                                   "Reading config failed!",
