@@ -16,14 +16,21 @@ namespace vmeplus
 
     json ReadConfigFromFile( const std::string& path )
     {
-        std::ifstream file;
-        file.exceptions( std::ios::failbit | std::ios::badbit );
-        json j;
+        try
+        {
+            std::ifstream file;
+            file.exceptions( std::ios::failbit | std::ios::badbit );
+            file.open( path );
 
-        file.open( path );
-        j = json::parse( file );
-        file.close();
+            json j = json::parse( file );
 
-        return j;
+            file.close();
+
+            return j;
+        }
+        catch( const json::exception& e )
+        {
+            throw( VException( VError_t::vConfigError, e.what() ) );
+        }
     }
 }

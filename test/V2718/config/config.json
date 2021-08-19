@@ -3,7 +3,7 @@
   "settings": {
     "inputs": [
       {
-        "led_polarity": 0,
+        "led_polarity": "jija",
         "polarity": 0
       },
       {
