@@ -31,7 +31,6 @@ class Controller : public QMainWindow
 
     private :
         vmeplus::V2718 fController;
-        json fConfig;
 
         Display *fDisplay;
 
@@ -79,8 +78,8 @@ class Controller : public QMainWindow
 
     public slots :
         void UpdateDisplay();
-        void CollectConfig();
-        void SpreadConfig();
+        json CollectConfig();
+        void SpreadConfig( const json& j );
         void SaveConfig();
         void LoadConfig();
 

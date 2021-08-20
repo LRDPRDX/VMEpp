@@ -33,8 +33,7 @@
 #include "VException.h"
 
 Controller::Controller( QWidget *parent ) :
-    QMainWindow( parent ),
-    fConfig( vmeplus::V2718::GetDefaultConfig() )
+    QMainWindow( parent )
 {
     CreateActions();
     CreateCentralWidget();
@@ -232,7 +231,7 @@ void Controller::CreatePulserTab()
 
         QLabel* freqLabel = new QLabel( tr("Frequency(Hz):") );
         fPulFreqSpin[i] = new QSpinBox();
-            fPulFreqSpin[i]->setRange( 0, 10000000 );
+            fPulFreqSpin[i]->setRange( 1, 10000000 );
 
         QLabel* dutyLabel = new QLabel( tr("Duty(%):" ) );
         fPulDutySpin[i] = new QSpinBox();
@@ -382,11 +381,9 @@ void Controller::UpdateDisplay()
 
 void Controller::Program()
 {
-    CollectConfig();
-
     try
     {
-        fController.WriteConfig( fConfig );
+        fController.WriteConfig( CollectConfig() );
     }
     catch( vmeplus::VException &e )
     {
@@ -394,49 +391,51 @@ void Controller::Program()
     }
 }
 
-void Controller::CollectConfig()
+json Controller::CollectConfig()
 {
-    fConfig = vmeplus::V2718::GetDefaultConfig();
+    json jConf = vmeplus::V2718::GetDefaultConfig();
 
     // In's and Out's
     for( uint8_t i = 0; i < N_INS; ++i )
     {
-        fConfig.at("settings").at("inputs").at( i ).at("polarity") = fInPolCombo[i]->currentData().toInt();
-        fConfig.at("settings").at("inputs").at( i ).at("led_polarity") = fInLedCombo[i]->currentData().toInt();
+        jConf.at("settings").at("inputs").at( i ).at("polarity") = fInPolCombo[i]->currentData().toInt();
+        jConf.at("settings").at("inputs").at( i ).at("led_polarity") = fInLedCombo[i]->currentData().toInt();
     }
 
     for( uint8_t i = 0; i < N_OUTS; ++i )
     {
-        fConfig.at("settings").at("outputs").at( i ).at("polarity") = fOutPolCombo[i]->currentData().toInt();
-        fConfig.at("settings").at("outputs").at( i ).at("led_polarity") = fOutLedCombo[i]->currentData().toInt();
-        fConfig.at("settings").at("outputs").at( i ).at("source") = fOutSrcCombo[i]->currentData().toInt();
+        jConf.at("settings").at("outputs").at( i ).at("polarity") = fOutPolCombo[i]->currentData().toInt();
+        jConf.at("settings").at("outputs").at( i ).at("led_polarity") = fOutLedCombo[i]->currentData().toInt();
+        jConf.at("settings").at("outputs").at( i ).at("source") = fOutSrcCombo[i]->currentData().toInt();
     }
 
     // Pulsers
     for( uint8_t i = 0; i < N_PULSERS; ++i )
     {
         json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
-        fConfig.at("settings").at("pulsers").at(id).at("frequency") = fPulFreqSpin[i]->value();
-        fConfig.at("settings").at("pulsers").at(id).at("duty") = fPulDutySpin[i]->value();
-        fConfig.at("settings").at("pulsers").at(id).at("count") = fPulNSpin[i]->value();
-        fConfig.at("settings").at("pulsers").at(id).at("start") = fPulStartCombo[i]->currentData().toInt();
-        fConfig.at("settings").at("pulsers").at(id).at("stop") = fPulStopCombo[i]->currentData().toInt();
+        jConf.at("settings").at("pulsers").at(id).at("frequency") = fPulFreqSpin[i]->value();
+        jConf.at("settings").at("pulsers").at(id).at("duty") = fPulDutySpin[i]->value();
+        jConf.at("settings").at("pulsers").at(id).at("count") = fPulNSpin[i]->value();
+        jConf.at("settings").at("pulsers").at(id).at("start") = fPulStartCombo[i]->currentData().toInt();
+        jConf.at("settings").at("pulsers").at(id).at("stop") = fPulStopCombo[i]->currentData().toInt();
     }
 
     // Scaler
-    fConfig.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
-    fConfig.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
-    fConfig.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
-    fConfig.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
-    fConfig.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+    jConf.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
+    jConf.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
+    jConf.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
+    jConf.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
+    jConf.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+
+    return jConf;
 }
 
-void Controller::SpreadConfig()
+void Controller::SpreadConfig( const json& jConf )
 {
-    auto changeCombo = [this]( QComboBox* c, std::string s ) {
+    auto changeCombo = [&jConf]( QComboBox* c, std::string s ) {
         int data;
         json::json_pointer p( s );
-        int index = c->findData( fConfig.at( p ).get_to( data ) );
+        int index = c->findData( jConf.at( p ).get_to( data ) );
         c->setCurrentIndex( index );
     };
 
@@ -463,11 +462,11 @@ void Controller::SpreadConfig()
         for( uint8_t i = 0; i < N_PULSERS; ++i )
         {
             json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
-            fConfig.at("settings").at("pulsers").at(id).at("frequency").get_to<uint32_t>( freq );
+            jConf.at("settings").at("pulsers").at(id).at("frequency").get_to<uint32_t>( freq );
                 fPulFreqSpin[i]->setValue( freq );
-            fConfig.at("settings").at("pulsers").at(id).at("duty").get_to<uint8_t>( duty );
+            jConf.at("settings").at("pulsers").at(id).at("duty").get_to<uint8_t>( duty );
                 fPulDutySpin[i]->setValue( duty );
-            fConfig.at("settings").at("pulsers").at(id).at("count").get_to<uint8_t>( count );
+            jConf.at("settings").at("pulsers").at(id).at("count").get_to<uint8_t>( count );
                 fPulNSpin[i]->setValue( count );
 
             changeCombo( fPulStartCombo[i], "/settings/pulsers" + id.to_string() + "/start" );
@@ -481,9 +480,9 @@ void Controller::SpreadConfig()
 
         short limit = 0;
         short autoreset = 0;
-        fConfig.at("settings").at("scaler").at("limit").get_to<short>( limit );
+        jConf.at("settings").at("scaler").at("limit").get_to<short>( limit );
             fScalLimitSpin->setValue( limit );
-        fConfig.at("settings").at("scaler").at("auto_reset").get_to<short>( autoreset );
+        jConf.at("settings").at("scaler").at("auto_reset").get_to<short>( autoreset );
             fScalAutoCheck->setChecked( autoreset );
     }
     catch( const json::exception& e )
@@ -505,11 +504,11 @@ void Controller::SaveConfig()
     }
     else
     {
-        CollectConfig();
+        json jConf = CollectConfig();
 
         try
         {
-            vmeplus::WriteConfigToFile(  fConfig, fileName.toStdString() );
+            vmeplus::WriteConfigToFile(  jConf, fileName.toStdString() );
         }
         catch( const std::fstream::failure& e )
         {
@@ -533,21 +532,14 @@ void Controller::LoadConfig()
     {
         try
         {
-            fConfig = vmeplus::ReadConfigFromFile( fileName.toStdString() );
-            if( vmeplus::V2718::Validate( fConfig ) )
-            {
-                SpreadConfig();
-            }
-            else
-            {
-                fConfig = vmeplus::V2718::GetDefaultConfig();
-            }
+            json jConf = vmeplus::ReadConfigFromFile( fileName.toStdString() );
+            SpreadConfig( jConf );
         }
         catch( const std::fstream::failure& e )
         {
             QMessageBox::warning( this,
                                   "Reading config failed!",
-                                  "Couldn't read from the file!",
+                                  QString( "Couldn't open/read/close \'%1\'!" ).arg( fileName ),
                                   QMessageBox::Ok );
         }
     }

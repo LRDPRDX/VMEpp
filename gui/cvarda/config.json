@@ -3,7 +3,7 @@
   "settings": {
     "inputs": [
       {
-        "led_polarity": "wr",
+        "led_polarity" : 0,
         "polarity": 0
       },
       {
