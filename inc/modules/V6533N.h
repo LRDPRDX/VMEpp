@@ -66,6 +66,7 @@
 #include "VSlave.h"
 #include "UConfigurable.h"
 
+#include <array>
 #include <string>
 
 namespace vmeplus
@@ -153,9 +154,27 @@ namespace vmeplus
         public :
             virtual void    Print() const override;
 
-        protected :
+        public :
             void    ReadConfig( UConfig<V6533N>& config ) override;
             void    WriteConfig( const UConfig<V6533N>& config ) override;
+    };
+
+    template<>
+    struct UConfig<V6533N>
+    {
+        struct Channel
+        {
+            float               VOLTAGE;
+            float               CURRENT;
+            float               TRIP_TIME;
+            float               SW_MAX;
+            uint16_t            RAMP_UP;
+            uint16_t            RAMP_DOWN;
+            bool                PW_DOWN;
+            V6533N::IMonRange_t IMON_RANGE;
+        };
+
+        std::array<Channel, V6533N::GetChNumber()> CHANNELS;
     };
 }
 

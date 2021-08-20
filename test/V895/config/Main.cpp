@@ -20,23 +20,8 @@ int main()
         controller.RegisterSlave( &desc );//Connect the board we want to work with
         controller.Initialize();//Initialize all the registered boards
 
-        nlohmann::json j = V895::GetDefaultConfig();
-
-        for( uint8_t i = 0; i < desc.GetChNumber(); ++i )
-        {
-            j.at("settings").at("channels").at(i).at("threshold") = 10;
-        }
-
-        j.at("settings").at("majority") = 3;
-        j.at("settings").at("width").at("high") = 50;
-        j.at("settings").at("width").at("low") = 50;
-        j.at("settings").at("mask") = 0xff;
-
-        //j.at("settings")["imposter"] = 0xff;
-
-        desc.WriteConfig( j );
-
-        std::cout << j.dump( 2 ) << std::endl;
+        UConfig<V895> cfg;
+        desc.ReadConfig( cfg );
     }
     catch( const VException &e )
     {

@@ -20,8 +20,10 @@ int main()
         controller.RegisterSlave( &hv );//Connect the board we want to work with
         controller.Initialize();//Initialize all the registered boards
 
-        nlohmann::json j = V6533N::GetDefaultConfig();
-        std::cout << j.dump( 2 ) << std::endl;
+        UConfig<V6533N> cfg;
+
+        hv.ReadConfig( cfg );
+        hv.WriteConfig( cfg );
     }
     catch( const VException &cv )
     {

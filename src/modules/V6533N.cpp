@@ -286,55 +286,35 @@ namespace vmeplus
         std::cout << "\n";
     }
 
-    void V6533N::ReadConfig( UConfig<V6533N>& config )
+    void V6533N::ReadConfig( UConfig<V6533N>& cfg )
     {
-        //j = fDefaultConfig;
+        for( uint8_t i = 0; i < fChNumber; ++i )
+        {
+            IMonRange_t iMon = ReadIMonRange( i );
 
-        //IMonRange_t iMon;
-        //for( uint8_t i = 0; i < fChNumber; ++i )
-        //{
-        //    j.at("settings").at("channels").at(i).at("voltage") = ReadVoltage( i );
-
-        //    iMon = ReadIMonRange( i );
-        //    j.at("settings").at("channels").at(i).at("imon") = iMon;
-        //    j.at("settings").at("channels").at(i).at("current") = ReadCurrent( i, iMon );
-
-        //    j.at("settings").at("channels").at(i).at("trip") = ReadTripTime( i );
-        //    j.at("settings").at("channels").at(i).at("sw_max") = ReadSWVMax( i );
-        //    j.at("settings").at("channels").at(i).at("ramp").at("down") =
-        //        ReadRampDown( i );
-        //    j.at("settings").at("channels").at(i).at("ramp").at("up") =
-        //        ReadRampUp( i );
-        //    j.at("settings").at("channels").at(i).at("pw_down") = ReadPWDown( i );
-        //}
+            cfg.CHANNELS.at( i ).VOLTAGE = ReadVoltage( i );
+            cfg.CHANNELS.at( i ).CURRENT = ReadCurrent( i, iMon );
+            cfg.CHANNELS.at( i ).TRIP_TIME = ReadTripTime( i );
+            cfg.CHANNELS.at( i ).SW_MAX = ReadSWVMax( i );
+            cfg.CHANNELS.at( i ).RAMP_UP = ReadRampUp( i );
+            cfg.CHANNELS.at( i ).RAMP_DOWN = ReadRampDown( i );
+            cfg.CHANNELS.at( i ).PW_DOWN = ReadPWDown( i );
+            cfg.CHANNELS.at( i ).IMON_RANGE = iMon;
+        }
     }
 
-    void V6533N::WriteConfig( const UConfig<V6533N>& config )
+    void V6533N::WriteConfig( const UConfig<V6533N>& cfg )
     {
-        //float voltage, current, ttime, vmax;
-        //uint16_t rampd, rampu;
-        //bool kill;
-        //IMonRange_t iMon;
-        //for( uint8_t i = 0; i < fChNumber; ++i )
-        //{
-        //    j.at("settings").at("channels").at(i).at("voltage").get_to<float>( voltage );
-        //    j.at("settings").at("channels").at(i).at("imon").get_to<IMonRange_t>( iMon );
-        //    j.at("settings").at("channels").at(i).at("current").get_to<float>( current );
-        //    j.at("settings").at("channels").at(i).at("ttime").get_to<float>( ttime );
-        //    j.at("settings").at("channels").at(i).at("sw_max").get_to<float>( vmax );
-
-        //    j.at("settings").at("channels").at(i).at("ramp").at("down").get_to<uint16_t>( rampd );
-        //    j.at("settings").at("channels").at(i).at("ramp").at("up").get_to<uint16_t>( rampu );
-        //    j.at("settings").at("channels").at(i).at("pw_down").get_to<bool>( kill );
-
-        //    WriteVoltage( i, voltage );
-        //    WriteCurrent( i, current );
-        //    WriteTripTime( i, ttime );
-        //    WriteSWVMax( i, vmax );
-        //    WriteRampUp( i, rampu );
-        //    WriteRampDown( i, rampd );
-        //    WritePWDown( i, kill );
-        //    WriteIMonRange( i, iMon );
-        //}
+        for( uint8_t i = 0; i < fChNumber; ++i )
+        {
+            WriteVoltage( i, cfg.CHANNELS.at( i ).VOLTAGE );
+            WriteCurrent( i, cfg.CHANNELS.at( i ).CURRENT );
+            WriteTripTime( i, cfg.CHANNELS.at( i ).TRIP_TIME );
+            WriteSWVMax( i, cfg.CHANNELS.at( i ).SW_MAX );
+            WriteRampUp( i, cfg.CHANNELS.at( i ).RAMP_UP );
+            WriteRampDown( i, cfg.CHANNELS.at( i ).RAMP_DOWN );
+            WritePWDown( i, cfg.CHANNELS.at( i ).PW_DOWN );
+            WriteIMonRange( i, cfg.CHANNELS.at( i ).IMON_RANGE );
+        }
     }
 }

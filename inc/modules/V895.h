@@ -56,6 +56,7 @@
 //#define     V895_N_CHANNELS     0x0010U//Aux
 #define     V895_LUB            0x00FFUL//Aux, The Lust Used Byte
 
+#include <array>
 
 #include "VSlave.h"
 #include "UConfigurable.h"
@@ -64,18 +65,13 @@ namespace vmeplus
 {
     class V895;
 
-    template<>
-    class UConfig<V895>
-    {
-    };
-
     class V895 : public VSlave, public UConfigurable<V895>
     {
         protected :
             static uint8_t const fChNumber = 0x10U;   // 16
 
         public :
-            static uint8_t GetChNumber() { return fChNumber; }
+            static uint8_t constexpr GetChNumber() { return fChNumber; }
 
         protected :
             virtual void    Initialize() override;
@@ -125,9 +121,19 @@ namespace vmeplus
         public :
             virtual void    Print() const override;
 
-        protected :
+        public :
             void    ReadConfig( UConfig<V895>& config ) override;
             void    WriteConfig( const UConfig<V895>& config ) override;
+    };
+
+    template<>
+    struct UConfig<V895>
+    {
+        std::array<uint8_t, V895::GetChNumber()>    THRESHOLDS;
+        uint16_t                                    MAJORITY;
+        uint16_t                                    WIDTH_H;
+        uint16_t                                    WIDTH_L;
+        uint16_t                                    MASK;
     };
 }
 #endif
