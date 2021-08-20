@@ -15,32 +15,6 @@ namespace vmeplus
     {
     }
 
-    template<>
-    json UConfigurable<V895>::fDefaultConfig = []() {
-        json j = json::object( {} );
-        j["name"] = "V895";
-
-        j["settings"] = json::object( {} );
-        j["settings"] += { "channels", {} };
-
-        json j_channels = json::array( {} );
-
-        for( uint8_t i = 0; i < V895::GetChNumber(); ++i )
-        {
-            json j_channel = json::object( {} );
-
-            j_channel.push_back( {"threshold", {}} );
-
-            j_channels.push_back( j_channel );
-        }
-        j["/settings/channels"_json_pointer] = j_channels;
-        j["settings"] += {"majority", {}};
-        j["settings"] += {"width", {{"low", {}}, {"high", {}}}};
-        j["settings"] += {"mask", {}};
-
-        return j;
-    }();
-
     V895::~V895()
     {
     }
@@ -180,30 +154,21 @@ namespace vmeplus
         std::cout << "\n";
     }
 
-    void V895::ReadConfigImpl( nlohmann::json &j )
+    void V895::ReadConfig( UConfig<V895>& cfg )
     {
-        // There is no way to read the configuration for this module
-        // so the default one
-        j = fDefaultConfig;
+        PrintMessage( Message_t::WARNING, "The configuration cannot be read from V895" );
     }
 
-    void V895::WriteConfigImpl( const nlohmann::json &j )
+    void V895::WriteConfig( const UConfig<V895>& cfg )
     {
-        uint8_t th;
         for( uint8_t i = 0; i < fChNumber; ++i )
         {
-            j.at("settings").at("channels").at(i).at("threshold").get_to<uint8_t>( th );
-            WriteThreshold( i, th );
+            WriteThreshold( i, cfg.THRESHOLDS.at( i ) );
         }
-        uint16_t widthH, widthL, maj, mask;
-        j.at("settings").at("majority").get_to<uint16_t>( maj );
-        j.at("settings").at("width").at("high").get_to<uint16_t>( widthH );
-        j.at("settings").at("width").at("low").get_to<uint16_t>( widthL );
-        j.at("settings").at("mask").get_to<uint16_t>( mask );
 
-        WriteMajLevel( maj );
-        WriteOutWidthH( widthH );
-        WriteOutWidthL( widthL );
-        Enable( mask );
+        WriteMajLevel( cfg.MAJORITY );
+        WriteOutWidthH( cfg.WIDTH_H );
+        WriteOutWidthL( cfg.WIDTH_L );
+        Enable( cfg.MASK );
     }
 }

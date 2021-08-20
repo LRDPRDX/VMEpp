@@ -807,11 +807,11 @@ namespace vmeplus {
 
     }
 
-    void V1190B::ReadConfigImpl( nlohmann::json &config )
+    void V1190B::ReadConfig( UConfig<V1190B>& config )
     {
     }
 
-    void V1190B::WriteConfigImpl( const nlohmann::json &config )
+    void V1190B::WriteConfig( const UConfig<V1190B>& config )
     {
     }
 }

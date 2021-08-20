@@ -1,17 +1,16 @@
 #ifndef V_PLUS_V2718_H
 #define V_PLUS_V2718_H
 
+#include <array>
+
 #include <CAENVMEtypes.h>
 #include "VController.h"
 #include "UConfigurable.h"
-
-using json = nlohmann::json;
 
 
 namespace vmeplus
 {
     class V2718;
-
 
     class V2718Pulser
     {
@@ -145,9 +144,50 @@ namespace vmeplus
             void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
             void ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity );
 
-        protected :
-            virtual void    ReadConfigImpl( nlohmann::json &config ) override;
-            virtual void    WriteConfigImpl( const nlohmann::json &config ) override;
+        public :
+            void    ReadConfig( UConfig<V2718>& config ) override;
+            void    WriteConfig( const UConfig<V2718>& config ) override;
+    };
+
+    template<>
+    struct UConfig<V2718>
+    {
+        struct Input
+        {
+            CVIOPolarity    POLARITY;
+            CVLEDPolarity   LED_POLARITY;
+        };
+
+        struct Output
+        {
+            CVIOPolarity    POLARITY;
+            CVLEDPolarity   LED_POLARITY;
+            CVIOSources     SOURCE;
+        };
+
+        struct Pulser
+        {
+            uint32_t        FREQUENCY;
+            uint8_t         DUTY;
+            unsigned char   N_PULSES;
+            CVIOSources     START_SOURCE;
+            CVIOSources     STOP_SOURCE;
+        };
+
+        struct Scaler
+        {
+            short           LIMIT;
+            short           AUTO_RESET;
+            CVIOSources     HIT_SOURCE;
+            CVIOSources     GATE_SOURCE;
+            CVIOSources     STOP_SOURCE;
+        };
+
+        std::array<Input, V2718::GetInNumber()>     INPUTS;
+        std::array<Output, V2718::GetOutNumber()>   OUTPUTS;
+        Pulser                                      PULSER_A;
+        Pulser                                      PULSER_B;
+        Scaler                                      SCALER;
     };
 }
 #endif

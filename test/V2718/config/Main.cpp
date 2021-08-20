@@ -1,6 +1,5 @@
 #include "VException.h"
 #include "modules/V2718.h"
-#include <nlohmann/json.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -8,7 +7,6 @@
 #include <cassert>
 
 using namespace vmeplus;
-using json = nlohmann::json;
 
 int main()
 {
@@ -30,31 +28,8 @@ int main()
         controller.GetPulser( cvPulserB ).SetStopSource( cvManualSW );
         controller.GetPulser( cvPulserB ).Write();
 
-        json j;
-
-        controller.ReadConfig( j );
-
-        try
-        {
-            //WriteConfigToFile( j, "/usr/config.json" ); // causes catch
-            //WriteConfigToFile( j, "./config.json" );
-            j = ReadConfigFromFile( "./config.json" );
-        }
-        catch( std::fstream::failure& e )
-        {
-            std::cout << "File reading writing failed\n" << std::endl;
-        }
-
-        controller.WriteConfig( j );
-
-        json jDefault = V2718::GetDefaultConfig();
-        json jInvalid = R"({"name" : "V895"})"; 
-        assert( controller.Validate( jDefault ) == true );
-        assert( controller.Validate( j ) == true );
-        assert( controller.Validate( jInvalid ) == false );
-
-        //std::cout << j.dump( 2 ) << std::endl;
-
+        UConfig<V2718> cfg;
+        controller.ReadConfig( cfg );
     }
     catch( const VException& e )
     {

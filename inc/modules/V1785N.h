@@ -238,6 +238,13 @@ namespace vmeplus
 {
     class V1785NEvent;
 
+    class V1785N;
+
+    template<>
+    struct UConfig<V1785N>
+    {
+    };
+
     //****** V1785N Part ******
     class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter, public UConfigurable<V1785N>
     {
@@ -330,9 +337,9 @@ namespace vmeplus
             //Printing
             virtual void    Print() const override;
 
-        protected :
-            void    ReadConfigImpl( nlohmann::json &config ) override;
-            void    WriteConfigImpl( const nlohmann::json &config ) override;
+        public :
+            void    ReadConfig( UConfig<V1785N>& config ) override;
+            void    WriteConfig( const UConfig<V1785N>& config ) override;
     };
 
     //****** V1785NEvent Part ******
