@@ -17,17 +17,20 @@ class QCheckBox;
 class QLedIndicatorWithLabel;
 class QLineEdit;
 
-
-static constexpr uint8_t N_INS = vmeplus::V2718::GetInNumber();
-static constexpr uint8_t N_OUTS = vmeplus::V2718::GetOutNumber();
-static constexpr uint8_t N_PULSERS = 2;
-
 class Display;
 
+Q_DECLARE_METATYPE(CVIOPolarity)   
+Q_DECLARE_METATYPE(CVLEDPolarity)   
+Q_DECLARE_METATYPE(CVIOSources)   
 
 class Controller : public QMainWindow
 {
     Q_OBJECT
+
+    public :
+        static constexpr uint8_t N_INS = vmeplus::V2718::GetInNumber();
+        static constexpr uint8_t N_OUTS = vmeplus::V2718::GetOutNumber();
+        static constexpr uint8_t N_PULSERS = 2;
 
     private :
         vmeplus::V2718 fController;
@@ -78,8 +81,8 @@ class Controller : public QMainWindow
 
     public slots :
         void UpdateDisplay();
-        json CollectConfig();
-        void SpreadConfig( const json& j );
+        vmeplus::UConfig<vmeplus::V2718> CollectConfig();
+        void SpreadConfig( const vmeplus::UConfig<vmeplus::V2718>& cfg );
         void SaveConfig();
         void LoadConfig();
 

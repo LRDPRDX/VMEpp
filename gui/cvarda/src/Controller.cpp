@@ -32,6 +32,8 @@
 
 #include "VException.h"
 
+using namespace vmeplus;
+
 Controller::Controller( QWidget *parent ) :
     QMainWindow( parent )
 {
@@ -373,7 +375,7 @@ void Controller::UpdateDisplay()
         CVDisplay displayInfo = fController.ReadDisplay();
         fDisplay->Update( displayInfo );
     }
-    catch( vmeplus::VException &e )
+    catch( VException &e )
     {
         qInfo() << e.what();
     }
@@ -385,164 +387,146 @@ void Controller::Program()
     {
         fController.WriteConfig( CollectConfig() );
     }
-    catch( vmeplus::VException &e )
+    catch( VException &e )
     {
         qInfo() << e.what();
     }
 }
 
-json Controller::CollectConfig()
+UConfig<V2718> Controller::CollectConfig()
 {
-    json jConf = vmeplus::V2718::GetDefaultConfig();
+    UConfig<V2718> cfg;
 
     // In's and Out's
     for( uint8_t i = 0; i < N_INS; ++i )
     {
-        jConf.at("settings").at("inputs").at( i ).at("polarity") = fInPolCombo[i]->currentData().toInt();
-        jConf.at("settings").at("inputs").at( i ).at("led_polarity") = fInLedCombo[i]->currentData().toInt();
+        cfg.INPUTS.at( i ).POLARITY     = fInPolCombo[i]->currentData().value<CVIOPolarity>();
+        cfg.INPUTS.at( i ).LED_POLARITY = fInLedCombo[i]->currentData().value<CVLEDPolarity>();
     }
 
     for( uint8_t i = 0; i < N_OUTS; ++i )
     {
-        jConf.at("settings").at("outputs").at( i ).at("polarity") = fOutPolCombo[i]->currentData().toInt();
-        jConf.at("settings").at("outputs").at( i ).at("led_polarity") = fOutLedCombo[i]->currentData().toInt();
-        jConf.at("settings").at("outputs").at( i ).at("source") = fOutSrcCombo[i]->currentData().toInt();
+        cfg.OUTPUTS.at( i ).POLARITY        = fOutPolCombo[i]->currentData().value<CVIOPolarity>();
+        cfg.OUTPUTS.at( i ).LED_POLARITY    = fOutLedCombo[i]->currentData().value<CVLEDPolarity>();
+        cfg.OUTPUTS.at( i ).SOURCE          = fOutSrcCombo[i]->currentData().value<CVIOSources>();
     }
 
     // Pulsers
     for( uint8_t i = 0; i < N_PULSERS; ++i )
     {
-        json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
-        jConf.at("settings").at("pulsers").at(id).at("frequency") = fPulFreqSpin[i]->value();
-        jConf.at("settings").at("pulsers").at(id).at("duty") = fPulDutySpin[i]->value();
-        jConf.at("settings").at("pulsers").at(id).at("count") = fPulNSpin[i]->value();
-        jConf.at("settings").at("pulsers").at(id).at("start") = fPulStartCombo[i]->currentData().toInt();
-        jConf.at("settings").at("pulsers").at(id).at("stop") = fPulStopCombo[i]->currentData().toInt();
+        UConfig<V2718>::Pulser& pulser = (i == cvPulserA) ? cfg.PULSER_A : cfg.PULSER_B;
+        pulser.FREQUENCY    = fPulFreqSpin[i]->value();
+        pulser.DUTY         = fPulDutySpin[i]->value();
+        pulser.N_PULSES     = fPulNSpin[i]->value();
+        pulser.START_SOURCE = fPulStartCombo[i]->currentData().value<CVIOSources>();
+        pulser.STOP_SOURCE  = fPulStopCombo[i]->currentData().value<CVIOSources>();
     }
 
     // Scaler
-    jConf.at("settings").at("scaler").at("gate") = fScalGateCombo->currentData().toInt();
-    jConf.at("settings").at("scaler").at("stop") = fScalResetCombo->currentData().toInt();
-    jConf.at("settings").at("scaler").at("hit") = fScalHitCombo->currentData().toInt();
-    jConf.at("settings").at("scaler").at("limit") = fScalLimitSpin->value();
-    jConf.at("settings").at("scaler").at("auto_reset") = fScalAutoCheck->isChecked();
+    cfg.SCALER.GATE_SOURCE  = fScalGateCombo->currentData().value<CVIOSources>();
+    cfg.SCALER.STOP_SOURCE  = fScalResetCombo->currentData().value<CVIOSources>();
+    cfg.SCALER.HIT_SOURCE   = fScalHitCombo->currentData().value<CVIOSources>();
+    cfg.SCALER.LIMIT        = fScalLimitSpin->value();
+    cfg.SCALER.AUTO_RESET   = fScalAutoCheck->isChecked();
 
-    return jConf;
+    return cfg;
 }
 
-void Controller::SpreadConfig( const json& jConf )
+void Controller::SpreadConfig( const UConfig<V2718>& cfg )
 {
-    auto changeCombo = [&jConf]( QComboBox* c, std::string s ) {
-        int data;
-        json::json_pointer p( s );
-        int index = c->findData( jConf.at( p ).get_to( data ) );
-        c->setCurrentIndex( index );
+    auto changeCombo = []( QComboBox* c, int data ) {
+        int index = c->findData( data  );
+        if( index >= 0 )
+        {
+            c->setCurrentIndex( index );
+        }
     };
 
-    try
-    {
         // In's and Out's
         for( uint8_t i = 0; i < N_INS; ++i )
         {
-            changeCombo( fInPolCombo[i], "/settings/inputs/" + std::to_string(i) + "/polarity" );
-            changeCombo( fInLedCombo[i], "/settings/inputs/" + std::to_string(i) + "/led_polarity" );
+            changeCombo( fInPolCombo[i], cfg.INPUTS.at( i ).POLARITY );
+            changeCombo( fInLedCombo[i], cfg.INPUTS.at( i ).LED_POLARITY );
         }
 
         for( uint8_t i = 0; i < N_OUTS; ++i )
         {
-            changeCombo( fOutPolCombo[i], "/settings/outputs/" + std::to_string(i) + "/polarity" );
-            changeCombo( fOutLedCombo[i], "/settings/outputs/" + std::to_string(i) + "/led_polarity" );
-            changeCombo( fOutSrcCombo[i], "/settings/outputs/" + std::to_string(i) + "/source" );
+            changeCombo( fOutPolCombo[i], cfg.OUTPUTS.at( i ).POLARITY  );
+            changeCombo( fOutLedCombo[i], cfg.OUTPUTS.at( i ).LED_POLARITY );
+            changeCombo( fOutSrcCombo[i], cfg.OUTPUTS.at( i ).SOURCE );
         }
 
         // Pulsers
-        uint32_t freq = 0;
-        uint8_t duty = 0;
-        uint8_t count = 0;
         for( uint8_t i = 0; i < N_PULSERS; ++i )
         {
-            json::json_pointer id( (i == cvPulserA) ? "/A" : "/B" );
-            jConf.at("settings").at("pulsers").at(id).at("frequency").get_to<uint32_t>( freq );
-                fPulFreqSpin[i]->setValue( freq );
-            jConf.at("settings").at("pulsers").at(id).at("duty").get_to<uint8_t>( duty );
-                fPulDutySpin[i]->setValue( duty );
-            jConf.at("settings").at("pulsers").at(id).at("count").get_to<uint8_t>( count );
-                fPulNSpin[i]->setValue( count );
+            const UConfig<V2718>::Pulser& pulser = (i == cvPulserA) ? cfg.PULSER_A : cfg.PULSER_B;
 
-            changeCombo( fPulStartCombo[i], "/settings/pulsers" + id.to_string() + "/start" );
-            changeCombo( fPulStopCombo[i], "/settings/pulsers" + id.to_string() + "/stop" );
+            fPulFreqSpin[i]->setValue( pulser.FREQUENCY );
+            fPulDutySpin[i]->setValue( pulser.DUTY );
+            fPulNSpin[i]->setValue( pulser.N_PULSES );
+
+            changeCombo( fPulStartCombo[i], pulser.START_SOURCE );
+            changeCombo( fPulStopCombo[i], pulser.STOP_SOURCE );
         }
 
         // Scaler
-        changeCombo( fScalGateCombo, "/settings/scaler/gate" );
-        changeCombo( fScalResetCombo, "/settings/scaler/stop" );
-        changeCombo( fScalHitCombo, "/settings/scaler/hit" );
+        changeCombo( fScalGateCombo, cfg.SCALER.GATE_SOURCE );
+        changeCombo( fScalResetCombo, cfg.SCALER.STOP_SOURCE );
+        changeCombo( fScalHitCombo, cfg.SCALER.HIT_SOURCE );
 
-        short limit = 0;
-        short autoreset = 0;
-        jConf.at("settings").at("scaler").at("limit").get_to<short>( limit );
-            fScalLimitSpin->setValue( limit );
-        jConf.at("settings").at("scaler").at("auto_reset").get_to<short>( autoreset );
-            fScalAutoCheck->setChecked( autoreset );
-    }
-    catch( const json::exception& e )
-    {
-            QMessageBox::warning( this,
-                                  "Spreading config failed!",
-                                  e.what(),
-                                  QMessageBox::Ok );
-    }
+        fScalLimitSpin->setValue( cfg.SCALER.LIMIT );
+        fScalAutoCheck->setChecked( cfg.SCALER.AUTO_RESET );
 }
 
 void Controller::SaveConfig()
 {
     QString fileName = QFileDialog::getSaveFileName( this, "Save Config file", "./", "Text files (*.json)" );
 
-    if( fileName.isEmpty() )
-    {
-        return;
-    }
-    else
-    {
-        json jConf = CollectConfig();
+    //if( fileName.isEmpty() )
+    //{
+    //    return;
+    //}
+    //else
+    //{
+    //    vmeplus::UConfig<V2718> cfg = CollectConfig();
 
-        try
-        {
-            vmeplus::WriteConfigToFile(  jConf, fileName.toStdString() );
-        }
-        catch( const std::fstream::failure& e )
-        {
-            QMessageBox::warning( this,
-                                  "Saving config failed!",
-                                  "Couldn't write to the file!",
-                                  QMessageBox::Ok );
-        }
-    }
+    //    try
+    //    {
+    //        vmeplus::WriteConfigToFile(  jConf, fileName.toStdString() );
+    //    }
+    //    catch( const std::fstream::failure& e )
+    //    {
+    //        QMessageBox::warning( this,
+    //                              "Saving config failed!",
+    //                              "Couldn't write to the file!",
+    //                              QMessageBox::Ok );
+    //    }
+    //}
 }
 
 void Controller::LoadConfig()
 {
     QString fileName = QFileDialog::getOpenFileName( this, "Load Config file", "./", "Text files (*.json)" );
 
-    if( fileName.isEmpty() )
-    {
-        return;
-    }
-    else
-    {
-        try
-        {
-            json jConf = vmeplus::ReadConfigFromFile( fileName.toStdString() );
-            SpreadConfig( jConf );
-        }
-        catch( const std::fstream::failure& e )
-        {
-            QMessageBox::warning( this,
-                                  "Reading config failed!",
-                                  QString( "Couldn't open/read/close \'%1\'!" ).arg( fileName ),
-                                  QMessageBox::Ok );
-        }
-    }
+    //if( fileName.isEmpty() )
+    //{
+    //    return;
+    //}
+    //else
+    //{
+    //    try
+    //    {
+    //        json jConf = vmeplus::ReadConfigFromFile( fileName.toStdString() );
+    //        SpreadConfig( jConf );
+    //    }
+    //    catch( const std::fstream::failure& e )
+    //    {
+    //        QMessageBox::warning( this,
+    //                              "Reading config failed!",
+    //                              QString( "Couldn't open/read/close \'%1\'!" ).arg( fileName ),
+    //                              QMessageBox::Ok );
+    //    }
+    //}
 }
 
 void Controller::Connect( short link, short conet )
@@ -566,7 +550,7 @@ void Controller::Disconnect()
     {
         fController.Close();
     }
-    catch( const vmeplus::VException& e )
+    catch( const VException& e )
     {
         qInfo() << "On disconnection : " << e.what();
     }
