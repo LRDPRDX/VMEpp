@@ -27,7 +27,7 @@ namespace vmeplus
         ReadManMType();
         ReadFixedCode();
 
-        for( uint16_t ch; ch < V895_N_CHANNELS; ch++ )
+        for( uint8_t ch = 0; ch < fChNumber; ch++ )
         {
             WriteThreshold( ch, 0xFF );
         }
@@ -37,43 +37,43 @@ namespace vmeplus
         return;
     }
 
-    void V895::Release()
-    {
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "..." );
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "...OK" );
-        return;
-    }
 
     //*********************
     //Channel configuration
     //*********************
-    void V895::WriteThreshold( uint16_t ch, uint16_t thr )
+    void V895::WriteThreshold( uint8_t ch, uint8_t thr )
     {
-        WriteRegister16( V895_THRESHOLD(ch), thr, V895_THRESHOLD_MSK );
+        WriteRegister16( V895_THRESHOLD(ch % fChNumber), thr, V895_THRESHOLD_MSK );
     }
 
     //***************************
     //Board general configuration
     //***************************
+    uint16_t V895::GetValueFromWidth( uint16_t width )
+    {
+        uint16_t w = (width < 5) ? 5 : ((width < 43) ? width : 43);
+        return std::round( 284. * (1. - (4.3 / w)) );
+    }
+
     void V895::WriteOutWidth( uint16_t width )
     {
-        WriteOutWidthL( width );
-        WriteOutWidthH( width );
+        WriteOutWidthL( GetValueFromWidth( width ) );
+        WriteOutWidthH( GetValueFromWidth( width ) );
     }
 
     void V895::WriteOutWidthH( uint16_t width )
     {
-        WriteRegister16( V895_OUT_WIDTH_H, width, V895_OUT_WIDTH_MSK );
+        WriteRegister16( V895_OUT_WIDTH_H, GetValueFromWidth( width ), V895_OUT_WIDTH_MSK );
     }
 
     void V895::WriteOutWidthL( uint16_t width )
     {
-        WriteRegister16( V895_OUT_WIDTH_L, width, V895_OUT_WIDTH_MSK );
+        WriteRegister16( V895_OUT_WIDTH_L, GetValueFromWidth( width ), V895_OUT_WIDTH_MSK );
     }
 
     void V895::WriteMajLevel( uint16_t level )
     {
-        uint16_t goodLevel = (level >= 1U) ? ((level <= V895_N_CHANNELS) ? level : V895_N_CHANNELS) : 1U;
+        uint16_t goodLevel = (level >= 1U) ? ((level <= fChNumber) ? level : fChNumber) : 1U;
         uint16_t majThr = lround( (goodLevel * 50. - 25.) / 4 );//See the module's manual
         WriteRegister16( V895_MAJ_THRESHOLD, majThr, V895_MAJ_THR_MSK );
     }
@@ -83,9 +83,9 @@ namespace vmeplus
         WriteRegister16( V895_PAT_INHIBIT, mask );
     }
 
-    void V895::EnableOnly( uint16_t ch )
+    void V895::EnableOnly( uint8_t ch )
     {
-        uint16_t mask = (1 << (ch % V895_N_CHANNELS));
+        uint16_t mask = (1 << (ch % fChNumber));
         WriteRegister16( V895_PAT_INHIBIT, mask );
     }
 

@@ -25,7 +25,7 @@
 //*******************************************************************
 
 //Channel config
-#define     V895_THRESHOLD(x)   (0x0002UL * ((x) % 16))//A32/D16 W
+#define     V895_THRESHOLD(x)   (0x0002UL * (x))//A32/D16 W
 #define     V895_THRESHOLD_MSK  0x00FFU//Aux
 
 //Board general config
@@ -53,7 +53,7 @@
 #define     V895_VER_MSK        0xF000UL//Aux
 
 //Not specified
-#define     V895_N_CHANNELS     0x0010U//Aux
+//#define     V895_N_CHANNELS     0x0010U//Aux
 #define     V895_LUB            0x00FFUL//Aux, The Lust Used Byte
 
 
@@ -64,8 +64,13 @@ namespace vmeplus
     class V895 : public VSlave
     {
         protected :
+            static uint8_t const fChNumber = 0x10U;   // 16
+
+        public :
+            static uint8_t GetChNumber() { return fChNumber; }
+
+        protected :
             virtual void    Initialize() override;
-            virtual void    Release() override;
 
         protected :
             uint16_t        fVersionSerial;
@@ -78,14 +83,15 @@ namespace vmeplus
 
         public :
             //Channel configuration
-            void            WriteThreshold( uint16_t ch, uint16_t thr );
+            void            WriteThreshold( uint8_t ch, uint8_t thr );
             //Board general configuration
+            uint16_t        GetValueFromWidth( uint16_t width );
             void            WriteOutWidth( uint16_t width );
             void            WriteOutWidthH( uint16_t width );
             void            WriteOutWidthL( uint16_t width );
             void            WriteMajLevel( uint16_t level );
             void            Enable( uint16_t mask );
-            void            EnableOnly( uint16_t ch );
+            void            EnableOnly( uint8_t ch );
             void            SendTest();
             //Board information
             uint16_t        ReadVerSer();

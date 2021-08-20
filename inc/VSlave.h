@@ -29,15 +29,15 @@ namespace vmeplus
             void                FIFOMBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am = cvA32_U_MBLT );
 
             virtual void        Initialize() = 0;
-            virtual void        Release() = 0;
 
         protected :
             void                WriteRegister16( uint32_t address, uint16_t data, uint16_t msk = 0xFFFFU );
             uint16_t            ReadRegister16( uint32_t address, uint16_t msk = 0xFFFFU );
             void                WriteRegister32( uint32_t address, uint32_t data, uint32_t msk = 0xFFFFFFFFU);
             uint32_t            ReadRegister32( uint32_t address, uint32_t msk = 0xFFFFFFFFU ); 
-	    virtual void        SetBit16( uint32_t address, uint16_t bit );
+	        virtual void        SetBit16( uint32_t address, uint16_t bit );
             virtual void        ClearBit16( uint32_t address, uint16_t bit );
+            virtual bool        GetBit16( uint32_t address, uint16_t bit );
 
         public :
             VSlave( std::string name, uint32_t baseAddress, uint32_t range );
@@ -55,6 +55,8 @@ namespace vmeplus
 
             virtual void        Print() const;
             virtual void        Reset();
+
+            void                Release();
 
             friend class VMaster;
     };

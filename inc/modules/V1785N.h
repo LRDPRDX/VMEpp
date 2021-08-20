@@ -253,7 +253,6 @@ namespace vmeplus
 
         protected :
             virtual void    Initialize() override;
-            virtual void    Release() override;
 
         protected :
             //Auxiliary control functions
@@ -351,8 +350,6 @@ namespace vmeplus
                 swap( first.fData, second.fData );
                 swap( first.fEOB, second.fEOB );
             }
-
-            uint32_t GetSize() const override { return 34 * 4; }
 
         public :
             uint16_t GetMemoChannels() const

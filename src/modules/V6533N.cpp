@@ -35,13 +35,6 @@ namespace vmeplus
         return;
     }
 
-    void V6533N::Release()
-    {
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "..." );
-        PrintMessage( Message_t::INFO, "Releasing " + fName + "...OK" );
-        return;
-    }
-
     //****************
     //Board parameters
     //****************
@@ -78,13 +71,13 @@ namespace vmeplus
     //******************
     float V6533N::ReadVoltage( uint16_t ch )
     {
-        return (float)ReadRegister16( V6533N_VMON(ch) ) * 0.1;
+        return (float)ReadRegister16( V6533N_VMON(ch % fChNumber) ) * 0.1;
     }
 
     void V6533N::WriteVoltage( uint16_t ch, float voltage )
     {
         uint16_t rawV = 10 * voltage;
-        WriteRegister16( V6533N_VSET(ch), rawV );
+        WriteRegister16( V6533N_VSET(ch % fChNumber), rawV );
     }
 
     float V6533N::ReadCurrent( uint16_t ch, V6533N::IMonRange_t range )
@@ -93,22 +86,22 @@ namespace vmeplus
         uint16_t rawI;
         float scale;
         //Save old range
-        V6533N::IMonRange_t old_range = ReadIMonRange( ch );
-        WriteIMonRange( ch, range );
+        V6533N::IMonRange_t old_range = ReadIMonRange( ch % fChNumber );
+        WriteIMonRange( ch % fChNumber, range );
 
         switch( range )
         {
             case( V6533N::IMonRange_t::RANGE_HIGH ) :
-                rawI = ReadRegister16( V6533N_IMONH(ch) );
+                rawI = ReadRegister16( V6533N_IMONH(ch % fChNumber) );
                 scale = 5e-5;//0.05 [uA]
                 break;
             case( V6533N::IMonRange_t::RANGE_LOW ) :
-                rawI = ReadRegister16( V6533N_IMONL(ch) );
+                rawI = ReadRegister16( V6533N_IMONL(ch % fChNumber) );
                 scale = 5e-6;//0.005 [uA]
                 break;
         }
         //Restore old range
-        WriteIMonRange( ch, old_range );
+        WriteIMonRange( ch % fChNumber, old_range );
 
         return (float)rawI * scale; 
     }
@@ -117,99 +110,99 @@ namespace vmeplus
     void V6533N::WriteCurrent( uint16_t ch, float current )
     {
         uint16_t rawI = current / 5e-2;// current in uA
-        WriteRegister16( V6533N_ISET(ch), rawI );
+        WriteRegister16( V6533N_ISET(ch % fChNumber), rawI );
     }
 
     bool V6533N::ReadEnable( uint16_t ch )
     {
-        return ReadRegister16( V6533N_PW(ch) );
+        return ReadRegister16( V6533N_PW(ch % fChNumber) );
     }
 
     void V6533N::WriteEnable( uint16_t ch, bool en )
     {
         uint16_t data = en ? 1 : 0;
-        WriteRegister16( V6533N_PW(ch), data );
+        WriteRegister16( V6533N_PW(ch % fChNumber), data );
     }
 
     uint16_t V6533N::ReadStatus( uint16_t ch )
     {
-        return ReadRegister16( V6533N_CHSTATUS(ch) );
+        return ReadRegister16( V6533N_CHSTATUS(ch % fChNumber) );
     }
 
     float V6533N::ReadTripTime( uint16_t ch )
     {
-        return (float)ReadRegister16( V6533N_TRIP_TIME(ch) ) * 0.1;
+        return (float)ReadRegister16( V6533N_TRIP_TIME(ch % fChNumber) ) * 0.1;
     }
 
     void V6533N::WriteTripTime( uint16_t ch, float ttime )
     {
         uint16_t raw_data = ttime * 10;
-        WriteRegister16( V6533N_TRIP_TIME(ch), raw_data );
+        WriteRegister16( V6533N_TRIP_TIME(ch % fChNumber), raw_data );
     }
 
     float V6533N::ReadSWVMax( uint16_t ch )
     {
-        return (float)ReadRegister16( V6533N_SVMAX(ch) ) * 0.1;
+        return (float)ReadRegister16( V6533N_SVMAX(ch % fChNumber) ) * 0.1;
     }
 
     void V6533N::WriteSWVMax( uint16_t ch, float voltage )
     {
         uint16_t raw_data = voltage * 10;
-        WriteRegister16( V6533N_SVMAX(ch), raw_data );
+        WriteRegister16( V6533N_SVMAX(ch % fChNumber), raw_data );
     }
 
     uint16_t V6533N::ReadRampDown( uint16_t ch )
     {
-        return ReadRegister16( V6533N_RAMP_DOWN(ch) );
+        return ReadRegister16( V6533N_RAMP_DOWN(ch % fChNumber) );
     }
 
     void V6533N::WriteRampDown( uint16_t ch, uint16_t rampd )
     {
-        WriteRegister16( V6533N_RAMP_DOWN(ch), rampd );
+        WriteRegister16( V6533N_RAMP_DOWN(ch % fChNumber), rampd );
     }
 
     uint16_t V6533N::ReadRampUp( uint16_t ch )
     {
-        return ReadRegister16( V6533N_RAMP_UP(ch) );
+        return ReadRegister16( V6533N_RAMP_UP(ch % fChNumber) );
     }
 
     void V6533N::WriteRampUp( uint16_t ch, uint16_t rampu )
     {
-        WriteRegister16( V6533N_RAMP_UP(ch), rampu );
+        WriteRegister16( V6533N_RAMP_UP(ch % fChNumber), rampu );
     }
 
     bool V6533N::ReadPWDown( uint16_t ch )
     {
-        return ReadRegister16( V6533N_PWDOWN(ch) );
+        return ReadRegister16( V6533N_PWDOWN(ch % fChNumber) );
     }
 
     void V6533N::WritePWDown( uint16_t ch, bool kill )
     {
         uint16_t data = kill ? 0 : 1;
-        WriteRegister16( V6533N_PWDOWN(ch), data );
+        WriteRegister16( V6533N_PWDOWN(ch % fChNumber), data );
     }
 
     V6533N::IMonRange_t V6533N::ReadIMonRange( uint16_t ch )
     {
-        uint16_t data = ReadRegister16( V6533N_IMON_RANGE(ch) );
+        uint16_t data = ReadRegister16( V6533N_IMON_RANGE(ch % fChNumber) );
         return (data > 0) ? V6533N::IMonRange_t::RANGE_LOW : V6533N::IMonRange_t::RANGE_HIGH;
     }
 
     void V6533N::WriteIMonRange( uint16_t ch, IMonRange_t range )
     {
         uint16_t data = (range == V6533N::IMonRange_t::RANGE_HIGH) ? 0 : 1;
-        WriteRegister16( V6533N_IMON_RANGE(ch), data );
+        WriteRegister16( V6533N_IMON_RANGE(ch % fChNumber), data );
     } 
 
     V6533N::Polarity_t V6533N::ReadPolarity( uint16_t ch )
     {
-        uint16_t data = ReadRegister16( V6533N_POLARITY(ch) );
+        uint16_t data = ReadRegister16( V6533N_POLARITY(ch % fChNumber) );
         return (data > 0) ? V6533N::Polarity_t::POSITIVE : V6533N::Polarity_t::NEGATIVE;
     }
 
     int16_t V6533N::ReadTemperature( uint16_t ch )
     {
-        return ReadRegister16( V6533N_TEMPERATURE(ch) );
+        return ReadRegister16( V6533N_TEMPERATURE(ch % fChNumber) );
     }
 
     //*******************
