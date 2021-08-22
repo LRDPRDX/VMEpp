@@ -1,20 +1,5 @@
-<<<<<<< HEAD:test/V1190B/acq_mode/Makefile
-TOP_DIR :=  $(shell pwd)/../..
-=======
-TOP_DIR :=  $(shell pwd)/../../..
->>>>>>> master:test/V895/total/Makefile
-INC_DIR     := $(TOP_DIR)/inc
-LINKAGE     := -lVMEplusM -lVMEplus
+TOP_DIR :=  $(shell pwd)/..
 
-CC          := g++
-CXXFLAGS    := -std=c++11
+all:
+	cd $(TOP_DIR) && $(MAKE)
 
-SRC     := $(wildcard *.cpp)
-TARGET  := $(patsubst %.cpp,%,$(SRC))
-
-$(TARGET) : $(SRC)
-		$(CC) -DLINUX $(CXXFLAGS) -I$(INC_DIR) $< $(LINKAGE) -o $@
-
-.PHONY : clean
-	clean :
-		rm -f $(TARGET)

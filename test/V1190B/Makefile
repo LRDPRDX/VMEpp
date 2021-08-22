@@ -5,7 +5,7 @@ LINKAGE     := -lVMEplusM -lVMEplus
 CC          := g++
 CXXFLAGS    := -std=c++11
 
-SRC     := $(shell find $(shell pwd) -name '*.cpp')
+SRC     := $(shell find $(shell pwd) -name Main.cpp)
 TARGET  := $(patsubst %.cpp,%,$(SRC))
 
 $(TARGET) : $(SRC)
