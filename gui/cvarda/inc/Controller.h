@@ -94,6 +94,9 @@ class Controller : public QMainWindow
         Controller( QWidget *parent = nullptr );
         ~Controller();
 
+    public :
+        void HandleError( const vmeplus::VException& e );
+
     friend class Connection;
     friend void DeviceWindow::Connect();
 };

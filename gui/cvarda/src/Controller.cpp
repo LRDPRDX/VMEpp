@@ -386,10 +386,12 @@ void Controller::Program()
     try
     {
         fController.WriteConfig( CollectConfig() );
+        Programmed( true );
     }
     catch( VException &e )
     {
-        qInfo() << e.what();
+        Programmed( false );
+        HandleError( e );
     }
 }
 
@@ -589,6 +591,12 @@ void Controller::ToggleStatusBar()
     {
         statusBar()->hide();
     }
+}
+
+void Controller::HandleError( const VException& e )
+{
+    ErrorMessageBox* msg = new ErrorMessageBox( e, this );
+    msg->show();
 }
 
 

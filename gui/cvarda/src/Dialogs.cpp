@@ -68,12 +68,8 @@ void Connection::Connect()
     }
     catch( const vmeplus::VException& e )
     {
-        qWarning() << "Connection failed : " << e.what();
-
-        QMessageBox::warning( this,
-                              tr( "Connection FAILED" ),
-                              tr( e.what() ),
-                              QMessageBox::Ok );
+        ErrorMessageBox* msg = new ErrorMessageBox( e, this );
+        msg->show();
     }
 }
 
@@ -155,4 +151,21 @@ void DeviceDialog::Add()
 void DeviceDialog::Cancel()
 {
     this->close();
+}
+
+/*****************************/
+/****** ErrorMessageBox ******/
+/*****************************/
+ErrorMessageBox::ErrorMessageBox( const vmeplus::VException& e, QWidget *parent ) :
+    QMessageBox( parent )
+{
+        setWindowTitle( "Error" );
+        setIcon( QMessageBox::Critical );
+        setText( QString::fromStdString( e.GetErrorMessage() ) );
+        setDetailedText( QString( "%1\n%2").arg( QString::fromStdString( e.GetInfo() ),
+                                                 QString::fromStdString( e.GetHint() ) ) );
+        setStandardButtons( QMessageBox::Ok );
+
+        setModal( true );
+        setAttribute( Qt::WA_DeleteOnClose, true );
 }

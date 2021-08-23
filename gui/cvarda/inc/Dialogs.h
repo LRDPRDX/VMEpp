@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QMessageBox>
 
 #include "Controller.h"
 
@@ -8,6 +9,12 @@ class QPushButton;
 class QComboBox;
 class QSpinBox;
 class QTextEdit;
+
+namespace vmeplus
+{
+    class VException;
+}
+
 
 class Connection : public QDialog
 {
@@ -49,4 +56,12 @@ class DeviceDialog : public QDialog
     private slots :
         void Cancel();
         void Add();
+};
+
+class ErrorMessageBox : public QMessageBox
+{
+    Q_OBJECT
+
+    public :
+        ErrorMessageBox( const vmeplus::VException& e, QWidget *parent = nullptr );
 };
