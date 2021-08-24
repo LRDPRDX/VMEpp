@@ -54,11 +54,11 @@ namespace vmeplus
                         break;
                     case( VError_t::vCommError ) :
                         fMessage = "Communication error"; break;
-                    case( VError_t::vGenericError ) :      
+                    case( VError_t::vGenericError ) :
                         fMessage = "Unspecified error"; break;
-                    case( VError_t::vInvalidParam ) :      
+                    case( VError_t::vInvalidParam ) :
                         fMessage = "Invalid parameter"; break;
-                    case( VError_t::vTimeoutError ) :      
+                    case( VError_t::vTimeoutError ) :
                         fMessage = "Timeout error"; break;
                     case( VError_t::vBadMaster ) :
                         fMessage = "Requesting a bad controller";
@@ -108,7 +108,7 @@ namespace vmeplus
 
             virtual const char* what() const throw()
             {
-                return Wrap( Prefix_t::MESSAGE, fMessage ).c_str();
+                return fMessage.c_str();
             }
 
             std::string GetErrorMessage() const throw()
