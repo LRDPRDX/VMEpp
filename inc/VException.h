@@ -47,42 +47,61 @@ namespace vmeplus
                 switch( errorCode )
                 {
                     case( VError_t::vSuccess ) :
-                        fMessage = "VME++ :: ERROR :: Operation completed successfully"; break;
+                        fMessage = "Operation completed successfully"; break;
                     case( VError_t::vBusError ) :
-                        fMessage = "VME++ :: ERROR :: VME bus error during the cycle";
-                        fHint    = "VME++ :: HINT :: Check your cable or reboot VME crate manually";
+                        fMessage = "VME bus error during the cycle";
+                        fHint    = "Check your cable or reboot VME crate manually";
                         break;
                     case( VError_t::vCommError ) :
-                        fMessage = "VME++ :: ERROR :: Communication error"; break;
-                    case( VError_t::vGenericError ) :      
-                        fMessage = "VME++ :: ERROR :: Unspecified error"; break;
-                    case( VError_t::vInvalidParam ) :      
-                        fMessage = "VME++ :: ERROR :: Invalid parameter"; break;
-                    case( VError_t::vTimeoutError ) :      
-                        fMessage = "VME++ :: ERROR :: Timeout error"; break;
+                        fMessage = "Communication error"; break;
+                    case( VError_t::vGenericError ) :
+                        fMessage = "Unspecified error"; break;
+                    case( VError_t::vInvalidParam ) :
+                        fMessage = "Invalid parameter"; break;
+                    case( VError_t::vTimeoutError ) :
+                        fMessage = "Timeout error"; break;
                     case( VError_t::vBadMaster ) :
-                        fMessage = "VME++ :: ERROR :: Requesting a bad controller";
-                        fHint    = "VME++ :: HINT :: Try to register this board to the correct master";
+                        fMessage = "Requesting a bad controller";
+                        fHint    = "Try to register this board to the correct master";
                         break;
                     case( VError_t::vOrphan ) :
-                        fMessage = "VME++ :: ERROR :: The controller is invalid";
-                        fHint = "VME++ :: HINT :: Use VController::RegisterBoard( VBoard* ) method to register the board";
+                        fMessage = "The controller is invalid";
+                        fHint = "Use VController::RegisterSlave( VSlave* ) method to register the board";
                         break;
                     case( VError_t::vBuffAllocFailed ) :
-                        fMessage = "VME++ :: ERROR :: Failed to allocate memory for the readout buffer";
+                        fMessage = "Failed to allocate memory for the readout buffer";
                         break;
                     case( VError_t::vBadSlave ) :
-                        fMessage = "VME++ :: ERROR :: Bad master (base address, nullptr, etc.)";
+                        fMessage = "Bad master (base address, nullptr, etc.)";
                         break;
                     case( VError_t::vConfigError ) :
-                        fMessage = "VME++ :: ERROR :: Error occured while writing/reading JSON config";
-                        fHint = "VME++ :: HINT :: Call ::GetDefaultConfig() member function to see how a config should look";
+                        fMessage = "Error occured while writing/reading JSON config";
+                        fHint = "Call ::GetDefaultConfig() member function to see how a config should look";
                         break;
                     case( VError_t::vAccessError ) :
-                        fMessage = "VME++ :: ERROR :: Data access error";
-                        fHint = "VME++ :: HINT :: Check the permissions";
+                        fMessage = "Data access error";
+                        fHint = "Check the permissions";
                         break;
                 }
+            }
+
+            enum class Prefix_t { MESSAGE, INFO, HINT };
+
+            static std::string Wrap( Prefix_t p, const std::string& msg )
+            {
+                std::string res = msg;
+
+                switch( p )
+                {
+                    case( Prefix_t::MESSAGE ) :
+                        res = "VME++ :: ERROR :: " + res; break;
+                    case( Prefix_t::INFO ) :
+                        res = "VME++ :: INFO :: " + res; break;
+                    case( Prefix_t::HINT ) :
+                        res = "VME++ :: HINT :: " + res; break;
+                }
+
+                return res;
             }
 
             virtual ~VException() throw() { };
@@ -94,17 +113,17 @@ namespace vmeplus
 
             std::string GetErrorMessage() const throw()
             {
-                return fMessage;
+                return Wrap( Prefix_t::MESSAGE, fMessage );
             }
 
             std::string GetInfo() const throw()
             {
-                return fInfo;
+                return Wrap( Prefix_t::INFO, fInfo );
             }
 
             std::string GetHint() const throw()
             {
-                return fHint;
+                return Wrap( Prefix_t::HINT, fHint );
             }
 
             VError_t GetErrorCode() const { return fErrorCode; }
