@@ -41,7 +41,7 @@ namespace vmeplus
             VException( VError_t errorCode, const std::string &addInfo ):
                 fErrorCode( errorCode ),
                 fMessage( "" ),
-                fInfo( "VME++ :: INFO :: " + addInfo ),
+                fInfo( addInfo ),
                 fHint( "N/A" )
             {
                 switch( errorCode )

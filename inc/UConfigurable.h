@@ -9,9 +9,7 @@
 namespace vmeplus
 {
     template <typename T>
-    struct UConfig
-    {
-    };
+    struct UConfig;
 
     template <typename T>
     class UConfigurable
