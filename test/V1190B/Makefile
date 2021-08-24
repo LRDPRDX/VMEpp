@@ -5,7 +5,7 @@ LINKAGE     := -lVMEplusM -lVMEplus
 CC          := g++
 CXXFLAGS    := -std=c++11
 
-SRC     := $(shell find $(shell pwd) -name Main.cpp)
+SRC     := $(shell find $$MAIN_PATH -name Main.cpp)
 TARGET  := $(patsubst %.cpp,%,$(SRC))
 
 $(TARGET) : $(SRC)
@@ -14,3 +14,4 @@ $(TARGET) : $(SRC)
 .PHONY : clean
 clean :
 	rm -f $(TARGET)
+
