@@ -18,6 +18,10 @@ Connection::Connection( Controller *parent ) :
 
     fParent( parent )
 {
+    setModal( true );
+    setAttribute( Qt::WA_DeleteOnClose, true );
+    setWindowTitle( "Connection" );
+
     // Upper layout (connection settings)
     auto *typeLabel = new QLabel( "Type:" );
     QStringList types = { "V2718", "V1718" };
@@ -78,14 +82,18 @@ void Connection::Cancel()
     this->close();
 }
 
-
-/****** DEVICE DIALOG ******/
-
+/***************************
+ ******* DEVICE DIALOG *****
+ ***************************/
 DeviceDialog::DeviceDialog( Controller *parent ) :
     QDialog( parent ),
 
     fParent( parent )
 {
+    setAttribute( Qt::WA_DeleteOnClose, true );
+    setModal( true );
+    setWindowTitle( "Device connection" );
+
     // Upper layout (connection settings)
     auto *devLabel = new QLabel( "Device:" );
 

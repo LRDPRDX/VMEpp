@@ -78,6 +78,8 @@ class Controller : public QMainWindow
         void OpenConnectDialog();
         void OpenDeviceDialog();
         void Program();
+        void PulserSlot();
+        void ScalerSlot();
 
     public slots :
         void UpdateDisplay();
@@ -85,6 +87,8 @@ class Controller : public QMainWindow
         void SpreadConfig( const vmeplus::UConfig<vmeplus::V2718>& cfg );
         void SaveConfig();
         void LoadConfig();
+        void StartPulser( CVPulserSelect p );
+        void StopPulser( CVPulserSelect p );
 
     signals :
         void Connected( bool );

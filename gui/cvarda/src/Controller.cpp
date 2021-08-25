@@ -264,9 +264,11 @@ void Controller::CreatePulserTab()
         fPulStartButton[i] = new QPushButton( "START" ); 
             fPulStartButton[i]->setStyleSheet( style::button::good );
             connect( this, &Controller::Connected, fPulStartButton[i], &QPushButton::setEnabled );
+            connect( fPulStartButton[i], &QPushButton::clicked, this, &Controller::PulserSlot );
         fPulStopButton[i] = new QPushButton( "STOP" );
             fPulStopButton[i]->setStyleSheet( style::button::bad );
             connect( this, &Controller::Connected, fPulStopButton[i], &QPushButton::setEnabled );
+            connect( fPulStopButton[i], &QPushButton::clicked, this, &Controller::PulserSlot );
 
         buttonLayout->addWidget( fPulStartButton[i] );
         buttonLayout->addWidget( fPulStopButton[i] );
@@ -305,12 +307,15 @@ void Controller::CreatePulserTab()
     fScalGateButton = new QPushButton( "GATE" );
         fScalGateButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalGateButton, &QPushButton::setEnabled );
+        connect( fScalGateButton, &QPushButton::clicked, this, &Controller::ScalerSlot );
     fScalStartButton = new QPushButton( "START" );
         fScalStartButton->setStyleSheet( style::button::good );
         connect( this, &Controller::Connected, fScalStartButton, &QPushButton::setEnabled );
+        connect( fScalStartButton, &QPushButton::clicked, this, &Controller::ScalerSlot );
     fScalResetButton = new QPushButton( "RESET" );
         fScalResetButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalResetButton, &QPushButton::setEnabled );
+        connect( fScalResetButton, &QPushButton::clicked, this, &Controller::ScalerSlot );
 
     buttonLayout->addWidget( fScalGateButton );
     buttonLayout->addWidget( fScalStartButton );
@@ -348,23 +353,20 @@ void Controller::CreatePulserTab()
     tab->setLayout( vLayout );
 }
 
-/****** SLOTS ******/
+
+//*******************
+//****** SLOTS ******
+//*******************
 void Controller::OpenConnectDialog()
 {
     Connection *cDialog = new Connection( this );
-        cDialog->setAttribute( Qt::WA_DeleteOnClose, true );
-        cDialog->setModal( true );
         cDialog->resize( 300, 150 );
-        cDialog->setWindowTitle( "Connection dialog" );
     cDialog->show();
 }
 
 void Controller::OpenDeviceDialog()
 {
     DeviceDialog *devDialog = new DeviceDialog( this );
-        devDialog->setAttribute( Qt::WA_DeleteOnClose, true );
-        devDialog->setModal( true );
-        devDialog->setWindowTitle( "Device dialog" );
     devDialog->show();
 }
 
@@ -377,7 +379,7 @@ void Controller::UpdateDisplay()
     }
     catch( VException &e )
     {
-        qInfo() << e.what();
+        HandleError( e );
     }
 }
 
@@ -392,6 +394,65 @@ void Controller::Program()
     {
         Programmed( false );
         HandleError( e );
+    }
+}
+
+void Controller::PulserSlot()
+{
+    QObject* obj = QObject::sender();
+    for( uint8_t i = 0; i < N_PULSERS; ++i )
+    {
+        if( obj == fPulStartButton[i] )
+        {
+            StartPulser( (i == 0) ? cvPulserA : cvPulserB );
+            break;
+        }
+        else if( obj == fPulStopButton[i] )
+        {
+            StopPulser( (i == 0) ? cvPulserA : cvPulserB );
+            break;
+        }
+    }
+}
+
+void Controller::StartPulser( CVPulserSelect p )
+{
+    try
+    {
+        fController.GetPulser( p ).Start();
+    }
+    catch( const VException& e )
+    {
+        HandleError( e );
+    }
+}
+
+void Controller::StopPulser( CVPulserSelect p )
+{
+    try
+    {
+        fController.GetPulser( p ).Stop();
+    }
+    catch( const VException& e )
+    {
+        HandleError( e );
+    }
+}
+
+void Controller::ScalerSlot()
+{
+    QObject* obj = QObject::sender();
+    if( obj == fScalGateButton )
+    {
+        qInfo() << "Gate" << "\n";
+    }
+    else if( obj == fScalResetButton )
+    {
+        qInfo() << "Reset" << "\n";
+    }
+    else if( obj == fScalStartButton )
+    {
+        qInfo() << "Start" << "\n";
     }
 }
 
@@ -533,10 +594,8 @@ void Controller::LoadConfig()
 
 void Controller::Connect( short link, short conet )
 {
-    qInfo() << "Openning controller...";
     //Exception may be thrown here
     fController.Open( link, conet );
-    qInfo() << "\n...OK";
 
     setWindowTitle( "gVME++ (V2718)" );
     statusBar()->showMessage( "Connected..." );
@@ -546,15 +605,13 @@ void Controller::Connect( short link, short conet )
 
 void Controller::Disconnect()
 {
-    qInfo() << "Disconnecting...";
-
     try
     {
         fController.Close();
     }
     catch( const VException& e )
     {
-        qInfo() << "On disconnection : " << e.what();
+        PrintMessage( Message_t::ERROR, "Error while disconnecting" );
     }
 
     setWindowTitle( "gVME++" );
