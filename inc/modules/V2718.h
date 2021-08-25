@@ -43,6 +43,8 @@ namespace vmeplus
             unsigned char       GetPeriod() const                 { return fPeriod; }
             void                SetWidth( unsigned char width )   { fWidth = width; }
             unsigned char       GetWidth() const                  { return fWidth; }
+            double              GetFrequencyReal() const;
+
             void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }  
             CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }  
             void                SetNPulses( unsigned char n )     { fNPulses = n; }

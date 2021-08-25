@@ -16,13 +16,16 @@ namespace vmeplus
                                                                             { 100000,     41, cvUnit410us },
                                                                             { 1000,      104, cvUnit104ms } };
         uint32_t period = 0;
-        for( int i = 0; i < 4; i++ )
+        if( freq > 0 )
         {
-            period = ss[i].expo / ss[i].num / freq;
-            if( period && (period < 256) )
+            for( int i = 0; i < 4; ++i )
             {
-                fTimeUnit = ss[i].unit;
-                break;
+                period = ss[i].expo / ss[i].num / freq;
+                if( period && (period < 256) )
+                {
+                    fTimeUnit = ss[i].unit;
+                    break;
+                }
             }
         }
 
@@ -37,6 +40,25 @@ namespace vmeplus
         {
             PrintMessage( Message_t::WARNING, "This frequency is not supported by the V2718's pulser" );
         }
+    }
+
+    double V2718Pulser::GetFrequencyReal() const
+    {
+        struct { double expo; double num; CVTimeUnits unit; } ss[4] = { { 1000000000., 25., cvUnit25ns },
+                                                                        { 10000000.,   16., cvUnit1600ns },
+                                                                        { 100000.,     41., cvUnit410us },
+                                                                        { 1000.,      104., cvUnit104ms } };
+
+        double freq = 0.0;
+        for( int i = 0; i < 4; ++i )
+        {
+            if( fTimeUnit == ss[i].unit )
+            {
+                freq = ss[i].expo / ss[i].num / (double)fPeriod;
+            }
+        }
+
+        return freq;
     }
 
     void V2718Pulser::Write()
