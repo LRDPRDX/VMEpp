@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <fstream>
 #include <unistd.h>
 #include <cassert>
 
@@ -14,12 +15,18 @@ int main()
 
     try
     {
-        for( uint32_t freq = 1; freq < 50; ++freq )
+        std::ofstream file( "./data.dat" );
+        for( uint32_t freq = 1; freq < 10000000; ++freq )
         {
             V2718Pulser& pulser = controller.GetPulser( cvPulserA );
-            pulser.SetSquare( freq, 50 );
-            std::cout << freq << "\t" << pulser.GetFrequencyReal() << "\n";
+            if( pulser.SetSquare( freq, 50 ) )
+            {
+                double error = ((double)freq - pulser.GetFrequencyReal()) / (double)freq;
+                file << freq << "\t" << error << "\n";
+            }
         }
+
+        file.close();
     }
     catch( const VException& e )
     {

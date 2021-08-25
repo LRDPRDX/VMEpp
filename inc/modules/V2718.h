@@ -54,7 +54,7 @@ namespace vmeplus
             void                SetStopSource( CVIOSources src )  { fStopSource = src; }
             CVIOSources         GetStopSource()                   { return fStopSource; }
 
-            void                SetSquare( uint32_t freq, uint8_t duty = 50 );
+            bool                SetSquare( uint32_t freq, uint8_t duty = 50 );
             void                GetSquare( uint32_t &freq, uint8_t &duty );
 
         public :
