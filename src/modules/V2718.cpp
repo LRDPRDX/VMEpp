@@ -4,39 +4,75 @@
 #include "modules/V2718.h"
 #include "VException.h"
 
+#include <cmath>
+
 namespace vmeplus
 {
     //**********************//
     //****** PULSER + ******//
     //**********************//
-    void V2718Pulser::SetSquare( uint32_t freq, uint8_t duty )
+    bool V2718Pulser::SetSquare( uint32_t freq, uint8_t duty )
     {
-        struct { uint32_t expo; uint32_t num; CVTimeUnits unit; } ss[4] = { { 1000000000, 25, cvUnit25ns },
-                                                                            { 10000000,   16, cvUnit1600ns },
-                                                                            { 100000,     41, cvUnit410us },
-                                                                            { 1000,      104, cvUnit104ms } };
-        uint32_t period = 0;
-        for( int i = 0; i < 4; i++ )
+        struct { double expo; double num; CVTimeUnits unit; } ss[4] = { { 1000000000., 25., cvUnit25ns },
+                                                                        { 10000000.,   16., cvUnit1600ns },
+                                                                        { 100000.,     41., cvUnit410us },
+                                                                        { 1000.,      104., cvUnit104ms } };
+
+        constexpr uint32_t MAX_N = 0xff;
+        constexpr uint32_t MIN_N = 0x02;
+        constexpr uint32_t MIN_D = 0x01;
+
+        if( freq == 0 )
         {
-            period = ss[i].expo / ss[i].num / freq;
-            if( period && (period < 256) )
+            return false;
+        }
+
+        double minError;
+        for( int i = 0; i < 4; ++i )
+        {
+            uint32_t n = std::max( MIN_N, std::min( MAX_N, (uint32_t)std::round( ss[i].expo / ss[i].num / freq ) ) );
+
+            double error = std::fabs( ss[i].expo / ss[i].num / n - (double)freq );
+
+            if( i == 0 )
             {
+                minError = error;
+
+                fPeriod = n;
+                fWidth = std::max( MIN_D, std::min( n - 1, (uint32_t)std::round( duty * n / 100 ) ) );
                 fTimeUnit = ss[i].unit;
-                break;
+            }
+            else if( error < minError )
+            {
+                minError = error;
+
+                fPeriod = n;
+                fWidth = std::max( MIN_D, std::min( n - 1, (uint32_t)std::round( duty * n / 100 ) ) );
+                fTimeUnit = ss[i].unit;
             }
         }
 
-        if( period )//only if  0 < period < 256; 
+        return true;
+    }
+
+    double V2718Pulser::GetFrequencyReal() const
+    {
+        struct { double expo; double num; CVTimeUnits unit; } ss[4] = { { 1000000000., 25., cvUnit25ns },
+                                                                        { 10000000.,   16., cvUnit1600ns },
+                                                                        { 100000.,     41., cvUnit410us },
+                                                                        { 1000.,      104., cvUnit104ms } };
+
+        double freq = 0.0;
+        for( int i = 0; i < 4; ++i )
         {
-            fPeriod = period;
-            duty = ((duty > 0) ? ((duty < 100) ? duty : 99) : 1);
-            uint32_t width = period * duty / 100;// < 256
-            fWidth = (width ? width : 1);
+            if( fTimeUnit == ss[i].unit )
+            {
+                return ss[i].expo / ss[i].num / (double)fPeriod;
+                
+            }
         }
-        else
-        {
-            PrintMessage( Message_t::WARNING, "This frequency is not supported by the V2718's pulser" );
-        }
+
+        return freq;
     }
 
     void V2718Pulser::GetSquare( uint32_t &freq, uint8_t &duty )
