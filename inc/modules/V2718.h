@@ -46,8 +46,10 @@ namespace vmeplus
             unsigned char       GetPeriod() const                 { return fPeriod; }
             void                SetWidth( unsigned char width )   { fWidth = width; }
             unsigned char       GetWidth() const                  { return fWidth; }
-            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }
-            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }
+            double              GetFrequencyReal() const;
+
+            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }  
+            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }  
             void                SetNPulses( unsigned char n )     { fNPulses = n; }
             unsigned char       GetNPulses() const                { return fNPulses; }
             void                SetStartSource( CVIOSources src ) { fStartSource = src; }
@@ -55,7 +57,7 @@ namespace vmeplus
             void                SetStopSource( CVIOSources src )  { fStopSource = src; }
             CVIOSources         GetStopSource()                   { return fStopSource; }
 
-            void                SetSquare( uint32_t freq, uint8_t duty = 50 );
+            bool                SetSquare( uint32_t freq, uint8_t duty = 50 );
             void                GetSquare( uint32_t &freq, uint8_t &duty );
 
         public :
