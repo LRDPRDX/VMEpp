@@ -15,6 +15,7 @@ int main()
 
     try
     {
+        unsigned fails = 0;
         std::ofstream file( "./data.dat" );
         for( uint32_t freq = 1; freq < 10000000; ++freq )
         {
@@ -24,7 +25,14 @@ int main()
                 double error = ((double)freq - pulser.GetFrequencyReal()) / (double)freq;
                 file << freq << "\t" << error << "\n";
             }
+            else
+            {
+                std::cout << freq << "\n";
+                fails++;
+            }
         }
+
+        std::cout << "Fails : " << fails << "\n";
 
         file.close();
     }

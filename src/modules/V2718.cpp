@@ -14,32 +14,79 @@ namespace vmeplus
     bool V2718Pulser::SetSquare( uint32_t freq, uint8_t duty )
     {
         struct { double expo; double num; CVTimeUnits unit; } ss[4] = { { 1000000000., 25., cvUnit25ns },
-                                                                            { 10000000.,   16., cvUnit1600ns },
-                                                                            { 100000.,     41., cvUnit410us },
-                                                                            { 1000.,      104., cvUnit104ms } };
+                                                                        { 10000000.,   16., cvUnit1600ns },
+                                                                        { 100000.,     41., cvUnit410us },
+                                                                        { 1000.,      104., cvUnit104ms } };
+
+        const uint32_t MAX_PERIOD = 0xff;
+        const uint32_t MIN_PERIOD = 0x02;
+
+        struct { uint32_t n; int u; } sPlus, sMinus;
+
+        uint32_t n0 = 0;
+
         if( freq > 0 )
         {
-            uint32_t period = 0;
-
             for( int i = 0; i < 4; ++i )
             {
-                period = std::round(ss[i].expo / ss[i].num / freq);
-                if( (period > 1) && (period < 256) )
+                n0 = std::floor( ss[i].expo / ss[i].num / freq );
+
+                if( (n0 >= MIN_PERIOD) && (n0 < MAX_PERIOD) )
                 {
-                    fTimeUnit = ss[i].unit;
+                    sMinus = { n0,     i };
+                    sPlus  = { n0 + 1, i };
+                    break;
+                }
+                else if( n0 == 1 )
+                {
+                    if( i > 0 )
+                    {
+                        sMinus = { MAX_PERIOD, i - 1 }; // use previous range 
+                        sPlus  = { n0 + 1,     i     }; // use current range, but increment period by 1
+                    }
+                    else
+                    {
+                        sPlus = sMinus = { n0 + 1, i };
+                    }
+                    break;
+                }
+                else if( n0 == MAX_PERIOD )
+                {
+                    if( i < 3 )
+                    {
+                        sMinus = { n0,         i     }; 
+                        sPlus  = { MIN_PERIOD, i + 1 }; // use next range
+                    }
+                    else
+                    {
+                        sPlus = sMinus = { n0, i };
+                    }
                     break;
                 }
             }
 
-            if( period > 0 )
+            if( n0 != 0 )
             {
+                double errorPlus    = std::fabs( freq - ss[sPlus.u].expo / ss[sPlus.u].num / sPlus.n );
+                double errorMinus   = std::fabs( freq - ss[sMinus.u].expo / ss[sMinus.u].num / sMinus.n );
+                if( errorPlus < errorMinus )
+                {
+                    n0 = sPlus.n;
+                    fTimeUnit = ss[sPlus.u].unit;
+                }
+                else
+                {
+                    n0 = sMinus.n;
+                    fTimeUnit = ss[sMinus.u].unit;
+                }
+
                 duty = ((duty > 0) ? ((duty < 100) ? duty : 99) : 1);
-                uint32_t width = period * duty / 100;// < 256
+                uint32_t width = n0 * duty / 100;// < MAX_PERIOD
                 width = (width > 0) ? width : 1;
 
-                if( width < period )
+                if( width < n0 )
                 {
-                    fPeriod = period;
+                    fPeriod = n0;
                     fWidth = width; 
 
                     return true;
