@@ -57,7 +57,7 @@ class Controller : public QMainWindow
         QSpinBox  *fScalLimitSpin;
         QComboBox *fScalHitCombo, *fScalGateCombo, *fScalResetCombo;
         QCheckBox *fScalAutoCheck;
-        QPushButton *fScalStartButton, *fScalGateButton, *fScalResetButton;
+        QPushButton *fScalGateButton, *fScalStopButton, *fScalResetButton;
 
         /****** Constructive methods ******/
     private :
@@ -79,7 +79,6 @@ class Controller : public QMainWindow
         void OpenDeviceDialog();
         void Program();
         void PulserSlot();
-        void ScalerSlot();
 
     public slots :
         void UpdateDisplay();
@@ -89,6 +88,9 @@ class Controller : public QMainWindow
         void LoadConfig();
         void StartPulser( CVPulserSelect p );
         void StopPulser( CVPulserSelect p );
+        void StartScaler();
+        void StopScaler();
+        void ResetScaler();
 
     signals :
         void Connected( bool );

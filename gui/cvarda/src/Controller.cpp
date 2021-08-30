@@ -307,18 +307,18 @@ void Controller::CreatePulserTab()
     fScalGateButton = new QPushButton( "GATE" );
         fScalGateButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalGateButton, &QPushButton::setEnabled );
-        connect( fScalGateButton, &QPushButton::clicked, this, &Controller::ScalerSlot );
-    fScalStartButton = new QPushButton( "START" );
-        fScalStartButton->setStyleSheet( style::button::good );
-        connect( this, &Controller::Connected, fScalStartButton, &QPushButton::setEnabled );
-        connect( fScalStartButton, &QPushButton::clicked, this, &Controller::ScalerSlot );
+        connect( fScalGateButton, &QPushButton::clicked, this, &Controller::StartScaler );
+    fScalStopButton = new QPushButton( "STOP" );
+        fScalStopButton->setStyleSheet( style::button::bad );
+        connect( this, &Controller::Connected, fScalStopButton, &QPushButton::setEnabled );
+        connect( fScalStopButton, &QPushButton::clicked, this, &Controller::StopScaler );
     fScalResetButton = new QPushButton( "RESET" );
         fScalResetButton->setStyleSheet( style::button::neutral );
         connect( this, &Controller::Connected, fScalResetButton, &QPushButton::setEnabled );
-        connect( fScalResetButton, &QPushButton::clicked, this, &Controller::ScalerSlot );
+        connect( fScalResetButton, &QPushButton::clicked, this, &Controller::ResetScaler );
 
     buttonLayout->addWidget( fScalGateButton );
-    buttonLayout->addWidget( fScalStartButton );
+    buttonLayout->addWidget( fScalStopButton );
     buttonLayout->addWidget( fScalResetButton );
     buttonFrame->setLayout( buttonLayout );
 
@@ -439,20 +439,39 @@ void Controller::StopPulser( CVPulserSelect p )
     }
 }
 
-void Controller::ScalerSlot()
+void Controller::StartScaler()
 {
-    QObject* obj = QObject::sender();
-    if( obj == fScalGateButton )
+    try
     {
-        qInfo() << "Gate" << "\n";
+        fController.GetScaler().EnableGate( true );
     }
-    else if( obj == fScalResetButton )
+    catch( const VException& e )
     {
-        qInfo() << "Reset" << "\n";
+        HandleError( e );
     }
-    else if( obj == fScalStartButton )
+}
+
+void Controller::StopScaler()
+{
+    try
     {
-        qInfo() << "Start" << "\n";
+        fController.GetScaler().EnableGate( false );
+    }
+    catch( const VException& e )
+    {
+        HandleError( e );
+    }
+}
+
+void Controller::ResetScaler()
+{
+    try
+    {
+        fController.GetScaler().Reset();
+    }
+    catch( const VException& e )
+    {
+        HandleError( e );
     }
 }
 
