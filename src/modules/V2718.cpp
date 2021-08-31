@@ -389,6 +389,16 @@ namespace vmeplus
                                cfg.OUTPUTS.at( i ).POLARITY,
                                cfg.OUTPUTS.at( i ).LED_POLARITY );
         }
+        // Scaler
+        // NOTE: It is important to write the config
+        // for the Scaler first since it overwrites
+        // the purpose of the signals on the inputs
+        fScaler.SetGateSource( cfg.SCALER.GATE_SOURCE );
+        fScaler.SetStopSource( cfg.SCALER.STOP_SOURCE );
+        fScaler.SetHitSource( cfg.SCALER.HIT_SOURCE );
+        fScaler.SetLimit( cfg.SCALER.LIMIT );
+        fScaler.SetAutoReset( cfg.SCALER.AUTO_RESET );
+        fScaler.Write();
 
         // Pulsers
         fPulserA.SetSquare( cfg.PULSER_A.FREQUENCY, cfg.PULSER_A.DUTY );
@@ -402,14 +412,6 @@ namespace vmeplus
         fPulserB.SetStartSource( cfg.PULSER_B.START_SOURCE );
         fPulserB.SetStopSource( cfg.PULSER_B.STOP_SOURCE );
         fPulserB.Write();
-
-        // Scaler
-        fScaler.SetGateSource( cfg.SCALER.GATE_SOURCE );
-        fScaler.SetStopSource( cfg.SCALER.STOP_SOURCE );
-        fScaler.SetHitSource( cfg.SCALER.HIT_SOURCE );
-        fScaler.SetLimit( cfg.SCALER.LIMIT );
-        fScaler.SetAutoReset( cfg.SCALER.AUTO_RESET );
-        fScaler.Write();
     }
     //*********************//
     //****** V2718 - ******//
