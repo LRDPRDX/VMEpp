@@ -1,6 +1,7 @@
 #pragma once
 
 #include "modules/V895.h"
+
 #include "DeviceWindow.h"
 
 
@@ -12,6 +13,7 @@ class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
 
+using namespace vmeplus;
 
 class V895Window : public DeviceWindow
 {
@@ -34,11 +36,15 @@ class V895Window : public DeviceWindow
         void CreateCentralWidget();
 
     public slots :
-        void SendTest();  
+        void SendTest();
+
+        UConfig<V895> CollectConfig();
+        void SpreadConfig( const UConfig<V895>& cfg );
+
+        void Program() override;
+        void ReadConfig() override;
 
     public :
-        void Program() override;
-
-        V895Window( uint32_t address, Controller *parent );
+        V895Window( uint32_t address, V2718Window *parent );
         ~V895Window();
 };

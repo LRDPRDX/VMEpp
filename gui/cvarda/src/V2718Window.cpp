@@ -23,18 +23,16 @@
 #include <QTabWidget>
 #include "qnamespace.h"
 
-#include "Controller.h"
+#include "V2718Window.h"
 #include "UConfigurable.h"
 #include "Dialogs.h"
 #include "Style.h"
-//#include "qledindicator.h"
 #include "QLedIndicator.h"
 
 #include "VException.h"
 
-using namespace vmeplus;
 
-Controller::Controller( QWidget *parent ) :
+V2718Window::V2718Window( QWidget *parent ) :
     QMainWindow( parent )
 {
     CreateActions();
@@ -46,16 +44,16 @@ Controller::Controller( QWidget *parent ) :
     statusBar()->showMessage( "Ready..." );
 }
 
-Controller::~Controller() {}
+V2718Window::~V2718Window() {}
 
 /****** Constructive methods ******/
-void Controller::CreateActions()
+void V2718Window::CreateActions()
 {
     // Main actions
     fConnectAction = new QAction( "&Connect", this );
-        connect( this, &Controller::Connected, fConnectAction, &QAction::setDisabled );
+        connect( this, &V2718Window::Connected, fConnectAction, &QAction::setDisabled );
     fDisconnectAction = new QAction( "&Disconnect", this );
-        connect( this, &Controller::Connected, fDisconnectAction, &QAction::setEnabled );
+        connect( this, &V2718Window::Connected, fDisconnectAction, &QAction::setEnabled );
     fExitAction = new QAction( "&Exit", this );
 
     QMenu *fileMenu = menuBar()->addMenu( "&File" );
@@ -63,9 +61,9 @@ void Controller::CreateActions()
         fileMenu->addAction( fDisconnectAction );
         fileMenu->addSeparator();
         fileMenu->addAction( fExitAction );
-    connect( fConnectAction, &QAction::triggered, this, &Controller::OpenConnectDialog );
-    connect( fDisconnectAction, &QAction::triggered, this, &Controller::Disconnect );
-    connect( fExitAction, &QAction::triggered, this, &Controller::close );
+    connect( fConnectAction, &QAction::triggered, this, &V2718Window::OpenConnectDialog );
+    connect( fDisconnectAction, &QAction::triggered, this, &V2718Window::Disconnect );
+    connect( fExitAction, &QAction::triggered, this, &V2718Window::close );
 
     // View actions
     fViewStatusBarAction = new QAction( "&View statusbar" );
@@ -74,27 +72,27 @@ void Controller::CreateActions()
 
     fViewMenu = menuBar()->addMenu( "&View" );
         fViewMenu->addAction( fViewStatusBarAction );
-    connect( fViewStatusBarAction, &QAction::triggered, this, &Controller::ToggleStatusBar );
+    connect( fViewStatusBarAction, &QAction::triggered, this, &V2718Window::ToggleStatusBar );
 
     // Config actions
-    fSaveConfigAction = new QAction( "Save config" );
-    fLoadConfigAction = new QAction( "Load config" );
+    fSaveConfigAction = new QAction( "Save" );
+    fLoadConfigAction = new QAction( "Load" );
 
     fConfigMenu = menuBar()->addMenu( "&Config" );
         fConfigMenu->addAction( fSaveConfigAction );
         fConfigMenu->addAction( fLoadConfigAction );
-    connect( fSaveConfigAction, &QAction::triggered, this, &Controller::SaveConfig );
-    connect( fLoadConfigAction, &QAction::triggered, this, &Controller::LoadConfig );
+    connect( fSaveConfigAction, &QAction::triggered, this, &V2718Window::SaveConfig );
+    connect( fLoadConfigAction, &QAction::triggered, this, &V2718Window::LoadConfig );
 
     // Add actions
     fAddDeviceAction = new QAction( "Device" );
-        //connect( this, &Controller::Connected, fAddDeviceAction, &QAction::setEnabled );
+        //connect( this, &V2718Window::Connected, fAddDeviceAction, &QAction::setEnabled );
     QMenu *addMenu = menuBar()->addMenu( "&Add" );
         addMenu->addAction( fAddDeviceAction );
-    connect( fAddDeviceAction, &QAction::triggered, this, &Controller::OpenDeviceDialog );
+    connect( fAddDeviceAction, &QAction::triggered, this, &V2718Window::OpenDeviceDialog );
 }
 
-void Controller::CreateCentralWidget()
+void V2718Window::CreateCentralWidget()
 {
     QWidget *centralWidget = new QWidget();
     QVBoxLayout *vLayout = new QVBoxLayout();
@@ -104,19 +102,33 @@ void Controller::CreateCentralWidget()
     CreateIOTab();
     CreatePulserTab();
 
+
     fProgramButton = new QPushButton( "PROGRAM" );
-        fProgramButton->setStyleSheet( style::button::neutral );
-        connect( this, &Controller::Connected, fProgramButton, &QPushButton::setEnabled );
-        connect( fProgramButton, &QPushButton::clicked, this, &Controller::Program );
+        fProgramButton->setStyleSheet( style::button::good );
+        connect( this, &V2718Window::Connected, fProgramButton, &QPushButton::setEnabled );
+        connect( fProgramButton, &QPushButton::clicked, this, &V2718Window::Program );
+
+    fReadButton = new QPushButton( "READ" );
+        fReadButton->setStyleSheet( style::button::good );
+        connect( this, &V2718Window::Connected, fReadButton, &QPushButton::setEnabled );
+        connect( fReadButton, &QPushButton::clicked, this, &V2718Window::ReadConfig );
+
+    QFrame *buttonFrame = new QFrame(); 
+        buttonFrame->setFrameShape( QFrame::StyledPanel );
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+
+    buttonLayout->addWidget( fProgramButton );
+    buttonLayout->addWidget( fReadButton );
+    buttonFrame->setLayout( buttonLayout );
 
     vLayout->addWidget( fMainTab );
-    vLayout->addWidget( fProgramButton );
+    vLayout->addWidget( buttonFrame );
     centralWidget->setLayout( vLayout );
 
     setCentralWidget( centralWidget );
 }
 
-void Controller::CreateDockWidget()
+void V2718Window::CreateDockWidget()
 {
     QDockWidget *dock = new QDockWidget( "Display", this );
     fDisplay = new Display( this, dock );
@@ -126,7 +138,7 @@ void Controller::CreateDockWidget()
 }
 
 
-void Controller::CreateIOTab()
+void V2718Window::CreateIOTab()
 {
     QWidget* tab = new QWidget();
     fMainTab->addTab( tab, tr("Inputs && Outputs") );
@@ -216,7 +228,7 @@ void Controller::CreateIOTab()
 }
 
 
-void Controller::CreatePulserTab()
+void V2718Window::CreatePulserTab()
 {
     QWidget* tab = new QWidget();
     fMainTab->addTab( tab, tr("Pulser && Scaler") );
@@ -263,12 +275,12 @@ void Controller::CreatePulserTab()
 
         fPulStartButton[i] = new QPushButton( "START" ); 
             fPulStartButton[i]->setStyleSheet( style::button::good );
-            connect( this, &Controller::Connected, fPulStartButton[i], &QPushButton::setEnabled );
-            connect( fPulStartButton[i], &QPushButton::clicked, this, &Controller::PulserSlot );
+            connect( this, &V2718Window::Connected, fPulStartButton[i], &QPushButton::setEnabled );
+            connect( fPulStartButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
         fPulStopButton[i] = new QPushButton( "STOP" );
             fPulStopButton[i]->setStyleSheet( style::button::bad );
-            connect( this, &Controller::Connected, fPulStopButton[i], &QPushButton::setEnabled );
-            connect( fPulStopButton[i], &QPushButton::clicked, this, &Controller::PulserSlot );
+            connect( this, &V2718Window::Connected, fPulStopButton[i], &QPushButton::setEnabled );
+            connect( fPulStopButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
 
         buttonLayout->addWidget( fPulStartButton[i] );
         buttonLayout->addWidget( fPulStopButton[i] );
@@ -305,17 +317,17 @@ void Controller::CreatePulserTab()
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
     fScalGateButton = new QPushButton( "GATE" );
-        fScalGateButton->setStyleSheet( style::button::neutral );
-        connect( this, &Controller::Connected, fScalGateButton, &QPushButton::setEnabled );
-        connect( fScalGateButton, &QPushButton::clicked, this, &Controller::StartScaler );
+        fScalGateButton->setStyleSheet( style::button::good );
+        connect( this, &V2718Window::Connected, fScalGateButton, &QPushButton::setEnabled );
+        connect( fScalGateButton, &QPushButton::clicked, this, &V2718Window::StartScaler );
     fScalStopButton = new QPushButton( "STOP" );
         fScalStopButton->setStyleSheet( style::button::bad );
-        connect( this, &Controller::Connected, fScalStopButton, &QPushButton::setEnabled );
-        connect( fScalStopButton, &QPushButton::clicked, this, &Controller::StopScaler );
+        connect( this, &V2718Window::Connected, fScalStopButton, &QPushButton::setEnabled );
+        connect( fScalStopButton, &QPushButton::clicked, this, &V2718Window::StopScaler );
     fScalResetButton = new QPushButton( "RESET" );
-        fScalResetButton->setStyleSheet( style::button::neutral );
-        connect( this, &Controller::Connected, fScalResetButton, &QPushButton::setEnabled );
-        connect( fScalResetButton, &QPushButton::clicked, this, &Controller::ResetScaler );
+        fScalResetButton->setStyleSheet( style::button::good );
+        connect( this, &V2718Window::Connected, fScalResetButton, &QPushButton::setEnabled );
+        connect( fScalResetButton, &QPushButton::clicked, this, &V2718Window::ResetScaler );
 
     buttonLayout->addWidget( fScalGateButton );
     buttonLayout->addWidget( fScalStopButton );
@@ -357,47 +369,62 @@ void Controller::CreatePulserTab()
 //*******************
 //****** SLOTS ******
 //*******************
-void Controller::OpenConnectDialog()
+void V2718Window::OpenConnectDialog()
 {
     Connection *cDialog = new Connection( this );
         cDialog->resize( 300, 150 );
     cDialog->show();
 }
 
-void Controller::OpenDeviceDialog()
+void V2718Window::OpenDeviceDialog()
 {
     DeviceDialog *devDialog = new DeviceDialog( this );
     devDialog->show();
 }
 
-void Controller::UpdateDisplay()
+void V2718Window::UpdateDisplay()
 {
     try
     {
         CVDisplay displayInfo = fController.ReadDisplay();
         fDisplay->Update( displayInfo );
     }
-    catch( VException &e )
+    catch( const VException &e )
     {
         HandleError( e );
     }
 }
 
-void Controller::Program()
+void V2718Window::Program()
 {
     try
     {
         fController.WriteConfig( CollectConfig() );
         Programmed( true );
     }
-    catch( VException &e )
+    catch( const VException &e )
     {
         Programmed( false );
         HandleError( e );
     }
 }
 
-void Controller::PulserSlot()
+void V2718Window::ReadConfig()
+{
+    UConfig<V2718> cfg;
+
+    try
+    {
+        fController.ReadConfig( cfg );
+        SpreadConfig( cfg );
+    }
+    catch( const VException& e )
+    {
+        HandleError( e );
+    }
+}
+
+void V2718Window::PulserSlot()
 {
     QObject* obj = QObject::sender();
     for( uint8_t i = 0; i < N_PULSERS; ++i )
@@ -415,7 +442,7 @@ void Controller::PulserSlot()
     }
 }
 
-void Controller::StartPulser( CVPulserSelect p )
+void V2718Window::StartPulser( CVPulserSelect p )
 {
     try
     {
@@ -427,7 +454,7 @@ void Controller::StartPulser( CVPulserSelect p )
     }
 }
 
-void Controller::StopPulser( CVPulserSelect p )
+void V2718Window::StopPulser( CVPulserSelect p )
 {
     try
     {
@@ -439,7 +466,7 @@ void Controller::StopPulser( CVPulserSelect p )
     }
 }
 
-void Controller::StartScaler()
+void V2718Window::StartScaler()
 {
     try
     {
@@ -451,7 +478,7 @@ void Controller::StartScaler()
     }
 }
 
-void Controller::StopScaler()
+void V2718Window::StopScaler()
 {
     try
     {
@@ -463,7 +490,7 @@ void Controller::StopScaler()
     }
 }
 
-void Controller::ResetScaler()
+void V2718Window::ResetScaler()
 {
     try
     {
@@ -475,7 +502,7 @@ void Controller::ResetScaler()
     }
 }
 
-UConfig<V2718> Controller::CollectConfig()
+UConfig<V2718> V2718Window::CollectConfig()
 {
     UConfig<V2718> cfg;
 
@@ -514,7 +541,7 @@ UConfig<V2718> Controller::CollectConfig()
     return cfg;
 }
 
-void Controller::SpreadConfig( const UConfig<V2718>& cfg )
+void V2718Window::SpreadConfig( const UConfig<V2718>& cfg )
 {
     auto changeCombo = []( QComboBox* c, int data ) {
         int index = c->findData( data  );
@@ -560,7 +587,8 @@ void Controller::SpreadConfig( const UConfig<V2718>& cfg )
         fScalAutoCheck->setChecked( cfg.SCALER.AUTO_RESET );
 }
 
-void Controller::SaveConfig()
+
+void V2718Window::SaveConfig()
 {
     QString fileName = QFileDialog::getSaveFileName( this, "Save Config file", "./", "Text files (*.json)" );
 
@@ -586,7 +614,7 @@ void Controller::SaveConfig()
     //}
 }
 
-void Controller::LoadConfig()
+void V2718Window::LoadConfig()
 {
     QString fileName = QFileDialog::getOpenFileName( this, "Load Config file", "./", "Text files (*.json)" );
 
@@ -611,7 +639,7 @@ void Controller::LoadConfig()
     //}
 }
 
-void Controller::Connect( short link, short conet )
+void V2718Window::Connect( short link, short conet )
 {
     //Exception may be thrown here
     fController.Open( link, conet );
@@ -622,7 +650,7 @@ void Controller::Connect( short link, short conet )
     emit Connected( true );
 }
 
-void Controller::Disconnect()
+void V2718Window::Disconnect()
 {
     try
     {
@@ -639,7 +667,7 @@ void Controller::Disconnect()
     emit Connected( false );
 }
 
-void Controller::closeEvent( QCloseEvent *event )
+void V2718Window::closeEvent( QCloseEvent *event )
 {
     const QMessageBox::StandardButton ret =
         QMessageBox::warning( this,
@@ -657,7 +685,7 @@ void Controller::closeEvent( QCloseEvent *event )
     }
 }
 
-void Controller::ToggleStatusBar()
+void V2718Window::ToggleStatusBar()
 {
     if( fViewStatusBarAction->isChecked() )
     {
@@ -669,7 +697,7 @@ void Controller::ToggleStatusBar()
     }
 }
 
-void Controller::HandleError( const VException& e )
+void V2718Window::HandleError( const VException& e )
 {
     ErrorMessageBox* msg = new ErrorMessageBox( e, this );
     msg->show();
@@ -679,7 +707,7 @@ void Controller::HandleError( const VException& e )
 /*********************/
 /****** DISPLAY ******/
 /*********************/
-Display::Display( Controller *controller, QWidget *parent ) :
+Display::Display( V2718Window *controller, QWidget *parent ) :
     QWidget( parent ),
     fController( controller )
 {
@@ -768,10 +796,17 @@ void Display::CreateDisplay()
     layout->addWidget( lowerFrame );
 
     fUpdateButton = new QPushButton( "UPDATE" );
-        fUpdateButton->setStyleSheet( style::button::neutral );
-    connect( fUpdateButton, &QPushButton::clicked, fController, &Controller::UpdateDisplay );
-    connect( fController, &Controller::Connected, fUpdateButton, &QPushButton::setEnabled );
-    layout->addWidget( fUpdateButton );
+        fUpdateButton->setStyleSheet( style::button::good );
+    connect( fUpdateButton, &QPushButton::clicked, fController, &V2718Window::UpdateDisplay );
+    connect( fController, &V2718Window::Connected, fUpdateButton, &QPushButton::setEnabled );
+
+    QFrame *buttonFrame = new QFrame(); 
+        buttonFrame->setFrameShape( QFrame::StyledPanel );
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+
+    buttonLayout->addWidget( fUpdateButton );
+    buttonFrame->setLayout( buttonLayout );
+    layout->addWidget( buttonFrame );
 
     setLayout( layout );
 }

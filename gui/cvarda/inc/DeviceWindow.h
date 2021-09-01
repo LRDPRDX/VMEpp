@@ -5,9 +5,10 @@
 #include "VSlave.h"
 
 class QPushButton;
+class QFrame;
 class QAction;
 
-class Controller;
+class V2718Window;
 
 
 class DeviceWindow : public QMainWindow
@@ -15,7 +16,7 @@ class DeviceWindow : public QMainWindow
     Q_OBJECT
 
     private :
-        Controller *fParent;
+        V2718Window *fParent;
 
     protected :
         vmeplus::VSlave *fDevice;
@@ -26,19 +27,22 @@ class DeviceWindow : public QMainWindow
 
     protected :
         QAction         *fConnectAction, *fDisconnectAction, *fExitAction;
-        QPushButton     *fProgramButton;
+        QPushButton     *fProgramButton, *fReadButton;
+        QFrame          *fBottomFrame;
 
     public slots :
         void Connect();
         void Disconnect();
         void OnControllerDisconnect( bool );
         virtual void Program() = 0;
+        virtual void ReadConfig() = 0;
+
 
     signals :
         void Connected( bool );
         void Programmed( bool );
 
     public :
-        DeviceWindow( Controller *parent );
+        DeviceWindow( V2718Window *parent );
         virtual ~DeviceWindow();
 };

@@ -3,7 +3,7 @@
 #include <QDialog>
 #include <QMessageBox>
 
-#include "Controller.h"
+#include "V2718Window.h"
 
 class QPushButton;
 class QComboBox;
@@ -21,14 +21,14 @@ class Connection : public QDialog
     Q_OBJECT
 
     private :
-        Controller  *fParent;
+        V2718Window  *fParent;
 
         QPushButton *fConnectButton, *fCancelButton;
         QComboBox   *fTypeCombo;
         QSpinBox    *fLinkSpin, *fConetSpin;
 
     public :
-        Connection( Controller *parent );
+        Connection( V2718Window *parent );
 
     private slots :
         void Connect();
@@ -43,7 +43,7 @@ class DeviceDialog : public QDialog
         enum Device { V895, V6533N };
 
     private :
-        Controller  *fParent;
+        V2718Window  *fParent;
 
         QComboBox   *fDeviceCombo;
         QSpinBox    *fAddressSpin;
@@ -51,7 +51,7 @@ class DeviceDialog : public QDialog
         QTextEdit   *fInfoText;
 
     public :
-        DeviceDialog( Controller *parent );
+        DeviceDialog( V2718Window *parent );
 
     private slots :
         void Cancel();

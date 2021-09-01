@@ -18,17 +18,19 @@
 #include <QTabWidget>
 #include "qnamespace.h"
 
-#include "Controller.h"
+#include "V2718Window.h"
 #include "V895Window.h"
 #include "Style.h"
 
 #include "VException.h"
 #include "modules/V895.h"
 
-V895Window::V895Window( uint32_t address, Controller *parent ) :
+using namespace vmeplus;
+
+V895Window::V895Window( uint32_t address, V2718Window *parent ) :
     DeviceWindow( parent )
 {
-    fDevice = new vmeplus::V895( address );
+    fDevice = new V895( address );
 
     setWindowTitle( "V895" );
     CreateActions();
@@ -45,6 +47,7 @@ V895Window::~V895Window()
 
 void V895Window::CreateActions()
 {
+
 }
 
 void V895Window::CreateCentralWidget()
@@ -63,9 +66,10 @@ void V895Window::CreateCentralWidget()
         for( uint8_t i = 0; i < N_CH_IN_GROUP; ++i )
         {
             uint8_t ch = i + N_CH_IN_GROUP * nG;
-            QLabel* thrLabel = new QLabel( tr("Threshold :") );
+            QLabel* thrLabel = new QLabel( QString("Threshold %1 :").arg( ch ) );
             fThrSpin[ch] = new QSpinBox();
                 fThrSpin[ch]->setRange( 0, 0xFF );
+                fThrSpin[ch]->setValue( 0xFF );
 
             fEnableCheck[ch] = new QCheckBox( "Enable" );
 
@@ -106,7 +110,7 @@ void V895Window::CreateCentralWidget()
     commonGroup->setLayout( commLayout );
     vLayout->addWidget( commonGroup );
 
-    vLayout->addWidget( fProgramButton );
+    vLayout->addWidget( fBottomFrame );
 
     centralWidget->setLayout( vLayout );
 
@@ -117,9 +121,9 @@ void V895Window::SendTest()
 {
     try
     {
-        static_cast<vmeplus::V895*>(fDevice)->SendTest();
+        static_cast<V895*>(fDevice)->SendTest();
     }
-    catch( vmeplus::VException &e )
+    catch( const VException &e )
     {
         qInfo() << "Error";
     }
@@ -127,6 +131,56 @@ void V895Window::SendTest()
 
 void V895Window::Program()
 {
-    qInfo() << "Programming V895...\n";
-    emit Programmed( true );
+    try
+    {
+        static_cast<V895*>(fDevice)->WriteConfig( CollectConfig() );
+        emit Programmed( true );
+    }
+    catch( const VException& e )
+    {
+        emit Programmed( false );
+    }
+}
+
+void V895Window::ReadConfig()
+{
+    UConfig<V895> cfg;
+
+    try
+    {
+        static_cast<V895*>(fDevice)->ReadConfig( cfg );
+        SpreadConfig( cfg );
+    }
+    catch( const VException& e )
+    {
+    }
+}
+
+void V895Window::SpreadConfig( const UConfig<V895>& cfg )
+{
+    for( uint8_t i = 0; i < N_CH; ++i )
+    {
+        fThrSpin[i]->setValue( cfg.THRESHOLDS.at( i ) );
+        fEnableCheck[i]->setChecked( cfg.MASK & (1 << i) );
+    }
+    fWidthSpin[0]->setValue( cfg.WIDTH_L );
+    fWidthSpin[1]->setValue( cfg.WIDTH_L );
+    fMajLevelSpin->setValue( cfg.MAJORITY );
+}
+
+UConfig<V895> V895Window::CollectConfig()
+{
+    UConfig<V895> cfg;
+
+    for( uint8_t i = 0; i < N_CH; ++i )
+    {
+        cfg.THRESHOLDS.at( i ) = fThrSpin[i]->value();
+        if( fEnableCheck[i]->isChecked() ) { cfg.MASK |= (1 << i); }
+        else                               { cfg.MASK &= ~(1 << i);}
+    }
+    cfg.WIDTH_L = fWidthSpin[0]->value();
+    cfg.WIDTH_H = fWidthSpin[1]->value();
+    cfg.MAJORITY = fMajLevelSpin->value();
+        
+    return cfg;
 }

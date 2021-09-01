@@ -1,13 +1,13 @@
 #include <QApplication>
 
-#include "Controller.h"
+#include "V2718Window.h"
 
 int main( int argc, char *argv[] )
 {
 
     QApplication app( argc, argv );
 
-    Controller window;
+    V2718Window window;
 
     window.resize( 350, 250 );
     window.setWindowTitle( "gVME++" );

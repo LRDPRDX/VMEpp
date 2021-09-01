@@ -13,7 +13,7 @@
 #include "V895Window.h"
 #include "V6533NWindow.h"
 
-Connection::Connection( Controller *parent ) :
+Connection::Connection( V2718Window *parent ) :
     QDialog( parent ),
 
     fParent( parent )
@@ -85,7 +85,7 @@ void Connection::Cancel()
 /***************************
  ******* DEVICE DIALOG *****
  ***************************/
-DeviceDialog::DeviceDialog( Controller *parent ) :
+DeviceDialog::DeviceDialog( V2718Window *parent ) :
     QDialog( parent ),
 
     fParent( parent )

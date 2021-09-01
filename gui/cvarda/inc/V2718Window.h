@@ -19,21 +19,24 @@ class QLineEdit;
 
 class Display;
 
+using namespace vmeplus;
+
 Q_DECLARE_METATYPE(CVIOPolarity)   
 Q_DECLARE_METATYPE(CVLEDPolarity)   
 Q_DECLARE_METATYPE(CVIOSources)   
 
-class Controller : public QMainWindow
+
+class V2718Window : public QMainWindow
 {
     Q_OBJECT
 
     public :
-        static constexpr uint8_t N_INS = vmeplus::V2718::GetInNumber();
-        static constexpr uint8_t N_OUTS = vmeplus::V2718::GetOutNumber();
+        static constexpr uint8_t N_INS = V2718::GetInNumber();
+        static constexpr uint8_t N_OUTS = V2718::GetOutNumber();
         static constexpr uint8_t N_PULSERS = 2;
 
     private :
-        vmeplus::V2718 fController;
+        V2718 fController;
 
         Display *fDisplay;
 
@@ -44,7 +47,7 @@ class Controller : public QMainWindow
         QAction *fAddDeviceAction;
 
         QTabWidget *fMainTab;
-        QPushButton *fProgramButton;
+        QPushButton *fProgramButton, *fReadButton;
 
         // Inputs and Outputs tab
         QComboBox *fOutSrcCombo[N_OUTS], *fOutPolCombo[N_OUTS], *fOutLedCombo[N_OUTS];
@@ -78,12 +81,13 @@ class Controller : public QMainWindow
         void OpenConnectDialog();
         void OpenDeviceDialog();
         void Program();
+        void ReadConfig();
         void PulserSlot();
 
     public slots :
         void UpdateDisplay();
-        vmeplus::UConfig<vmeplus::V2718> CollectConfig();
-        void SpreadConfig( const vmeplus::UConfig<vmeplus::V2718>& cfg );
+        UConfig<V2718> CollectConfig();
+        void SpreadConfig( const UConfig<V2718>& cfg );
         void SaveConfig();
         void LoadConfig();
         void StartPulser( CVPulserSelect p );
@@ -97,11 +101,11 @@ class Controller : public QMainWindow
         void Programmed( bool );
 
     public :
-        Controller( QWidget *parent = nullptr );
-        ~Controller();
+        V2718Window( QWidget *parent = nullptr );
+        ~V2718Window();
 
     public :
-        void HandleError( const vmeplus::VException& e );
+        void HandleError( const VException& e );
 
     friend class Connection;
     friend void DeviceWindow::Connect();
@@ -117,7 +121,7 @@ class Display : public QWidget
         static const int N_IRQ  = 7;
 
     protected :
-        Controller  *fController;
+        V2718Window  *fController;
 
         QLineEdit               *fAddressText, *fDataText;
         QLedIndicatorWithLabel  *fAddressModLED[N_AM], *fIRQLED[N_IRQ];
@@ -129,7 +133,7 @@ class Display : public QWidget
         void CreateDisplay();
 
     public :
-        Display( Controller *controller, QWidget *parent = nullptr );
+        Display( V2718Window *controller, QWidget *parent = nullptr );
         ~Display();
 
         void Update( const CVDisplay &display );

@@ -1,4 +1,4 @@
-#include "Controller.h"
+#include "V2718Window.h"
 #include "V6533NWindow.h"
 #include "modules/V6533N.h"
 
@@ -27,7 +27,8 @@
 #include "VException.h"
 #include "qnamespace.h"
 
-V6533NWindow::V6533NWindow( uint32_t address, Controller *parent ) :
+
+V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     DeviceWindow( parent )
 {
     fDevice = new vmeplus::V6533N( address );
@@ -118,7 +119,7 @@ void V6533NWindow::CreateCentralWidget()
         vLayout->addWidget( chGroup );
     }
 
-    vLayout->addWidget( fProgramButton );
+    vLayout->addWidget( fBottomFrame );
 
     centralWidget->setLayout( vLayout );
 
@@ -127,6 +128,65 @@ void V6533NWindow::CreateCentralWidget()
 
 void V6533NWindow::Program()
 {
-    qInfo() << "Programming V895...\n";
-    emit Programmed( true );
+    try
+    {
+        static_cast<V6533N*>( fDevice )->WriteConfig( CollectConfig() );
+        emit Programmed( true );
+    }
+    catch( const VException& e )
+    {
+        emit Programmed( false );
+    }
+}
+
+void V6533NWindow::ReadConfig()
+{
+    UConfig<V6533N> cfg;
+
+    try
+    {
+        static_cast<V6533N*>(fDevice)->ReadConfig( cfg );
+        SpreadConfig( cfg );
+    }
+    catch( const VException& e )
+    {
+    }
+}
+
+void V6533NWindow::SpreadConfig( const UConfig<V6533N>& cfg )
+{
+    auto changeCombo = []( QComboBox* c, int data ) {
+        int index = c->findData( data  );
+        if( index >= 0 )
+        {
+            c->setCurrentIndex( index );
+        }
+    };
+
+    for( uint8_t i = 0; i < N_CH; ++i )
+    {
+        fVoltSpin[i]->setValue( cfg.CHANNELS.at( i ).VOLTAGE );
+        fCurSpin[i]->setValue( cfg.CHANNELS.at( i ).CURRENT );
+        fSWMaxSpin[i]->setValue( cfg.CHANNELS.at( i ).SW_MAX );
+        fUpSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_UP );
+        fDownSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_DOWN );
+        changeCombo( fOffCombo[i], cfg.CHANNELS.at( i ).PW_DOWN );
+    }
+}
+
+UConfig<V6533N> V6533NWindow::CollectConfig()
+{
+    UConfig<V6533N> cfg;
+
+    for( uint8_t i = 0; i < N_CH; ++i )
+    {
+        cfg.CHANNELS.at( i ).VOLTAGE = fVoltSpin[i]->value();    
+        cfg.CHANNELS.at( i ).CURRENT = fCurSpin[i]->value();    
+        cfg.CHANNELS.at( i ).SW_MAX = fSWMaxSpin[i]->value();    
+        cfg.CHANNELS.at( i ).RAMP_UP = fUpSpin[i]->value();    
+        cfg.CHANNELS.at( i ).RAMP_DOWN = fDownSpin[i]->value();    
+        cfg.CHANNELS.at( i ).PW_DOWN = fOffCombo[i]->currentData().value<bool>();  
+    }
+
+    return cfg;
 }

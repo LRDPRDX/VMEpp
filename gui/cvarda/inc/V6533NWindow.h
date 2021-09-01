@@ -12,6 +12,8 @@ class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
 
+using namespace vmeplus;
+
 
 class V6533NWindow : public DeviceWindow
 {
@@ -19,7 +21,7 @@ class V6533NWindow : public DeviceWindow
 
     protected :
         // Auxiliary
-        static constexpr uint8_t N_CH = vmeplus::V6533N::GetChNumber(); // 6 channels
+        static constexpr uint8_t N_CH = V6533N::GetChNumber(); // 6 channels
 
     protected :
         // Widgets
@@ -32,9 +34,14 @@ class V6533NWindow : public DeviceWindow
         void CreateActions();
         void CreateCentralWidget();
 
-    public :
+    public slots :
         void Program() override;
+        void ReadConfig() override;
 
-        V6533NWindow( uint32_t address, Controller *parent );
+        UConfig<V6533N> CollectConfig();
+        void SpreadConfig( const UConfig<V6533N>& cfg );
+
+    public :
+        V6533NWindow( uint32_t address, V2718Window *parent );
         ~V6533NWindow();
 };

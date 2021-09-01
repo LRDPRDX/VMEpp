@@ -5,27 +5,41 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QDebug>
+#include <QFrame>
+#include <QHBoxLayout>
 
 #include <VException.h>
 
 #include "DeviceWindow.h"
-#include "Controller.h"
+#include "V2718Window.h"
 #include "Style.h"
 
 
-DeviceWindow::DeviceWindow( Controller *parent ) :
+DeviceWindow::DeviceWindow( V2718Window *parent ) :
     QMainWindow( parent ),
     fParent( parent ),
     fDevice( nullptr )
 {
     resize( 300, 150 );
 
-    connect( fParent, &Controller::Connected, this, &DeviceWindow::OnControllerDisconnect );
+    connect( fParent, &V2718Window::Connected, this, &DeviceWindow::OnControllerDisconnect );
 
     fProgramButton = new QPushButton( "PROGRAM" );
-        fProgramButton->setStyleSheet( style::button::neutral );
+        fProgramButton->setStyleSheet( style::button::good );
         connect( this, &DeviceWindow::Connected, fProgramButton, &QPushButton::setEnabled );
         connect( fProgramButton, &QPushButton::clicked, this, &DeviceWindow::Program );
+
+    fReadButton = new QPushButton( "READ" );
+        fReadButton->setStyleSheet( style::button::good );
+        connect( this, &DeviceWindow::Connected, fReadButton, &QPushButton::setEnabled );
+        connect( fReadButton, &QPushButton::clicked, this, &DeviceWindow::ReadConfig );
+
+    fBottomFrame = new QFrame(); 
+        fBottomFrame->setFrameShape( QFrame::StyledPanel );
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+        buttonLayout->addWidget( fProgramButton );
+        buttonLayout->addWidget( fReadButton );
+    fBottomFrame->setLayout( buttonLayout );
 
     CreateFileMenu();
 }
