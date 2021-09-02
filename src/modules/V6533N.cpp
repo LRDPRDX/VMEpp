@@ -173,7 +173,7 @@ namespace vmeplus
 
     bool V6533N::ReadPWDown( uint16_t ch )
     {
-        return ReadRegister16( V6533N_PWDOWN(ch % fChNumber) );
+        return not ReadRegister16( V6533N_PWDOWN(ch % fChNumber) );
     }
 
     void V6533N::WritePWDown( uint16_t ch, bool kill )
