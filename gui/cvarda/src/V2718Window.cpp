@@ -103,18 +103,15 @@ void V2718Window::CreateCentralWidget()
     CreatePulserTab();
 
 
-    fProgramButton = new QPushButton( "PROGRAM" );
-        fProgramButton->setStyleSheet( style::button::good );
-        connect( this, &V2718Window::Connected, fProgramButton, &QPushButton::setEnabled );
-        connect( fProgramButton, &QPushButton::clicked, this, &V2718Window::Program );
+    fProgramButton = new SButton( "PROGRAM", SColor_t::VIOLET );
+        connect( this, &V2718Window::Connected, fProgramButton, &SButton::setEnabled );
+        connect( fProgramButton, &SButton::clicked, this, &V2718Window::Program );
 
-    fReadButton = new QPushButton( "READ" );
-        fReadButton->setStyleSheet( style::button::good );
-        connect( this, &V2718Window::Connected, fReadButton, &QPushButton::setEnabled );
-        connect( fReadButton, &QPushButton::clicked, this, &V2718Window::ReadConfig );
+    fReadButton = new SButton( "READ", SColor_t::VIOLET );
+        connect( this, &V2718Window::Connected, fReadButton, &SButton::setEnabled );
+        connect( fReadButton, &SButton::clicked, this, &V2718Window::ReadConfig );
 
-    QFrame *buttonFrame = new QFrame(); 
-        buttonFrame->setFrameShape( QFrame::StyledPanel );
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
     buttonLayout->addWidget( fProgramButton );
@@ -269,18 +266,15 @@ void V2718Window::CreatePulserTab()
             fPulStopCombo[i]->addItem( "SW", cvManualSW );
             fPulStopCombo[i]->addItem( "Input " + QString::number( i ), (i == 0) ? cvInputSrc0 : cvInputSrc1 );
 
-        QFrame *buttonFrame = new QFrame(); 
-            buttonFrame->setFrameShape( QFrame::StyledPanel );
+        SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
         QHBoxLayout *buttonLayout = new QHBoxLayout();
 
-        fPulStartButton[i] = new QPushButton( "START" ); 
-            fPulStartButton[i]->setStyleSheet( style::button::good );
-            connect( this, &V2718Window::Connected, fPulStartButton[i], &QPushButton::setEnabled );
-            connect( fPulStartButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
-        fPulStopButton[i] = new QPushButton( "STOP" );
-            fPulStopButton[i]->setStyleSheet( style::button::bad );
-            connect( this, &V2718Window::Connected, fPulStopButton[i], &QPushButton::setEnabled );
-            connect( fPulStopButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
+        fPulStartButton[i] = new SButton( "START", SColor_t::VIOLET ); 
+            connect( this, &V2718Window::Connected, fPulStartButton[i], &SButton::setEnabled );
+            connect( fPulStartButton[i], &SButton::clicked, this, &V2718Window::PulserSlot );
+        fPulStopButton[i] = new SButton( "STOP", SColor_t::RED );
+            connect( this, &V2718Window::Connected, fPulStopButton[i], &SButton::setEnabled );
+            connect( fPulStopButton[i], &SButton::clicked, this, &V2718Window::PulserSlot );
 
         buttonLayout->addWidget( fPulStartButton[i] );
         buttonLayout->addWidget( fPulStopButton[i] );
@@ -312,22 +306,18 @@ void V2718Window::CreatePulserTab()
     fScalAutoCheck = new QCheckBox( "Auto reset" );    
 
 
-    QFrame *buttonFrame = new QFrame(); 
-        buttonFrame->setFrameShape( QFrame::StyledPanel );
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
-    fScalGateButton = new QPushButton( "GATE" );
-        fScalGateButton->setStyleSheet( style::button::good );
-        connect( this, &V2718Window::Connected, fScalGateButton, &QPushButton::setEnabled );
-        connect( fScalGateButton, &QPushButton::clicked, this, &V2718Window::StartScaler );
-    fScalStopButton = new QPushButton( "STOP" );
-        fScalStopButton->setStyleSheet( style::button::bad );
-        connect( this, &V2718Window::Connected, fScalStopButton, &QPushButton::setEnabled );
-        connect( fScalStopButton, &QPushButton::clicked, this, &V2718Window::StopScaler );
-    fScalResetButton = new QPushButton( "RESET" );
-        fScalResetButton->setStyleSheet( style::button::good );
-        connect( this, &V2718Window::Connected, fScalResetButton, &QPushButton::setEnabled );
-        connect( fScalResetButton, &QPushButton::clicked, this, &V2718Window::ResetScaler );
+    fScalGateButton = new SButton( "GATE", SColor_t::VIOLET );
+        connect( this, &V2718Window::Connected, fScalGateButton, &SButton::setEnabled );
+        connect( fScalGateButton, &SButton::clicked, this, &V2718Window::StartScaler );
+    fScalStopButton = new SButton( "STOP", SColor_t::RED );
+        connect( this, &V2718Window::Connected, fScalStopButton, &SButton::setEnabled );
+        connect( fScalStopButton, &SButton::clicked, this, &V2718Window::StopScaler );
+    fScalResetButton = new SButton( "RESET", SColor_t::VIOLET );
+        connect( this, &V2718Window::Connected, fScalResetButton, &SButton::setEnabled );
+        connect( fScalResetButton, &SButton::clicked, this, &V2718Window::ResetScaler );
 
     buttonLayout->addWidget( fScalGateButton );
     buttonLayout->addWidget( fScalStopButton );
@@ -722,7 +712,7 @@ void Display::CreateDisplay()
 {
     QVBoxLayout *layout = new QVBoxLayout();
 
-    QFrame *upperFrame = new QFrame();
+    SFrame *upperFrame = new SFrame( SColor_t::VIOLET );
     QGridLayout *upperLayout = new QGridLayout();
 
     QLabel *addressLabel = new QLabel( "Address:" );
@@ -795,13 +785,11 @@ void Display::CreateDisplay()
     lowerFrame->setLayout( lowerLayout );
     layout->addWidget( lowerFrame );
 
-    fUpdateButton = new QPushButton( "UPDATE" );
-        fUpdateButton->setStyleSheet( style::button::good );
-    connect( fUpdateButton, &QPushButton::clicked, fController, &V2718Window::UpdateDisplay );
-    connect( fController, &V2718Window::Connected, fUpdateButton, &QPushButton::setEnabled );
+    fUpdateButton = new SButton( "UPDATE", SColor_t::VIOLET );
+    connect( fUpdateButton, &SButton::clicked, fController, &V2718Window::UpdateDisplay );
+    connect( fController, &V2718Window::Connected, fUpdateButton, &SButton::setEnabled );
 
-    QFrame *buttonFrame = new QFrame(); 
-        buttonFrame->setFrameShape( QFrame::StyledPanel );
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
     buttonLayout->addWidget( fUpdateButton );

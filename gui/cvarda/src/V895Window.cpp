@@ -99,8 +99,7 @@ void V895Window::CreateCentralWidget()
     fMajLevelSpin = new QSpinBox();
         fMajLevelSpin->setRange( 0, N_CH );
 
-    fTestButton = new QPushButton( "TEST" );
-        fTestButton->setStyleSheet( style::button::good );
+    fTestButton = new SButton( "TEST", SColor_t::VIOLET );
         connect( this, &V895Window::Connected, fTestButton, &QPushButton::setEnabled );
         connect( fTestButton, &QPushButton::clicked, this, &V895Window::SendTest );
 
@@ -108,6 +107,7 @@ void V895Window::CreateCentralWidget()
     commLayout->addWidget( fMajLevelSpin, 10 );
     commLayout->addWidget( fTestButton, 1 );
     commonGroup->setLayout( commLayout );
+    commonGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
     vLayout->addWidget( commonGroup );
 
     vLayout->addWidget( fBottomFrame );

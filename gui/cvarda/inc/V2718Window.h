@@ -7,7 +7,7 @@
 #include "DeviceWindow.h"
 
 class QAction;
-class QPushButton;
+class SButton;
 class QComboBox;
 class QMenu;
 class QSpinBox;
@@ -47,7 +47,7 @@ class V2718Window : public QMainWindow
         QAction *fAddDeviceAction;
 
         QTabWidget *fMainTab;
-        QPushButton *fProgramButton, *fReadButton;
+        SButton *fProgramButton, *fReadButton;
 
         // Inputs and Outputs tab
         QComboBox *fOutSrcCombo[N_OUTS], *fOutPolCombo[N_OUTS], *fOutLedCombo[N_OUTS];
@@ -56,11 +56,11 @@ class V2718Window : public QMainWindow
         //Pulser and Scaler tab
         QSpinBox  *fPulFreqSpin[N_PULSERS], *fPulDutySpin[N_PULSERS], *fPulNSpin[N_PULSERS];
         QComboBox *fPulStartCombo[N_PULSERS], *fPulStopCombo[N_PULSERS];
-        QPushButton *fPulStartButton[N_PULSERS], *fPulStopButton[N_PULSERS];
+        SButton *fPulStartButton[N_PULSERS], *fPulStopButton[N_PULSERS];
         QSpinBox  *fScalLimitSpin;
         QComboBox *fScalHitCombo, *fScalGateCombo, *fScalResetCombo;
         QCheckBox *fScalAutoCheck;
-        QPushButton *fScalGateButton, *fScalStopButton, *fScalResetButton;
+        SButton *fScalGateButton, *fScalStopButton, *fScalResetButton;
 
         /****** Constructive methods ******/
     private :
@@ -127,7 +127,7 @@ class Display : public QWidget
         QLedIndicatorWithLabel  *fAddressModLED[N_AM], *fIRQLED[N_IRQ];
         QLedIndicatorWithLabel  *fASLED, *fIACKLED, *fWriteLED, *fLwordLED, *fDS1LED, *fDS2LED;
         QLedIndicatorWithLabel  *fBreqLED, *fBgntLED, *fSresLED, *fDTKLED, *fBERRLED;
-        QPushButton             *fUpdateButton;
+        SButton                 *fUpdateButton;
 
     protected :
         void CreateDisplay();

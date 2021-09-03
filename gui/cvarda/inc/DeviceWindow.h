@@ -4,8 +4,8 @@
 
 #include "VSlave.h"
 
-class QPushButton;
-class QFrame;
+class SButton;
+class SFrame;
 class QAction;
 
 class V2718Window;
@@ -27,8 +27,8 @@ class DeviceWindow : public QMainWindow
 
     protected :
         QAction         *fConnectAction, *fDisconnectAction, *fExitAction;
-        QPushButton     *fProgramButton, *fReadButton;
-        QFrame          *fBottomFrame;
+        SButton     *fProgramButton, *fReadButton;
+        SFrame          *fBottomFrame;
 
     public slots :
         void Connect();

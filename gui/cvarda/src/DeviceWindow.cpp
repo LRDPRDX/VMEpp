@@ -5,7 +5,6 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QDebug>
-#include <QFrame>
 #include <QHBoxLayout>
 
 #include <VException.h>
@@ -24,21 +23,20 @@ DeviceWindow::DeviceWindow( V2718Window *parent ) :
 
     connect( fParent, &V2718Window::Connected, this, &DeviceWindow::OnControllerDisconnect );
 
-    fProgramButton = new QPushButton( "PROGRAM" );
-        fProgramButton->setStyleSheet( style::button::good );
+    fProgramButton = new SButton( "PROGRAM", SColor_t::VIOLET );
         connect( this, &DeviceWindow::Connected, fProgramButton, &QPushButton::setEnabled );
         connect( fProgramButton, &QPushButton::clicked, this, &DeviceWindow::Program );
 
-    fReadButton = new QPushButton( "READ" );
-        fReadButton->setStyleSheet( style::button::good );
+    fReadButton = new SButton( "READ", SColor_t::VIOLET );
         connect( this, &DeviceWindow::Connected, fReadButton, &QPushButton::setEnabled );
         connect( fReadButton, &QPushButton::clicked, this, &DeviceWindow::ReadConfig );
 
-    fBottomFrame = new QFrame(); 
-        fBottomFrame->setFrameShape( QFrame::StyledPanel );
+    fBottomFrame = new SFrame( SColor_t::VIOLET ); 
+
     QHBoxLayout *buttonLayout = new QHBoxLayout();
         buttonLayout->addWidget( fProgramButton );
         buttonLayout->addWidget( fReadButton );
+
     fBottomFrame->setLayout( buttonLayout );
 
     CreateFileMenu();

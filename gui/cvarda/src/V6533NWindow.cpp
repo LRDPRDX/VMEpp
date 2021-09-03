@@ -11,7 +11,6 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLabel>
-#include <QFrame>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -71,10 +70,12 @@ void V6533NWindow::CreateCentralWidget()
         QLabel *upLabel = new QLabel( "Up (V/s):" );
         fUpSpin[ch] = new QSpinBox();
             fUpSpin[ch]->setRange( 0, 400 );
+            fUpSpin[ch]->setValue( 100 );
 
-        QLabel *downLabel = new QLabel( "Up (V/s):" );
+        QLabel *downLabel = new QLabel( "Down (V/s):" );
         fDownSpin[ch] = new QSpinBox();
             fDownSpin[ch]->setRange( 0, 400 );
+            fDownSpin[ch]->setValue( 100 );
 
         QLabel *swMaxLabel = new QLabel( "Max (V):" );
         fSWMaxSpin[ch] = new QSpinBox();
@@ -85,15 +86,12 @@ void V6533NWindow::CreateCentralWidget()
             fOffCombo[ch]->addItem( "OFF", 0 );
             fOffCombo[ch]->addItem( "KILL", 1 );
 
-        QFrame *buttonFrame = new QFrame(); 
-            buttonFrame->setFrameShape( QFrame::StyledPanel );
+        SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
         QVBoxLayout *buttonLayout = new QVBoxLayout();
 
-        fOnButton = new QPushButton( "ON" );
-           fOnButton->setStyleSheet( style::button::good );
+        fOnButton = new SButton( "ON", SColor_t::VIOLET );
            connect( this, &DeviceWindow::Connected, fOnButton, &QPushButton::setEnabled );
-        fOffButton = new QPushButton( "OFF" );
-           fOffButton->setStyleSheet( style::button::bad );
+        fOffButton = new SButton( "OFF", SColor_t::RED );
            connect( this, &DeviceWindow::Connected, fOffButton, &QPushButton::setEnabled );
 
         buttonLayout->addWidget( fOnButton );
