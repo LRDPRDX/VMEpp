@@ -1,5 +1,5 @@
-TOP_DIR :=  $(shell pwd)/../../../..
-INC_DIR     := $(dir $(shell find $(TOP_DIR) -name inc))inc
+TOP_DIR := $(dir $(lastword $(MAKEFILE_LIST)))../..
+INC_DIR     := $(TOP_DIR)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
 CC          := g++
