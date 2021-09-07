@@ -134,7 +134,7 @@ class Display : public QWidget
 
     public :
         Display( V2718Window *controller, QWidget *parent = nullptr );
-        ~Display();
+        virtual ~Display();
 
         void Update( const CVDisplay &display );
 };

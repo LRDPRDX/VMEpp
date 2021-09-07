@@ -8,6 +8,8 @@ namespace style
 {
     static const QString white          =      "#ffffff";
     static const QString black          =      "#000000";
+    static const QString grey           =      "#a3a3a3";
+    static const QString greyLight      =      "#c9c9c9";
 
     static const QString violet         =      "#8888ff";
     static const QString violetLight    =      "#bdbfff";
@@ -32,12 +34,6 @@ namespace style
     static const QString blue           =      "#88c3ff";
     static const QString blueLight      =      "#bde0ff";
     static const QString blueDark       =      "#70b8ff";
-
-    namespace led
-    {
-        static const QString on =       QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2 ); border-radius: 4px" ).arg( redLight, red );
-        static const QString off =      QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2); border-radius: 4px" ).arg( violetLight, violet );
-    }
 }
 
 enum class SColor_t { VIOLET, RED, GREEN, YELLOW, PINK, BLUE };

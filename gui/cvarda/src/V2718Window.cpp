@@ -701,6 +701,7 @@ Display::Display( V2718Window *controller, QWidget *parent ) :
     QWidget( parent ),
     fController( controller )
 {
+    setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
     CreateDisplay();
 }
 
@@ -731,7 +732,7 @@ void Display::CreateDisplay()
     upperFrame->setLayout( upperLayout );
     layout->addWidget( upperFrame );
 
-    QFrame *lowerFrame = new QFrame();
+    SFrame *lowerFrame = new SFrame( SColor_t::VIOLET );
     QGridLayout *lowerLayout = new QGridLayout();
 
     int ledSize = 14;
@@ -786,8 +787,8 @@ void Display::CreateDisplay()
     layout->addWidget( lowerFrame );
 
     fUpdateButton = new SButton( "UPDATE", SColor_t::VIOLET );
-    connect( fUpdateButton, &SButton::clicked, fController, &V2718Window::UpdateDisplay );
-    connect( fController, &V2718Window::Connected, fUpdateButton, &SButton::setEnabled );
+        connect( fUpdateButton, &SButton::clicked, fController, &V2718Window::UpdateDisplay );
+        connect( fController, &V2718Window::Connected, fUpdateButton, &SButton::setEnabled );
 
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
     QHBoxLayout *buttonLayout = new QHBoxLayout();

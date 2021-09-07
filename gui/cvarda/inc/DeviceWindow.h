@@ -7,6 +7,7 @@
 class SButton;
 class SFrame;
 class QAction;
+class QMenu;
 
 class V2718Window;
 
@@ -26,14 +27,19 @@ class DeviceWindow : public QMainWindow
         void CreateFileMenu();
 
     protected :
+        QMenu           *fViewMenu, *fConfigMenu;
         QAction         *fConnectAction, *fDisconnectAction, *fExitAction;
-        SButton     *fProgramButton, *fReadButton;
+        QAction         *fSaveConfigAction, *fLoadConfigAction;
+        QAction         *fViewStatusBarAction;
+
+        SButton         *fProgramButton, *fReadButton;
         SFrame          *fBottomFrame;
 
     public slots :
         void Connect();
         void Disconnect();
         void OnControllerDisconnect( bool );
+        void ToggleStatusBar();
         virtual void Program() = 0;
         virtual void ReadConfig() = 0;
 

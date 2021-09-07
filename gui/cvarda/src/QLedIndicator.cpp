@@ -18,7 +18,7 @@ void QLedIndicator::setState( bool state )
     SColor v( SColor_t::VIOLET );
     SColor p( SColor_t::PINK );
     QString on =       QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2 ); border-radius: 4px" ).arg( p.light, p.dark );
-    QString off =      QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2); border-radius: 4px" ).arg( v.light, v.dark );
+    QString off =      QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2); border-radius: 4px" ).arg( style::greyLight, style::grey );
     
         setStyleSheet( state ? on : off );
 }

@@ -20,8 +20,11 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTabWidget>
+#include <QDockWidget>
+#include <QLineEdit>
 
 #include "Style.h"
+#include "QLedIndicator.h"
 
 #include "VException.h"
 #include "qnamespace.h"
@@ -35,6 +38,7 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     setWindowTitle( "V6533N" );
     CreateActions();
     CreateCentralWidget();
+    CreateDockWidget();
 
     emit Connected( false );
 
@@ -47,6 +51,16 @@ V6533NWindow::~V6533NWindow()
 
 void V6533NWindow::CreateActions()
 {
+
+}
+
+void V6533NWindow::CreateDockWidget()
+{
+    QDockWidget *dock = new QDockWidget( "V6533N Monitor", this );
+    fMonitor = new Monitor( this, dock );
+    dock->setWidget( fMonitor );
+    addDockWidget( Qt::RightDockWidgetArea, dock );
+    fViewMenu->addAction( dock->toggleViewAction() );
 }
 
 void V6533NWindow::CreateCentralWidget()
@@ -151,6 +165,24 @@ void V6533NWindow::ReadConfig()
     }
 }
 
+void V6533NWindow::UpdateMonitor()
+{
+    V6533N* hv = static_cast<V6533N*>( fDevice );
+    try
+    {
+        float vMax = hv->ReadVMax(); 
+        float iMax = hv->ReadIMax(); 
+        uint16_t status = hv->ReadStatus();
+
+        fMonitor->fVoltText->setText( QString::number( vMax ) );
+        fMonitor->fCurText->setText( QString::number( iMax ) );
+    }
+    catch( const VException& e )
+    {
+        qInfo() << e.what() << "\n";
+    }
+}
+
 void V6533NWindow::SpreadConfig( const UConfig<V6533N>& cfg )
 {
     auto changeCombo = []( QComboBox* c, int data ) {
@@ -187,4 +219,92 @@ UConfig<V6533N> V6533NWindow::CollectConfig()
     }
 
     return cfg;
+}
+
+
+//*********************
+//****** MONITOR ******
+//*********************
+Monitor::Monitor( V6533NWindow* container, QWidget* parent ) :
+    QWidget( parent ),
+    fContainer( container )
+{
+    setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
+    CreateGeneralFrame();
+}
+
+Monitor::~Monitor()
+{
+}
+
+void Monitor::CreateGeneralFrame()
+{
+    QVBoxLayout *layout = new QVBoxLayout();
+
+    SFrame *upperFrame = new SFrame( SColor_t::VIOLET );
+    QGridLayout *upperLayout = new QGridLayout();
+
+    QLabel *vLabel = new QLabel( "Max Voltage [V]:" );
+    fVoltText = new QLineEdit();
+        fVoltText->setReadOnly( true );
+
+    QLabel *cLabel = new QLabel( "Max Current [mA]:" );
+    fCurText = new QLineEdit();
+        fCurText->setReadOnly( true );
+
+    const int ledSize = 14;
+
+    fPowFailLED = new QLedIndicatorWithLabel( ledSize, "POWER FAIL", false );
+    fOvPowLED = new QLedIndicatorWithLabel( ledSize, "OVER POWER", false );
+    fMaxVUncLED = new QLedIndicatorWithLabel( ledSize, "UNCALIBRATED", true );
+    fMaxIUncLED = new QLedIndicatorWithLabel( ledSize, "UNCALIBRATED", true );
+
+    upperLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );
+    upperLayout->addWidget( fVoltText, 0, 1 );
+    upperLayout->addWidget( fMaxVUncLED, 0, 2 );
+    upperLayout->addWidget( cLabel, 1, 0, Qt::AlignRight );
+    upperLayout->addWidget( fCurText, 1, 1 );
+    upperLayout->addWidget( fMaxIUncLED, 1, 2 );
+
+    upperFrame->setLayout( upperLayout );
+    layout->addWidget( upperFrame );
+
+    SFrame *lowerFrame = new SFrame( SColor_t::VIOLET );
+    QGridLayout *lowerLayout = new QGridLayout();
+
+    for( int i = 0; i < N_CH/2; ++i )
+    {
+        fAlarmLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "ALARM CH%1" ).arg( i ), false );
+        lowerLayout->addWidget( fAlarmLED[i], i, 0 );
+    }
+
+    for( int i = N_CH/2; i < N_CH; ++i )
+    {
+        fAlarmLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "ALARM CH%1" ).arg( i ), true );
+        lowerLayout->addWidget( fAlarmLED[i], i - N_CH/2, 1 );
+    }
+
+    lowerLayout->setSpacing( 1 );
+    lowerFrame->setLayout( lowerLayout );
+    layout->addWidget( lowerFrame );
+
+    fUpdateButton = new SButton( "UPDATE", SColor_t::VIOLET );
+        connect( fContainer, &V6533NWindow::Connected, fUpdateButton, &SButton::setEnabled );
+        connect( fUpdateButton, &QPushButton::clicked, fContainer, &V6533NWindow::UpdateMonitor );
+    fStartButton = new SButton( "START", SColor_t::VIOLET );
+        connect( fContainer, &V6533NWindow::Connected, fStartButton, &SButton::setEnabled );
+    fStopButton = new SButton( "STOP", SColor_t::RED );
+        connect( fContainer, &V6533NWindow::Connected, fStopButton, &SButton::setEnabled );
+
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+
+    buttonLayout->addWidget( fUpdateButton );
+    buttonLayout->addWidget( fStartButton );
+    buttonLayout->addWidget( fStopButton );
+
+    buttonFrame->setLayout( buttonLayout );
+    layout->addWidget( buttonFrame );
+
+    setLayout( layout );
 }

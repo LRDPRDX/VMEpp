@@ -49,6 +49,7 @@ DeviceWindow::~DeviceWindow()
 
 void DeviceWindow::CreateFileMenu()
 {
+    // File
     fConnectAction = new QAction( "&Connect", this );
         connect( this, &DeviceWindow::Connected, fConnectAction, &QAction::setDisabled );
     fDisconnectAction = new QAction( "&Disconnect", this );
@@ -63,6 +64,23 @@ void DeviceWindow::CreateFileMenu()
     connect( fConnectAction, &QAction::triggered, this, &DeviceWindow::Connect );
     connect( fDisconnectAction, &QAction::triggered, this, &DeviceWindow::Disconnect );
     connect( fExitAction, &QAction::triggered, this, &DeviceWindow::close );
+
+    // View
+    fViewStatusBarAction = new QAction( "&View statusbar" );
+        fViewStatusBarAction->setCheckable( true );
+        fViewStatusBarAction->setChecked( true );
+
+    fViewMenu = menuBar()->addMenu( "View" );
+        fViewMenu->addAction( fViewStatusBarAction );
+    connect( fViewStatusBarAction, &QAction::triggered, this, &DeviceWindow::ToggleStatusBar );
+
+    // Config actions
+    fSaveConfigAction = new QAction( "Save" );
+    fLoadConfigAction = new QAction( "Load" );
+
+    fConfigMenu = menuBar()->addMenu( "&Config" );
+        fConfigMenu->addAction( fSaveConfigAction );
+        fConfigMenu->addAction( fLoadConfigAction );
 }
 
 void DeviceWindow::Connect()
@@ -120,3 +138,16 @@ void DeviceWindow::closeEvent( QCloseEvent *event )
             break;
     }
 }
+
+void DeviceWindow::ToggleStatusBar()
+{
+    if( fViewStatusBarAction->isChecked() )
+    {
+        statusBar()->show();
+    }
+    else
+    {
+        statusBar()->hide();
+    }
+}
+
