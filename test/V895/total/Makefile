@@ -12,5 +12,5 @@ $(TARGET) : $(SRC)
 		$(CC) -DLINUX $(CXXFLAGS) -I$(INC_DIR) $< $(LINKAGE) -o $@
 
 .PHONY : clean
-	clean :
-		rm -f $(TARGET)
+clean :
+	rm -f $(TARGET)
