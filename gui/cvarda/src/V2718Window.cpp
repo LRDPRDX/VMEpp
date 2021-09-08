@@ -808,23 +808,23 @@ void Display::Update( const CVDisplay &display )
 
     for( unsigned i = 0; i < N_AM; ++i )
     {
-        fAddressModLED[i]->SetChecked( ((1 << i) & display.cvAM) ? true : true );
+        fAddressModLED[i]->SetChecked( ((1 << i) & display.cvAM) );
     }
 
     for( unsigned i = 0; i < N_IRQ; ++i )
     {
-        fIRQLED[i]->SetChecked( ((1 << i) & display.cvIRQ) ? true : true );
+        fIRQLED[i]->SetChecked( ((1 << i) & display.cvIRQ) );
     }
 
-    fASLED->SetChecked( display.cvAS != 0 ? true : true );
-    fIACKLED->SetChecked( display.cvIACK != 0 ? true : true );
-    fDS1LED->SetChecked( display.cvDS0 != 0 ? true : true );
-    fDS2LED->SetChecked( display.cvDS1 != 0 ? true : true );
-    fWriteLED->SetChecked( display.cvWRITE != 0 ? true : true );
-    fLwordLED->SetChecked( display.cvLWORD != 0 ? true : true );
-    fBreqLED->SetChecked( display.cvBR != 0 ? true : true );
-    fBgntLED->SetChecked( display.cvBG != 0 ? true : true );
-    fSresLED->SetChecked( display.cvSYSRES != 0 ? true : true );
-    fDTKLED->SetChecked( display.cvDTACK != 0 ? true : true );
-    fBERRLED->SetChecked( display.cvBERR ? true : false );
+    fASLED->SetChecked( display.cvAS );
+    fIACKLED->SetChecked( display.cvIACK );
+    fDS1LED->SetChecked( display.cvDS0 );
+    fDS2LED->SetChecked( display.cvDS1 );
+    fWriteLED->SetChecked( display.cvWRITE );
+    fLwordLED->SetChecked( display.cvLWORD );
+    fBreqLED->SetChecked( display.cvBR );
+    fBgntLED->SetChecked( display.cvBG );
+    fSresLED->SetChecked( display.cvSYSRES );
+    fDTKLED->SetChecked( display.cvDTACK );
+    fBERRLED->SetChecked( display.cvBERR );
 }
