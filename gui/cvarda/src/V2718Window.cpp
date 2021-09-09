@@ -789,7 +789,7 @@ void Display::CreateDisplay()
         connect( fUpdateButton, &SButton::clicked, fController, &V2718Window::UpdateDisplay );
         connect( fController, &V2718Window::Connected, fUpdateButton, &SButton::setEnabled );
 
-    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
     buttonLayout->addWidget( fUpdateButton );
@@ -807,23 +807,23 @@ void Display::Update( const CVDisplay &display )
 
     for( unsigned i = 0; i < N_AM; ++i )
     {
-        fAddressModLED[i]->SetChecked( ((1 << i) & display.cvAM) ? Qt::Checked : Qt::Unchecked );
+        fAddressModLED[i]->SetChecked( ((1 << i) & display.cvAM) );
     }
 
     for( unsigned i = 0; i < N_IRQ; ++i )
     {
-        fIRQLED[i]->SetChecked( ((1 << i) & display.cvIRQ) ? Qt::Checked : Qt::Unchecked );
+        fIRQLED[i]->SetChecked( ((1 << i) & display.cvIRQ) );
     }
 
-    fASLED->SetChecked( display.cvAS ? Qt::Checked : Qt::Unchecked );
-    fIACKLED->SetChecked( display.cvIACK ? Qt::Checked : Qt::Unchecked );
-    fDS1LED->SetChecked( display.cvDS0 ? Qt::Checked : Qt::Unchecked );
-    fDS2LED->SetChecked( display.cvDS1 ? Qt::Checked : Qt::Unchecked );
-    fWriteLED->SetChecked( display.cvWRITE ? Qt::Checked : Qt::Unchecked );
-    fLwordLED->SetChecked( display.cvLWORD ? Qt::Checked : Qt::Unchecked );
-    fBreqLED->SetChecked( display.cvBR ? Qt::Checked : Qt::Unchecked );
-    fBgntLED->SetChecked( display.cvBG ? Qt::Checked : Qt::Unchecked );
-    fSresLED->SetChecked( display.cvSYSRES ? Qt::Checked : Qt::Unchecked );
-    fDTKLED->SetChecked( display.cvDTACK ? Qt::Checked : Qt::Unchecked );
-    fBERRLED->SetChecked( display.cvBERR ? Qt::Checked : Qt::Unchecked );
+    fASLED->SetChecked( display.cvAS );
+    fIACKLED->SetChecked( display.cvIACK );
+    fDS1LED->SetChecked( display.cvDS0 );
+    fDS2LED->SetChecked( display.cvDS1 );
+    fWriteLED->SetChecked( display.cvWRITE );
+    fLwordLED->SetChecked( display.cvLWORD );
+    fBreqLED->SetChecked( display.cvBR );
+    fBgntLED->SetChecked( display.cvBG );
+    fSresLED->SetChecked( display.cvSYSRES );
+    fDTKLED->SetChecked( display.cvDTACK );
+    fBERRLED->SetChecked( display.cvBERR );
 }
