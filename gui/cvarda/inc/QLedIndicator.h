@@ -9,7 +9,10 @@ class QLedIndicator : public QLabel
     Q_OBJECT
 
     public:
-        explicit QLedIndicator( int size, QWidget *parent = 0 );
+        static constexpr int size = 14;
+
+        QLedIndicator( QWidget *parent = 0 );
+        virtual ~QLedIndicator();
         
     public slots:
         void setState( bool state );
@@ -21,7 +24,9 @@ class QLedIndicatorWithLabel : public QWidget
         QLedIndicator *fLED;
 
     public :
-        QLedIndicatorWithLabel( int size = 14, QString text = "", bool leftAlign = true, QWidget *parent = nullptr );
+        QLedIndicatorWithLabel( QString text = "", bool leftAlign = true, QWidget *parent = nullptr );
+        virtual ~QLedIndicatorWithLabel();
+
         void SetChecked( bool status ) { fLED->setState( status ); }
 };
 

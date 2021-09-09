@@ -7,7 +7,7 @@
 SFrame::SFrame( SColor_t color, QWidget *parent ) :
     QFrame( parent )
 {
-    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
+    setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Maximum );
     setObjectName( "SFrame" );
 
     SColor c( color );

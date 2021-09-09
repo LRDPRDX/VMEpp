@@ -33,7 +33,7 @@ class V6533NWindow : public DeviceWindow
 
         QSpinBox    *fVoltSpin[N_CH], *fCurSpin[N_CH], *fUpSpin[N_CH], *fDownSpin[N_CH], *fSWMaxSpin[N_CH];
         QComboBox   *fOffCombo[N_CH];
-        QPushButton *fOnButton, *fOffButton, *fKillButton;
+        QPushButton *fOnButton[N_CH], *fOffButton[N_CH], *fKillButton;
 
     protected :
         // Creational member functions
@@ -45,6 +45,8 @@ class V6533NWindow : public DeviceWindow
         void Program() override;
         void ReadConfig() override;
         void UpdateMonitor();
+        void ChannelOn();
+        void ChannelOff();
 
         UConfig<V6533N> CollectConfig();
         void SpreadConfig( const UConfig<V6533N>& cfg );

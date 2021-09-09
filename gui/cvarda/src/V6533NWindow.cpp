@@ -22,6 +22,7 @@
 #include <QTabWidget>
 #include <QDockWidget>
 #include <QLineEdit>
+#include <QSignalMapper>
 
 #include "Style.h"
 #include "QLedIndicator.h"
@@ -103,13 +104,16 @@ void V6533NWindow::CreateCentralWidget()
         SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
         QVBoxLayout *buttonLayout = new QVBoxLayout();
 
-        fOnButton = new SButton( "ON", SColor_t::VIOLET );
-           connect( this, &DeviceWindow::Connected, fOnButton, &QPushButton::setEnabled );
-        fOffButton = new SButton( "OFF", SColor_t::RED );
-           connect( this, &DeviceWindow::Connected, fOffButton, &QPushButton::setEnabled );
 
-        buttonLayout->addWidget( fOnButton );
-        buttonLayout->addWidget( fOffButton );
+        fOnButton[ch] = new SButton( "ON", SColor_t::VIOLET );
+           connect( this, &DeviceWindow::Connected, fOnButton[ch], &QPushButton::setEnabled );
+           connect( fOnButton[ch], &SButton::clicked, this, &V6533NWindow::ChannelOn );
+        fOffButton[ch] = new SButton( "OFF", SColor_t::RED );
+           connect( this, &DeviceWindow::Connected, fOffButton[ch], &QPushButton::setEnabled );
+           connect( fOffButton[ch], &SButton::clicked, this, &V6533NWindow::ChannelOff );
+
+        buttonLayout->addWidget( fOnButton[ch] );
+        buttonLayout->addWidget( fOffButton[ch] );
         buttonFrame->setLayout( buttonLayout );
 
         gridLayout->addWidget( voltLabel, 0, 0, Qt::AlignRight ); 
@@ -176,6 +180,14 @@ void V6533NWindow::UpdateMonitor()
 
         fMonitor->fVoltText->setText( QString::number( vMax ) );
         fMonitor->fCurText->setText( QString::number( iMax ) );
+        
+        fMonitor->fMaxVUncLED->SetChecked( status & (1 << 10) );
+        fMonitor->fMaxIUncLED->SetChecked( status & (1 << 11) );
+
+        for( uint8_t i = 0; i < N_CH; ++i )
+        {
+            fMonitor->fAlarmLED[i]->SetChecked( status & (1 << i) );
+        }
     }
     catch( const VException& e )
     {
@@ -221,6 +233,75 @@ UConfig<V6533N> V6533NWindow::CollectConfig()
     return cfg;
 }
 
+void V6533NWindow::ChannelOn()
+{
+    QPushButton *button = qobject_cast<QPushButton*>( sender() );
+    if( button == nullptr )
+    {
+        return;
+    }
+
+    uint8_t ch;
+    bool found = false;
+    for( uint8_t i = 0; i < N_CH; ++i )
+    {
+        if( button == fOnButton[i] )
+        {
+            found = true;
+            ch = i;
+            break;
+        }
+    }
+
+    if( not found )
+    {
+        return;
+    }
+
+    try
+    {
+        static_cast<V6533N*>( fDevice )->WriteEnable( ch, true );
+    }
+    catch( const VException& e )
+    {
+        qInfo() << e.what() << "\n";
+    }
+}
+
+void V6533NWindow::ChannelOff()
+{
+    QPushButton *button = qobject_cast<QPushButton*>( sender() );
+    if( button == nullptr )
+    {
+        return;
+    }
+
+    uint8_t ch;
+    bool found = false;
+    for( uint8_t i = 0; i < N_CH; ++i )
+    {
+        if( button == fOffButton[i] )
+        {
+            found = true;
+            ch = i;
+            break;
+        }
+    }
+
+    if( not found )
+    {
+        return;
+    }
+
+    try
+    {
+        static_cast<V6533N*>( fDevice )->WriteEnable( ch, false );
+    }
+    catch( const VException& e )
+    {
+        qInfo() << e.what() << "\n";
+    }
+}
 
 //*********************
 //****** MONITOR ******
@@ -252,12 +333,10 @@ void Monitor::CreateGeneralFrame()
     fCurText = new QLineEdit();
         fCurText->setReadOnly( true );
 
-    const int ledSize = 14;
-
-    fPowFailLED = new QLedIndicatorWithLabel( ledSize, "POWER FAIL", false );
-    fOvPowLED = new QLedIndicatorWithLabel( ledSize, "OVER POWER", false );
-    fMaxVUncLED = new QLedIndicatorWithLabel( ledSize, "UNCALIBRATED", true );
-    fMaxIUncLED = new QLedIndicatorWithLabel( ledSize, "UNCALIBRATED", true );
+    fPowFailLED = new QLedIndicatorWithLabel( "POWER FAIL", false );
+    fOvPowLED = new QLedIndicatorWithLabel( "OVER POWER", false );
+    fMaxVUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
+    fMaxIUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
 
     upperLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );
     upperLayout->addWidget( fVoltText, 0, 1 );
@@ -274,13 +353,13 @@ void Monitor::CreateGeneralFrame()
 
     for( int i = 0; i < N_CH/2; ++i )
     {
-        fAlarmLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "ALARM CH%1" ).arg( i ), false );
+        fAlarmLED[i] = new QLedIndicatorWithLabel( QString( "ALARM CH%1" ).arg( i ), false );
         lowerLayout->addWidget( fAlarmLED[i], i, 0 );
     }
 
     for( int i = N_CH/2; i < N_CH; ++i )
     {
-        fAlarmLED[i] = new QLedIndicatorWithLabel( ledSize, QString( "ALARM CH%1" ).arg( i ), true );
+        fAlarmLED[i] = new QLedIndicatorWithLabel( QString( "ALARM CH%1" ).arg( i ), true );
         lowerLayout->addWidget( fAlarmLED[i], i - N_CH/2, 1 );
     }
 
