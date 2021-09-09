@@ -1,5 +1,5 @@
 TOP_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
-INC_DIR     := $(firstword $(subst /test, ,$(TOP_DIR)))/inc
+INC_DIR     := $(realpath $(TOP_DIR)/../..)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
 CC          := g++
