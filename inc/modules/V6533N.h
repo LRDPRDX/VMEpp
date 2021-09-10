@@ -104,9 +104,11 @@ namespace vmeplus
 
             //Channel parameters
             float           ReadVoltage( uint16_t ch );//throws
+            float           ReadVoltageSet( uint16_t ch );//throws
             void            WriteVoltage( uint16_t ch, float voltage );//throws
 
             float           ReadCurrent( uint16_t ch, IMonRange_t range );//throws
+            float           ReadCurrentSet( uint16_t ch );//throws
             void            WriteCurrent( uint16_t ch, float current );//throws
 
             bool            ReadEnable( uint16_t ch );//throws
@@ -164,8 +166,8 @@ namespace vmeplus
     {
         struct Channel
         {
-            float               VOLTAGE;
-            float               CURRENT;
+            float               V_SET;
+            float               I_SET;
             float               TRIP_TIME;
             float               SW_MAX;
             uint16_t            RAMP_UP;
