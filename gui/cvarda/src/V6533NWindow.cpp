@@ -207,8 +207,8 @@ void V6533NWindow::SpreadConfig( const UConfig<V6533N>& cfg )
 
     for( uint8_t i = 0; i < N_CH; ++i )
     {
-        fVoltSpin[i]->setValue( cfg.CHANNELS.at( i ).VOLTAGE );
-        fCurSpin[i]->setValue( cfg.CHANNELS.at( i ).CURRENT );
+        fVoltSpin[i]->setValue( cfg.CHANNELS.at( i ).V_SET );
+        fCurSpin[i]->setValue( cfg.CHANNELS.at( i ).I_SET );
         fSWMaxSpin[i]->setValue( cfg.CHANNELS.at( i ).SW_MAX );
         fUpSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_UP );
         fDownSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_DOWN );
@@ -222,8 +222,8 @@ UConfig<V6533N> V6533NWindow::CollectConfig()
 
     for( uint8_t i = 0; i < N_CH; ++i )
     {
-        cfg.CHANNELS.at( i ).VOLTAGE = fVoltSpin[i]->value();    
-        cfg.CHANNELS.at( i ).CURRENT = fCurSpin[i]->value();    
+        cfg.CHANNELS.at( i ).V_SET = fVoltSpin[i]->value();    
+        cfg.CHANNELS.at( i ).I_SET = fCurSpin[i]->value();    
         cfg.CHANNELS.at( i ).SW_MAX = fSWMaxSpin[i]->value();    
         cfg.CHANNELS.at( i ).RAMP_UP = fUpSpin[i]->value();    
         cfg.CHANNELS.at( i ).RAMP_DOWN = fDownSpin[i]->value();    
