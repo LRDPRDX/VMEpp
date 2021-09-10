@@ -71,7 +71,12 @@ namespace vmeplus
     //******************
     float V6533N::ReadVoltage( uint16_t ch )
     {
-        return (float)ReadRegister16( V6533N_VMON(ch % fChNumber) ) * 0.1;
+        return (float)ReadRegister16( V6533N_VMON(ch % fChNumber) ) * 0.1;// in V
+    }
+
+    float V6533N::ReadVoltageSet( uint16_t ch )
+    {
+        return (float)ReadRegister16( V6533N_VSET(ch % fChNumber) ) * 0.1;// in V
     }
 
     void V6533N::WriteVoltage( uint16_t ch, float voltage )
@@ -106,6 +111,10 @@ namespace vmeplus
         return (float)rawI * scale;
     }
 
+    float V6533N::ReadCurrentSet( uint16_t ch )
+    {
+        return ReadRegister16( V6533N_ISET(ch % fChNumber) ) * 5e-2;// in uA
+    }
 
     void V6533N::WriteCurrent( uint16_t ch, float current )
     {
@@ -292,8 +301,8 @@ namespace vmeplus
         {
             IMonRange_t iMon = ReadIMonRange( i );
 
-            cfg.CHANNELS.at( i ).VOLTAGE = ReadVoltage( i );
-            cfg.CHANNELS.at( i ).CURRENT = ReadCurrent( i, iMon );
+            cfg.CHANNELS.at( i ).V_SET = ReadVoltageSet( i );
+            cfg.CHANNELS.at( i ).I_SET = ReadCurrentSet( i );
             cfg.CHANNELS.at( i ).TRIP_TIME = ReadTripTime( i );
             cfg.CHANNELS.at( i ).SW_MAX = ReadSWVMax( i );
             cfg.CHANNELS.at( i ).RAMP_UP = ReadRampUp( i );
@@ -307,14 +316,29 @@ namespace vmeplus
     {
         for( uint8_t i = 0; i < fChNumber; ++i )
         {
-            WriteVoltage( i, cfg.CHANNELS.at( i ).VOLTAGE );
-            WriteCurrent( i, cfg.CHANNELS.at( i ).CURRENT );
+            WriteVoltage( i, cfg.CHANNELS.at( i ).V_SET );
+            WriteCurrent( i, cfg.CHANNELS.at( i ).I_SET );
             WriteTripTime( i, cfg.CHANNELS.at( i ).TRIP_TIME );
             WriteSWVMax( i, cfg.CHANNELS.at( i ).SW_MAX );
             WriteRampUp( i, cfg.CHANNELS.at( i ).RAMP_UP );
             WriteRampDown( i, cfg.CHANNELS.at( i ).RAMP_DOWN );
             WritePWDown( i, cfg.CHANNELS.at( i ).PW_DOWN );
             WriteIMonRange( i, cfg.CHANNELS.at( i ).IMON_RANGE );
+        }
+    }
+
+    void V6533N::ReadMonitor( MonitorData& m )
+    {
+        m.V_MAX     = ReadVMax();
+        m.I_MAX     = ReadIMax();
+        m.STATUS    = ReadStatus();
+
+        for( uint8_t i = 0; i < fChNumber; ++i )
+        {
+            m.CHANNELS.at( i ).VOLTAGE = ReadVoltage( i );
+            m.CHANNELS.at( i ).CURRENT = ReadCurrent( i, ReadIMonRange( i ) );
+            m.CHANNELS.at( i ).STATUS  = ReadStatus( i );
+            m.CHANNELS.at( i ).TEMP    = ReadTemperature( i );
         }
     }
 }
