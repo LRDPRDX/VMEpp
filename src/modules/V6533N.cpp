@@ -317,4 +317,19 @@ namespace vmeplus
             WriteIMonRange( i, cfg.CHANNELS.at( i ).IMON_RANGE );
         }
     }
+
+    void V6533N::ReadMonitor( MonitorData& m )
+    {
+        m.V_MAX     = ReadVMax();
+        m.I_MAX     = ReadIMax();
+        m.STATUS    = ReadStatus();
+
+        for( uint8_t i = 0; i < fChNumber; ++i )
+        {
+            m.CHANNELS.at( i ).VOLTAGE = ReadVoltage( i );
+            m.CHANNELS.at( i ).CURRENT = ReadCurrent( i, ReadIMonRange( i ) );
+            m.CHANNELS.at( i ).STATUS  = ReadStatus( i );
+            m.CHANNELS.at( i ).TEMP    = ReadTemperature( i );
+        }
+    }
 }

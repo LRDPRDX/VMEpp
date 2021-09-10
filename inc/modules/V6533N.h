@@ -74,7 +74,7 @@ namespace vmeplus
     class V6533N : public VSlave, public UConfigurable<V6533N>
     {
         protected :
-            static uint8_t const fChNumber = 0x06U;   // 6
+            static uint8_t constexpr fChNumber = 0x06U;   // 6
 
         public :
             static uint8_t constexpr GetChNumber() { return fChNumber; }
@@ -155,8 +155,25 @@ namespace vmeplus
             virtual void    Print() const override;
 
         public :
+            struct MonitorData
+            {
+                struct Channel
+                {
+                    float VOLTAGE;
+                    float CURRENT;
+                    uint16_t STATUS;
+                    int16_t TEMP; 
+                };
+
+                float V_MAX; 
+                float I_MAX;
+                uint16_t STATUS;
+                std::array<Channel, fChNumber> CHANNELS;
+            };
+
             void    ReadConfig( UConfig<V6533N>& config ) override;
             void    WriteConfig( const UConfig<V6533N>& config ) override;
+            void    ReadMonitor( V6533N::MonitorData& mon );
     };
 
     template<>
@@ -164,8 +181,8 @@ namespace vmeplus
     {
         struct Channel
         {
-            float               VOLTAGE;
-            float               CURRENT;
+            float               V_SET;
+            float               I_SET;
             float               TRIP_TIME;
             float               SW_MAX;
             uint16_t            RAMP_UP;
