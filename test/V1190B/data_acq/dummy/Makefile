@@ -1,1 +1,1 @@
-include $(shell pwd)/../../rules.mk
+include $(shell pwd)/../../../rules.mk  
