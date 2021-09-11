@@ -175,7 +175,8 @@ namespace vmeplus
 
             void    ReadConfig( UConfig<V6533N>& config ) override;
             void    WriteConfig( const UConfig<V6533N>& config ) override;
-            void    ReadMonitor( V6533N::MonitorData& mon );
+
+            V6533N::MonitorData ReadMonitor();
     };
 
     template<>

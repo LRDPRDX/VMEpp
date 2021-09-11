@@ -327,8 +327,10 @@ namespace vmeplus
         }
     }
 
-    void V6533N::ReadMonitor( MonitorData& m )
+    V6533N::MonitorData V6533N::ReadMonitor()
     {
+        V6533N::MonitorData m;
+
         m.V_MAX     = ReadVMax();
         m.I_MAX     = ReadIMax();
         m.STATUS    = ReadStatus();
@@ -340,5 +342,7 @@ namespace vmeplus
             m.CHANNELS.at( i ).STATUS  = ReadStatus( i );
             m.CHANNELS.at( i ).TEMP    = ReadTemperature( i );
         }
+
+        return m;
     }
 }
