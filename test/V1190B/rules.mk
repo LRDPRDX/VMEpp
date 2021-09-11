@@ -1,4 +1,4 @@
-TOP_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+TOP_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 INC_DIR     := $(TOP_DIR)/../../inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
