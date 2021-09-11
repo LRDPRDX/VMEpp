@@ -174,20 +174,9 @@ void V6533NWindow::UpdateMonitor()
     V6533N* hv = static_cast<V6533N*>( fDevice );
     try
     {
-        float vMax = hv->ReadVMax(); 
-        float iMax = hv->ReadIMax(); 
-        uint16_t status = hv->ReadStatus();
-
-        fMonitor->fVoltText->setText( QString::number( vMax ) );
-        fMonitor->fCurText->setText( QString::number( iMax ) );
-        
-        fMonitor->fMaxVUncLED->SetChecked( status & (1 << 10) );
-        fMonitor->fMaxIUncLED->SetChecked( status & (1 << 11) );
-
-        for( uint8_t i = 0; i < N_CH; ++i )
-        {
-            fMonitor->fAlarmLED[i]->SetChecked( status & (1 << i) );
-        }
+        V6533N::MonitorData md;
+        hv->ReadMonitor( md );
+        fMonitor->Update( md );
     }
     catch( const VException& e )
     {
@@ -329,7 +318,7 @@ void Monitor::CreateGeneralFrame()
     fVoltText = new QLineEdit();
         fVoltText->setReadOnly( true );
 
-    QLabel *cLabel = new QLabel( "Max Current [mA]:" );
+    QLabel *cLabel = new QLabel( "Max Current [uA]:" );
     fCurText = new QLineEdit();
         fCurText->setReadOnly( true );
 
@@ -386,4 +375,18 @@ void Monitor::CreateGeneralFrame()
     layout->addWidget( buttonFrame );
 
     setLayout( layout );
+}
+
+void Monitor::Update( const V6533N::MonitorData& m )
+{
+    fVoltText->setText( QString::number( m.V_MAX ) );
+    fCurText->setText( QString::number( m.I_MAX ) );
+    
+    fMaxVUncLED->SetChecked( m.STATUS & (1 << 10) );
+    fMaxIUncLED->SetChecked( m.STATUS & (1 << 11) );
+
+    for( uint8_t i = 0; i < N_CH; ++i )
+    {
+        fAlarmLED[i]->SetChecked( m.STATUS & (1 << i) );
+    }
 }

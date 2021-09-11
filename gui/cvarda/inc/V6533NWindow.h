@@ -75,6 +75,7 @@ class Monitor : public QWidget
         virtual ~Monitor();
 
         void CreateGeneralFrame();
+        void Update( const V6533N::MonitorData& data );
 
         friend void V6533NWindow::UpdateMonitor();
 };
