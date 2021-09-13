@@ -6,10 +6,17 @@
 #include <cstdint>
 #include <string>
 
+/************************************************************
+ * Every entity of the library is contained in this namespace 
+ * **********************************************************/
 namespace vmeplus
 {
     class VMaster;
 
+    /************************************************************
+     * Represents the SLAVE functional module of the VME standard
+     * Each concrete module must be a child of this class
+     * **********************************************************/
     class VSlave
     {
         private :
