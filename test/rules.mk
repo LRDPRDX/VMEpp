@@ -1,6 +1,6 @@
 TEST_TOP_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
-INC_DIR     := $(TEST_TOP_DIR)../inc
-LINKAGE     := -lVMEplusM -lVMEplus
+INC_DIR      := $(TEST_TOP_DIR)../inc
+LINKAGE      := -lVMEplusM -lVMEplus
 
 CC          := g++
 CXXFLAGS    := -std=c++11
