@@ -10,6 +10,8 @@
 Main
 
 # Tests
+/test/*
+!/rules.mk
 !/test/V895/
 !/test/V1190B/
 
