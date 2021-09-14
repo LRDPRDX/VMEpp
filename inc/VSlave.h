@@ -6,17 +6,17 @@
 #include <cstdint>
 #include <string>
 
-/************************************************************
+/**
  * Every entity of the library is contained in this namespace 
- * **********************************************************/
+ */
 namespace vmeplus
 {
     class VMaster;
 
-    /************************************************************
-     * Represents the SLAVE functional module of the VME standard
-     * Each concrete module must be a child of this class
-     * **********************************************************/
+    /**
+     * Represents the SLAVE functional module of the VME standard.
+     * Each concrete module must be a child of this class.
+     */
     class VSlave
     {
         private :
@@ -29,10 +29,58 @@ namespace vmeplus
             std::string         fFirmware;
             uint16_t            fSerial;
 
+            /**
+             * Requests MASTER to perform a READ CYCLE with given parameters
+             *
+             * @param address VME-address (including the base address)
+             * @param data data to read
+             * @param dw data width
+             * @param am address modifier
+             */
             void                ReadRequest( uint32_t address, void *data, CVDataWidth dw = cvD16, CVAddressModifier am = cvA32_U_DATA );
+
+            /**
+             * Requests MASTER to perform a WRITE CYCLE with given parameters
+             *
+             * @param address VME-address (including the base address)
+             * @param data data to read
+             * @param dw data width
+             * @param am address modifier
+             */
             void                WriteRequest( uint32_t address, void *data,  CVDataWidth dw = cvD16, CVAddressModifier am = cvA32_U_DATA );
+
+            /**
+             * Requests MASTER to perform a BLOCK READ CYCLE with given parameters
+             *
+             * @param address VME-address (including the base address)
+             * @param buffer data to read to [out]
+             * @param size number of bytes to be read [in]
+             * @param count number of bytes actually read [out]
+             * @param dw data width
+             * @param am address modifier
+             */
             void                BLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVDataWidth dw, CVAddressModifier am = cvA32_U_BLT );
+
+            /**
+             * Requests MASTER to perform a MULTIPLEXED BLOCK READ CYCLE with given parameters
+             *
+             * @param address VME-address (including the base address)
+             * @param buffer data to read to [out]
+             * @param size number of bytes to be read [in]
+             * @param count number of bytes actually read [out]
+             * @param am address modifier
+             */
             void                MBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am = cvA32_U_MBLT );
+
+            /**
+             * Requests MASTER to perform a FIFO MULTIPLEXED BLOCK READ CYCLE with given parameters
+             *
+             * @param address VME-address (including the base address)
+             * @param buffer data to read to [out]
+             * @param size number of bytes to be read [in]
+             * @param count number of bytes actually read [out]
+             * @param am address modifier
+             */
             void                FIFOMBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am = cvA32_U_MBLT );
 
             virtual void        Initialize() = 0;

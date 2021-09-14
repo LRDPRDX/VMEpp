@@ -7,7 +7,7 @@
 
 namespace vmeplus
 {
-    VSlave::VSlave( std::string name, uint32_t baseAddress, uint32_t range ) : 
+    VSlave::VSlave( std::string name, uint32_t baseAddress, uint32_t range ) :
         fMaster( nullptr ),
         fBaseAddress( baseAddress ),
         fRange( range ),
@@ -26,7 +26,7 @@ namespace vmeplus
     {
         if( fMaster != nullptr )
         {
-            fMaster->ReadCycle( fBaseAddress + address, data, am, dw ); 
+            fMaster->ReadCycle( fBaseAddress + address, data, am, dw );
         }
         else
         {
@@ -86,7 +86,7 @@ namespace vmeplus
     {
         uint16_t data;
         ReadRequest( address, &data );//D16 by default
-        return (data & msk); 
+        return (data & msk);
     }
 
     void VSlave::WriteRegister16( uint32_t address, uint16_t data, uint16_t msk )
