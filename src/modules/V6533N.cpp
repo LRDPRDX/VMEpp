@@ -87,7 +87,7 @@ namespace vmeplus
 
     float V6533N::ReadCurrent( uint16_t ch, V6533N::IMonRange_t range )
     {
-        //Return value in [mA]
+        //Return value in [uA]
         uint16_t rawI;
         float scale;
         //Save old range
@@ -98,11 +98,11 @@ namespace vmeplus
         {
             case( V6533N::IMonRange_t::RANGE_HIGH ) :
                 rawI = ReadRegister16( V6533N_IMONH(ch % fChNumber) );
-                scale = 5e-5;//0.05 [uA]
+                scale = 5e-2;//0.05 [uA]
                 break;
             case( V6533N::IMonRange_t::RANGE_LOW ) :
                 rawI = ReadRegister16( V6533N_IMONL(ch % fChNumber) );
-                scale = 5e-6;//0.005 [uA]
+                scale = 5e-3;//0.005 [uA]
                 break;
         }
         //Restore old range
