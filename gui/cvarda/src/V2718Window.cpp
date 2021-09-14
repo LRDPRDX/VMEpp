@@ -44,6 +44,8 @@ V2718Window::V2718Window( QWidget *parent ) :
     emit Connected( false );
 
     statusBar()->showMessage( "Ready..." );
+
+    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 V2718Window::~V2718Window() {}
