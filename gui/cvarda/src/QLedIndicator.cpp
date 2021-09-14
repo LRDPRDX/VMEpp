@@ -5,9 +5,10 @@
 #include <QDebug>
 
 QLedIndicator::QLedIndicator( int size, QWidget *parent ) :
-    QLabel(parent)
+    QLabel(parent),
+    fColor( SColor_t::RED )
 {
-    setState( false );
+    SetState( false );
     setFixedSize( size, size );
 }
 
@@ -15,12 +16,11 @@ QLedIndicator::~QLedIndicator()
 {
 }
 
-void QLedIndicator::setState( bool state )
+void QLedIndicator::SetState( bool state )
 {
-    SColor v( SColor_t::VIOLET );
-    SColor p( SColor_t::PINK );
-    QString on =       QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2 ); border-radius: 5px" ).arg( p.light, p.dark );
-    QString off =      QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2); border-radius: 5px" ).arg( style::greyLight, style::grey );
+    SColor c( fColor );
+    QString on =       QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2 ); border-radius: 5px; border: 1px solid #000000" ).arg( c.light, c.dark );
+    QString off =      QString( "color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2); border-radius: 5px; border: 1px solid #000000" ).arg( style::greyLight, style::grey );
     
     setStyleSheet( state ? on : off );
 }

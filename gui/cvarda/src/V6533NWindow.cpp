@@ -83,6 +83,7 @@ void V6533NWindow::CreateCentralWidget()
         QLabel *curLabel = new QLabel( "I (uA):" );
         fCurSpin[ch] = new QSpinBox();
             fCurSpin[ch]->setRange( 0, 3000 );
+            fCurSpin[ch]->setValue( 100 );
 
         QLabel *upLabel = new QLabel( "Up (V/s):" );
         fUpSpin[ch] = new QSpinBox();
@@ -97,6 +98,7 @@ void V6533NWindow::CreateCentralWidget()
         QLabel *swMaxLabel = new QLabel( "Max (V):" );
         fSWMaxSpin[ch] = new QSpinBox();
             fSWMaxSpin[ch]->setRange( 0, 6000 );
+            fSWMaxSpin[ch]->setValue( 100 );
 
         QLabel *offLabel = new QLabel( "OFF:" );
         fOffCombo[ch] = new QComboBox();
@@ -351,12 +353,14 @@ void V6533NMonitor::CreateGeneralFrame()
     SFrame *generalFrame = new SFrame( SColor_t::VIOLET );
     QGridLayout *gLayout = new QGridLayout();
 
-    QLabel *vLabel = new QLabel( "Max Voltage [V]:" );
+    QLabel *vLabel = new QLabel( "Max Voltage:" );
+    QLabel *vqLabel = new QLabel( "V" );
     fVoltText = new QLineEdit();
         fVoltText->setReadOnly( true );
         fVoltText->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
 
-    QLabel *cLabel = new QLabel( "Max Current [uA]:" );
+    QLabel *cLabel = new QLabel( "Max Current:" );
+    QLabel *cqLabel = new QLabel( "uA" );
     fCurText = new QLineEdit();
         fCurText->setReadOnly( true );
         fCurText->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
@@ -368,10 +372,12 @@ void V6533NMonitor::CreateGeneralFrame()
 
     gLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );
     gLayout->addWidget( fVoltText, 0, 1 );
-    gLayout->addWidget( fMaxVUncLED, 0, 2 );
+    gLayout->addWidget( vqLabel, 0, 2, Qt::AlignLeft );
+    gLayout->addWidget( fMaxVUncLED, 0, 3 );
     gLayout->addWidget( cLabel, 1, 0, Qt::AlignRight );
     gLayout->addWidget( fCurText, 1, 1 );
-    gLayout->addWidget( fMaxIUncLED, 1, 2 );
+    gLayout->addWidget( cqLabel, 1, 2, Qt::AlignLeft );
+    gLayout->addWidget( fMaxIUncLED, 1, 3 );
 
     generalFrame->setLayout( gLayout );
     fLayout->addWidget( generalFrame );
@@ -416,6 +422,8 @@ void V6533NMonitor::CreateChannelFrame()
             fChStatusLED[ch][l]->setToolTip( ledNames[l] );
             ledLayout->addWidget( fChStatusLED[ch][l], 0, l );
         }
+        fChStatusLED[ch][0]->SetColor( SColor_t::GREEN );// the ON LED should be green
+
         ledFrame->setLayout( ledLayout );
 
         gridLayout->addWidget( ledFrame, 0, 4 );
@@ -445,7 +453,7 @@ void V6533NMonitor::Update( const V6533N::MonitorData& m )
 
         for( uint8_t l = 0; l < N_LED; ++l )
         {
-            fChStatusLED[ch][l]->setState( m.CHANNELS.at(ch).STATUS & (1 << l) );
+            fChStatusLED[ch][l]->SetState( m.CHANNELS.at(ch).STATUS & (1 << l) );
         }
     }
 }

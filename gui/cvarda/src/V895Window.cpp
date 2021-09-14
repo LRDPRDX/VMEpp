@@ -101,11 +101,12 @@ void V895Window::CreateCentralWidget()
         fMajLevelSpin->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
 
     fTestButton = new SButton( "TEST", SColor_t::VIOLET );
+        fTestButton->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
         connect( this, &V895Window::Connected, fTestButton, &QPushButton::setEnabled );
         connect( fTestButton, &QPushButton::clicked, this, &V895Window::SendTest );
 
     commLayout->addWidget( majLabel, 1, Qt::AlignRight );
-    commLayout->addWidget( fMajLevelSpin, 10 );
+    commLayout->addWidget( fMajLevelSpin, 10, Qt::AlignLeft );
     commLayout->addWidget( fTestButton, 1 );
     commonGroup->setLayout( commLayout );
     commonGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
