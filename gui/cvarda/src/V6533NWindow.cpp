@@ -23,6 +23,7 @@
 #include <QDockWidget>
 #include <QLineEdit>
 #include <QSignalMapper>
+#include <QTimer>
 
 #include "Style.h"
 #include "QLedIndicator.h"
@@ -110,7 +111,7 @@ void V6533NWindow::CreateCentralWidget()
             fIMonCombo[ch]->addItem( "300uA", QVariant::fromValue( V6533N::IMonRange_t::RANGE_LOW ) );
             fIMonCombo[ch]->addItem( "3000uA", QVariant::fromValue( V6533N::IMonRange_t::RANGE_HIGH ) );
 
-        SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
+        SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
         QHBoxLayout *buttonLayout = new QHBoxLayout();
 
 
@@ -125,19 +126,19 @@ void V6533NWindow::CreateCentralWidget()
         buttonLayout->addWidget( fOffButton[ch] );
         buttonFrame->setLayout( buttonLayout );
 
-        gridLayout->addWidget( voltLabel, 0, 0, Qt::AlignRight ); 
+        gridLayout->addWidget( voltLabel, 0, 0, Qt::AlignRight );
         gridLayout->addWidget( fVoltSpin[ch], 0, 1 );
-        gridLayout->addWidget( curLabel, 0, 2, Qt::AlignRight ); 
+        gridLayout->addWidget( curLabel, 0, 2, Qt::AlignRight );
         gridLayout->addWidget( fCurSpin[ch], 0, 3 );
-        gridLayout->addWidget( swMaxLabel, 0, 4, Qt::AlignRight ); 
+        gridLayout->addWidget( swMaxLabel, 0, 4, Qt::AlignRight );
         gridLayout->addWidget( fSWMaxSpin[ch], 0, 5 );
-        gridLayout->addWidget( upLabel, 1, 0, Qt::AlignRight ); 
+        gridLayout->addWidget( upLabel, 1, 0, Qt::AlignRight );
         gridLayout->addWidget( fUpSpin[ch], 1, 1 );
-        gridLayout->addWidget( downLabel, 1, 2, Qt::AlignRight ); 
+        gridLayout->addWidget( downLabel, 1, 2, Qt::AlignRight );
         gridLayout->addWidget( fDownSpin[ch], 1, 3 );
-        gridLayout->addWidget( offLabel, 1, 4, Qt::AlignRight ); 
+        gridLayout->addWidget( offLabel, 1, 4, Qt::AlignRight );
         gridLayout->addWidget( fOffCombo[ch], 1, 5 );
-        gridLayout->addWidget( iMonLabel, 1, 6, Qt::AlignRight ); 
+        gridLayout->addWidget( iMonLabel, 1, 6, Qt::AlignRight );
         gridLayout->addWidget( fIMonCombo[ch], 1, 7 );
 
         gridLayout->addWidget( buttonFrame, 0, 6, 1, 2 );
@@ -223,12 +224,12 @@ UConfig<V6533N> V6533NWindow::CollectConfig()
 
     for( uint8_t i = 0; i < N_CH; ++i )
     {
-        cfg.CHANNELS.at( i ).V_SET = fVoltSpin[i]->value();    
-        cfg.CHANNELS.at( i ).I_SET = fCurSpin[i]->value();    
-        cfg.CHANNELS.at( i ).SW_MAX = fSWMaxSpin[i]->value();    
-        cfg.CHANNELS.at( i ).RAMP_UP = fUpSpin[i]->value();    
-        cfg.CHANNELS.at( i ).RAMP_DOWN = fDownSpin[i]->value();    
-        cfg.CHANNELS.at( i ).PW_DOWN = fOffCombo[i]->currentData().value<bool>();  
+        cfg.CHANNELS.at( i ).V_SET = fVoltSpin[i]->value();
+        cfg.CHANNELS.at( i ).I_SET = fCurSpin[i]->value();
+        cfg.CHANNELS.at( i ).SW_MAX = fSWMaxSpin[i]->value();
+        cfg.CHANNELS.at( i ).RAMP_UP = fUpSpin[i]->value();
+        cfg.CHANNELS.at( i ).RAMP_DOWN = fDownSpin[i]->value();
+        cfg.CHANNELS.at( i ).PW_DOWN = fOffCombo[i]->currentData().value<bool>();
         cfg.CHANNELS.at( i ).IMON_RANGE = fIMonCombo[i]->currentData().value<V6533N::IMonRange_t>();
     }
 
@@ -315,6 +316,8 @@ V6533NMonitor::V6533NMonitor( V6533NWindow* container, QWidget* parent ) :
     fLayout = new QVBoxLayout();
 
     setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
+
+    CreateTimer();
     CreateWidgets();
 
     setLayout( fLayout );
@@ -334,10 +337,12 @@ void V6533NMonitor::CreateWidgets()
         connect( fUpdateButton, &QPushButton::clicked, fContainer, &V6533NWindow::UpdateMonitor );
     fStartButton = new SButton( "START", SColor_t::VIOLET );
         connect( fContainer, &V6533NWindow::Connected, fStartButton, &SButton::setEnabled );
+        connect( fStartButton, &QPushButton::clicked, this, &V6533NMonitor::StartTimer );
     fStopButton = new SButton( "STOP", SColor_t::RED );
         connect( fContainer, &V6533NWindow::Connected, fStopButton, &SButton::setEnabled );
+        connect( fStopButton, &QPushButton::clicked, this, &V6533NMonitor::StopTimer );
 
-    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
     buttonLayout->addWidget( fUpdateButton );
@@ -437,11 +442,18 @@ void V6533NMonitor::CreateChannelFrame()
     }
 }
 
+void V6533NMonitor::CreateTimer()
+{
+    fTimer = new QTimer( this );
+        fTimer->setInterval( 1000 );
+    connect( fTimer, &QTimer::timeout, fContainer, &V6533NWindow::UpdateMonitor );
+}
+
 void V6533NMonitor::Update( const V6533N::MonitorData& m )
 {
     fVoltText->setText( QString::number( m.V_MAX ) );
     fCurText->setText( QString::number( m.I_MAX ) );
-    
+
     fMaxVUncLED->SetChecked( m.STATUS & (1 << 10) );
     fMaxIUncLED->SetChecked( m.STATUS & (1 << 11) );
 
@@ -455,5 +467,22 @@ void V6533NMonitor::Update( const V6533N::MonitorData& m )
         {
             fChStatusLED[ch][l]->SetState( m.CHANNELS.at(ch).STATUS & (1 << l) );
         }
+    }
+}
+
+void V6533NMonitor::StartTimer()
+{
+    if( fTimer->isActive() )
+    {
+        return;
+    }
+    fTimer->start();
+}
+
+void V6533NMonitor::StopTimer()
+{
+    if( fTimer->isActive() )
+    {
+        fTimer->stop();
     }
 }

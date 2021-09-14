@@ -12,6 +12,7 @@ class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
 class QLineEdit;
+class QTimer;
 
 class QLedIndicatorWithLabel;
 class QLedIndicator;
@@ -66,7 +67,8 @@ class V6533NMonitor : public QWidget
         static constexpr uint8_t N_CH = V6533N::GetChNumber(); // 6 channels
         static constexpr uint8_t N_LED = 14;
 
-        V6533NWindow* fContainer;
+        V6533NWindow    *fContainer;
+        QTimer          *fTimer;
 
     protected :
         QLineEdit               *fVoltText, *fCurText;
@@ -81,7 +83,12 @@ class V6533NMonitor : public QWidget
         void CreateWidgets();
         void CreateGeneralFrame();
         void CreateChannelFrame();
-        
+        void CreateTimer();
+
+    protected slots :
+        void StartTimer();
+        void StopTimer();
+
     public :
         V6533NMonitor( V6533NWindow* parentWindow, QWidget* parent = nullptr );
         virtual ~V6533NMonitor();

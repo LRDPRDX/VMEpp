@@ -7,7 +7,6 @@
 #include "VController.h"
 #include "UConfigurable.h"
 
-
 namespace vmeplus
 {
     class V2718;
@@ -48,8 +47,8 @@ namespace vmeplus
             unsigned char       GetWidth() const                  { return fWidth; }
             double              GetFrequencyReal() const;
 
-            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }  
-            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }  
+            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }
+            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }
             void                SetNPulses( unsigned char n )     { fNPulses = n; }
             unsigned char       GetNPulses() const                { return fNPulses; }
             void                SetStartSource( CVIOSources src ) { fStartSource = src; }
