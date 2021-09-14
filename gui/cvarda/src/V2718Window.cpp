@@ -28,8 +28,10 @@
 #include "Dialogs.h"
 #include "Style.h"
 #include "QLedIndicator.h"
+#include "Prelude.h"
 
 #include "VException.h"
+
 
 
 V2718Window::V2718Window( QWidget *parent ) :

@@ -14,8 +14,9 @@ class QCheckBox;
 class QLineEdit;
 
 class QLedIndicatorWithLabel;
+class QLedIndicator;
 
-class Monitor;
+class V6533NMonitor;
 
 using namespace vmeplus;
 
@@ -29,11 +30,12 @@ class V6533NWindow : public DeviceWindow
 
     protected :
         // Widgets
-        Monitor     *fMonitor;
+        V6533NMonitor     *fMonitor;
 
         QSpinBox    *fVoltSpin[N_CH], *fCurSpin[N_CH], *fUpSpin[N_CH], *fDownSpin[N_CH], *fSWMaxSpin[N_CH];
         QComboBox   *fOffCombo[N_CH];
         QPushButton *fOnButton[N_CH], *fOffButton[N_CH], *fKillButton;
+        QComboBox   *fIMonCombo[N_CH];
 
     protected :
         // Creational member functions
@@ -56,12 +58,13 @@ class V6533NWindow : public DeviceWindow
         ~V6533NWindow();
 };
 
-class Monitor : public QWidget
+class V6533NMonitor : public QWidget
 {
     Q_OBJECT
 
     protected :
         static constexpr uint8_t N_CH = V6533N::GetChNumber(); // 6 channels
+        static constexpr uint8_t N_LED = 14;
 
         V6533NWindow* fContainer;
 
@@ -69,12 +72,20 @@ class Monitor : public QWidget
         QLineEdit               *fVoltText, *fCurText;
         QLedIndicatorWithLabel  *fAlarmLED[N_CH], *fPowFailLED, *fOvPowLED, *fMaxVUncLED, *fMaxIUncLED;
         QPushButton             *fUpdateButton, *fStartButton, *fStopButton;
+        QLineEdit               *fVoltMonText[N_CH], *fCurMonText[N_CH], *fTempMonText[N_CH];
+        QLedIndicator           *fChStatusLED[N_CH][N_LED];
+
+        QVBoxLayout             *fLayout;
+
+    protected :
+        void CreateWidgets();
+        void CreateGeneralFrame();
+        void CreateChannelFrame();
         
     public :
-        Monitor( V6533NWindow* parentWindow, QWidget* parent = nullptr );
-        virtual ~Monitor();
+        V6533NMonitor( V6533NWindow* parentWindow, QWidget* parent = nullptr );
+        virtual ~V6533NMonitor();
 
-        void CreateGeneralFrame();
         void Update( const V6533N::MonitorData& data );
 
         friend void V6533NWindow::UpdateMonitor();

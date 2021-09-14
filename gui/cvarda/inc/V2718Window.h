@@ -21,11 +21,6 @@ class Display;
 
 using namespace vmeplus;
 
-Q_DECLARE_METATYPE(CVIOPolarity)   
-Q_DECLARE_METATYPE(CVLEDPolarity)   
-Q_DECLARE_METATYPE(CVIOSources)   
-
-
 class V2718Window : public QMainWindow
 {
     Q_OBJECT

@@ -98,6 +98,7 @@ void V895Window::CreateCentralWidget()
 
     fMajLevelSpin = new QSpinBox();
         fMajLevelSpin->setRange( 0, N_CH );
+        fMajLevelSpin->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
 
     fTestButton = new SButton( "TEST", SColor_t::VIOLET );
         connect( this, &V895Window::Connected, fTestButton, &QPushButton::setEnabled );

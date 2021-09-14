@@ -19,8 +19,6 @@ DeviceWindow::DeviceWindow( V2718Window *parent ) :
     fParent( parent ),
     fDevice( nullptr )
 {
-    resize( 300, 150 );
-
     connect( fParent, &V2718Window::Connected, this, &DeviceWindow::OnControllerDisconnect );
 
     fProgramButton = new SButton( "PROGRAM", SColor_t::VIOLET );
@@ -40,6 +38,8 @@ DeviceWindow::DeviceWindow( V2718Window *parent ) :
     fBottomFrame->setLayout( buttonLayout );
 
     CreateFileMenu();
+
+    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 DeviceWindow::~DeviceWindow()

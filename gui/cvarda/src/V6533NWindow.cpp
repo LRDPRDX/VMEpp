@@ -26,6 +26,7 @@
 
 #include "Style.h"
 #include "QLedIndicator.h"
+#include "Prelude.h"
 
 #include "VException.h"
 #include "qnamespace.h"
@@ -43,6 +44,7 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
 
     emit Connected( false );
 
+
     statusBar()->showMessage( "Ready..." );
 }
 
@@ -57,8 +59,8 @@ void V6533NWindow::CreateActions()
 
 void V6533NWindow::CreateDockWidget()
 {
-    QDockWidget *dock = new QDockWidget( "V6533N Monitor", this );
-    fMonitor = new Monitor( this, dock );
+    QDockWidget *dock = new QDockWidget( "V6533N::Monitor", this );
+    fMonitor = new V6533NMonitor( this, dock );
     dock->setWidget( fMonitor );
     addDockWidget( Qt::RightDockWidgetArea, dock );
     fViewMenu->addAction( dock->toggleViewAction() );
@@ -101,8 +103,13 @@ void V6533NWindow::CreateCentralWidget()
             fOffCombo[ch]->addItem( "OFF", 0 );
             fOffCombo[ch]->addItem( "KILL", 1 );
 
+        QLabel *iMonLabel = new QLabel( "Imon:" );
+        fIMonCombo[ch] = new QComboBox();
+            fIMonCombo[ch]->addItem( "300uA", QVariant::fromValue( V6533N::IMonRange_t::RANGE_LOW ) );
+            fIMonCombo[ch]->addItem( "3000uA", QVariant::fromValue( V6533N::IMonRange_t::RANGE_HIGH ) );
+
         SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
-        QVBoxLayout *buttonLayout = new QVBoxLayout();
+        QHBoxLayout *buttonLayout = new QHBoxLayout();
 
 
         fOnButton[ch] = new SButton( "ON", SColor_t::VIOLET );
@@ -128,8 +135,11 @@ void V6533NWindow::CreateCentralWidget()
         gridLayout->addWidget( fDownSpin[ch], 1, 3 );
         gridLayout->addWidget( offLabel, 1, 4, Qt::AlignRight ); 
         gridLayout->addWidget( fOffCombo[ch], 1, 5 );
+        gridLayout->addWidget( iMonLabel, 1, 6, Qt::AlignRight ); 
+        gridLayout->addWidget( fIMonCombo[ch], 1, 7 );
 
-        gridLayout->addWidget( buttonFrame, 0, 6, 2, 1 );
+        gridLayout->addWidget( buttonFrame, 0, 6, 1, 2 );
+
 
         chGroup->setLayout( gridLayout );
         vLayout->addWidget( chGroup );
@@ -174,8 +184,7 @@ void V6533NWindow::UpdateMonitor()
     V6533N* hv = static_cast<V6533N*>( fDevice );
     try
     {
-        V6533N::MonitorData md;
-        hv->ReadMonitor( md );
+        V6533N::MonitorData md = hv->ReadMonitor();
         fMonitor->Update( md );
     }
     catch( const VException& e )
@@ -202,6 +211,7 @@ void V6533NWindow::SpreadConfig( const UConfig<V6533N>& cfg )
         fUpSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_UP );
         fDownSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_DOWN );
         changeCombo( fOffCombo[i], cfg.CHANNELS.at( i ).PW_DOWN );
+        ChangeCombo( fIMonCombo[i], cfg.CHANNELS.at( i ).IMON_RANGE );
     }
 }
 
@@ -217,6 +227,7 @@ UConfig<V6533N> V6533NWindow::CollectConfig()
         cfg.CHANNELS.at( i ).RAMP_UP = fUpSpin[i]->value();    
         cfg.CHANNELS.at( i ).RAMP_DOWN = fDownSpin[i]->value();    
         cfg.CHANNELS.at( i ).PW_DOWN = fOffCombo[i]->currentData().value<bool>();  
+        cfg.CHANNELS.at( i ).IMON_RANGE = fIMonCombo[i]->currentData().value<V6533N::IMonRange_t>();
     }
 
     return cfg;
@@ -295,66 +306,26 @@ void V6533NWindow::ChannelOff()
 //*********************
 //****** MONITOR ******
 //*********************
-Monitor::Monitor( V6533NWindow* container, QWidget* parent ) :
+V6533NMonitor::V6533NMonitor( V6533NWindow* container, QWidget* parent ) :
     QWidget( parent ),
     fContainer( container )
 {
+    fLayout = new QVBoxLayout();
+
     setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
+    CreateWidgets();
+
+    setLayout( fLayout );
+}
+
+V6533NMonitor::~V6533NMonitor()
+{
+}
+
+void V6533NMonitor::CreateWidgets()
+{
     CreateGeneralFrame();
-}
-
-Monitor::~Monitor()
-{
-}
-
-void Monitor::CreateGeneralFrame()
-{
-    QVBoxLayout *layout = new QVBoxLayout();
-
-    SFrame *upperFrame = new SFrame( SColor_t::VIOLET );
-    QGridLayout *upperLayout = new QGridLayout();
-
-    QLabel *vLabel = new QLabel( "Max Voltage [V]:" );
-    fVoltText = new QLineEdit();
-        fVoltText->setReadOnly( true );
-
-    QLabel *cLabel = new QLabel( "Max Current [uA]:" );
-    fCurText = new QLineEdit();
-        fCurText->setReadOnly( true );
-
-    fPowFailLED = new QLedIndicatorWithLabel( "POWER FAIL", false );
-    fOvPowLED = new QLedIndicatorWithLabel( "OVER POWER", false );
-    fMaxVUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
-    fMaxIUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
-
-    upperLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );
-    upperLayout->addWidget( fVoltText, 0, 1 );
-    upperLayout->addWidget( fMaxVUncLED, 0, 2 );
-    upperLayout->addWidget( cLabel, 1, 0, Qt::AlignRight );
-    upperLayout->addWidget( fCurText, 1, 1 );
-    upperLayout->addWidget( fMaxIUncLED, 1, 2 );
-
-    upperFrame->setLayout( upperLayout );
-    layout->addWidget( upperFrame );
-
-    SFrame *lowerFrame = new SFrame( SColor_t::VIOLET );
-    QGridLayout *lowerLayout = new QGridLayout();
-
-    for( int i = 0; i < N_CH/2; ++i )
-    {
-        fAlarmLED[i] = new QLedIndicatorWithLabel( QString( "ALARM CH%1" ).arg( i ), false );
-        lowerLayout->addWidget( fAlarmLED[i], i, 0 );
-    }
-
-    for( int i = N_CH/2; i < N_CH; ++i )
-    {
-        fAlarmLED[i] = new QLedIndicatorWithLabel( QString( "ALARM CH%1" ).arg( i ), true );
-        lowerLayout->addWidget( fAlarmLED[i], i - N_CH/2, 1 );
-    }
-
-    lowerLayout->setSpacing( 1 );
-    lowerFrame->setLayout( lowerLayout );
-    layout->addWidget( lowerFrame );
+    CreateChannelFrame();
 
     fUpdateButton = new SButton( "UPDATE", SColor_t::VIOLET );
         connect( fContainer, &V6533NWindow::Connected, fUpdateButton, &SButton::setEnabled );
@@ -372,12 +343,93 @@ void Monitor::CreateGeneralFrame()
     buttonLayout->addWidget( fStopButton );
 
     buttonFrame->setLayout( buttonLayout );
-    layout->addWidget( buttonFrame );
-
-    setLayout( layout );
+    fLayout->addWidget( buttonFrame );
 }
 
-void Monitor::Update( const V6533N::MonitorData& m )
+void V6533NMonitor::CreateGeneralFrame()
+{
+    SFrame *generalFrame = new SFrame( SColor_t::VIOLET );
+    QGridLayout *gLayout = new QGridLayout();
+
+    QLabel *vLabel = new QLabel( "Max Voltage [V]:" );
+    fVoltText = new QLineEdit();
+        fVoltText->setReadOnly( true );
+        fVoltText->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
+
+    QLabel *cLabel = new QLabel( "Max Current [uA]:" );
+    fCurText = new QLineEdit();
+        fCurText->setReadOnly( true );
+        fCurText->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
+
+    fPowFailLED = new QLedIndicatorWithLabel( "POWER FAIL", false );
+    fOvPowLED = new QLedIndicatorWithLabel( "OVER POWER", false );
+    fMaxVUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
+    fMaxIUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
+
+    gLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );
+    gLayout->addWidget( fVoltText, 0, 1 );
+    gLayout->addWidget( fMaxVUncLED, 0, 2 );
+    gLayout->addWidget( cLabel, 1, 0, Qt::AlignRight );
+    gLayout->addWidget( fCurText, 1, 1 );
+    gLayout->addWidget( fMaxIUncLED, 1, 2 );
+
+    generalFrame->setLayout( gLayout );
+    fLayout->addWidget( generalFrame );
+}
+
+void V6533NMonitor::CreateChannelFrame()
+{
+    for( uint8_t ch = 0; ch < N_CH; ++ch )
+    {
+        QGroupBox *chGroup = new QGroupBox( QString( "Channel %1" ).arg( ch ) );
+        QGridLayout *gridLayout = new QGridLayout();
+
+        QLabel *voltLabel = new QLabel( "V" );
+        fVoltMonText[ch] = new QLineEdit();
+            fVoltMonText[ch]->setReadOnly( true );
+            fVoltMonText[ch]->setFixedWidth( 50 );
+
+        QLabel *curLabel = new QLabel( "uA" );
+        fCurMonText[ch] = new QLineEdit();
+            fCurMonText[ch]->setReadOnly( true );
+            fCurMonText[ch]->setFixedWidth( 50 );
+
+        QLabel *tempLabel = new QLabel( "\u00b0C" );
+        fTempMonText[ch] = new QLineEdit();
+            fTempMonText[ch]->setReadOnly( true );
+            fTempMonText[ch]->setFixedWidth( 50 );
+
+        gridLayout->addWidget( fVoltMonText[ch], 0, 0 );
+        gridLayout->addWidget( voltLabel, 0, 1, Qt::AlignLeft );
+        gridLayout->addWidget( fCurMonText[ch], 0, 2 );
+        gridLayout->addWidget( curLabel, 0, 3, Qt::AlignLeft );
+
+        SFrame* ledFrame = new SFrame( SColor_t::RED );
+        QGridLayout* ledLayout = new QGridLayout();
+            ledLayout->setSpacing( 1 );
+        QString ledNames[N_LED] = { "ON", "RAMP UP", "RAMP DOWN", "OVER CURRENT", "OVER VOLTAGE", "UNDER VOLTAGE",
+                                   "MAX V", "MAX I", "TRIP", "OVER POWER", "OVER TEMPERATURE", "DISABLED",
+                                   "INTERLOCK", "UNCALIBRATED" };
+        for( uint8_t l = 0; l < N_LED; ++l )
+        {
+            fChStatusLED[ch][l] = new QLedIndicator( 10 );
+            fChStatusLED[ch][l]->setToolTip( ledNames[l] );
+            ledLayout->addWidget( fChStatusLED[ch][l], 0, l );
+        }
+        ledFrame->setLayout( ledLayout );
+
+        gridLayout->addWidget( ledFrame, 0, 4 );
+
+        gridLayout->addWidget( fTempMonText[ch], 0, 5 );
+        gridLayout->addWidget( tempLabel, 0, 6, Qt::AlignLeft );
+
+        chGroup->setLayout( gridLayout );
+
+        fLayout->addWidget( chGroup );
+    }
+}
+
+void V6533NMonitor::Update( const V6533N::MonitorData& m )
 {
     fVoltText->setText( QString::number( m.V_MAX ) );
     fCurText->setText( QString::number( m.I_MAX ) );
@@ -385,8 +437,15 @@ void Monitor::Update( const V6533N::MonitorData& m )
     fMaxVUncLED->SetChecked( m.STATUS & (1 << 10) );
     fMaxIUncLED->SetChecked( m.STATUS & (1 << 11) );
 
-    for( uint8_t i = 0; i < N_CH; ++i )
+    for( uint8_t ch = 0; ch < N_CH; ++ch )
     {
-        fAlarmLED[i]->SetChecked( m.STATUS & (1 << i) );
+        fVoltMonText[ch]->setText( QString().sprintf("%.1f", m.CHANNELS.at(ch).VOLTAGE ) );
+        fCurMonText[ch]->setText( QString().sprintf("%.1f", m.CHANNELS.at(ch).CURRENT ) );
+        fTempMonText[ch]->setText( QString::number( m.CHANNELS.at(ch).TEMP ) );
+
+        for( uint8_t l = 0; l < N_LED; ++l )
+        {
+            fChStatusLED[ch][l]->setState( m.CHANNELS.at(ch).STATUS & (1 << l) );
+        }
     }
 }
