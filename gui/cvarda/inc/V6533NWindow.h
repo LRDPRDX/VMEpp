@@ -72,10 +72,11 @@ class V6533NMonitor : public QWidget
 
     protected :
         QLineEdit               *fVoltText, *fCurText;
-        QLedIndicatorWithLabel  *fAlarmLED[N_CH], *fPowFailLED, *fOvPowLED, *fMaxVUncLED, *fMaxIUncLED;
+        QLedIndicatorWithLabel  *fAlarmLED[N_CH];
         QPushButton             *fUpdateButton, *fStartButton, *fStopButton;
         QLineEdit               *fVoltMonText[N_CH], *fCurMonText[N_CH], *fTempMonText[N_CH];
         QLedIndicator           *fChStatusLED[N_CH][N_LED];
+        QLedIndicator           *fPowFailLED, *fOvPowLED, *fMaxVUncLED, *fMaxIUncLED;
 
         QVBoxLayout             *fLayout;
 

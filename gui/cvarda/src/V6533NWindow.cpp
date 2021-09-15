@@ -362,27 +362,34 @@ void V6533NMonitor::CreateGeneralFrame()
     QLabel *vqLabel = new QLabel( "V" );
     fVoltText = new QLineEdit();
         fVoltText->setReadOnly( true );
-        fVoltText->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
+        fVoltText->setFixedWidth( 60 );
 
     QLabel *cLabel = new QLabel( "Max Current:" );
     QLabel *cqLabel = new QLabel( "uA" );
     fCurText = new QLineEdit();
         fCurText->setReadOnly( true );
-        fCurText->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
+        fCurText->setFixedWidth( 60 );
 
-    fPowFailLED = new QLedIndicatorWithLabel( "POWER FAIL", false );
-    fOvPowLED = new QLedIndicatorWithLabel( "OVER POWER", false );
-    fMaxVUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
-    fMaxIUncLED = new QLedIndicatorWithLabel( "UNCALIBRATED", true );
+    fPowFailLED = new QLedIndicator();
+        fPowFailLED->setToolTip( "POWER FAILED" );
+    fOvPowLED = new QLedIndicator();
+        fOvPowLED->setToolTip( "OVER POWER" );
+    fMaxVUncLED = new QLedIndicator();
+        fMaxVUncLED->setToolTip( "MAX V UNCALIBRATED" );
+    fMaxIUncLED = new QLedIndicator();
+        fMaxIUncLED->setToolTip( "MAX I UNCALIBRATED" );
 
     gLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );
     gLayout->addWidget( fVoltText, 0, 1 );
     gLayout->addWidget( vqLabel, 0, 2, Qt::AlignLeft );
-    gLayout->addWidget( fMaxVUncLED, 0, 3 );
+    gLayout->addWidget( fMaxVUncLED, 0, 3, Qt::AlignHCenter );
+    gLayout->addWidget( fPowFailLED, 0, 4, Qt::AlignHCenter );
     gLayout->addWidget( cLabel, 1, 0, Qt::AlignRight );
     gLayout->addWidget( fCurText, 1, 1 );
     gLayout->addWidget( cqLabel, 1, 2, Qt::AlignLeft );
-    gLayout->addWidget( fMaxIUncLED, 1, 3 );
+    gLayout->addWidget( fMaxIUncLED, 1, 3, Qt::AlignHCenter );
+    gLayout->addWidget( fOvPowLED, 1, 4, Qt::AlignHCenter );
+
 
     generalFrame->setLayout( gLayout );
     fLayout->addWidget( generalFrame );
@@ -447,15 +454,18 @@ void V6533NMonitor::CreateTimer()
     fTimer = new QTimer( this );
         fTimer->setInterval( 1000 );
     connect( fTimer, &QTimer::timeout, fContainer, &V6533NWindow::UpdateMonitor );
+    connect( fContainer, &V6533NWindow::Connected, this, &V6533NMonitor::StopTimer );
 }
 
 void V6533NMonitor::Update( const V6533N::MonitorData& m )
 {
-    fVoltText->setText( QString::number( m.V_MAX ) );
-    fCurText->setText( QString::number( m.I_MAX ) );
+    fVoltText->setText( QString().sprintf( "%.1f", m.V_MAX ) );
+    fCurText->setText( QString().sprintf( "%.1f", m.I_MAX ) );
 
-    fMaxVUncLED->SetChecked( m.STATUS & (1 << 10) );
-    fMaxIUncLED->SetChecked( m.STATUS & (1 << 11) );
+    fMaxVUncLED->SetState( m.STATUS & (1 << 10) );
+    fMaxIUncLED->SetState( m.STATUS & (1 << 11) );
+    fPowFailLED->SetState( m.STATUS & (1 << 8) );
+    fOvPowLED->SetState(   m.STATUS & (1 << 9) );
 
     for( uint8_t ch = 0; ch < N_CH; ++ch )
     {
