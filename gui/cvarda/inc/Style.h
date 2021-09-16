@@ -3,6 +3,7 @@
 #include <QString>
 #include <QFrame>
 #include <QPushButton>
+#include <QGroupBox>
 
 namespace style 
 {
@@ -65,6 +66,18 @@ struct SColor
     }
 };
 
+namespace ss
+{
+    static const QString groupBox = QString( "QGroupBox {border:2px solid %1; margin-top:3ex;"
+                                             "border-top-right-radius:5px; border-bottom-left-radius:5px;"
+                                             "border-bottom-right-radius:5px;}" 
+                                             "QGroupBox::title {subcontrol-origin: margin; padding: 0 3px;"
+                                             "background-color:%1; border-top-left-radius:5px;"
+                                             "border-top-right-radius:5px; color:#ffffff}" ).arg( style::blue );
+
+    static const QString frame = QString( "SFrame {border: 1px solid %1; border-radius: 4px}" ).arg( style::blue );
+}
+
 class SFrame : public QFrame
 {
     Q_OBJECT
@@ -81,4 +94,13 @@ class SButton : public QPushButton
     public :
         SButton( const QString& text, SColor_t color, QWidget *parent = nullptr );
         virtual ~SButton();
+};
+
+class SGroupBox : public QGroupBox
+{
+    Q_OBJECT
+
+    public :
+        SGroupBox( const QString& title, QWidget* parent = nullptr );
+        virtual ~SGroupBox();
 };

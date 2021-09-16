@@ -507,7 +507,8 @@ main.o: src/main.cpp inc/V2718Window.h \
 		../../inc/UConfigurable.h \
 		../../inc/VException.h \
 		inc/DeviceWindow.h \
-		../../inc/VSlave.h
+		../../inc/VSlave.h \
+		inc/Style.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 QLedIndicator.o: src/QLedIndicator.cpp inc/QLedIndicator.h \

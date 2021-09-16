@@ -9,10 +9,6 @@ SFrame::SFrame( SColor_t color, QWidget *parent ) :
 {
     setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Maximum );
     setObjectName( "SFrame" );
-
-    SColor c( color );
-    QString s = QString( "#SFrame {border: 2px solid %1; border-radius: 4px}" ).arg( c.light );
-    setStyleSheet( s );
 }
 
 SFrame::~SFrame()
@@ -40,5 +36,24 @@ SButton::SButton( const QString& text, SColor_t color, QWidget *parent ) :
 }
 
 SButton::~SButton()
+{
+}
+
+//***********************
+//****** SGROUPBOX ******
+//***********************
+SGroupBox::SGroupBox( const QString& title, QWidget* parent ) :
+    QGroupBox( title, parent )
+{
+    SColor c( SColor_t::VIOLET );
+
+    QString s = QString( "QGroupBox {border:2px solid %1; margin-top:3ex;}" ).arg( c.normal );
+
+    QString t = QString( "QGroupBox::title {subcontrol-origin: margin; padding: 0 3px; background-color:%1; border-top-left-radius:5px; border-top-right-radius:5px; color:#ffffff}" ).arg(c.normal);
+
+    setStyleSheet( s + t );
+};
+
+SGroupBox::~SGroupBox()
 {
 }

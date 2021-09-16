@@ -64,6 +64,7 @@ void V6533NWindow::CreateDockWidget()
     fMonitor = new V6533NMonitor( this, dock );
     dock->setWidget( fMonitor );
     addDockWidget( Qt::RightDockWidgetArea, dock );
+    dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable );
     fViewMenu->addAction( dock->toggleViewAction() );
 }
 
@@ -370,13 +371,13 @@ void V6533NMonitor::CreateGeneralFrame()
         fCurText->setReadOnly( true );
         fCurText->setFixedWidth( 60 );
 
-    fPowFailLED = new QLedIndicator();
+    fPowFailLED = new QLedIndicator( 18 );
         fPowFailLED->setToolTip( "POWER FAILED" );
-    fOvPowLED = new QLedIndicator();
+    fOvPowLED = new QLedIndicator( 18 );
         fOvPowLED->setToolTip( "OVER POWER" );
-    fMaxVUncLED = new QLedIndicator();
+    fMaxVUncLED = new QLedIndicator( 18 );
         fMaxVUncLED->setToolTip( "MAX V UNCALIBRATED" );
-    fMaxIUncLED = new QLedIndicator();
+    fMaxIUncLED = new QLedIndicator( 18 );
         fMaxIUncLED->setToolTip( "MAX I UNCALIBRATED" );
 
     gLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );

@@ -135,6 +135,7 @@ void V2718Window::CreateDockWidget()
     fDisplay = new Display( this, dock );
     dock->setWidget( fDisplay );
     addDockWidget( Qt::RightDockWidgetArea, dock );
+    dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable );
     fViewMenu->addAction( dock->toggleViewAction() );
 }
 
