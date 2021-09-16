@@ -43,3 +43,4 @@ moc_*
 *.pro
 
 /gui/cvarda/cvarda
+/gui/cvarda/Makefile
