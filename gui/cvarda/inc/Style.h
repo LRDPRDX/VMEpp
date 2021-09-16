@@ -95,12 +95,3 @@ class SButton : public QPushButton
         SButton( const QString& text, SColor_t color, QWidget *parent = nullptr );
         virtual ~SButton();
 };
-
-class SGroupBox : public QGroupBox
-{
-    Q_OBJECT
-
-    public :
-        SGroupBox( const QString& title, QWidget* parent = nullptr );
-        virtual ~SGroupBox();
-};
