@@ -16,6 +16,8 @@ namespace vmeplus
                             vGenericError = cvGenericError,
                             vInvalidParam = cvInvalidParam,
                             vTimeoutError = cvTimeoutError,
+                            vAlreadyOpenError = cvAlreadyOpenError,
+                            vMaxBoardCountError = cvMaxBoardCountError,
                             vBadMaster = -10,
                             vOrphan = -11,
                             vBuffAllocFailed = -12,
@@ -60,6 +62,10 @@ namespace vmeplus
                         fMessage = "Invalid parameter"; break;
                     case( VError_t::vTimeoutError ) :
                         fMessage = "Timeout error"; break;
+                    case( VError_t::vAlreadyOpenError ) :
+                        fMessage = "Device is already open error"; break;
+                    case( VError_t::vMaxBoardCountError ) :
+                        fMessage = "Maximum device number has been reached"; break;
                     case( VError_t::vBadMaster ) :
                         fMessage = "Requesting a bad controller";
                         fHint    = "Try to register this board to the correct master";
