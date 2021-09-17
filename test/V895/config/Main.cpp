@@ -16,9 +16,9 @@ int main()
 
     try
     {
-        controller.Open( 0, 0 );
-        controller.RegisterSlave( &desc );//Connect the board we want to work with
-        controller.Initialize();//Initialize all the registered boards
+        //controller.Open( 0, 0 );
+        //controller.RegisterSlave( &desc );//Connect the board we want to work with
+        //controller.Initialize();//Initialize all the registered boards
 
         UConfig<V895> cfg;
         desc.ReadConfig( cfg );

@@ -1,0 +1,26 @@
+{
+    "cfg": {
+        "thresholds": {
+            "value0": 64,
+            "value1": 0,
+            "value2": 0,
+            "value3": 0,
+            "value4": 0,
+            "value5": 0,
+            "value6": 0,
+            "value7": 0,
+            "value8": 192,
+            "value9": 53,
+            "value10": 59,
+            "value11": 182,
+            "value12": 76,
+            "value13": 127,
+            "value14": 0,
+            "value15": 0
+        },
+        "majority": 36808,
+        "width high": 46628,
+        "width low": 32588,
+        "mask": 0
+    }
+}
