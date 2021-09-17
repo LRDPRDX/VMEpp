@@ -162,6 +162,12 @@ namespace vmeplus
             CVIOPolarity    POLARITY;
             CVLEDPolarity   LED_POLARITY;
 
+            Input() :
+                POLARITY( CVIOPolarity::cvDirect ),
+                LED_POLARITY( CVLEDPolarity::cvActiveHigh )
+            {
+            }
+
             template <class Archive>
             void serialize( Archive& ar )
             {
@@ -175,6 +181,13 @@ namespace vmeplus
             CVIOPolarity    POLARITY;
             CVLEDPolarity   LED_POLARITY;
             CVIOSources     SOURCE;
+
+            Output() :
+                POLARITY( CVIOPolarity::cvDirect ),
+                LED_POLARITY( CVLEDPolarity::cvActiveHigh ),
+                SOURCE( CVIOSources::cvManualSW )
+            {
+            }
 
             template <class Archive>
             void serialize( Archive& ar )
@@ -192,6 +205,15 @@ namespace vmeplus
             unsigned char   N_PULSES;
             CVIOSources     START_SOURCE;
             CVIOSources     STOP_SOURCE;
+
+            Pulser() :
+                FREQUENCY( 10 ),
+                DUTY( 50 ),
+                N_PULSES( 0 ),
+                START_SOURCE( CVIOSources::cvManualSW ),
+                STOP_SOURCE( CVIOSources::cvManualSW )
+            {
+            }
 
             template <class Archive>
             void serialize( Archive& ar )
@@ -211,6 +233,15 @@ namespace vmeplus
             CVIOSources     HIT_SOURCE;
             CVIOSources     GATE_SOURCE;
             CVIOSources     STOP_SOURCE;
+
+            Scaler() :
+                LIMIT( 0 ),
+                AUTO_RESET( 1 ),
+                HIT_SOURCE( CVIOSources::cvInputSrc0 ),
+                GATE_SOURCE( CVIOSources::cvManualSW ),
+                STOP_SOURCE( CVIOSources::cvInputSrc1 )
+            {
+            }
 
             template <class Archive>
             void serialize( Archive& ar )

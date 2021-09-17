@@ -13,50 +13,50 @@
         "outputs": {
             "value0": {
                 "polarity": 0,
-                "LED polarity": 1,
-                "source": 4
+                "LED polarity": 0,
+                "source": 0
             },
             "value1": {
                 "polarity": 0,
-                "LED polarity": 1,
-                "source": 4
+                "LED polarity": 0,
+                "source": 0
             },
             "value2": {
                 "polarity": 0,
-                "LED polarity": 1,
-                "source": 4
+                "LED polarity": 0,
+                "source": 0
             },
             "value3": {
                 "polarity": 0,
-                "LED polarity": 1,
-                "source": 4
+                "LED polarity": 0,
+                "source": 0
             },
             "value4": {
                 "polarity": 0,
                 "LED polarity": 0,
-                "source": 4
+                "source": 0
             }
         },
         "pulser A": {
-            "frequency": 9,
+            "frequency": 10,
             "duty": 50,
-            "N": 88,
+            "N": 0,
             "start": 0,
             "stop": 0
         },
         "pulser B": {
-            "frequency": 9920,
-            "duty": 19,
-            "N": 200,
+            "frequency": 10,
+            "duty": 50,
+            "N": 0,
             "start": 0,
             "stop": 0
         },
         "scaler": {
             "limit": 0,
-            "duty": 0,
+            "duty": 1,
             "hit": 1,
             "gate": 0,
-            "stop": 0
+            "stop": 2
         }
     }
 }

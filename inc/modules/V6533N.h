@@ -193,6 +193,18 @@ namespace vmeplus
             bool                PW_DOWN;
             V6533N::IMonRange_t IMON_RANGE;
 
+            Channel() :
+                V_SET{},
+                I_SET{},
+                TRIP_TIME{},
+                SW_MAX{},
+                RAMP_UP{},
+                RAMP_DOWN{},
+                PW_DOWN{},
+                IMON_RANGE{}
+            {
+            }
+
             template <class Archive>
             void serialize( Archive& ar )
             {

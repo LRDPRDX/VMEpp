@@ -4,7 +4,7 @@
             "value0": {
                 "voltage set": 0.0,
                 "current set": 0.0,
-                "trip time": 1.1210387714598537e-43,
+                "trip time": 0.0,
                 "sw max voltage": 0.0,
                 "ramp up": 0,
                 "ramp down": 0,
@@ -13,9 +13,9 @@
             },
             "value1": {
                 "voltage set": 0.0,
-                "current set": 9.10844001811131e-44,
+                "current set": 0.0,
                 "trip time": 0.0,
-                "sw max voltage": 7.006492321624085e-45,
+                "sw max voltage": 0.0,
                 "ramp up": 0,
                 "ramp down": 0,
                 "power down": false,
@@ -24,11 +24,11 @@
             "value2": {
                 "voltage set": 0.0,
                 "current set": 0.0,
-                "trip time": 1.401298464324817e-45,
+                "trip time": 0.0,
                 "sw max voltage": 0.0,
-                "ramp up": 5,
+                "ramp up": 0,
                 "ramp down": 0,
-                "power down": true,
+                "power down": false,
                 "current mon range": 0
             },
             "value3": {
@@ -38,28 +38,28 @@
                 "sw max voltage": 0.0,
                 "ramp up": 0,
                 "ramp down": 0,
-                "power down": true,
-                "current mon range": 119
+                "power down": false,
+                "current mon range": 0
             },
             "value4": {
-                "voltage set": 1.5414283107572988e-43,
-                "current set": 1.2751816025355836e-43,
+                "voltage set": 0.0,
+                "current set": 0.0,
                 "trip time": 0.0,
                 "sw max voltage": 0.0,
                 "ramp up": 0,
                 "ramp down": 0,
                 "power down": false,
-                "current mon range": 3
+                "current mon range": 0
             },
             "value5": {
                 "voltage set": 0.0,
-                "current set": 9.10844001811131e-44,
+                "current set": 0.0,
                 "trip time": 0.0,
-                "sw max voltage": NaN,
-                "ramp up": 65535,
-                "ramp down": 65535,
-                "power down": true,
-                "current mon range": 32765
+                "sw max voltage": 0.0,
+                "ramp up": 0,
+                "ramp down": 0,
+                "power down": false,
+                "current mon range": 0
             }
         }
     }

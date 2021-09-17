@@ -30,8 +30,8 @@ int main()
         UConfig<V2718> cfg;
         //controller.ReadConfig( cfg );
 
-        //WriteConfigToFile( cfg, "config.json" );
-        WriteConfigToFile( cfg, "/usr/config.json" );
+        WriteConfigToFile( cfg, "config.json" );
+        //WriteConfigToFile( cfg, "/usr/config.json" );
 
         UConfig<V2718> cfg2;
         ReadConfigFromFile( cfg2, "config.json" );

@@ -135,6 +135,15 @@ namespace vmeplus
         uint16_t                                    WIDTH_L;
         uint16_t                                    MASK;
 
+        UConfig<V895>() :
+            THRESHOLDS{0},
+            MAJORITY{},
+            WIDTH_H{},
+            WIDTH_L{},
+            MASK{}
+        {
+        }
+
         template <class Archive>
         void serialize( Archive& ar )
         {
