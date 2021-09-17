@@ -2,6 +2,7 @@ export TOP_DIR  := $(shell pwd)
 export DEP_DIR  := $(TOP_DIR)/.deps
 export OBJ_DIR  := $(TOP_DIR)/obj
 export INC_DIR  := $(TOP_DIR)/inc
+export CEREAL_INC := $(HOME)/Tools/cereal-1.3.0/include
 export SRC_DIR  := $(TOP_DIR)/src
 export BIN_DIR  := $(TOP_DIR)/bin
 export LIB_DIR  := $(TOP_DIR)/lib

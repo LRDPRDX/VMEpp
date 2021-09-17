@@ -1,4 +1,4 @@
-TOP_DIR 	:= ../../../
+TOP_DIR :=  $(shell pwd)/../../..
 INC_DIR     := $(TOP_DIR)/inc
 LINKAGE     := -lVMEplusM -lVMEplus
 
@@ -9,7 +9,7 @@ SRC     := $(wildcard *.cpp)
 TARGET  := $(patsubst %.cpp,%,$(SRC))
 
 $(TARGET) : $(SRC)
-	$(CC) -DLINUX $(CXXFLAGS) -I$(INC_DIR) $< $(LINKAGE) -o $@
+		$(CC) -DLINUX $(CXXFLAGS) -g -I$(INC_DIR) -I$(HOME)/Tools/cereal-1.3.0/include $< $(LINKAGE) -o $@
 
 .PHONY : clean
 clean :

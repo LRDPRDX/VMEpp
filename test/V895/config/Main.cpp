@@ -22,6 +22,8 @@ int main()
 
         UConfig<V895> cfg;
         desc.ReadConfig( cfg );
+
+        WriteConfigToFile( cfg, "config.json" );
     }
     catch( const VException &e )
     {

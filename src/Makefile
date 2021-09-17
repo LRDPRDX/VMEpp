@@ -13,7 +13,7 @@ $(TARGET) : $(OBJS) | $(LIB_DIR)
 $(LIB_DIR) : ; mkdir -p $@
 
 $(OBJ_DIR)/%.o : %.cpp | $(OBJ_DIR) $(DEP_DIR)
-	$(CXX) $(DEPFLAGS) -c $(CXXFLAGS) -I$(INC_DIR) $< -o $@ 
+	$(CXX) $(DEPFLAGS) -c $(CXXFLAGS) -I$(INC_DIR) -I$(CEREAL_INC) $< -o $@ 
 
 $(OBJ_DIR) : ; mkdir -p $@
 $(DEP_DIR) : ; mkdir -p $@
