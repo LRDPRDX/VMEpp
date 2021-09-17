@@ -9,7 +9,7 @@ TARGET      := $(LIB_DIR)/$(LIB_SO)
 all : $(TARGET)
 
 $(MODULE_OBJ_DIR)/%.o : %.cpp | $(MODULE_OBJ_DIR)
-	$(CXX) $(DEPFLAGS) -c $(CXXFLAGS) -I$(INC_DIR) -I$(CEREAL_INC) $< -o $@ 
+	$(CXX) $(DEPFLAGS) -c $(CXXFLAGS) -I$(INC_DIR) $< -o $@ 
 
 $(MODULE_OBJ_DIR) : ; mkdir -p $@
 
