@@ -16,14 +16,15 @@ int main()
 
     try
     {
-        controller.Open( 0, 0 );
-        controller.RegisterSlave( &hv );//Connect the board we want to work with
-        controller.Initialize();//Initialize all the registered boards
+        //controller.Open( 0, 0 );
+        //controller.RegisterSlave( &hv );//Connect the board we want to work with
+        //controller.Initialize();//Initialize all the registered boards
 
         UConfig<V6533N> cfg;
 
-        hv.ReadConfig( cfg );
-        hv.WriteConfig( cfg );
+        //hv.ReadConfig( cfg );
+        //hv.WriteConfig( cfg );
+        WriteConfigToFile( cfg, "config.json" );
     }
     catch( const VException &cv )
     {

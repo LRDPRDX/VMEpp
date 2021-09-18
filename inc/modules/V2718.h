@@ -7,6 +7,9 @@
 #include "VController.h"
 #include "UConfigurable.h"
 
+#include "cereal/cereal.hpp"
+#include "cereal/types/array.hpp"
+
 namespace vmeplus
 {
     class V2718;
@@ -157,6 +160,19 @@ namespace vmeplus
         {
             CVIOPolarity    POLARITY;
             CVLEDPolarity   LED_POLARITY;
+
+            Input() :
+                POLARITY( CVIOPolarity::cvDirect ),
+                LED_POLARITY( CVLEDPolarity::cvActiveHigh )
+            {
+            }
+
+            template <class Archive>
+            void serialize( Archive& ar )
+            {
+                ar( cereal::make_nvp( "polarity", POLARITY ),
+                    cereal::make_nvp( "LED polarity", LED_POLARITY ) );
+            }
         };
 
         struct Output
@@ -164,6 +180,21 @@ namespace vmeplus
             CVIOPolarity    POLARITY;
             CVLEDPolarity   LED_POLARITY;
             CVIOSources     SOURCE;
+
+            Output() :
+                POLARITY( CVIOPolarity::cvDirect ),
+                LED_POLARITY( CVLEDPolarity::cvActiveHigh ),
+                SOURCE( CVIOSources::cvManualSW )
+            {
+            }
+
+            template <class Archive>
+            void serialize( Archive& ar )
+            {
+                ar( cereal::make_nvp( "polarity", POLARITY ),
+                    cereal::make_nvp( "LED polarity", LED_POLARITY ),
+                    cereal::make_nvp( "source", SOURCE ) );
+            }
         };
 
         struct Pulser
@@ -173,6 +204,25 @@ namespace vmeplus
             unsigned char   N_PULSES;
             CVIOSources     START_SOURCE;
             CVIOSources     STOP_SOURCE;
+
+            Pulser() :
+                FREQUENCY( 10 ),
+                DUTY( 50 ),
+                N_PULSES( 0 ),
+                START_SOURCE( CVIOSources::cvManualSW ),
+                STOP_SOURCE( CVIOSources::cvManualSW )
+            {
+            }
+
+            template <class Archive>
+            void serialize( Archive& ar )
+            {
+                ar( cereal::make_nvp( "frequency", FREQUENCY ),
+                    cereal::make_nvp( "duty", DUTY ),
+                    cereal::make_nvp( "N", N_PULSES ),
+                    cereal::make_nvp( "start", START_SOURCE ),
+                    cereal::make_nvp( "stop", STOP_SOURCE ) );
+            }
         };
 
         struct Scaler
@@ -182,6 +232,25 @@ namespace vmeplus
             CVIOSources     HIT_SOURCE;
             CVIOSources     GATE_SOURCE;
             CVIOSources     STOP_SOURCE;
+
+            Scaler() :
+                LIMIT( 0 ),
+                AUTO_RESET( 1 ),
+                HIT_SOURCE( CVIOSources::cvInputSrc0 ),
+                GATE_SOURCE( CVIOSources::cvManualSW ),
+                STOP_SOURCE( CVIOSources::cvInputSrc1 )
+            {
+            }
+
+            template <class Archive>
+            void serialize( Archive& ar )
+            {
+                ar( cereal::make_nvp( "limit", LIMIT ),
+                    cereal::make_nvp( "duty", AUTO_RESET ),
+                    cereal::make_nvp( "hit", HIT_SOURCE ),
+                    cereal::make_nvp( "gate", GATE_SOURCE ),
+                    cereal::make_nvp( "stop", STOP_SOURCE ) );
+            }
         };
 
         std::array<Input, V2718::GetInNumber()>     INPUTS;
@@ -189,6 +258,16 @@ namespace vmeplus
         Pulser                                      PULSER_A;
         Pulser                                      PULSER_B;
         Scaler                                      SCALER;
+
+        template <class Archive>
+        void serialize( Archive& ar )
+        {
+            ar( cereal::make_nvp( "inputs", INPUTS ),
+                cereal::make_nvp( "outputs", OUTPUTS ),
+                cereal::make_nvp( "pulser A", PULSER_A ),
+                cereal::make_nvp( "pulser B", PULSER_B ),
+                cereal::make_nvp( "scaler", SCALER ) );
+        }
     };
 }
 #endif

@@ -1,0 +1,66 @@
+{
+    "cfg": {
+        "channels": {
+            "value0": {
+                "voltage set": 0.0,
+                "current set": 0.0,
+                "trip time": 0.0,
+                "sw max voltage": 0.0,
+                "ramp up": 0,
+                "ramp down": 0,
+                "power down": false,
+                "current mon range": 0
+            },
+            "value1": {
+                "voltage set": 0.0,
+                "current set": 0.0,
+                "trip time": 0.0,
+                "sw max voltage": 0.0,
+                "ramp up": 0,
+                "ramp down": 0,
+                "power down": false,
+                "current mon range": 0
+            },
+            "value2": {
+                "voltage set": 0.0,
+                "current set": 0.0,
+                "trip time": 0.0,
+                "sw max voltage": 0.0,
+                "ramp up": 0,
+                "ramp down": 0,
+                "power down": false,
+                "current mon range": 0
+            },
+            "value3": {
+                "voltage set": 0.0,
+                "current set": 0.0,
+                "trip time": 0.0,
+                "sw max voltage": 0.0,
+                "ramp up": 0,
+                "ramp down": 0,
+                "power down": false,
+                "current mon range": 0
+            },
+            "value4": {
+                "voltage set": 0.0,
+                "current set": 0.0,
+                "trip time": 0.0,
+                "sw max voltage": 0.0,
+                "ramp up": 0,
+                "ramp down": 0,
+                "power down": false,
+                "current mon range": 0
+            },
+            "value5": {
+                "voltage set": 0.0,
+                "current set": 0.0,
+                "trip time": 0.0,
+                "sw max voltage": 0.0,
+                "ramp up": 0,
+                "ramp down": 0,
+                "power down": false,
+                "current mon range": 0
+            }
+        }
+    }
+}

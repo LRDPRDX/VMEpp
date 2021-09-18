@@ -2,7 +2,6 @@
 #include "modules/V2718.h"
 
 #include <iostream>
-#include <fstream>
 #include <unistd.h>
 #include <cassert>
 
@@ -30,6 +29,12 @@ int main()
 
         UConfig<V2718> cfg;
         controller.ReadConfig( cfg );
+
+        //WriteConfigToFile( cfg, "config.json" );
+        //WriteConfigToFile( cfg, "/usr/config.json" );
+
+        UConfig<V2718> cfg2;
+        ReadConfigFromFile( cfg2, "config.json" );
     }
     catch( const VException& e )
     {

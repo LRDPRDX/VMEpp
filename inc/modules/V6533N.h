@@ -164,10 +164,10 @@ namespace vmeplus
                     float VOLTAGE;
                     float CURRENT;
                     uint16_t STATUS;
-                    int16_t TEMP; 
+                    int16_t TEMP;
                 };
 
-                float V_MAX; 
+                float V_MAX;
                 float I_MAX;
                 uint16_t STATUS;
                 std::array<Channel, fChNumber> CHANNELS;
@@ -192,9 +192,40 @@ namespace vmeplus
             uint16_t            RAMP_DOWN;
             bool                PW_DOWN;
             V6533N::IMonRange_t IMON_RANGE;
+
+            Channel() :
+                V_SET{},
+                I_SET{},
+                TRIP_TIME{},
+                SW_MAX{},
+                RAMP_UP{},
+                RAMP_DOWN{},
+                PW_DOWN{},
+                IMON_RANGE{}
+            {
+            }
+
+            template <class Archive>
+            void serialize( Archive& ar )
+            {
+                ar( cereal::make_nvp( "voltage set", V_SET ),
+                    cereal::make_nvp( "current set", I_SET ),
+                    cereal::make_nvp( "trip time", TRIP_TIME ),
+                    cereal::make_nvp( "sw max voltage", SW_MAX ),
+                    cereal::make_nvp( "ramp up", RAMP_UP ),
+                    cereal::make_nvp( "ramp down", RAMP_DOWN ),
+                    cereal::make_nvp( "power down", PW_DOWN ),
+                    cereal::make_nvp( "current mon range", IMON_RANGE ) );
+            }
         };
 
         std::array<Channel, V6533N::GetChNumber()> CHANNELS;
+
+        template <class Archive>
+        void serialize( Archive& ar )
+        {
+            ar( cereal::make_nvp( "channels", CHANNELS ) );
+        }
     };
 }
 

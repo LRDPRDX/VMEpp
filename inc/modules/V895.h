@@ -134,6 +134,25 @@ namespace vmeplus
         uint16_t                                    WIDTH_H;
         uint16_t                                    WIDTH_L;
         uint16_t                                    MASK;
+
+        UConfig<V895>() :
+            THRESHOLDS{0},
+            MAJORITY{},
+            WIDTH_H{},
+            WIDTH_L{},
+            MASK{}
+        {
+        }
+
+        template <class Archive>
+        void serialize( Archive& ar )
+        {
+            ar( cereal::make_nvp( "thresholds", THRESHOLDS ),
+                cereal::make_nvp( "majority", MAJORITY ),
+                cereal::make_nvp( "width high", WIDTH_H ),
+                cereal::make_nvp( "width low", WIDTH_L ),
+                cereal::make_nvp( "mask", MASK ) );
+        }
     };
 }
 #endif
