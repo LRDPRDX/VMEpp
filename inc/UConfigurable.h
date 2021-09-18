@@ -33,7 +33,7 @@ namespace vmeplus
         }
         catch( const cereal::Exception& e )
         {
-            std::cout << e.what() << "\n";
+            throw( VException( VError_t::vConfigError, "Writing to " + path ) );
         }
     }
 
@@ -48,7 +48,7 @@ namespace vmeplus
         }
         catch( const cereal::Exception& e )
         {
-            std::cout << e.what() << "\n";
+            throw( VException( VError_t::vConfigError, "Reading from " + path ) );
         }
     }
 }

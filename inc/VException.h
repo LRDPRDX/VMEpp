@@ -81,8 +81,8 @@ namespace vmeplus
                         fMessage = "Bad master (base address, nullptr, etc.)";
                         break;
                     case( VError_t::vConfigError ) :
-                        fMessage = "Error occured while writing/reading JSON config";
-                        fHint = "Call ::GetDefaultConfig() member function to see how a config should look";
+                        fMessage = "Error occured while writing/reading config";
+                        fHint = "To see how a particular config should look like try to write the default config: WriteConfigToFile( UConfig<T>(), \"path\" ), where \'T\' is your module class";
                         break;
                     case( VError_t::vAccessError ) :
                         fMessage = "Data access error";

@@ -333,13 +333,16 @@ namespace vmeplus
         for( uint8_t i = 0; i < fInNumber; ++i )
         {
             ReadInputConfig( static_cast<CVInputSelect>(i), pol, ledPol );
-            cfg.INPUTS.at( i ) = { pol, ledPol };
+            cfg.INPUTS.at( i ).POLARITY = pol;
+            cfg.INPUTS.at( i ).LED_POLARITY = ledPol;
         }
 
         for( uint8_t i = 0; i < fOutNumber; ++i )
         {
             ReadOutputConfig( static_cast<CVOutputSelect>(i), pol, ledPol, src );
-            cfg.OUTPUTS.at( i ) = { pol, ledPol, src };
+            cfg.OUTPUTS.at( i ).POLARITY = pol;
+            cfg.OUTPUTS.at( i ).LED_POLARITY = ledPol;
+            cfg.OUTPUTS.at( i ).SOURCE = src;
         }
 
         // Pulsers
