@@ -36,6 +36,8 @@ V895Window::V895Window( uint32_t address, V2718Window *parent ) :
     CreateActions();
     CreateCentralWidget();
 
+    connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V895> );
+
     emit Connected( false );
 
     statusBar()->showMessage( "Ready..." );
@@ -135,7 +137,8 @@ void V895Window::Program()
 {
     try
     {
-        static_cast<V895*>(fDevice)->WriteConfig( CollectConfig() );
+        UConfig<V895> cfg = qvariant_cast<UConfig<V895>>( this->CollectConfig() );
+        static_cast<V895*>(fDevice)->WriteConfig( cfg );
         emit Programmed( true );
     }
     catch( const VException& e )
@@ -170,7 +173,7 @@ void V895Window::SpreadConfig( const UConfig<V895>& cfg )
     fMajLevelSpin->setValue( cfg.MAJORITY );
 }
 
-UConfig<V895> V895Window::CollectConfig()
+QVariant V895Window::CollectConfig()
 {
     UConfig<V895> cfg;
 
@@ -183,6 +186,9 @@ UConfig<V895> V895Window::CollectConfig()
     cfg.WIDTH_L = fWidthSpin[0]->value();
     cfg.WIDTH_H = fWidthSpin[1]->value();
     cfg.MAJORITY = fMajLevelSpin->value();
+
+    QVariant qv;
+    qv.setValue( cfg );
         
-    return cfg;
+    return qv;
 }

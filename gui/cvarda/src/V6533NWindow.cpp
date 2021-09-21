@@ -43,6 +43,8 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     CreateCentralWidget();
     CreateDockWidget();
 
+    connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V6533N> );
+
     emit Connected( false );
 
 
@@ -160,7 +162,8 @@ void V6533NWindow::Program()
 {
     try
     {
-        static_cast<V6533N*>( fDevice )->WriteConfig( CollectConfig() );
+        UConfig<V6533N> cfg = qvariant_cast< UConfig<V6533N> >( this->CollectConfig() );
+        static_cast<V6533N*>(fDevice)->WriteConfig( cfg );
         emit Programmed( true );
     }
     catch( const VException& e )
@@ -219,7 +222,7 @@ void V6533NWindow::SpreadConfig( const UConfig<V6533N>& cfg )
     }
 }
 
-UConfig<V6533N> V6533NWindow::CollectConfig()
+QVariant V6533NWindow::CollectConfig()
 {
     UConfig<V6533N> cfg;
 
@@ -234,7 +237,10 @@ UConfig<V6533N> V6533NWindow::CollectConfig()
         cfg.CHANNELS.at( i ).IMON_RANGE = fIMonCombo[i]->currentData().value<V6533N::IMonRange_t>();
     }
 
-    return cfg;
+    QVariant qv;
+    qv.setValue( cfg );
+
+    return qv;
 }
 
 void V6533NWindow::ChannelOn()

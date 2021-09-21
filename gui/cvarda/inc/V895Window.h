@@ -38,7 +38,7 @@ class V895Window : public DeviceWindow
     public slots :
         void SendTest();
 
-        UConfig<V895> CollectConfig();
+        QVariant CollectConfig() override;
         void SpreadConfig( const UConfig<V895>& cfg );
 
         void Program() override;

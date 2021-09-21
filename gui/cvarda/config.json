@@ -1,65 +1,66 @@
 {
-  "name": "V2718",
-  "settings": {
-    "inputs": [
-      {
-        "led_polarity" : 0,
-        "polarity": 0
-      },
-      {
-        "led_polarity": 0,
-        "polarity": 0
-      }
-    ],
-    "outputs": [
-      {
-        "led_polarity": 0,
-        "polarity": 0,
-        "source": 4
-      },
-      {
-        "led_polarity": 0,
-        "polarity": 0,
-        "source": 4
-      },
-      {
-        "led_polarity": 0,
-        "polarity": 0,
-        "source": 4
-      },
-      {
-        "led_polarity": 0,
-        "polarity": 0,
-        "source": 4
-      },
-      {
-        "led_polarity": 0,
-        "polarity": 0,
-        "source": 4
-      }
-    ],
-    "pulsers": {
-      "A": {
-        "count": 0,
-        "duty": 1,
-        "frequency": 0,
-        "start": 0,
-        "stop": 0
-      },
-      "B": {
-        "count": 0,
-        "duty": 1,
-        "frequency": 0,
-        "start": 0,
-        "stop": 0
-      }
-    },
-    "scaler": {
-      "auto_reset": false,
-      "gate": 0,
-      "hit": 1,
-      "limit": 0,
-      "stop": 0
+    "cfg": {
+        "channels": {
+            "value0": {
+                "voltage set": 0.0,
+                "current set": 100.0,
+                "trip time": 0.0,
+                "sw max voltage": 100.0,
+                "ramp up": 100,
+                "ramp down": 100,
+                "power down": false,
+                "current mon range": 1
+            },
+            "value1": {
+                "voltage set": 0.0,
+                "current set": 100.0,
+                "trip time": 0.0,
+                "sw max voltage": 100.0,
+                "ramp up": 100,
+                "ramp down": 100,
+                "power down": false,
+                "current mon range": 1
+            },
+            "value2": {
+                "voltage set": 0.0,
+                "current set": 100.0,
+                "trip time": 0.0,
+                "sw max voltage": 100.0,
+                "ramp up": 100,
+                "ramp down": 100,
+                "power down": false,
+                "current mon range": 1
+            },
+            "value3": {
+                "voltage set": 0.0,
+                "current set": 100.0,
+                "trip time": 0.0,
+                "sw max voltage": 100.0,
+                "ramp up": 100,
+                "ramp down": 100,
+                "power down": false,
+                "current mon range": 1
+            },
+            "value4": {
+                "voltage set": 0.0,
+                "current set": 100.0,
+                "trip time": 0.0,
+                "sw max voltage": 100.0,
+                "ramp up": 100,
+                "ramp down": 100,
+                "power down": false,
+                "current mon range": 1
+            },
+            "value5": {
+                "voltage set": 0.0,
+                "current set": 100.0,
+                "trip time": 0.0,
+                "sw max voltage": 100.0,
+                "ramp up": 100,
+                "ramp down": 100,
+                "power down": false,
+                "current mon range": 1
+            }
+        }
     }
-  }
 }

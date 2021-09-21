@@ -51,7 +51,7 @@ class V6533NWindow : public DeviceWindow
         void ChannelOn();
         void ChannelOff();
 
-        UConfig<V6533N> CollectConfig();
+        QVariant CollectConfig() override;
         void SpreadConfig( const UConfig<V6533N>& cfg );
 
     public :
