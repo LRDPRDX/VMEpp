@@ -53,10 +53,14 @@ class DeviceWindow : public QMainWindow
         virtual void Program() = 0;
         virtual void ReadConfig() = 0;
         virtual QVariant CollectConfig() = 0;
+        virtual void SpreadConfig( const QVariant& config ) = 0;
 
     public :
         template<typename T>
         void SaveConfig();
+
+        template<typename T>
+        void LoadConfig();
 
 
     signals :
@@ -65,13 +69,13 @@ class DeviceWindow : public QMainWindow
 
     public :
         DeviceWindow( V2718Window *parent );
-        virtual ~DeviceWindow();
+        ~DeviceWindow() override;
 };
 
 template <typename T>
 void DeviceWindow::SaveConfig()
 {
-    QString fileName = QFileDialog::getSaveFileName( this, "Save Config file", "./", "Text files (*.json)" );
+    QString fileName = QFileDialog::getSaveFileName( this, "Save config file", "./", "Text files (*.json)" );
 
     if( fileName.isEmpty() )
     {
@@ -88,8 +92,37 @@ void DeviceWindow::SaveConfig()
         catch( const VException& e )
         {
             QMessageBox::warning( this,
-                                  "Saving config failed!",
-                                  "Couldn't write to the file!",
+                                  e.what(),
+                                  e.GetInfo().c_str(),
+                                  QMessageBox::Ok );
+        }
+    }
+}
+
+template <typename T>
+void DeviceWindow::LoadConfig()
+{
+    QString fileName = QFileDialog::getOpenFileName( this, "Load config file", "./", "Text files (*.json)" );
+
+    if( fileName.isEmpty() )
+    {
+        return;
+    }
+    else
+    {
+        try
+        {
+            UConfig<T> cfg;
+            ReadConfigFromFile( cfg, fileName.toStdString() );
+            QVariant qv;
+            qv.setValue( cfg );
+            this->SpreadConfig( qv );
+        }
+        catch( const VException& e )
+        {
+            QMessageBox::warning( this,
+                                  e.what(),
+                                  e.GetInfo().c_str(),
                                   QMessageBox::Ok );
         }
     }

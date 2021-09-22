@@ -52,7 +52,7 @@ class V6533NWindow : public DeviceWindow
         void ChannelOff();
 
         QVariant CollectConfig() override;
-        void SpreadConfig( const UConfig<V6533N>& cfg );
+        void SpreadConfig( const QVariant& qConfig ) override;
 
     public :
         V6533NWindow( uint32_t address, V2718Window *parent );

@@ -36,8 +36,6 @@ V895Window::V895Window( uint32_t address, V2718Window *parent ) :
     CreateActions();
     CreateCentralWidget();
 
-    connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V895> );
-
     emit Connected( false );
 
     statusBar()->showMessage( "Ready..." );
@@ -49,7 +47,8 @@ V895Window::~V895Window()
 
 void V895Window::CreateActions()
 {
-
+    connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V895> );
+    connect( fLoadConfigAction, &QAction::triggered, this, &DeviceWindow::LoadConfig<V895> );
 }
 
 void V895Window::CreateCentralWidget()
@@ -137,7 +136,7 @@ void V895Window::Program()
 {
     try
     {
-        UConfig<V895> cfg = qvariant_cast<UConfig<V895>>( this->CollectConfig() );
+        UConfig<V895> cfg = qvariant_cast< UConfig<V895> >( this->CollectConfig() );
         static_cast<V895*>(fDevice)->WriteConfig( cfg );
         emit Programmed( true );
     }
@@ -154,15 +153,17 @@ void V895Window::ReadConfig()
     try
     {
         static_cast<V895*>(fDevice)->ReadConfig( cfg );
-        SpreadConfig( cfg );
+        QVariant qv; qv.setValue( cfg );
+        SpreadConfig( qv );
     }
     catch( const VException& e )
     {
     }
 }
 
-void V895Window::SpreadConfig( const UConfig<V895>& cfg )
+void V895Window::SpreadConfig( const QVariant& qConfig )
 {
+    UConfig<V895> cfg = qvariant_cast< UConfig<V895> >( qConfig );
     for( uint8_t i = 0; i < N_CH; ++i )
     {
         fThrSpin[i]->setValue( cfg.THRESHOLDS.at( i ) );

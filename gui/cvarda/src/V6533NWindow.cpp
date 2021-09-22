@@ -43,8 +43,6 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     CreateCentralWidget();
     CreateDockWidget();
 
-    connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V6533N> );
-
     emit Connected( false );
 
 
@@ -57,7 +55,8 @@ V6533NWindow::~V6533NWindow()
 
 void V6533NWindow::CreateActions()
 {
-
+    connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V6533N> );
+    connect( fLoadConfigAction, &QAction::triggered, this, &DeviceWindow::LoadConfig<V6533N> );
 }
 
 void V6533NWindow::CreateDockWidget()
@@ -179,7 +178,8 @@ void V6533NWindow::ReadConfig()
     try
     {
         static_cast<V6533N*>(fDevice)->ReadConfig( cfg );
-        SpreadConfig( cfg );
+        QVariant qv; qv.setValue( cfg );
+        SpreadConfig( qv );
     }
     catch( const VException& e )
     {
@@ -200,7 +200,7 @@ void V6533NWindow::UpdateMonitor()
     }
 }
 
-void V6533NWindow::SpreadConfig( const UConfig<V6533N>& cfg )
+void V6533NWindow::SpreadConfig( const QVariant& qConfig )
 {
     auto changeCombo = []( QComboBox* c, int data ) {
         int index = c->findData( data  );
@@ -210,6 +210,7 @@ void V6533NWindow::SpreadConfig( const UConfig<V6533N>& cfg )
         }
     };
 
+    UConfig<V6533N> cfg = qvariant_cast< UConfig<V6533N> >( qConfig );
     for( uint8_t i = 0; i < N_CH; ++i )
     {
         fVoltSpin[i]->setValue( cfg.CHANNELS.at( i ).V_SET );

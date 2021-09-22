@@ -2,7 +2,7 @@
     "cfg": {
         "channels": {
             "value0": {
-                "voltage set": 0.0,
+                "voltage set": 10.0,
                 "current set": 100.0,
                 "trip time": 0.0,
                 "sw max voltage": 100.0,
@@ -12,14 +12,14 @@
                 "current mon range": 1
             },
             "value1": {
-                "voltage set": 0.0,
+                "voltage set": 10.0,
                 "current set": 100.0,
                 "trip time": 0.0,
                 "sw max voltage": 100.0,
                 "ramp up": 100,
                 "ramp down": 100,
                 "power down": false,
-                "current mon range": 1
+                "current mon range": 0
             },
             "value2": {
                 "voltage set": 0.0,
