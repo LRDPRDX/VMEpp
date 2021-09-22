@@ -1,7 +1,3 @@
-#include "V2718Window.h"
-#include "V6533NWindow.h"
-#include "modules/V6533N.h"
-
 #include <QMenu>
 #include <QMenuBar>
 #include <QApplication>
@@ -24,13 +20,15 @@
 #include <QLineEdit>
 #include <QSignalMapper>
 #include <QTimer>
+#include "qnamespace.h"
+
+#include "V2718Window.h"
+#include "V6533NWindow.h"
+#include "VException.h"
+#include "modules/V6533N.h"
 
 #include "Style.h"
-#include "QLedIndicator.h"
 #include "Prelude.h"
-
-#include "VException.h"
-#include "qnamespace.h"
 
 
 V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
@@ -44,7 +42,6 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     CreateDockWidget();
 
     emit Connected( false );
-
 
     statusBar()->showMessage( "Ready..." );
 }
@@ -374,13 +371,13 @@ void V6533NMonitor::CreateGeneralFrame()
         fCurText->setReadOnly( true );
         fCurText->setFixedWidth( 60 );
 
-    fPowFailLED = new QLedIndicator( 18 );
+    fPowFailLED = new SLedIndicator( 18 );
         fPowFailLED->setToolTip( "POWER FAILED" );
-    fOvPowLED = new QLedIndicator( 18 );
+    fOvPowLED = new SLedIndicator( 18 );
         fOvPowLED->setToolTip( "OVER POWER" );
-    fMaxVUncLED = new QLedIndicator( 18 );
+    fMaxVUncLED = new SLedIndicator( 18 );
         fMaxVUncLED->setToolTip( "MAX V UNCALIBRATED" );
-    fMaxIUncLED = new QLedIndicator( 18 );
+    fMaxIUncLED = new SLedIndicator( 18 );
         fMaxIUncLED->setToolTip( "MAX I UNCALIBRATED" );
 
     gLayout->addWidget( vLabel, 0, 0, Qt::AlignRight );
@@ -434,7 +431,7 @@ void V6533NMonitor::CreateChannelFrame()
                                    "INTERLOCK", "UNCALIBRATED" };
         for( uint8_t l = 0; l < N_LED; ++l )
         {
-            fChStatusLED[ch][l] = new QLedIndicator( 10 );
+            fChStatusLED[ch][l] = new SLedIndicator( 10 );
             fChStatusLED[ch][l]->setToolTip( ledNames[l] );
             ledLayout->addWidget( fChStatusLED[ch][l], 0, l );
         }

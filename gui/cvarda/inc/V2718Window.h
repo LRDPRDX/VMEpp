@@ -1,10 +1,9 @@
 #pragma once
 
 #include <QMainWindow>
+#include "DeviceWindow.h"
 
 #include "modules/V2718.h"
-
-#include "DeviceWindow.h"
 
 class QAction;
 class SButton;
@@ -14,7 +13,7 @@ class QSpinBox;
 class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
-class QLedIndicatorWithLabel;
+class SLedIndicatorWithLabel;
 class QLineEdit;
 
 class Display;
@@ -119,9 +118,9 @@ class Display : public QWidget
         V2718Window  *fController;
 
         QLineEdit               *fAddressText, *fDataText;
-        QLedIndicatorWithLabel  *fAddressModLED[N_AM], *fIRQLED[N_IRQ];
-        QLedIndicatorWithLabel  *fASLED, *fIACKLED, *fWriteLED, *fLwordLED, *fDS1LED, *fDS2LED;
-        QLedIndicatorWithLabel  *fBreqLED, *fBgntLED, *fSresLED, *fDTKLED, *fBERRLED;
+        SLedIndicatorWithLabel  *fAddressModLED[N_AM], *fIRQLED[N_IRQ];
+        SLedIndicatorWithLabel  *fASLED, *fIACKLED, *fWriteLED, *fLwordLED, *fDS1LED, *fDS2LED;
+        SLedIndicatorWithLabel  *fBreqLED, *fBgntLED, *fSresLED, *fDTKLED, *fBERRLED;
         SButton                 *fUpdateButton;
 
     protected :

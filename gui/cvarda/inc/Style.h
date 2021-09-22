@@ -3,7 +3,7 @@
 #include <QString>
 #include <QFrame>
 #include <QPushButton>
-#include <QGroupBox>
+#include <QLabel>
 
 namespace style 
 {
@@ -84,7 +84,7 @@ class SFrame : public QFrame
 
     public :
         SFrame( SColor_t color, QWidget *parent = nullptr );
-        virtual ~SFrame();
+        ~SFrame() override = default;
 };
 
 class SButton : public QPushButton
@@ -93,5 +93,34 @@ class SButton : public QPushButton
 
     public :
         SButton( const QString& text, SColor_t color, QWidget *parent = nullptr );
-        virtual ~SButton();
+        ~SButton() override = default;
+};
+
+class SLedIndicator : public QLabel
+{
+    Q_OBJECT
+
+    protected :
+        SColor_t fColor;
+        
+    public:
+        SLedIndicator( int size = 14, QWidget *parent = 0 );
+        ~SLedIndicator() override = default;
+        
+    public slots:
+        void SetState( bool state );
+        void SetColor( SColor_t color ) { fColor = color; }
+};
+
+class SLedIndicatorWithLabel : public QWidget
+{
+    private :
+        SLedIndicator *fLED;
+
+    public :
+        SLedIndicatorWithLabel( QString text = "", bool leftAlign = true, int size = 14, QWidget *parent = nullptr );
+        ~SLedIndicatorWithLabel() override = default;
+
+        void SetChecked( bool status ) { fLED->SetState( status ); }
+        void SetColor( SColor_t color ) { fLED->SetColor( color ); }
 };

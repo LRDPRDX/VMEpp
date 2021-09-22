@@ -27,11 +27,9 @@
 #include "UConfigurable.h"
 #include "Dialogs.h"
 #include "Style.h"
-#include "QLedIndicator.h"
 #include "Prelude.h"
 
 #include "VException.h"
-
 
 
 V2718Window::V2718Window( QWidget *parent ) :
@@ -741,47 +739,47 @@ void Display::CreateDisplay()
     int row = 0;
     for( int i = 0; i < N_AM; ++i, ++row )
     {
-        fAddressModLED[i] = new QLedIndicatorWithLabel( QString( "AM%1" ).arg( i ), false );
+        fAddressModLED[i] = new SLedIndicatorWithLabel( QString( "AM%1" ).arg( i ), false );
         lowerLayout->addWidget( fAddressModLED[i], i, 0 );
     }
 
-    fDS1LED = new QLedIndicatorWithLabel( "DS1", false );
-    fDS2LED = new QLedIndicatorWithLabel( "DS2", false );
+    fDS1LED = new SLedIndicatorWithLabel( "DS1", false );
+    fDS2LED = new SLedIndicatorWithLabel( "DS2", false );
     lowerLayout->addWidget( fDS1LED, row++, 0 );
     lowerLayout->addWidget( fDS2LED, row++, 0 );
 
-    fASLED = new QLedIndicatorWithLabel( "AS", false );
+    fASLED = new SLedIndicatorWithLabel( "AS", false );
     lowerLayout->addWidget( fASLED, row++, 0 );
 
-    fIACKLED = new QLedIndicatorWithLabel( "IACK", false );
+    fIACKLED = new SLedIndicatorWithLabel( "IACK", false );
     lowerLayout->addWidget( fIACKLED, row++, 0 );
 
-    fWriteLED = new QLedIndicatorWithLabel( "WRITE", false );
+    fWriteLED = new SLedIndicatorWithLabel( "WRITE", false );
     lowerLayout->addWidget( fWriteLED, row++, 0 );
 
-    fLwordLED = new QLedIndicatorWithLabel( "LWORD", false );
+    fLwordLED = new SLedIndicatorWithLabel( "LWORD", false );
     lowerLayout->addWidget( fLwordLED, row++, 0 );
 
     row = 0;
     for( int i = 0; i < N_IRQ; ++i, ++row )
     {
-        fIRQLED[i] = new QLedIndicatorWithLabel( QString( "IRQ%1" ).arg( i + 1 ) );
+        fIRQLED[i] = new SLedIndicatorWithLabel( QString( "IRQ%1" ).arg( i + 1 ) );
         lowerLayout->addWidget( fIRQLED[i], i, 1 );
     }
 
-    fBreqLED = new QLedIndicatorWithLabel( "BREQ" );
+    fBreqLED = new SLedIndicatorWithLabel( "BREQ" );
     lowerLayout->addWidget( fBreqLED, row++, 1 );
 
-    fBgntLED = new QLedIndicatorWithLabel( "BGNT" );
+    fBgntLED = new SLedIndicatorWithLabel( "BGNT" );
     lowerLayout->addWidget( fBgntLED, row++, 1 );
 
-    fSresLED = new QLedIndicatorWithLabel( "SRES" );
+    fSresLED = new SLedIndicatorWithLabel( "SRES" );
     lowerLayout->addWidget( fSresLED, row++, 1 );
 
-    fDTKLED = new QLedIndicatorWithLabel( "DTK" );
+    fDTKLED = new SLedIndicatorWithLabel( "DTK" );
     lowerLayout->addWidget( fDTKLED, row++, 1 );
 
-    fBERRLED = new QLedIndicatorWithLabel( "BERR" );
+    fBERRLED = new SLedIndicatorWithLabel( "BERR" );
     lowerLayout->addWidget( fBERRLED, row++, 1 );
 
     lowerLayout->setSpacing( 1 );

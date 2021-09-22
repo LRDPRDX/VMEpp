@@ -14,8 +14,8 @@ class QCheckBox;
 class QLineEdit;
 class QTimer;
 
-class QLedIndicatorWithLabel;
-class QLedIndicator;
+class SLedIndicatorWithLabel;
+class SLedIndicator;
 
 class V6533NMonitor;
 
@@ -72,11 +72,11 @@ class V6533NMonitor : public QWidget
 
     protected :
         QLineEdit               *fVoltText, *fCurText;
-        QLedIndicatorWithLabel  *fAlarmLED[N_CH];
+        SLedIndicatorWithLabel  *fAlarmLED[N_CH];
         QPushButton             *fUpdateButton, *fStartButton, *fStopButton;
         QLineEdit               *fVoltMonText[N_CH], *fCurMonText[N_CH], *fTempMonText[N_CH];
-        QLedIndicator           *fChStatusLED[N_CH][N_LED];
-        QLedIndicator           *fPowFailLED, *fOvPowLED, *fMaxVUncLED, *fMaxIUncLED;
+        SLedIndicator           *fChStatusLED[N_CH][N_LED];
+        SLedIndicator           *fPowFailLED, *fOvPowLED, *fMaxVUncLED, *fMaxIUncLED;
 
         QVBoxLayout             *fLayout;
 
