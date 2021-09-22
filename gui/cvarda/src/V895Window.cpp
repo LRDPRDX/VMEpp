@@ -41,10 +41,6 @@ V895Window::V895Window( uint32_t address, V2718Window *parent ) :
     statusBar()->showMessage( "Ready..." );
 }
 
-V895Window::~V895Window()
-{
-}
-
 void V895Window::CreateActions()
 {
     connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V895> );

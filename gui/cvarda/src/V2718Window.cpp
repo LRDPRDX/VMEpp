@@ -48,8 +48,6 @@ V2718Window::V2718Window( QWidget *parent ) :
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-V2718Window::~V2718Window() {}
-
 /****** Constructive methods ******/
 void V2718Window::CreateActions()
 {

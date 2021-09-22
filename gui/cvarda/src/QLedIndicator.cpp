@@ -12,10 +12,6 @@ QLedIndicator::QLedIndicator( int size, QWidget *parent ) :
     setFixedSize( size, size );
 }
 
-QLedIndicator::~QLedIndicator()
-{
-}
-
 void QLedIndicator::SetState( bool state )
 {
     SColor c( fColor );
@@ -47,8 +43,4 @@ QLedIndicatorWithLabel::QLedIndicatorWithLabel( QString text, bool leftAlign, in
 	}
 
     setLayout( gLayout );
-}
-
-QLedIndicatorWithLabel::~QLedIndicatorWithLabel()
-{
 }

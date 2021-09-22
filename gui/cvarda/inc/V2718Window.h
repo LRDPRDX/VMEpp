@@ -97,7 +97,7 @@ class V2718Window : public QMainWindow
 
     public :
         V2718Window( QWidget *parent = nullptr );
-        ~V2718Window();
+        ~V2718Window() override = default;
 
     public :
         void HandleError( const VException& e );

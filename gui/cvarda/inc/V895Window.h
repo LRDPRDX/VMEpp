@@ -46,5 +46,5 @@ class V895Window : public DeviceWindow
 
     public :
         V895Window( uint32_t address, V2718Window *parent );
-        ~V895Window();
+        ~V895Window() override = default;
 };

@@ -49,10 +49,6 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     statusBar()->showMessage( "Ready..." );
 }
 
-V6533NWindow::~V6533NWindow()
-{
-}
-
 void V6533NWindow::CreateActions()
 {
     connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V6533N> );

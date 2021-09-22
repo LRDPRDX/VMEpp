@@ -56,7 +56,7 @@ class V6533NWindow : public DeviceWindow
 
     public :
         V6533NWindow( uint32_t address, V2718Window *parent );
-        ~V6533NWindow();
+        ~V6533NWindow() override = default;
 };
 
 class V6533NMonitor : public QWidget

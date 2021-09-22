@@ -15,7 +15,7 @@ class QLedIndicator : public QLabel
         
     public:
         QLedIndicator( int size = 14, QWidget *parent = 0 );
-        virtual ~QLedIndicator();
+        ~QLedIndicator() override = default;
         
     public slots:
         void SetState( bool state );
@@ -29,7 +29,7 @@ class QLedIndicatorWithLabel : public QWidget
 
     public :
         QLedIndicatorWithLabel( QString text = "", bool leftAlign = true, int size = 14, QWidget *parent = nullptr );
-        virtual ~QLedIndicatorWithLabel();
+        ~QLedIndicatorWithLabel() override = default;
 
         void SetChecked( bool status ) { fLED->SetState( status ); }
         void SetColor( SColor_t color ) { fLED->SetColor( color ); }
