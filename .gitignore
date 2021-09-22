@@ -43,6 +43,6 @@ ROOT/
 moc_*
 *.pro
 
-/gui/cvarda/cvarda
-/gui/cvarda/Makefile
+/gui/gvmepp/cvarda
+/gui/gvmepp/Makefile
 /gui/.qmake.stash
