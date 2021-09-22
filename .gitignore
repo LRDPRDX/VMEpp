@@ -45,3 +45,4 @@ moc_*
 
 /gui/cvarda/cvarda
 /gui/cvarda/Makefile
+/gui/.qmake.stash
