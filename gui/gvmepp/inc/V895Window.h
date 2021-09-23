@@ -41,7 +41,7 @@ class V895Window : public DeviceWindow
         QVariant CollectConfig() override;
         void SpreadConfig( const QVariant& qConfig ) override;
 
-        void Program() override;
+        void WriteConfig() override;
         void ReadConfig() override;
 
     public :

@@ -46,7 +46,9 @@ V2718Window::V2718Window( QWidget *parent ) :
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-/****** Constructive methods ******/
+//**********************************
+//****** CONSTRUCTIVE METHODS ******
+//**********************************
 void V2718Window::CreateActions()
 {
     // Main actions
@@ -534,48 +536,40 @@ UConfig<V2718> V2718Window::CollectConfig()
 
 void V2718Window::SpreadConfig( const UConfig<V2718>& cfg )
 {
-    auto changeCombo = []( QComboBox* c, int data ) {
-        int index = c->findData( data  );
-        if( index >= 0 )
-        {
-            c->setCurrentIndex( index );
-        }
-    };
+    // In's and Out's
+    for( uint8_t i = 0; i < N_INS; ++i )
+    {
+        ChangeCombo( fInPolCombo[i], cfg.INPUTS.at( i ).POLARITY );
+        ChangeCombo( fInLedCombo[i], cfg.INPUTS.at( i ).LED_POLARITY );
+    }
 
-        // In's and Out's
-        for( uint8_t i = 0; i < N_INS; ++i )
-        {
-            changeCombo( fInPolCombo[i], cfg.INPUTS.at( i ).POLARITY );
-            changeCombo( fInLedCombo[i], cfg.INPUTS.at( i ).LED_POLARITY );
-        }
+    for( uint8_t i = 0; i < N_OUTS; ++i )
+    {
+        ChangeCombo( fOutPolCombo[i], cfg.OUTPUTS.at( i ).POLARITY  );
+        ChangeCombo( fOutLedCombo[i], cfg.OUTPUTS.at( i ).LED_POLARITY );
+        ChangeCombo( fOutSrcCombo[i], cfg.OUTPUTS.at( i ).SOURCE );
+    }
 
-        for( uint8_t i = 0; i < N_OUTS; ++i )
-        {
-            changeCombo( fOutPolCombo[i], cfg.OUTPUTS.at( i ).POLARITY  );
-            changeCombo( fOutLedCombo[i], cfg.OUTPUTS.at( i ).LED_POLARITY );
-            changeCombo( fOutSrcCombo[i], cfg.OUTPUTS.at( i ).SOURCE );
-        }
+    // Pulsers
+    for( uint8_t i = 0; i < N_PULSERS; ++i )
+    {
+        const UConfig<V2718>::Pulser& pulser = (i == cvPulserA) ? cfg.PULSER_A : cfg.PULSER_B;
 
-        // Pulsers
-        for( uint8_t i = 0; i < N_PULSERS; ++i )
-        {
-            const UConfig<V2718>::Pulser& pulser = (i == cvPulserA) ? cfg.PULSER_A : cfg.PULSER_B;
+        fPulFreqSpin[i]->setValue( pulser.FREQUENCY );
+        fPulDutySpin[i]->setValue( pulser.DUTY );
+        fPulNSpin[i]->setValue( pulser.N_PULSES );
 
-            fPulFreqSpin[i]->setValue( pulser.FREQUENCY );
-            fPulDutySpin[i]->setValue( pulser.DUTY );
-            fPulNSpin[i]->setValue( pulser.N_PULSES );
+        ChangeCombo( fPulStartCombo[i], pulser.START_SOURCE );
+        ChangeCombo( fPulStopCombo[i], pulser.STOP_SOURCE );
+    }
 
-            changeCombo( fPulStartCombo[i], pulser.START_SOURCE );
-            changeCombo( fPulStopCombo[i], pulser.STOP_SOURCE );
-        }
+    // Scaler
+    ChangeCombo( fScalGateCombo, cfg.SCALER.GATE_SOURCE );
+    ChangeCombo( fScalResetCombo, cfg.SCALER.STOP_SOURCE );
+    ChangeCombo( fScalHitCombo, cfg.SCALER.HIT_SOURCE );
 
-        // Scaler
-        changeCombo( fScalGateCombo, cfg.SCALER.GATE_SOURCE );
-        changeCombo( fScalResetCombo, cfg.SCALER.STOP_SOURCE );
-        changeCombo( fScalHitCombo, cfg.SCALER.HIT_SOURCE );
-
-        fScalLimitSpin->setValue( cfg.SCALER.LIMIT );
-        fScalAutoCheck->setChecked( cfg.SCALER.AUTO_RESET );
+    fScalLimitSpin->setValue( cfg.SCALER.LIMIT );
+    fScalAutoCheck->setChecked( cfg.SCALER.AUTO_RESET );
 }
 
 
@@ -690,6 +684,27 @@ void V2718Window::ToggleStatusBar()
 
 void V2718Window::HandleError( const VException& e )
 {
+    switch( e.GetErrorCode() )
+    {
+        case( VError_t::vSuccess ) :
+        case( VError_t::vInvalidParam ) :
+        case( VError_t::vTimeoutError ) :
+        case( VError_t::vAlreadyOpenError ) :
+        case( VError_t::vMaxBoardCountError ) :
+
+        case( VError_t::vBadMaster ) :
+        case( VError_t::vOrphan ) :
+        case( VError_t::vBuffAllocFailed ) :
+        case( VError_t::vBadSlave ) :
+        case( VError_t::vConfigError ) :
+        case( VError_t::vAccessError ) :
+            break;
+
+        case( VError_t::vBusError ) :
+        case( VError_t::vCommError ) :
+        case( VError_t::vGenericError ) :
+            Disconnect(); break;
+    }
     ErrorMessageBox* msg = new ErrorMessageBox( e, this );
     msg->show();
 }

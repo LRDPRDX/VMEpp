@@ -128,7 +128,7 @@ void V895Window::SendTest()
     }
 }
 
-void V895Window::Program()
+void V895Window::WriteConfig()
 {
     try
     {

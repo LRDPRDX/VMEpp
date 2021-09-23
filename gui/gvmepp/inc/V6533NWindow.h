@@ -45,7 +45,7 @@ class V6533NWindow : public DeviceWindow
         void CreateDockWidget();
 
     public slots :
-        void Program() override;
+        void WriteConfig() override;
         void ReadConfig() override;
         void UpdateMonitor();
         void ChannelOn();

@@ -5,9 +5,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-#include "UConfigurable.h"
-#include "modules/V895.h"
-#include "modules/V6533N.h"
+#include "Prelude.h"
 
 class SButton;
 class SFrame;
@@ -18,9 +16,6 @@ class V2718Window;
 
 
 using namespace vmeplus;
-
-Q_DECLARE_METATYPE(UConfig<V895>)
-Q_DECLARE_METATYPE(UConfig<V6533N>)
 
 class DeviceWindow : public QMainWindow
 {
@@ -35,6 +30,7 @@ class DeviceWindow : public QMainWindow
     protected :
         void closeEvent( QCloseEvent *event ) override;
         void CreateFileMenu();
+        void CreateBottomFrame();
 
     protected :
         QMenu           *fViewMenu, *fConfigMenu;
@@ -42,7 +38,7 @@ class DeviceWindow : public QMainWindow
         QAction         *fSaveConfigAction, *fLoadConfigAction;
         QAction         *fViewStatusBarAction;
 
-        SButton         *fProgramButton, *fReadButton;
+        SButton         *fWriteButton, *fReadButton;
         SFrame          *fBottomFrame;
 
     public slots :
@@ -50,7 +46,7 @@ class DeviceWindow : public QMainWindow
         void Disconnect();
         void OnControllerDisconnect( bool );
         void ToggleStatusBar();
-        virtual void Program() = 0;
+        virtual void WriteConfig() = 0;
         virtual void ReadConfig() = 0;
         virtual QVariant CollectConfig() = 0;
         virtual void SpreadConfig( const QVariant& config ) = 0;

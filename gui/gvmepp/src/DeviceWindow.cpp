@@ -21,23 +21,8 @@ DeviceWindow::DeviceWindow( V2718Window *parent ) :
 {
     connect( fParent, &V2718Window::Connected, this, &DeviceWindow::OnControllerDisconnect );
 
-    fProgramButton = new SButton( "PROGRAM", SColor_t::VIOLET );
-        connect( this, &DeviceWindow::Connected, fProgramButton, &QPushButton::setEnabled );
-        connect( fProgramButton, &QPushButton::clicked, this, &DeviceWindow::Program );
-
-    fReadButton = new SButton( "READ", SColor_t::VIOLET );
-        connect( this, &DeviceWindow::Connected, fReadButton, &QPushButton::setEnabled );
-        connect( fReadButton, &QPushButton::clicked, this, &DeviceWindow::ReadConfig );
-
-    fBottomFrame = new SFrame( SColor_t::VIOLET ); 
-
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
-        buttonLayout->addWidget( fProgramButton );
-        buttonLayout->addWidget( fReadButton );
-
-    fBottomFrame->setLayout( buttonLayout );
-
     CreateFileMenu();
+    CreateBottomFrame();
 
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
@@ -47,9 +32,31 @@ DeviceWindow::~DeviceWindow()
     delete fDevice;
 }
 
+
+//**********************************
+//****** CONSTRUCTIVE METHODS ******
+//**********************************
+void DeviceWindow::CreateBottomFrame()
+{
+    fWriteButton = new SButton( "WRITE", SColor_t::VIOLET );
+        connect( this, &DeviceWindow::Connected, fWriteButton, &QPushButton::setEnabled );
+        connect( fWriteButton, &QPushButton::clicked, this, &DeviceWindow::WriteConfig );
+
+    fReadButton = new SButton( "READ", SColor_t::VIOLET );
+        connect( this, &DeviceWindow::Connected, fReadButton, &QPushButton::setEnabled );
+        connect( fReadButton, &QPushButton::clicked, this, &DeviceWindow::ReadConfig );
+
+    fBottomFrame = new SFrame( SColor_t::VIOLET ); 
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+        buttonLayout->addWidget( fWriteButton );
+        buttonLayout->addWidget( fReadButton );
+    fBottomFrame->setLayout( buttonLayout );
+}
+
 void DeviceWindow::CreateFileMenu()
 {
-    // File
+    // File menu
     fConnectAction = new QAction( "&Connect", this );
         connect( this, &DeviceWindow::Connected, fConnectAction, &QAction::setDisabled );
     fDisconnectAction = new QAction( "&Disconnect", this );
@@ -64,7 +71,6 @@ void DeviceWindow::CreateFileMenu()
     connect( fConnectAction, &QAction::triggered, this, &DeviceWindow::Connect );
     connect( fDisconnectAction, &QAction::triggered, this, &DeviceWindow::Disconnect );
     connect( fExitAction, &QAction::triggered, this, &DeviceWindow::close );
-
     // View
     fViewStatusBarAction = new QAction( "&View statusbar" );
         fViewStatusBarAction->setCheckable( true );
@@ -73,7 +79,6 @@ void DeviceWindow::CreateFileMenu()
     fViewMenu = menuBar()->addMenu( "View" );
         fViewMenu->addAction( fViewStatusBarAction );
     connect( fViewStatusBarAction, &QAction::triggered, this, &DeviceWindow::ToggleStatusBar );
-
     // Config actions
     fSaveConfigAction = new QAction( "Save" );
     fLoadConfigAction = new QAction( "Load" );
@@ -83,6 +88,9 @@ void DeviceWindow::CreateFileMenu()
         fConfigMenu->addAction( fLoadConfigAction );
 }
 
+//*******************
+//****** SLOTS ******
+//*******************
 void DeviceWindow::Connect()
 {
     bool success = true;
@@ -93,13 +101,11 @@ void DeviceWindow::Connect()
     catch( const vmeplus::VException &e )
     {
         success = false;
-
         QMessageBox::warning( this,
                               tr( "Connection FAILED" ),
                               tr( e.what() ),
                               QMessageBox::Ok );
     }
-
     statusBar()->showMessage( success ? "Connected..." : "Disconnected..." );
     emit Connected( success );
 }
@@ -115,7 +121,6 @@ void DeviceWindow::OnControllerDisconnect( bool status )
 void DeviceWindow::Disconnect()
 {
     fDevice->Release();
-
     statusBar()->showMessage( "Disconnected..." );
     emit Connected( false );
 }
@@ -150,4 +155,3 @@ void DeviceWindow::ToggleStatusBar()
         statusBar()->hide();
     }
 }
-

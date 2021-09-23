@@ -2,13 +2,21 @@
 
 #include "CAENVMElib.h"
 #include "modules/V2718.h"
+#include "modules/V895.h"
 #include "modules/V6533N.h"
 
-Q_DECLARE_METATYPE(V6533N::IMonRange_t)   
+using namespace vmeplus;
 
+/* CAENVMElib types */
 Q_DECLARE_METATYPE(CVIOPolarity)   
 Q_DECLARE_METATYPE(CVLEDPolarity)   
 Q_DECLARE_METATYPE(CVIOSources)   
+
+/* VMEpp types */
+Q_DECLARE_METATYPE(UConfig<V895>)
+Q_DECLARE_METATYPE(UConfig<V6533N>)
+Q_DECLARE_METATYPE(V6533N::IMonRange_t)   
+
 
 #include <QComboBox>
 #include <QVariant>

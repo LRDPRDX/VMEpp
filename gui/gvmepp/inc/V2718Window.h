@@ -47,7 +47,7 @@ class V2718Window : public QMainWindow
         QComboBox *fOutSrcCombo[N_OUTS], *fOutPolCombo[N_OUTS], *fOutLedCombo[N_OUTS];
         QComboBox *fInPolCombo[N_INS], *fInLedCombo[N_INS];
 
-        //Pulser and Scaler tab
+        //Pulsers and Scaler tab
         QSpinBox  *fPulFreqSpin[N_PULSERS], *fPulDutySpin[N_PULSERS], *fPulNSpin[N_PULSERS];
         QComboBox *fPulStartCombo[N_PULSERS], *fPulStopCombo[N_PULSERS];
         SButton *fPulStartButton[N_PULSERS], *fPulStopButton[N_PULSERS];

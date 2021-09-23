@@ -150,7 +150,7 @@ void V6533NWindow::CreateCentralWidget()
     setCentralWidget( centralWidget );
 }
 
-void V6533NWindow::Program()
+void V6533NWindow::WriteConfig()
 {
     try
     {
@@ -195,14 +195,6 @@ void V6533NWindow::UpdateMonitor()
 
 void V6533NWindow::SpreadConfig( const QVariant& qConfig )
 {
-    auto changeCombo = []( QComboBox* c, int data ) {
-        int index = c->findData( data  );
-        if( index >= 0 )
-        {
-            c->setCurrentIndex( index );
-        }
-    };
-
     UConfig<V6533N> cfg = qvariant_cast< UConfig<V6533N> >( qConfig );
     for( uint8_t i = 0; i < N_CH; ++i )
     {
@@ -211,7 +203,7 @@ void V6533NWindow::SpreadConfig( const QVariant& qConfig )
         fSWMaxSpin[i]->setValue( cfg.CHANNELS.at( i ).SW_MAX );
         fUpSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_UP );
         fDownSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_DOWN );
-        changeCombo( fOffCombo[i], cfg.CHANNELS.at( i ).PW_DOWN );
+        ChangeCombo( fOffCombo[i], cfg.CHANNELS.at( i ).PW_DOWN );
         ChangeCombo( fIMonCombo[i], cfg.CHANNELS.at( i ).IMON_RANGE );
     }
 }

@@ -102,6 +102,7 @@ class SLedIndicator : public QLabel
 
     protected :
         SColor_t fColor;
+        int      fSize;
         
     public:
         SLedIndicator( int size = 14, QWidget *parent = 0 );
