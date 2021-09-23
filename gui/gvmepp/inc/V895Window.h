@@ -2,7 +2,7 @@
 
 #include "modules/V895.h"
 
-#include "DeviceWindow.h"
+#include "SlaveWindow.h"
 
 
 class QAction;
@@ -15,7 +15,7 @@ class QCheckBox;
 
 using namespace vmeplus;
 
-class V895Window : public DeviceWindow
+class V895Window : public SlaveWindow
 {
     Q_OBJECT
 

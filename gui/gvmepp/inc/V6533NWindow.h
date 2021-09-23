@@ -1,7 +1,7 @@
 #pragma once
 
 #include "modules/V6533N.h"
-#include "DeviceWindow.h"
+#include "SlaveWindow.h"
 
 
 class QAction;
@@ -21,7 +21,8 @@ class V6533NMonitor;
 
 using namespace vmeplus;
 
-class V6533NWindow : public DeviceWindow
+
+class V6533NWindow : public SlaveWindow
 {
     Q_OBJECT
 

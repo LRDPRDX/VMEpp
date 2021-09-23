@@ -32,7 +32,7 @@
 
 
 V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
-    DeviceWindow( parent )
+    SlaveWindow( parent )
 {
     fDevice = new vmeplus::V6533N( address );
 

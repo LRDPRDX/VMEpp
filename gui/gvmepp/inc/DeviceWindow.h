@@ -12,20 +12,12 @@ class SFrame;
 class QAction;
 class QMenu;
 
-class V2718Window;
-
-
 using namespace vmeplus;
+
 
 class DeviceWindow : public QMainWindow
 {
     Q_OBJECT
-
-    private :
-        V2718Window *fParent;
-
-    protected :
-        VSlave *fDevice;
 
     protected :
         void closeEvent( QCloseEvent *event ) override;
@@ -42,12 +34,12 @@ class DeviceWindow : public QMainWindow
         SFrame          *fBottomFrame;
 
     public slots :
-        void Connect();
-        void Disconnect();
-        void OnControllerDisconnect( bool );
         void ToggleStatusBar();
+
         virtual void WriteConfig() = 0;
         virtual void ReadConfig() = 0;
+        virtual void Connect() = 0;
+        virtual void Disconnect() = 0;
         virtual QVariant CollectConfig() = 0;
         virtual void SpreadConfig( const QVariant& config ) = 0;
 
@@ -64,8 +56,8 @@ class DeviceWindow : public QMainWindow
         void Programmed( bool );
 
     public :
-        DeviceWindow( V2718Window *parent );
-        ~DeviceWindow() override;
+        DeviceWindow( QMainWindow *parent = nullptr );
+        ~DeviceWindow() override = default;
 };
 
 template <typename T>

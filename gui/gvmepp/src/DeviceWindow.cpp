@@ -14,24 +14,14 @@
 #include "Style.h"
 
 
-DeviceWindow::DeviceWindow( V2718Window *parent ) :
-    QMainWindow( parent ),
-    fParent( parent ),
-    fDevice( nullptr )
+DeviceWindow::DeviceWindow( QMainWindow *parent ) :
+    QMainWindow( parent )
 {
-    connect( fParent, &V2718Window::Connected, this, &DeviceWindow::OnControllerDisconnect );
-
     CreateFileMenu();
     CreateBottomFrame();
 
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
-
-DeviceWindow::~DeviceWindow()
-{
-    delete fDevice;
-}
-
 
 //**********************************
 //****** CONSTRUCTIVE METHODS ******
@@ -91,40 +81,6 @@ void DeviceWindow::CreateFileMenu()
 //*******************
 //****** SLOTS ******
 //*******************
-void DeviceWindow::Connect()
-{
-    bool success = true;
-    try
-    {
-        fParent->fController.RegisterSlave( fDevice );
-    }
-    catch( const vmeplus::VException &e )
-    {
-        success = false;
-        QMessageBox::warning( this,
-                              tr( "Connection FAILED" ),
-                              tr( e.what() ),
-                              QMessageBox::Ok );
-    }
-    statusBar()->showMessage( success ? "Connected..." : "Disconnected..." );
-    emit Connected( success );
-}
-
-void DeviceWindow::OnControllerDisconnect( bool status )
-{
-    if( not status )
-    {
-        Disconnect();
-    }
-}
-
-void DeviceWindow::Disconnect()
-{
-    fDevice->Release();
-    statusBar()->showMessage( "Disconnected..." );
-    emit Connected( false );
-}
-
 void DeviceWindow::closeEvent( QCloseEvent *event )
 {
     const QMessageBox::StandardButton ret =

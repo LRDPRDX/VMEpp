@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include "DeviceWindow.h"
+#include "SlaveWindow.h"
 
 #include "modules/V2718.h"
 
@@ -102,7 +102,7 @@ class V2718Window : public QMainWindow
         void HandleError( const VException& e );
 
     friend class Connection;
-    friend void DeviceWindow::Connect();
+    friend void SlaveWindow::Connect();
 };
 
 

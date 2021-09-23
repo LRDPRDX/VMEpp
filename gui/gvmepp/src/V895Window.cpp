@@ -28,7 +28,7 @@
 using namespace vmeplus;
 
 V895Window::V895Window( uint32_t address, V2718Window *parent ) :
-    DeviceWindow( parent )
+    SlaveWindow( parent )
 {
     fDevice = new V895( address );
 
