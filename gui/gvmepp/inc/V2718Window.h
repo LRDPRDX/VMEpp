@@ -20,7 +20,7 @@ class Display;
 
 using namespace vmeplus;
 
-class V2718Window : public QMainWindow
+class V2718Window : public DeviceWindow
 {
     Q_OBJECT
 
@@ -29,19 +29,23 @@ class V2718Window : public QMainWindow
         static constexpr uint8_t N_OUTS = V2718::GetOutNumber();
         static constexpr uint8_t N_PULSERS = 2;
 
+    /* Constructive methods */
+    private :
+        void CreateMenu();
+        void CreateCentralWidget();
+        void CreateDockWidget();
+        void CreateIOTab();
+        void CreatePulserTab();
+
     private :
         V2718 fController;
 
         Display *fDisplay;
 
-        QMenu   *fViewMenu, *fConfigMenu;
-        QAction *fConnectAction, *fDisconnectAction, *fExitAction;
-        QAction *fSaveConfigAction, *fLoadConfigAction;
-        QAction *fViewStatusBarAction;
+        QMenu   *fAddMenu;
         QAction *fAddDeviceAction;
 
         QTabWidget *fMainTab;
-        SButton *fProgramButton, *fReadButton;
 
         // Inputs and Outputs tab
         QComboBox *fOutSrcCombo[N_OUTS], *fOutPolCombo[N_OUTS], *fOutLedCombo[N_OUTS];
@@ -56,43 +60,29 @@ class V2718Window : public QMainWindow
         QCheckBox *fScalAutoCheck;
         SButton *fScalGateButton, *fScalStopButton, *fScalResetButton;
 
-        /****** Constructive methods ******/
-    private :
-        void CreateActions();
-        void CreateCentralWidget();
-        void CreateDockWidget();
-        void CreateIOTab();
-        void CreatePulserTab();
-
     protected :
         void closeEvent( QCloseEvent *event ) override;
 
-        void Connect( short link, short conet );
-        void Disconnect();
-
     private slots :
-        void ToggleStatusBar();
         void OpenConnectDialog();
         void OpenDeviceDialog();
-        void Program();
-        void ReadConfig();
         void PulserSlot();
 
     public slots :
+        void WriteConfig() override;
+        void ReadConfig() override;
+        QVariant CollectConfig() override;
+        void SpreadConfig( const QVariant& config ) override;
+        void Disconnect() override;
+        void Connect() override;
+        void Connect( short link, short conet );
+
         void UpdateDisplay();
-        UConfig<V2718> CollectConfig();
-        void SpreadConfig( const UConfig<V2718>& cfg );
-        void SaveConfig();
-        void LoadConfig();
         void StartPulser( CVPulserSelect p );
         void StopPulser( CVPulserSelect p );
         void StartScaler();
         void StopScaler();
         void ResetScaler();
-
-    signals :
-        void Connected( bool );
-        void Programmed( bool );
 
     public :
         V2718Window( QWidget *parent = nullptr );

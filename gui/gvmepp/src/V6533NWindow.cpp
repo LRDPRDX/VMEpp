@@ -37,7 +37,7 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     fDevice = new vmeplus::V6533N( address );
 
     setWindowTitle( "V6533N" );
-    CreateActions();
+    CreateMenu();
     CreateCentralWidget();
     CreateDockWidget();
 
@@ -46,7 +46,7 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     statusBar()->showMessage( "Ready..." );
 }
 
-void V6533NWindow::CreateActions()
+void V6533NWindow::CreateMenu()
 {
     connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V6533N> );
     connect( fLoadConfigAction, &QAction::triggered, this, &DeviceWindow::LoadConfig<V6533N> );
@@ -223,8 +223,7 @@ QVariant V6533NWindow::CollectConfig()
         cfg.CHANNELS.at( i ).IMON_RANGE = fIMonCombo[i]->currentData().value<V6533N::IMonRange_t>();
     }
 
-    QVariant qv;
-    qv.setValue( cfg );
+    QVariant qv; qv.setValue( cfg );
 
     return qv;
 }

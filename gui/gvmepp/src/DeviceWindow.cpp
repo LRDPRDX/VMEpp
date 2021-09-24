@@ -14,10 +14,10 @@
 #include "Style.h"
 
 
-DeviceWindow::DeviceWindow( QMainWindow *parent ) :
+DeviceWindow::DeviceWindow( QWidget *parent ) :
     QMainWindow( parent )
 {
-    CreateFileMenu();
+    CreateMenu();
     CreateBottomFrame();
 
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
@@ -44,20 +44,20 @@ void DeviceWindow::CreateBottomFrame()
     fBottomFrame->setLayout( buttonLayout );
 }
 
-void DeviceWindow::CreateFileMenu()
+void DeviceWindow::CreateMenu()
 {
-    // File menu
+    // File
     fConnectAction = new QAction( "&Connect", this );
         connect( this, &DeviceWindow::Connected, fConnectAction, &QAction::setDisabled );
     fDisconnectAction = new QAction( "&Disconnect", this );
         connect( this, &DeviceWindow::Connected, fDisconnectAction, &QAction::setEnabled );
     fExitAction = new QAction( "&Exit", this );
 
-    QMenu *fileMenu = menuBar()->addMenu( "&File" );
-        fileMenu->addAction( fConnectAction );
-        fileMenu->addAction( fDisconnectAction );
-        fileMenu->addSeparator();
-        fileMenu->addAction( fExitAction );
+    fFileMenu = menuBar()->addMenu( "&File" );
+        fFileMenu->addAction( fConnectAction );
+        fFileMenu->addAction( fDisconnectAction );
+        fFileMenu->addSeparator();
+        fFileMenu->addAction( fExitAction );
     connect( fConnectAction, &QAction::triggered, this, &DeviceWindow::Connect );
     connect( fDisconnectAction, &QAction::triggered, this, &DeviceWindow::Disconnect );
     connect( fExitAction, &QAction::triggered, this, &DeviceWindow::close );
@@ -69,7 +69,7 @@ void DeviceWindow::CreateFileMenu()
     fViewMenu = menuBar()->addMenu( "View" );
         fViewMenu->addAction( fViewStatusBarAction );
     connect( fViewStatusBarAction, &QAction::triggered, this, &DeviceWindow::ToggleStatusBar );
-    // Config actions
+    // Config
     fSaveConfigAction = new QAction( "Save" );
     fLoadConfigAction = new QAction( "Load" );
 

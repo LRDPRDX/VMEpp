@@ -19,19 +19,27 @@ class DeviceWindow : public QMainWindow
 {
     Q_OBJECT
 
-    protected :
-        void closeEvent( QCloseEvent *event ) override;
-        void CreateFileMenu();
+        /* Constructive members (called on construction) */
+        /* May be hidden in an inherited window */
+    private :
+        void CreateMenu();
         void CreateBottomFrame();
 
     protected :
-        QMenu           *fViewMenu, *fConfigMenu;
+        QMenu           *fFileMenu;
         QAction         *fConnectAction, *fDisconnectAction, *fExitAction;
+
+        QMenu           *fConfigMenu;
         QAction         *fSaveConfigAction, *fLoadConfigAction;
+
+        QMenu           *fViewMenu;
         QAction         *fViewStatusBarAction;
 
         SButton         *fWriteButton, *fReadButton;
         SFrame          *fBottomFrame;
+
+    protected :
+        void closeEvent( QCloseEvent *event ) override;
 
     public slots :
         void ToggleStatusBar();
@@ -56,7 +64,7 @@ class DeviceWindow : public QMainWindow
         void Programmed( bool );
 
     public :
-        DeviceWindow( QMainWindow *parent = nullptr );
+        DeviceWindow( QWidget *parent = nullptr );
         ~DeviceWindow() override = default;
 };
 

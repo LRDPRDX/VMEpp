@@ -184,8 +184,7 @@ QVariant V895Window::CollectConfig()
     cfg.WIDTH_H = fWidthSpin[1]->value();
     cfg.MAJORITY = fMajLevelSpin->value();
 
-    QVariant qv;
-    qv.setValue( cfg );
+    QVariant qv; qv.setValue( cfg );
         
     return qv;
 }

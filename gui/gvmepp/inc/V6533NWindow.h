@@ -41,7 +41,7 @@ class V6533NWindow : public SlaveWindow
 
     protected :
         // Creational member functions
-        void CreateActions();
+        void CreateMenu();
         void CreateCentralWidget();
         void CreateDockWidget();
 

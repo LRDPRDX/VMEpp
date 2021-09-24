@@ -33,9 +33,9 @@
 
 
 V2718Window::V2718Window( QWidget *parent ) :
-    QMainWindow( parent )
+    DeviceWindow( parent )
 {
-    CreateActions();
+    CreateMenu();
     CreateCentralWidget();
     CreateDockWidget();
 
@@ -49,48 +49,17 @@ V2718Window::V2718Window( QWidget *parent ) :
 //**********************************
 //****** CONSTRUCTIVE METHODS ******
 //**********************************
-void V2718Window::CreateActions()
+void V2718Window::CreateMenu()
 {
-    // Main actions
-    fConnectAction = new QAction( "&Connect", this );
-        connect( this, &V2718Window::Connected, fConnectAction, &QAction::setDisabled );
-    fDisconnectAction = new QAction( "&Disconnect", this );
-        connect( this, &V2718Window::Connected, fDisconnectAction, &QAction::setEnabled );
-    fExitAction = new QAction( "&Exit", this );
+    // Config
+    connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V2718> );
+    connect( fLoadConfigAction, &QAction::triggered, this, &DeviceWindow::LoadConfig<V2718> );
 
-    QMenu *fileMenu = menuBar()->addMenu( "&File" );
-        fileMenu->addAction( fConnectAction );
-        fileMenu->addAction( fDisconnectAction );
-        fileMenu->addSeparator();
-        fileMenu->addAction( fExitAction );
-    connect( fConnectAction, &QAction::triggered, this, &V2718Window::OpenConnectDialog );
-    connect( fDisconnectAction, &QAction::triggered, this, &V2718Window::Disconnect );
-    connect( fExitAction, &QAction::triggered, this, &V2718Window::close );
-
-    // View actions
-    fViewStatusBarAction = new QAction( "&View statusbar" );
-        fViewStatusBarAction->setCheckable( true );
-        fViewStatusBarAction->setChecked( true );
-
-    fViewMenu = menuBar()->addMenu( "&View" );
-        fViewMenu->addAction( fViewStatusBarAction );
-    connect( fViewStatusBarAction, &QAction::triggered, this, &V2718Window::ToggleStatusBar );
-
-    // Config actions
-    fSaveConfigAction = new QAction( "Save" );
-    fLoadConfigAction = new QAction( "Load" );
-
-    fConfigMenu = menuBar()->addMenu( "&Config" );
-        fConfigMenu->addAction( fSaveConfigAction );
-        fConfigMenu->addAction( fLoadConfigAction );
-    connect( fSaveConfigAction, &QAction::triggered, this, &V2718Window::SaveConfig );
-    connect( fLoadConfigAction, &QAction::triggered, this, &V2718Window::LoadConfig );
-
-    // Add actions
+    // Add device 
     fAddDeviceAction = new QAction( "Device" );
-        //connect( this, &V2718Window::Connected, fAddDeviceAction, &QAction::setEnabled );
-    QMenu *addMenu = menuBar()->addMenu( "&Add" );
-        addMenu->addAction( fAddDeviceAction );
+        connect( this, &V2718Window::Connected, fAddDeviceAction, &QAction::setEnabled );
+    fAddMenu = menuBar()->addMenu( "&Add" );
+        fAddMenu->addAction( fAddDeviceAction );
     connect( fAddDeviceAction, &QAction::triggered, this, &V2718Window::OpenDeviceDialog );
 }
 
@@ -104,24 +73,9 @@ void V2718Window::CreateCentralWidget()
     CreateIOTab();
     CreatePulserTab();
 
-
-    fProgramButton = new SButton( "PROGRAM", SColor_t::VIOLET );
-        connect( this, &V2718Window::Connected, fProgramButton, &SButton::setEnabled );
-        connect( fProgramButton, &SButton::clicked, this, &V2718Window::Program );
-
-    fReadButton = new SButton( "READ", SColor_t::VIOLET );
-        connect( this, &V2718Window::Connected, fReadButton, &SButton::setEnabled );
-        connect( fReadButton, &SButton::clicked, this, &V2718Window::ReadConfig );
-
-    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
-
-    buttonLayout->addWidget( fProgramButton );
-    buttonLayout->addWidget( fReadButton );
-    buttonFrame->setLayout( buttonLayout );
-
     vLayout->addWidget( fMainTab );
-    vLayout->addWidget( buttonFrame );
+    vLayout->addWidget( fBottomFrame );
+
     centralWidget->setLayout( vLayout );
 
     setCentralWidget( centralWidget );
@@ -136,7 +90,6 @@ void V2718Window::CreateDockWidget()
     dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable );
     fViewMenu->addAction( dock->toggleViewAction() );
 }
-
 
 void V2718Window::CreateIOTab()
 {
@@ -388,11 +341,12 @@ void V2718Window::UpdateDisplay()
     }
 }
 
-void V2718Window::Program()
+void V2718Window::WriteConfig()
 {
     try
     {
-        fController.WriteConfig( CollectConfig() );
+        UConfig<V2718> cfg = qvariant_cast< UConfig<V2718> >( this->CollectConfig() );
+        fController.WriteConfig( cfg );
         Programmed( true );
     }
     catch( const VException &e )
@@ -409,7 +363,8 @@ void V2718Window::ReadConfig()
     try
     {
         fController.ReadConfig( cfg );
-        SpreadConfig( cfg );
+        QVariant qv; qv.setValue( cfg );
+        SpreadConfig( qv );
     }
     catch( const VException& e )
     {
@@ -495,7 +450,7 @@ void V2718Window::ResetScaler()
     }
 }
 
-UConfig<V2718> V2718Window::CollectConfig()
+QVariant V2718Window::CollectConfig()
 {
     UConfig<V2718> cfg;
 
@@ -531,11 +486,14 @@ UConfig<V2718> V2718Window::CollectConfig()
     cfg.SCALER.LIMIT        = fScalLimitSpin->value();
     cfg.SCALER.AUTO_RESET   = fScalAutoCheck->isChecked();
 
-    return cfg;
+    QVariant qv; qv.setValue( cfg );
+
+    return qv;
 }
 
-void V2718Window::SpreadConfig( const UConfig<V2718>& cfg )
+void V2718Window::SpreadConfig( const QVariant& qConfig )
 {
+    UConfig<V2718> cfg = qvariant_cast< UConfig<V2718> >( qConfig );
     // In's and Out's
     for( uint8_t i = 0; i < N_INS; ++i )
     {
@@ -572,58 +530,6 @@ void V2718Window::SpreadConfig( const UConfig<V2718>& cfg )
     fScalAutoCheck->setChecked( cfg.SCALER.AUTO_RESET );
 }
 
-
-void V2718Window::SaveConfig()
-{
-    QString fileName = QFileDialog::getSaveFileName( this, "Save Config file", "./", "Text files (*.json)" );
-
-    //if( fileName.isEmpty() )
-    //{
-    //    return;
-    //}
-    //else
-    //{
-    //    vmeplus::UConfig<V2718> cfg = CollectConfig();
-
-    //    try
-    //    {
-    //        vmeplus::WriteConfigToFile(  jConf, fileName.toStdString() );
-    //    }
-    //    catch( const std::fstream::failure& e )
-    //    {
-    //        QMessageBox::warning( this,
-    //                              "Saving config failed!",
-    //                              "Couldn't write to the file!",
-    //                              QMessageBox::Ok );
-    //    }
-    //}
-}
-
-void V2718Window::LoadConfig()
-{
-    QString fileName = QFileDialog::getOpenFileName( this, "Load Config file", "./", "Text files (*.json)" );
-
-    //if( fileName.isEmpty() )
-    //{
-    //    return;
-    //}
-    //else
-    //{
-    //    try
-    //    {
-    //        json jConf = vmeplus::ReadConfigFromFile( fileName.toStdString() );
-    //        SpreadConfig( jConf );
-    //    }
-    //    catch( const std::fstream::failure& e )
-    //    {
-    //        QMessageBox::warning( this,
-    //                              "Reading config failed!",
-    //                              QString( "Couldn't open/read/close \'%1\'!" ).arg( fileName ),
-    //                              QMessageBox::Ok );
-    //    }
-    //}
-}
-
 void V2718Window::Connect( short link, short conet )
 {
     //Exception may be thrown here
@@ -634,6 +540,12 @@ void V2718Window::Connect( short link, short conet )
 
     emit Connected( true );
 }
+
+void V2718Window::Connect()
+{
+    OpenConnectDialog();
+}
+
 
 void V2718Window::Disconnect()
 {
@@ -667,18 +579,6 @@ void V2718Window::closeEvent( QCloseEvent *event )
         default :
             event->ignore();
             break;
-    }
-}
-
-void V2718Window::ToggleStatusBar()
-{
-    if( fViewStatusBarAction->isChecked() )
-    {
-        statusBar()->show();
-    }
-    else
-    {
-        statusBar()->hide();
     }
 }
 
