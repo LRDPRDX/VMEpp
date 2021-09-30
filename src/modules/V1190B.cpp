@@ -6,32 +6,21 @@
 
 namespace vmeplus {
 
-    /*************************/
-    /****** V1190BEvent ******/
-    /*************************/
-    V1190BEvent::V1190BEvent()
-    {
-    }
-
-    V1190BEvent::~V1190BEvent()
-    {
-    }
-
     /********************/
     /****** V1190B ******/
     /********************/
     V1190B::V1190B(uint32_t baseAddress, uint32_t range) :
             VSlave("V1190B", baseAddress, range),
             VSlaveInterrupter("V1190B", baseAddress, range),
-            VSlaveAcquisitor("V1190B", baseAddress, range),
+            VSlaveAcquisitor<V1190B>("V1190B", baseAddress, range),
 
             fFirmwareRevision("N/A"),
             fOUI(0),
             fVersion(0),
             fBoardID(0),
-            fRevision(0) {}
-
-    V1190B::~V1190B() {};
+            fRevision(0)
+    {
+    }
 
     void V1190B::Initialize() {
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...");
@@ -174,22 +163,15 @@ namespace vmeplus {
         }
     }
 
-    bool V1190B::GetEventAt(uint32_t index, VEvent *e) const
+    bool V1190B::GetEventAt( uint32_t index, UEvent<V1190B> &event ) const
     {
-        V1190BEvent* event = dynamic_cast<V1190BEvent*>( e ); 
-        if( !event )
-        {
-            PrintMessage( Message_t::ERROR, "Bad event pointer has been provided to the V1190B::GetEventAt() function. Must be V1190BEvent*." );
-            return false;
-        }
-
         if( !fBuffer )
         {
             PrintMessage( Message_t::WARNING, "V1190B::GetEventAt : buffer is nullptr. Forgot to allocate?" );
             return false;
         }
 
-        event->fHits.clear();
+        event.fHits.clear();
 
         uint32_t word;
 
@@ -197,26 +179,26 @@ namespace vmeplus {
         for( ; index < fReadBytes / 4; ++index )
         {
             word = fBuffer[index];
-            if( (word & V1190BEvent::Word_t::MASK) != V1190BEvent::Word_t::FILLER )
+            if( (word & UEvent<V1190B>::Word_t::MASK) != UEvent<V1190B>::Word_t::FILLER )
             {
                 break;
             }
         }
 
-        uint32_t wordTypeCurrent = word & V1190BEvent::Word_t::MASK;
+        uint32_t wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
 
         // If the first non-filler word is T_MEAS it means we are
         // collecting data recorded in the CONTINUOUS mode
-        if( wordTypeCurrent == V1190BEvent::Word_t::T_MEAS )
+        if( wordTypeCurrent == UEvent<V1190B>::Word_t::T_MEAS )
         {
-            event->fHits.push_back( V1190BEvent::V1190BHit( word ) );
-            event->fStart = event->fStop = index;
+            event.fHits.push_back( UEvent<V1190B>::V1190BHit( word ) );
+            event.fStart = event.fStop = index;
             return true;
         }
-        else if( wordTypeCurrent == V1190BEvent::Word_t::G_HEADER )
+        else if( wordTypeCurrent == UEvent<V1190B>::Word_t::G_HEADER )
         {
-            event->fGlobalHeader = word;
-            event->fStart = index;
+            event.fGlobalHeader = word;
+            event.fStart = index;
             ++index;
         }
         else
@@ -227,25 +209,25 @@ namespace vmeplus {
         for( ; index < fReadBytes / 4; ++index )
         {
             word = fBuffer[index];
-            wordTypeCurrent = word & V1190BEvent::Word_t::MASK;
+            wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
 
             switch( wordTypeCurrent )
             {
-                case( V1190BEvent::Word_t::T_HEADER ) :
-                case( V1190BEvent::Word_t::T_TRAILER ) :
+                case( UEvent<V1190B>::Word_t::T_HEADER ) :
+                case( UEvent<V1190B>::Word_t::T_TRAILER ) :
                     break;
-                case( V1190BEvent::Word_t::T_ERROR ) :
-                    event->fErrors = word;
+                case( UEvent<V1190B>::Word_t::T_ERROR ) :
+                    event.fErrors = word;
                     break;
-                case( V1190BEvent::Word_t::T_MEAS ) :
-                    event->fHits.push_back( V1190BEvent::V1190BHit( word ) );
+                case( UEvent<V1190B>::Word_t::T_MEAS ) :
+                    event.fHits.push_back( UEvent<V1190B>::V1190BHit( word ) );
                     break;
-                case( V1190BEvent::Word_t::G_TTT ) :
-                    event->fETTT = word;
+                case( UEvent<V1190B>::Word_t::G_TTT ) :
+                    event.fETTT = word;
                     break;
-                case( V1190BEvent::Word_t::G_TRAILER ) :
-                    event->fGlobalTrailer = word;
-                    event->fStop = index;
+                case( UEvent<V1190B>::Word_t::G_TRAILER ) :
+                    event.fGlobalTrailer = word;
+                    event.fStop = index;
                     return true;
                     break;
                 default :
@@ -306,7 +288,7 @@ namespace vmeplus {
 
     bool V1190B::ReadControl( V1190B::Control_t bit )
     {
-        return GetBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) ); 
+        return GetBit16( V1190B_CONTROL_REGISTER, static_cast<uint16_t>( bit ) );
     }
 
     uint16_t V1190B::ReadControl()

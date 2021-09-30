@@ -12,15 +12,16 @@ namespace vmeplus
             uint32_t fStop;
 
         public :
-            VEvent();
-            virtual     ~VEvent();
+            VEvent() :
+                fStart( 0 ),
+                fStop( 0 )
+            { };
+            virtual ~VEvent() = default;
 
         public :
             uint32_t GetStart() const { return fStart; }
             uint32_t GetStop() const { return fStop; }
-            void     Reset() { fStart= 0; fStop = 0; }
-
-            
+            void     Reset() { fStart = 0; fStop = 0; }
     };
 }
 #endif

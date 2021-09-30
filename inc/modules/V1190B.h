@@ -116,7 +116,7 @@ namespace vmeplus {
     /********************/
     /****** V1190B ******/
     /********************/
-    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1190B> {
+    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor<V1190B>, public UConfigurable<V1190B> {
 
         private :
             static uint8_t const fChNumber = 0x40;    // Number of channels 64
@@ -268,7 +268,7 @@ namespace vmeplus {
 
         public:
             V1190B(uint32_t address, uint32_t range = V1190B_LUB);
-            virtual ~V1190B();
+            ~V1190B() override = default;
 
         protected:
             void Initialize() override;
@@ -297,7 +297,7 @@ namespace vmeplus {
             void AllocateBuffer() override;
             uint32_t ReadBuffer() override;
             void DropBuffer( const std::string& fileName );
-            bool GetEventAt(uint32_t index, VEvent *event) const override;
+            bool GetEventAt(uint32_t index, UEvent<V1190B> &event) const override;
 
             /************************/
             /****** INTERRUPTS ******/
@@ -639,7 +639,8 @@ namespace vmeplus {
     /*************************/
     /****** V1190BEvent ******/
     /*************************/
-    class V1190BEvent : public VEvent
+    template<>
+    class UEvent<V1190B> : public VEvent
     {
         public :
             enum Word_t
@@ -684,8 +685,8 @@ namespace vmeplus {
             const_iterator cend() const noexcept    { return fHits.cend(); }
 
         public :
-            V1190BEvent();
-            ~V1190BEvent();
+            UEvent<V1190B>() { };
+            ~UEvent<V1190B>() override = default;
             //V1190BEvent( const V1190BEvent& other );
             //V1190BEvent& operator=( V1190BEvent other );
             size_t GetNHits()           { return fHits.size(); }
@@ -694,7 +695,7 @@ namespace vmeplus {
             uint32_t GetWordCount()     { return ((fGlobalTrailer & 0x001fffeU) >> 5U); }
 
         friend class V1190B;
-    };
+    };// UEvent<V1990B>
 }// vmepp
 
 #endif
