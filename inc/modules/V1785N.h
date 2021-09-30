@@ -350,11 +350,11 @@ namespace vmeplus
             uint32_t    fEOB;
 
         public :
-            UEvent<V1785N>();
-            ~UEvent<V1785N>() override = default;
-            UEvent<V1785N>( const UEvent<V1785N> &other );
-            UEvent<V1785N>& operator=( UEvent<V1785N> other );
-            friend void swap( UEvent<V1785N> &first, UEvent<V1785N> &second )
+            UEvent();
+            ~UEvent() override = default;
+            UEvent( const UEvent &other );
+            UEvent& operator=( UEvent other );
+            friend void swap( UEvent &first, UEvent &second )
             {
                 using std::swap;
                 swap( first.fHeader, second.fHeader );

@@ -31,7 +31,7 @@ namespace vmeplus
     //****** V1785N Part ******
     V1785N::V1785N( uint32_t baseAddress, uint32_t range ) :
         VSlave( "V1785N", baseAddress, range ),
-        VSlaveAcquisitor<V1785N>( "V1785N", baseAddress, range ),
+        VSlaveAcquisitor( "V1785N", baseAddress, range ),
         VSlaveInterrupter( "V1785N", baseAddress, range ),
 
         fFirmwareRevision( "N/A" ),

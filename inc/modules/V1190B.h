@@ -685,10 +685,10 @@ namespace vmeplus {
             const_iterator cend() const noexcept    { return fHits.cend(); }
 
         public :
-            UEvent<V1190B>() { };
-            ~UEvent<V1190B>() override = default;
-            //V1190BEvent( const V1190BEvent& other );
-            //V1190BEvent& operator=( V1190BEvent other );
+            UEvent() { };
+            ~UEvent() override = default;
+            //UEvent( const UEvent& other );
+            UEvent& operator=( UEvent other );
             size_t GetNHits()           { return fHits.size(); }
             uint32_t GetEventCount()    { return ((fGlobalHeader & 0x07ffffe0U) >> 5U); }
             uint32_t GetETTT()          { return (fETTT & 0x07ffffffU); }

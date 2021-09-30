@@ -12,7 +12,7 @@ namespace vmeplus {
     V1190B::V1190B(uint32_t baseAddress, uint32_t range) :
             VSlave("V1190B", baseAddress, range),
             VSlaveInterrupter("V1190B", baseAddress, range),
-            VSlaveAcquisitor<V1190B>("V1190B", baseAddress, range),
+            VSlaveAcquisitor("V1190B", baseAddress, range),
 
             fFirmwareRevision("N/A"),
             fOUI(0),
