@@ -688,7 +688,7 @@ namespace vmeplus {
             UEvent() { };
             ~UEvent() override = default;
             //UEvent( const UEvent& other );
-            UEvent& operator=( UEvent other );
+            //UEvent& operator=( UEvent other );
             size_t GetNHits()           { return fHits.size(); }
             uint32_t GetEventCount()    { return ((fGlobalHeader & 0x07ffffe0U) >> 5U); }
             uint32_t GetETTT()          { return (fETTT & 0x07ffffffU); }
