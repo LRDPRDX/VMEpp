@@ -1,6 +1,6 @@
 #include "Dialogs.h"
+#include "Style.h"
 
-#include <QPushButton>
 #include <QDebug>
 #include <QLabel>
 #include <QComboBox>
@@ -12,6 +12,7 @@
 #include "VException.h"
 #include "V895Window.h"
 #include "V6533NWindow.h"
+
 
 Connection::Connection( V2718Window *parent ) :
     QDialog( parent ),
@@ -46,10 +47,10 @@ Connection::Connection( V2718Window *parent ) :
         settingsLayout->addWidget( fConetSpin );
 
     // Lower layout (buttons)
-    fConnectButton = new QPushButton( "Connect" );
+    fConnectButton = new SButton( "Connect", SColor_t::VIOLET );
     connect( fConnectButton, &QPushButton::clicked, this, &Connection::Connect );
 
-    fCancelButton = new QPushButton( "Cancel" );
+    fCancelButton = new SButton( "Cancel", SColor_t::RED );
     connect( fCancelButton, &QPushButton::clicked, this, &Connection::Cancel );
 
     auto *buttonsLayout = new QHBoxLayout();
@@ -118,11 +119,11 @@ DeviceDialog::DeviceDialog( V2718Window *parent ) :
         settingsLayout->setStretchFactor( fAddressSpin, 1  );
 
     // Lower layout (buttons)
-    fAddButton = new QPushButton( "Add" );
-    connect( fAddButton, &QPushButton::clicked, this, &DeviceDialog::Add );
+    fAddButton = new SButton( "Add", SColor_t::VIOLET );
+    connect( fAddButton, &SButton::clicked, this, &DeviceDialog::Add );
 
-    fCancelButton = new QPushButton( "Cancel" );
-    connect( fCancelButton, &QPushButton::clicked, this, &DeviceDialog::Cancel );
+    fCancelButton = new SButton( "Cancel", SColor_t::RED );
+    connect( fCancelButton, &SButton::clicked, this, &DeviceDialog::Cancel );
 
     auto *buttonsLayout = new QHBoxLayout();
         buttonsLayout->addWidget( fAddButton );

@@ -11,6 +11,8 @@ class SlaveWindow : public DeviceWindow
     private :
         V2718Window     *fParent;
 
+        void CreateMenu();
+
     protected : 
         VSlave          *fDevice;
 

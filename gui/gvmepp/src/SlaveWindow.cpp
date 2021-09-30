@@ -1,4 +1,5 @@
 #include <QStatusBar>
+#include <QAction>
 
 #include "SlaveWindow.h"
 #include "V2718Window.h"
@@ -10,11 +11,25 @@ SlaveWindow::SlaveWindow( V2718Window *parent ) :
     fDevice( nullptr )
 {
     connect( fParent, &V2718Window::Connected, this, &SlaveWindow::OnControllerDisconnect );
+
+    CreateMenu();
 }
 
 SlaveWindow::~SlaveWindow()
 {
-    delete fDevice;
+    if( fDevice )
+    {
+        delete fDevice;
+    }
+}
+
+
+//**********************************
+//****** CONSTRUCTIVE METHODS ******
+//**********************************
+void SlaveWindow::CreateMenu()
+{
+    connect( fParent, &V2718Window::Connected, fConnectAction, &QAction::setEnabled );
 }
 
 //*******************
@@ -53,4 +68,3 @@ void SlaveWindow::OnControllerDisconnect( bool status )
         Disconnect();
     }
 }
-

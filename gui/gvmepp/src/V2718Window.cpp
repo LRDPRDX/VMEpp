@@ -6,7 +6,6 @@
 #include <QDebug>
 #include <QStatusBar>
 #include <QFileDialog>
-#include <QPushButton>
 #include <QComboBox>
 #include <QSpinBox>
 #include <QLabel>
