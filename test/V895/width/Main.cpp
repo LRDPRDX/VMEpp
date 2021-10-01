@@ -12,10 +12,10 @@ int main()
     V2718 controller;
     //Instantiate a descriminator
     V895 dm( 0x40080000 );
-    
+
     try
     {
-        controller.Open( 0, 0 ); 
+        controller.Open( 0, 0 );
         controller.RegisterSlave( &dm );
         controller.Initialize();
 
@@ -38,8 +38,8 @@ int main()
     }
     catch( const VException& e )
     {
-        std::cerr << e.what() << "\n"; 
-        std::cerr << e.GetInfo() << "\n"; 
+        std::cerr << e.what() << "\n";
+        std::cerr << e.GetInfo() << "\n";
     }
     return 0;
 }

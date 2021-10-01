@@ -20,12 +20,12 @@ void Histo()
 
     V2718 controller;
     V1190B tdc(0x20080000);
-    
+
     try
     {
         std::cout << "Test begins...\n";
 
-        controller.Open( 0, 0 ); 
+        controller.Open( 0, 0 );
         controller.RegisterSlave( &tdc );
         controller.Initialize();
 
@@ -49,8 +49,8 @@ void Histo()
         while( nEvents < 20000 )
         {
             tdc.ReadBuffer();
-            V1190BEvent e;
-            while( tdc.GetEvent( &e ) )
+            UEvent<V1190B> e;
+            while( tdc.GetEvent( e ) )
             {
                 for( auto it = e.cbegin(); it != e.cend(); ++it )
                 {
@@ -60,7 +60,7 @@ void Histo()
             c->Modified();
             c->Update();
 
-            nEvents += tdc.GetNEventsRead(); 
+            nEvents += tdc.GetNEventsRead();
         }
 
         std::cout << "Mean : " << h->GetMean() << "\n";
