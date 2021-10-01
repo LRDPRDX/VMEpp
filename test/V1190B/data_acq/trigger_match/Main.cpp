@@ -30,7 +30,7 @@ int main()
         tdc.WriteWindowOffset( -10 ); // -250 ns
         tdc.WriteEnableSubTrigger( true ); //
 
-        tdc.WriteIRQEvents( 10 * 8 );
+        tdc.WriteIRQEvents( 1 );
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 

@@ -1,3 +1,13 @@
+/*
+   To test this example you may use the following configuration:
+   
+   1) Connect any output (say ch 12) of the Descriminator V895 to the
+      TRIGGER input of the CONTROL connector of the TDC V1190B
+
+   2) Connect the output (ch 12) of the Descriminator V895 to the input of TDC V1190B
+
+   3) Send the Test signal to the V895 N times (see "WriteIRQEvents" parameter )
+*/
 #include "VException.h"
 #include "modules/V2718.h"
 #include "modules/V1190B.h"
