@@ -13,11 +13,11 @@ int main()
 {
     V2718 controller;
     V1190B tdc(0x20080000);
-    
+
     try
     {
         std::cout << "Test begins...\n";
-        controller.Open( 0, 0 ); 
+        controller.Open( 0, 0 );
         controller.RegisterSlave( &tdc );
         controller.Initialize();
 
@@ -30,7 +30,7 @@ int main()
         tdc.WriteWindowOffset( -10 ); // -250 ns
         tdc.WriteEnableSubTrigger( true ); //
 
-        tdc.WriteIRQEvents( 10 * 8 );
+        tdc.WriteIRQEvents( 1 );
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 
@@ -48,8 +48,8 @@ int main()
 
         tdc.ReadBuffer();
 
-        V1190BEvent e;
-        while( tdc.GetEvent( &e ) )
+        UEvent<V1190B> e;
+        while( tdc.GetEvent( e ) )
         {
             for( auto hit = e.cbegin(); hit != e.cend(); ++hit )
             {

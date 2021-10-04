@@ -6,8 +6,10 @@
 
 namespace vmeplus
 {
-    class VEvent;
+    template<typename MODULE_NAME>
+    class UEvent;
 
+    template<typename MODULE_NAME>
     class VSlaveAcquisitor : virtual public VSlave
     {
         protected :
@@ -19,14 +21,23 @@ namespace vmeplus
             uint32_t                    fReadCycles;
 
         public :
-            VSlaveAcquisitor( std::string name, uint32_t address, uint32_t range );
-            virtual ~VSlaveAcquisitor();
+            VSlaveAcquisitor( std::string name, uint32_t address, uint32_t range ) :
+                VSlave( name, address, range ),
+
+                fReadBytes( 0 ),
+                fNEventsRead( 0 ),
+                fCurrentEvent( 0 ),
+                fCurrentIndex( 0 ),
+                fReadCycles( 1 )
+            {
+            }
+            ~VSlaveAcquisitor() override = default;
 
         public :
             virtual void        AllocateBuffer() = 0;
             virtual uint32_t    ReadBuffer() = 0;
-            virtual bool        GetEvent( VEvent *event );
-            virtual bool        GetEventAt( uint32_t index, VEvent *event ) const = 0;
+            virtual bool        GetEvent( UEvent<MODULE_NAME> &event );
+            virtual bool        GetEventAt( uint32_t index, UEvent<MODULE_NAME> &event ) const = 0;
             void                SetReadCycles( uint32_t n ) { fReadCycles = (n ? (n <= 32 ? n : 32) : 1); }
             uint32_t            GetReadCycles() { return fReadCycles; }
 
@@ -42,5 +53,21 @@ namespace vmeplus
                                   fNEventsRead = 0;
                                 }
     };
+
+    template<typename MODULE_NAME>
+    bool VSlaveAcquisitor<MODULE_NAME>::GetEvent( UEvent<MODULE_NAME> &event )
+    {
+        if( GetEventAt( fCurrentIndex, event ) )
+        {
+            fCurrentIndex = event.GetStop() + 1;
+            fNEventsRead++;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
+
 #endif

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include <QMainWindow>
 #include "SlaveWindow.h"
 
@@ -62,6 +64,7 @@ class V2718Window : public DeviceWindow
 
     protected :
         void closeEvent( QCloseEvent *event ) override;
+        void DoOnError( const VException& error ) override;
 
     private slots :
         void OpenConnectDialog();
@@ -89,10 +92,8 @@ class V2718Window : public DeviceWindow
         ~V2718Window() override = default;
 
     public :
-        void HandleError( const VException& e );
-
-    friend class Connection;
-    friend void SlaveWindow::Connect();
+        friend class Connection;
+        friend void SlaveWindow::Connect();
 };
 
 
@@ -101,16 +102,15 @@ class Display : public QWidget
     Q_OBJECT
 
     protected :
-        static const int N_AM   = 6;
-        static const int N_IRQ  = 7;
+        static const size_t N_LED = 24; 
+        static const std::array<QString, N_LED> fLEDNames;
+        static size_t GetLED( const QString& name );
 
     protected :
         V2718Window  *fController;
 
         QLineEdit               *fAddressText, *fDataText;
-        SLedIndicatorWithLabel  *fAddressModLED[N_AM], *fIRQLED[N_IRQ];
-        SLedIndicatorWithLabel  *fASLED, *fIACKLED, *fWriteLED, *fLwordLED, *fDS1LED, *fDS2LED;
-        SLedIndicatorWithLabel  *fBreqLED, *fBgntLED, *fSresLED, *fDTKLED, *fBERRLED;
+        SLedIndicatorWithLabel  *fLED[N_LED];
         SButton                 *fUpdateButton;
 
     protected :

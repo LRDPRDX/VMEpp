@@ -73,9 +73,9 @@ namespace ss
                                              "border-bottom-right-radius:5px;}" 
                                              "QGroupBox::title {subcontrol-origin: margin; padding: 0 3px;"
                                              "background-color:%1; border-top-left-radius:5px;"
-                                             "border-top-right-radius:5px; color:#ffffff}" ).arg( style::blue );
+                                             "border-top-right-radius:5px; color:#ffffff}" ).arg( style::violet );
 
-    static const QString frame = QString( "SFrame {border: 1px solid %1; border-radius: 4px}" ).arg( style::blue );
+    static const QString frame = QString( "SFrame {border: 1px solid %1; border-radius: 4px}" ).arg( style::violet );
 }
 
 class SFrame : public QFrame
@@ -105,7 +105,7 @@ class SLedIndicator : public QLabel
         int      fSize;
         
     public:
-        SLedIndicator( int size = 14, QWidget *parent = 0 );
+        SLedIndicator( int size = 16, QWidget *parent = 0 );
         ~SLedIndicator() override = default;
         
     public slots:
@@ -119,7 +119,7 @@ class SLedIndicatorWithLabel : public QWidget
         SLedIndicator *fLED;
 
     public :
-        SLedIndicatorWithLabel( QString text = "", bool leftAlign = true, int size = 14, QWidget *parent = nullptr );
+        SLedIndicatorWithLabel( QString text = "", bool leftAlign = true, int size = 16, QWidget *parent = nullptr );
         ~SLedIndicatorWithLabel() override = default;
 
         void SetChecked( bool status ) { fLED->SetState( status ); }

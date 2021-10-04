@@ -15,11 +15,11 @@ int main()
 {
     V2718 controller;
     V1190B tdc(0x20080000);
-    
+
     try
     {
         std::cout << "Test begins...\n";
-        controller.Open( 0, 0 ); 
+        controller.Open( 0, 0 );
         controller.RegisterSlave( &tdc );
         controller.Initialize();
 

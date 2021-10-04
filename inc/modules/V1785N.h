@@ -236,8 +236,6 @@
 
 namespace vmeplus
 {
-    class V1785NEvent;
-
     class V1785N;
 
     template<>
@@ -246,7 +244,7 @@ namespace vmeplus
     };
 
     //****** V1785N Part ******
-    class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter, public UConfigurable<V1785N>
+    class V1785N : public VSlaveAcquisitor<V1785N>, public VSlaveInterrupter, public UConfigurable<V1785N>
     {
         public :
             enum class Range_t : uint8_t { HIGH, LOW };
@@ -269,7 +267,7 @@ namespace vmeplus
 
         public :
             V1785N( uint32_t baseAddress, uint32_t range = V1785N_LUB );
-            virtual         ~V1785N();
+            ~V1785N() override = default;
 
         protected :
             //Read ROM
@@ -319,7 +317,7 @@ namespace vmeplus
             uint32_t        ReadBuffer() override;
             //void            ScanBuffer() override;
             //bool            GetEvent( VEvent *event ) override;
-            bool            GetEventAt( uint32_t index, VEvent *event ) const override;
+            bool            GetEventAt( uint32_t index, UEvent<V1785N> &event ) const override;
             void            ClearData();
 
         //State methods 
@@ -342,8 +340,9 @@ namespace vmeplus
             void    WriteConfig( const UConfig<V1785N>& config ) override;
     };
 
-    //****** V1785NEvent Part ******
-    class V1785NEvent : public VEvent
+    //****** UEvent<V1785N> Part ******
+    template<>
+    class UEvent<V1785N> : public VEvent
     {
         protected :
             uint32_t    fHeader;
@@ -351,11 +350,11 @@ namespace vmeplus
             uint32_t    fEOB;
 
         public :
-            V1785NEvent();
-            ~V1785NEvent();
-            V1785NEvent( const V1785NEvent &other );
-            V1785NEvent& operator=( V1785NEvent other );
-            friend void swap( V1785NEvent &first, V1785NEvent &second )
+            UEvent();
+            ~UEvent() override = default;
+            UEvent( const UEvent &other );
+            UEvent& operator=( UEvent other );
+            friend void swap( UEvent &first, UEvent &second )
             {
                 using std::swap;
                 swap( first.fHeader, second.fHeader );

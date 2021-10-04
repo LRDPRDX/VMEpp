@@ -40,6 +40,7 @@ class DeviceWindow : public QMainWindow
 
     protected :
         void closeEvent( QCloseEvent *event ) override;
+        virtual void DoOnError( const VException& error ) = 0;
 
     public slots :
         void ToggleStatusBar();
@@ -50,6 +51,8 @@ class DeviceWindow : public QMainWindow
         virtual void Disconnect() = 0;
         virtual QVariant CollectConfig() = 0;
         virtual void SpreadConfig( const QVariant& config ) = 0;
+
+        void OnError( const VException& error );
 
     public :
         template<typename T>
@@ -62,6 +65,7 @@ class DeviceWindow : public QMainWindow
     signals :
         void Connected( bool );
         void Programmed( bool );
+        void Error( const VException& error );
 
     public :
         DeviceWindow( QWidget *parent = nullptr );
