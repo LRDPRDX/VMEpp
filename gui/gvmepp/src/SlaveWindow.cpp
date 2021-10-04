@@ -68,3 +68,7 @@ void SlaveWindow::OnControllerDisconnect( bool status )
         Disconnect();
     }
 }
+
+void SlaveWindow::DoOnError( const VException& error )
+{
+}

@@ -1,4 +1,5 @@
 #include <fstream>
+#include <map>
 
 #include <QMenu>
 #include <QMenuBar>
@@ -41,8 +42,6 @@ V2718Window::V2718Window( QWidget *parent ) :
     emit Connected( false );
 
     statusBar()->showMessage( "Ready..." );
-
-    this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 //**********************************
@@ -336,7 +335,7 @@ void V2718Window::UpdateDisplay()
     }
     catch( const VException &e )
     {
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -351,7 +350,7 @@ void V2718Window::WriteConfig()
     catch( const VException &e )
     {
         Programmed( false );
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -367,7 +366,7 @@ void V2718Window::ReadConfig()
     }
     catch( const VException& e )
     {
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -397,7 +396,7 @@ void V2718Window::StartPulser( CVPulserSelect p )
     }
     catch( const VException& e )
     {
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -409,7 +408,7 @@ void V2718Window::StopPulser( CVPulserSelect p )
     }
     catch( const VException& e )
     {
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -421,7 +420,7 @@ void V2718Window::StartScaler()
     }
     catch( const VException& e )
     {
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -433,7 +432,7 @@ void V2718Window::StopScaler()
     }
     catch( const VException& e )
     {
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -445,7 +444,7 @@ void V2718Window::ResetScaler()
     }
     catch( const VException& e )
     {
-        HandleError( e );
+        Error( e );
     }
 }
 
@@ -581,7 +580,7 @@ void V2718Window::closeEvent( QCloseEvent *event )
     }
 }
 
-void V2718Window::HandleError( const VException& e )
+void V2718Window::DoOnError( const VException& e )
 {
     switch( e.GetErrorCode() )
     {
@@ -604,14 +603,19 @@ void V2718Window::HandleError( const VException& e )
         case( VError_t::vGenericError ) :
             Disconnect(); break;
     }
-    ErrorMessageBox* msg = new ErrorMessageBox( e, this );
-    msg->show();
 }
 
 
 /*********************/
 /****** DISPLAY ******/
 /*********************/
+const std::array<QString, Display::N_LED> Display::fLEDNames = {"AM0", "AM1", "AM2", "AM3", "AM4", "AM5",
+                                                                "DS0", "DS1",
+                                                                "AS", "IACK", "WRITE", "LWORD",
+                                                                "IRQ1", "IRQ2", "IRQ3", "IRQ4", "IRQ5",
+                                                                "IRQ6", "IRQ7",
+                                                                "BREQ", "BGNT", "SRES", "DTK", "BERR" }; 
+
 Display::Display( V2718Window *controller, QWidget *parent ) :
     QWidget( parent ),
     fController( controller )
@@ -650,51 +654,20 @@ void Display::CreateDisplay()
     SFrame *lowerFrame = new SFrame( SColor_t::VIOLET );
     QGridLayout *lowerLayout = new QGridLayout();
 
-    int row = 0;
-    for( int i = 0; i < N_AM; ++i, ++row )
+    for( size_t i = 0; i < N_LED/2; ++i )
     {
-        fAddressModLED[i] = new SLedIndicatorWithLabel( QString( "AM%1" ).arg( i ), false );
-        lowerLayout->addWidget( fAddressModLED[i], i, 0 );
+        fLED[i] = new SLedIndicatorWithLabel( fLEDNames[i], false );
+        fLED[i]->SetColor( SColor_t::VIOLET );
+        lowerLayout->addWidget( fLED[i], i, 0 );
     }
 
-    fDS1LED = new SLedIndicatorWithLabel( "DS1", false );
-    fDS2LED = new SLedIndicatorWithLabel( "DS2", false );
-    lowerLayout->addWidget( fDS1LED, row++, 0 );
-    lowerLayout->addWidget( fDS2LED, row++, 0 );
-
-    fASLED = new SLedIndicatorWithLabel( "AS", false );
-    lowerLayout->addWidget( fASLED, row++, 0 );
-
-    fIACKLED = new SLedIndicatorWithLabel( "IACK", false );
-    lowerLayout->addWidget( fIACKLED, row++, 0 );
-
-    fWriteLED = new SLedIndicatorWithLabel( "WRITE", false );
-    lowerLayout->addWidget( fWriteLED, row++, 0 );
-
-    fLwordLED = new SLedIndicatorWithLabel( "LWORD", false );
-    lowerLayout->addWidget( fLwordLED, row++, 0 );
-
-    row = 0;
-    for( int i = 0; i < N_IRQ; ++i, ++row )
+    for( size_t i = N_LED/2; i < N_LED; ++i )
     {
-        fIRQLED[i] = new SLedIndicatorWithLabel( QString( "IRQ%1" ).arg( i + 1 ) );
-        lowerLayout->addWidget( fIRQLED[i], i, 1 );
+        fLED[i] = new SLedIndicatorWithLabel( fLEDNames[i], true );
+        fLED[i]->SetColor( SColor_t::VIOLET );
+        lowerLayout->addWidget( fLED[i], i - N_LED/2, 1 );
     }
-
-    fBreqLED = new SLedIndicatorWithLabel( "BREQ" );
-    lowerLayout->addWidget( fBreqLED, row++, 1 );
-
-    fBgntLED = new SLedIndicatorWithLabel( "BGNT" );
-    lowerLayout->addWidget( fBgntLED, row++, 1 );
-
-    fSresLED = new SLedIndicatorWithLabel( "SRES" );
-    lowerLayout->addWidget( fSresLED, row++, 1 );
-
-    fDTKLED = new SLedIndicatorWithLabel( "DTK" );
-    lowerLayout->addWidget( fDTKLED, row++, 1 );
-
-    fBERRLED = new SLedIndicatorWithLabel( "BERR" );
-    lowerLayout->addWidget( fBERRLED, row++, 1 );
+    fLED[GetLED("BERR")]->SetColor( SColor_t::RED );
 
     lowerLayout->setSpacing( 1 );
     lowerFrame->setLayout( lowerLayout );
@@ -720,25 +693,46 @@ void Display::Update( const CVDisplay &display )
     fAddressText->setText( QString().setNum( display.cvAddress, 16 ) );
     fDataText->setText( QString().setNum( display.cvData, 16 ) );
 
-    for( unsigned i = 0; i < N_AM; ++i )
+    std::map<QString, size_t> m;
+    for( size_t i = 0; i < fLEDNames.size(); ++i )
     {
-        fAddressModLED[i]->SetChecked( ((1 << i) & display.cvAM) );
+        m.insert( std::make_pair( fLEDNames[i], i ) );
     }
 
-    for( unsigned i = 0; i < N_IRQ; ++i )
-    {
-        fIRQLED[i]->SetChecked( ((1 << i) & display.cvIRQ) );
-    }
+    fLED[m["AM0"]]->SetChecked( ((1 << 0) & display.cvAM) );
+    fLED[m["AM1"]]->SetChecked( ((1 << 1) & display.cvAM) );
+    fLED[m["AM2"]]->SetChecked( ((1 << 2) & display.cvAM) );
+    fLED[m["AM3"]]->SetChecked( ((1 << 3) & display.cvAM) );
+    fLED[m["AM4"]]->SetChecked( ((1 << 4) & display.cvAM) );
+    fLED[m["AM5"]]->SetChecked( ((1 << 5) & display.cvAM) );
 
-    fASLED->SetChecked( display.cvAS );
-    fIACKLED->SetChecked( display.cvIACK );
-    fDS1LED->SetChecked( display.cvDS0 );
-    fDS2LED->SetChecked( display.cvDS1 );
-    fWriteLED->SetChecked( display.cvWRITE );
-    fLwordLED->SetChecked( display.cvLWORD );
-    fBreqLED->SetChecked( display.cvBR );
-    fBgntLED->SetChecked( display.cvBG );
-    fSresLED->SetChecked( display.cvSYSRES );
-    fDTKLED->SetChecked( display.cvDTACK );
-    fBERRLED->SetChecked( display.cvBERR );
+    fLED[m["IRQ1"]]->SetChecked( ((1 << 0) & display.cvIRQ) );
+    fLED[m["IRQ2"]]->SetChecked( ((1 << 1) & display.cvIRQ) );
+    fLED[m["IRQ3"]]->SetChecked( ((1 << 2) & display.cvIRQ) );
+    fLED[m["IRQ4"]]->SetChecked( ((1 << 3) & display.cvIRQ) );
+    fLED[m["IRQ5"]]->SetChecked( ((1 << 4) & display.cvIRQ) );
+    fLED[m["IRQ6"]]->SetChecked( ((1 << 5) & display.cvIRQ) );
+    fLED[m["IRQ7"]]->SetChecked( ((1 << 6) & display.cvIRQ) );
+
+    fLED[m["AS"]]->SetChecked( display.cvAS );
+    fLED[m["IACK"]]->SetChecked( display.cvIACK );
+    fLED[m["DS0"]]->SetChecked( display.cvDS0 );
+    fLED[m["DS1"]]->SetChecked( display.cvDS1 );
+    fLED[m["WRITE"]]->SetChecked( display.cvWRITE );
+    fLED[m["LWORD"]]->SetChecked( display.cvLWORD );
+    fLED[m["BREQ"]]->SetChecked( display.cvBR );
+    fLED[m["BGNT"]]->SetChecked( display.cvBG );
+    fLED[m["SRES"]]->SetChecked( display.cvSYSRES );
+    fLED[m["DTK"]]->SetChecked( display.cvDTACK );
+    fLED[m["BERR"]]->SetChecked( display.cvBERR );
+}
+
+size_t Display::GetLED( const QString& name )
+{
+    size_t i = 0;
+    for( auto it = fLEDNames.cbegin(); it != fLEDNames.cend() && *it != name; )
+    {
+        ++it; ++i;
+    }
+    return i;
 }

@@ -11,6 +11,7 @@
 
 #include "DeviceWindow.h"
 #include "V2718Window.h"
+#include "Dialogs.h"
 #include "Style.h"
 
 
@@ -19,6 +20,8 @@ DeviceWindow::DeviceWindow( QWidget *parent ) :
 {
     CreateMenu();
     CreateBottomFrame();
+
+    connect( this, &DeviceWindow::Error, this, &DeviceWindow::OnError );
 
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
@@ -110,4 +113,14 @@ void DeviceWindow::ToggleStatusBar()
     {
         statusBar()->hide();
     }
+}
+
+void DeviceWindow::OnError( const VException& error )
+{
+    statusBar()->showMessage( QString( "Error %1 : %2" ).arg( QString::number( static_cast<int>(error.GetErrorCode()) ),
+                                                              QString::fromStdString( error.GetErrorMessage() ) ) );
+    this->DoOnError( error );
+    
+    ErrorMessageBox* msg = new ErrorMessageBox( error, this );
+    msg->show();
 }

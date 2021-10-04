@@ -16,6 +16,9 @@ class SlaveWindow : public DeviceWindow
     protected : 
         VSlave          *fDevice;
 
+    protected :
+        void DoOnError( const VException& error ) override;
+
     public slots :
         void OnControllerDisconnect( bool );
         void Connect() override;
