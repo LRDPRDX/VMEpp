@@ -105,7 +105,7 @@ class SLedIndicator : public QLabel
         int      fSize;
         
     public:
-        SLedIndicator( int size = 16, QWidget *parent = 0 );
+        SLedIndicator( int size = 14, QWidget *parent = 0 );
         ~SLedIndicator() override = default;
         
     public slots:
@@ -119,7 +119,7 @@ class SLedIndicatorWithLabel : public QWidget
         SLedIndicator *fLED;
 
     public :
-        SLedIndicatorWithLabel( QString text = "", bool leftAlign = true, int size = 16, QWidget *parent = nullptr );
+        SLedIndicatorWithLabel( QString text = "", bool leftAlign = true, int size = 14, QWidget *parent = nullptr );
         ~SLedIndicatorWithLabel() override = default;
 
         void SetChecked( bool status ) { fLED->SetState( status ); }

@@ -46,6 +46,9 @@ V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     statusBar()->showMessage( "Ready..." );
 }
 
+//**********************************
+//****** CONSTRUCTIVE METHODS ******
+//**********************************
 void V6533NWindow::CreateMenu()
 {
     connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V6533N> );
@@ -150,6 +153,9 @@ void V6533NWindow::CreateCentralWidget()
     setCentralWidget( centralWidget );
 }
 
+//*******************
+//****** SLOTS ******
+//*******************
 void V6533NWindow::WriteConfig()
 {
     try
@@ -161,6 +167,7 @@ void V6533NWindow::WriteConfig()
     catch( const VException& e )
     {
         emit Programmed( false );
+        emit Error( e );
     }
 }
 
@@ -176,6 +183,7 @@ void V6533NWindow::ReadConfig()
     }
     catch( const VException& e )
     {
+        emit Error( e );
     }
 }
 
@@ -189,7 +197,7 @@ void V6533NWindow::UpdateMonitor()
     }
     catch( const VException& e )
     {
-        qInfo() << e.what() << "\n";
+        emit Error( e );
     }
 }
 
@@ -255,11 +263,19 @@ void V6533NWindow::ChannelOn()
 
     try
     {
-        static_cast<V6533N*>( fDevice )->WriteEnable( ch, true );
+        V6533N* hv = static_cast<V6533N*>( fDevice );
+        hv->WriteVoltage( ch, fVoltSpin[ch]->value() );
+        hv->WriteCurrent( ch, fCurSpin[ch]->value() );
+        hv->WriteSWVMax( ch, fSWMaxSpin[ch]->value() );
+        hv->WriteRampUp( ch, fUpSpin[ch]->value() );
+        hv->WriteRampDown( ch, fDownSpin[ch]->value() );
+        hv->WritePWDown( ch, fOffCombo[ch]->currentData().value<bool>() );
+        hv->WriteIMonRange( ch, fIMonCombo[ch]->currentData().value<V6533N::IMonRange_t>() );
+        hv->WriteEnable( ch, true );
     }
     catch( const VException& e )
     {
-        qInfo() << e.what() << "\n";
+        emit Error( e );
     }
 }
 
@@ -294,7 +310,24 @@ void V6533NWindow::ChannelOff()
     }
     catch( const VException& e )
     {
-        qInfo() << e.what() << "\n";
+        emit Error( e );
+    }
+}
+
+void V6533NWindow::KillAll()
+{
+    try
+    {
+        V6533N* hv = static_cast<V6533N*>( fDevice );
+        for( uint8_t ch = 0; ch < N_CH; ++ch )
+        {
+            hv->WritePWDown( ch, true ); // kill on power off
+            hv->WriteEnable( ch, false ); // off
+        }
+    }
+    catch( const VException& e )
+    {
+        emit Error( e );
     }
 }
 
@@ -447,6 +480,7 @@ void V6533NMonitor::CreateTimer()
         fTimer->setInterval( 1000 );
     connect( fTimer, &QTimer::timeout, fContainer, &V6533NWindow::UpdateMonitor );
     connect( fContainer, &V6533NWindow::Connected, this, &V6533NMonitor::StopTimer );
+    connect( fContainer, &V6533NWindow::Error, this, &V6533NMonitor::StopTimer );
 }
 
 void V6533NMonitor::Update( const V6533N::MonitorData& m )

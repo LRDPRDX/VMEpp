@@ -124,7 +124,7 @@ void V895Window::SendTest()
     }
     catch( const VException &e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -139,7 +139,7 @@ void V895Window::WriteConfig()
     catch( const VException& e )
     {
         emit Programmed( false );
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -155,7 +155,7 @@ void V895Window::ReadConfig()
     }
     catch( const VException& e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 

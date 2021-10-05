@@ -26,6 +26,12 @@ class V6533NWindow : public SlaveWindow
 {
     Q_OBJECT
 
+    private :
+        // Creational member functions
+        void CreateMenu();
+        void CreateCentralWidget();
+        void CreateDockWidget();
+
     protected :
         // Auxiliary
         static constexpr uint8_t N_CH = V6533N::GetChNumber(); // 6 channels
@@ -39,18 +45,13 @@ class V6533NWindow : public SlaveWindow
         QPushButton *fOnButton[N_CH], *fOffButton[N_CH], *fKillButton;
         QComboBox   *fIMonCombo[N_CH];
 
-    protected :
-        // Creational member functions
-        void CreateMenu();
-        void CreateCentralWidget();
-        void CreateDockWidget();
-
     public slots :
         void WriteConfig() override;
         void ReadConfig() override;
         void UpdateMonitor();
         void ChannelOn();
         void ChannelOff();
+        void KillAll();
 
         QVariant CollectConfig() override;
         void SpreadConfig( const QVariant& qConfig ) override;
