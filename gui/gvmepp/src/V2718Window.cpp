@@ -87,6 +87,7 @@ void V2718Window::CreateDockWidget()
     addDockWidget( Qt::RightDockWidgetArea, dock );
     dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable );
     fViewMenu->addAction( dock->toggleViewAction() );
+    dock->setVisible( false );
 }
 
 void V2718Window::CreateIOTab()

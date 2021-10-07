@@ -8,6 +8,7 @@ class QAction;
 class QPushButton;
 class QComboBox;
 class QSpinBox;
+class QDoubleSpinBox;
 class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
@@ -38,12 +39,16 @@ class V6533NWindow : public SlaveWindow
 
     protected :
         // Widgets
-        V6533NMonitor     *fMonitor;
+        V6533NMonitor   *fMonitor;
 
-        QSpinBox    *fVoltSpin[N_CH], *fCurSpin[N_CH], *fUpSpin[N_CH], *fDownSpin[N_CH], *fSWMaxSpin[N_CH];
-        QComboBox   *fOffCombo[N_CH];
-        QPushButton *fOnButton[N_CH], *fOffButton[N_CH], *fKillButton;
-        QComboBox   *fIMonCombo[N_CH];
+        QMenu           *fActionMenu;
+        QAction         *fOffAllAction;
+
+        QSpinBox        *fVoltSpin[N_CH], *fCurSpin[N_CH], *fUpSpin[N_CH], *fDownSpin[N_CH], *fSWMaxSpin[N_CH];
+        QComboBox       *fOffCombo[N_CH];
+        QPushButton     *fOnButton[N_CH], *fOffButton[N_CH], *fKillButton[N_CH];
+        QComboBox       *fIMonCombo[N_CH];
+        QDoubleSpinBox  *fTripSpin[N_CH];
 
     public slots :
         void WriteConfig() override;
@@ -51,7 +56,7 @@ class V6533NWindow : public SlaveWindow
         void UpdateMonitor();
         void ChannelOn();
         void ChannelOff();
-        void KillAll();
+        void OffAll();
 
         QVariant CollectConfig() override;
         void SpreadConfig( const QVariant& qConfig ) override;
@@ -94,7 +99,7 @@ class V6533NMonitor : public QWidget
 
     public :
         V6533NMonitor( V6533NWindow* parentWindow, QWidget* parent = nullptr );
-        virtual ~V6533NMonitor();
+        ~V6533NMonitor() override = default;
 
         void Update( const V6533N::MonitorData& data );
 

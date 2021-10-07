@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -53,6 +54,12 @@ void V6533NWindow::CreateMenu()
 {
     connect( fSaveConfigAction, &QAction::triggered, this, &DeviceWindow::SaveConfig<V6533N> );
     connect( fLoadConfigAction, &QAction::triggered, this, &DeviceWindow::LoadConfig<V6533N> );
+
+    fOffAllAction = new QAction( "&Off all channels", this );
+        connect( fOffAllAction, &QAction::triggered, this, &V6533NWindow::OffAll );
+
+    fActionMenu = menuBar()->addMenu( "&Action" );   
+        fActionMenu->addAction( fOffAllAction );
 }
 
 void V6533NWindow::CreateDockWidget()
@@ -63,6 +70,7 @@ void V6533NWindow::CreateDockWidget()
     addDockWidget( Qt::RightDockWidgetArea, dock );
     dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable );
     fViewMenu->addAction( dock->toggleViewAction() );
+    dock->setVisible( false );
 }
 
 void V6533NWindow::CreateCentralWidget()
@@ -78,16 +86,19 @@ void V6533NWindow::CreateCentralWidget()
         QLabel *voltLabel = new QLabel( "U (V):" );
         fVoltSpin[ch] = new QSpinBox();
             fVoltSpin[ch]->setRange( 0, 6000 );
+            fVoltSpin[ch]->setToolTip( "Voltage" );
 
         QLabel *curLabel = new QLabel( "I (uA):" );
         fCurSpin[ch] = new QSpinBox();
             fCurSpin[ch]->setRange( 0, 3000 );
             fCurSpin[ch]->setValue( 100 );
+            fCurSpin[ch]->setToolTip( "Max current supplied" );
 
         QLabel *upLabel = new QLabel( "Up (V/s):" );
         fUpSpin[ch] = new QSpinBox();
             fUpSpin[ch]->setRange( 0, 400 );
             fUpSpin[ch]->setValue( 100 );
+            fUpSpin[ch]->setToolTip( "Ramp up:")
 
         QLabel *downLabel = new QLabel( "Down (V/s):" );
         fDownSpin[ch] = new QSpinBox();
@@ -103,6 +114,13 @@ void V6533NWindow::CreateCentralWidget()
         fOffCombo[ch] = new QComboBox();
             fOffCombo[ch]->addItem( "OFF", 0 );
             fOffCombo[ch]->addItem( "KILL", 1 );
+
+        QLabel *tripLabel = new QLabel( "Time (s):");
+        fTripSpin[ch] = new QDoubleSpinBox();
+            fTripSpin[ch]->setRange( 0, 999.9 );
+            fTripSpin[ch]->setSingleStep( 0.1 );
+            fTripSpin[ch]->setDecimals( 1 );
+            fTripSpin[ch]->setValue( 0.1 );
 
         QLabel *iMonLabel = new QLabel( "Imon:" );
         fIMonCombo[ch] = new QComboBox();
@@ -134,12 +152,14 @@ void V6533NWindow::CreateCentralWidget()
         gridLayout->addWidget( fUpSpin[ch], 1, 1 );
         gridLayout->addWidget( downLabel, 1, 2, Qt::AlignRight );
         gridLayout->addWidget( fDownSpin[ch], 1, 3 );
-        gridLayout->addWidget( offLabel, 1, 4, Qt::AlignRight );
-        gridLayout->addWidget( fOffCombo[ch], 1, 5 );
-        gridLayout->addWidget( iMonLabel, 1, 6, Qt::AlignRight );
-        gridLayout->addWidget( fIMonCombo[ch], 1, 7 );
+        gridLayout->addWidget( iMonLabel, 1, 4, Qt::AlignRight );
+        gridLayout->addWidget( fIMonCombo[ch], 1, 5 );
+        gridLayout->addWidget( offLabel, 1, 6, Qt::AlignRight );
+        gridLayout->addWidget( fOffCombo[ch], 1, 7 );
+        gridLayout->addWidget( tripLabel, 1, 8, Qt::AlignRight );
+        gridLayout->addWidget( fTripSpin[ch], 1, 9 );
 
-        gridLayout->addWidget( buttonFrame, 0, 6, 1, 2 );
+        gridLayout->addWidget( buttonFrame, 0, 6, 1, 4 );
 
 
         chGroup->setLayout( gridLayout );
@@ -314,14 +334,13 @@ void V6533NWindow::ChannelOff()
     }
 }
 
-void V6533NWindow::KillAll()
+void V6533NWindow::OffAll()
 {
     try
     {
         V6533N* hv = static_cast<V6533N*>( fDevice );
         for( uint8_t ch = 0; ch < N_CH; ++ch )
         {
-            hv->WritePWDown( ch, true ); // kill on power off
             hv->WriteEnable( ch, false ); // off
         }
     }
@@ -346,10 +365,6 @@ V6533NMonitor::V6533NMonitor( V6533NWindow* container, QWidget* parent ) :
     CreateWidgets();
 
     setLayout( fLayout );
-}
-
-V6533NMonitor::~V6533NMonitor()
-{
 }
 
 void V6533NMonitor::CreateWidgets()
