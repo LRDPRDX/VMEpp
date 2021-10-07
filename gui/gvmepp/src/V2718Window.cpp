@@ -39,7 +39,7 @@ V2718Window::V2718Window( QWidget *parent ) :
     CreateCentralWidget();
     CreateDockWidget();
 
-    emit Connected( false );
+    //emit Connected( false );
 
     statusBar()->showMessage( "Ready..." );
 }

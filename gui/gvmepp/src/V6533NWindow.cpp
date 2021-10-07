@@ -58,8 +58,7 @@ void V6533NWindow::CreateMenu()
     fOffAllAction = new QAction( "&Off all channels", this );
         connect( fOffAllAction, &QAction::triggered, this, &V6533NWindow::OffAll );
 
-    fActionMenu = menuBar()->addMenu( "&Action" );   
-        fActionMenu->addAction( fOffAllAction );
+    fActionMenu = menuBar()->addMenu( "&Action" ); fActionMenu->addAction( fOffAllAction );
 }
 
 void V6533NWindow::CreateDockWidget()
@@ -98,7 +97,7 @@ void V6533NWindow::CreateCentralWidget()
         fUpSpin[ch] = new QSpinBox();
             fUpSpin[ch]->setRange( 0, 400 );
             fUpSpin[ch]->setValue( 100 );
-            fUpSpin[ch]->setToolTip( "Ramp up:")
+            fUpSpin[ch]->setToolTip( "Ramp up" );
 
         QLabel *downLabel = new QLabel( "Down (V/s):" );
         fDownSpin[ch] = new QSpinBox();
@@ -110,9 +109,9 @@ void V6533NWindow::CreateCentralWidget()
             fSWMaxSpin[ch]->setRange( 0, 6000 );
             fSWMaxSpin[ch]->setValue( 100 );
 
-        QLabel *offLabel = new QLabel( "OFF:" );
+        QLabel *offLabel = new QLabel( "PW Down:" );
         fOffCombo[ch] = new QComboBox();
-            fOffCombo[ch]->addItem( "OFF", 0 );
+            fOffCombo[ch]->addItem( "Ramp Down", 0 );
             fOffCombo[ch]->addItem( "KILL", 1 );
 
         QLabel *tripLabel = new QLabel( "Time (s):");
@@ -121,11 +120,15 @@ void V6533NWindow::CreateCentralWidget()
             fTripSpin[ch]->setSingleStep( 0.1 );
             fTripSpin[ch]->setDecimals( 1 );
             fTripSpin[ch]->setValue( 0.1 );
+            fTripSpin[ch]->setToolTip( "Max. time an \"overcurrent\" is allowed to last.\nOutput voltage will drop to zero either at the Ramp-Down rate\nor at the fastest available rate, depending on the Power Down setting." );
+            fTripSpin[ch]->setToolTipDuration( 10000 );
 
         QLabel *iMonLabel = new QLabel( "Imon:" );
         fIMonCombo[ch] = new QComboBox();
             fIMonCombo[ch]->addItem( "300uA", QVariant::fromValue( V6533N::IMonRange_t::RANGE_LOW ) );
             fIMonCombo[ch]->addItem( "3000uA", QVariant::fromValue( V6533N::IMonRange_t::RANGE_HIGH ) );
+            fIMonCombo[ch]->setToolTip( "IMPORTANT: if 300uA is selected, and the channel\ndraws a current larger than 300uA\nthen OVERCURRENT is signalled." );
+            fIMonCombo[ch]->setToolTipDuration( 10000 );
 
         SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
         QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -231,6 +234,7 @@ void V6533NWindow::SpreadConfig( const QVariant& qConfig )
         fSWMaxSpin[i]->setValue( cfg.CHANNELS.at( i ).SW_MAX );
         fUpSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_UP );
         fDownSpin[i]->setValue( cfg.CHANNELS.at( i ).RAMP_DOWN );
+        fTripSpin[i]->setValue( cfg.CHANNELS.at( i ).TRIP_TIME );
         ChangeCombo( fOffCombo[i], cfg.CHANNELS.at( i ).PW_DOWN );
         ChangeCombo( fIMonCombo[i], cfg.CHANNELS.at( i ).IMON_RANGE );
     }
@@ -247,6 +251,7 @@ QVariant V6533NWindow::CollectConfig()
         cfg.CHANNELS.at( i ).SW_MAX = fSWMaxSpin[i]->value();
         cfg.CHANNELS.at( i ).RAMP_UP = fUpSpin[i]->value();
         cfg.CHANNELS.at( i ).RAMP_DOWN = fDownSpin[i]->value();
+        cfg.CHANNELS.at( i ).TRIP_TIME = fTripSpin[i]->value();
         cfg.CHANNELS.at( i ).PW_DOWN = fOffCombo[i]->currentData().value<bool>();
         cfg.CHANNELS.at( i ).IMON_RANGE = fIMonCombo[i]->currentData().value<V6533N::IMonRange_t>();
     }
