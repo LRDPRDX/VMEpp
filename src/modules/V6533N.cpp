@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <cmath>
 
 namespace vmeplus
 {
@@ -81,7 +82,7 @@ namespace vmeplus
 
     void V6533N::WriteVoltage( uint16_t ch, float voltage )
     {
-        uint16_t rawV = 10 * voltage;
+        uint16_t rawV = std::round( 10 * voltage );
         WriteRegister16( V6533N_VSET(ch % fChNumber), rawV );
     }
 
@@ -145,7 +146,7 @@ namespace vmeplus
 
     void V6533N::WriteTripTime( uint16_t ch, float ttime )
     {
-        uint16_t raw_data = ttime * 10;
+        uint16_t raw_data = std::round( ttime * 10 );
         WriteRegister16( V6533N_TRIP_TIME(ch % fChNumber), raw_data );
     }
 
