@@ -51,8 +51,8 @@ namespace vmeplus
             unsigned char       GetWidth() const                  { return fWidth; }
             double              GetFrequencyReal() const;
 
-            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }  
-            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }  
+            void                SetTimeUnit( CVTimeUnits unit )   { fTimeUnit = unit; }
+            CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }
             void                SetNPulses( unsigned char n )     { fNPulses = n; }
             unsigned char       GetNPulses() const                { return fNPulses; }
             void                SetStartSource( CVIOSources src ) { fStartSource = src; }
@@ -93,7 +93,7 @@ namespace vmeplus
                 fGateSource( cvManualSW ),
                 fStopSource( cvManualSW )
             {}
-            ~V2718Scaler() {};
+            ~V2718Scaler() = default;
             V2718Scaler( const V2718Scaler &other ) = delete;
             V2718Scaler& operator=( const V2718Scaler &other ) = delete;
 
@@ -136,7 +136,7 @@ namespace vmeplus
 
         public :
             V2718 ();
-            virtual ~V2718 ();
+            ~V2718() override = default;
             virtual void Open( short link, short bdNum ) override;
 
         public :

@@ -15,8 +15,8 @@ namespace vmeplus
             std::vector<VSlaveInterrupter*>     fInterrupters;
 
         public :
-            VInterruptHandler();
-            virtual ~VInterruptHandler();
+            VInterruptHandler() : fInterrupters( 0 ) { };
+            virtual ~VInterruptHandler() = default;
 
         public :
             bool    RegisterInterrupter( VSlaveInterrupter *interrupter );

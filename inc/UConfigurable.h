@@ -17,9 +17,15 @@ namespace vmeplus
     template <typename T>
     class UConfigurable
     {
+        protected :
+            static std::string  fName;
+
         public :
             virtual void ReadConfig( UConfig<T>& cfg ) = 0;
             virtual void WriteConfig( const UConfig<T>& cfg ) = 0;
+
+        public :
+            static std::string  GetName() { return fName; }
     };
 
     template <typename T, typename Archive = typename cereal::JSONOutputArchive>
@@ -29,7 +35,7 @@ namespace vmeplus
         {
             std::ofstream os( path );
             Archive archive( os );
-            archive( CEREAL_NVP( cfg ) );
+            archive( cereal::make_nvp( T::GetName() , cfg ) );
         }
         catch( const cereal::Exception& e )
         {
@@ -44,7 +50,7 @@ namespace vmeplus
         {
             std::ifstream is( path );
             Archive archive( is );
-            archive( CEREAL_NVP( cfg ) );
+            archive( cereal::make_nvp( T::GetName() , cfg ) );
         }
         catch( const cereal::Exception& e )
         {

@@ -9,7 +9,8 @@
 namespace vmeplus
 {
     V6533N::V6533N( uint32_t baseAddress, uint32_t range ) :
-        VSlave( "V6533N", baseAddress, range ),
+        VSlave(  baseAddress, range ),
+
         fChannels( 0 ),
         fDescription( "N/A" ),
         fModel( "N/A" ),
@@ -17,9 +18,8 @@ namespace vmeplus
     {
     }
 
-    V6533N::~V6533N()
-    {
-    }
+    template<>
+    std::string UConfigurable<V6533N>::fName = "V6533N";
 
     void V6533N::Initialize()
     {

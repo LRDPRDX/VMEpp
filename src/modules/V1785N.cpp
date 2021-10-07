@@ -30,9 +30,9 @@ namespace vmeplus
 
     //****** V1785N Part ******
     V1785N::V1785N( uint32_t baseAddress, uint32_t range ) :
-        VSlave( "V1785N", baseAddress, range ),
-        VSlaveAcquisitor( "V1785N", baseAddress, range ),
-        VSlaveInterrupter( "V1785N", baseAddress, range ),
+        VSlave( baseAddress, range ),
+        VSlaveAcquisitor( baseAddress, range ),
+        VSlaveInterrupter( baseAddress, range ),
 
         fFirmwareRevision( "N/A" ),
         fOUI( 0 ),
@@ -41,6 +41,9 @@ namespace vmeplus
         fRevision( 0 )
     {
     }
+
+    template<>
+    std::string UConfigurable<V1785N>::fName = "V1785N";
 
     void V1785N::Initialize()
     {

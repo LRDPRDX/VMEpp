@@ -21,8 +21,8 @@ namespace vmeplus
             uint32_t                    fReadCycles;
 
         public :
-            VSlaveAcquisitor( std::string name, uint32_t address, uint32_t range ) :
-                VSlave( name, address, range ),
+            VSlaveAcquisitor( uint32_t address, uint32_t range ) :
+                VSlave( address, range ),
 
                 fReadBytes( 0 ),
                 fNEventsRead( 0 ),

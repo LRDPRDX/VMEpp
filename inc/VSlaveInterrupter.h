@@ -1,5 +1,5 @@
 #ifndef V_PLUS_SLAVE_INTERRUPTER_H 
-#define V_PLUS_SLAVE_INTERRUPTER_H 
+#define V_PLUS_SLAVE_INTERRUPTER_H
 
 #include "VSlave.h"
 
@@ -11,7 +11,7 @@ namespace vmeplus
     class VSlaveInterrupter : virtual public VSlave
     {
         public :
-            VSlaveInterrupter( std::string name, uint32_t address, uint32_t range );
+            VSlaveInterrupter( uint32_t address, uint32_t range );
             virtual ~VSlaveInterrupter();
 
         public :

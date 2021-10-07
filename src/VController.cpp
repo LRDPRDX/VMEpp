@@ -27,7 +27,7 @@ namespace vmeplus
             std::cerr << "On closing controller : " << e.what() << std::endl;
             return;
         }
-    } 
+    }
 
     void VController::Close()
     {
@@ -48,7 +48,7 @@ namespace vmeplus
         }
         return release;
     }
-    
+
     //***********************
     //****** ARBITER + ******
     //***********************
@@ -59,7 +59,7 @@ namespace vmeplus
         {
             throw VException( static_cast<VError_t>(ec), "SetArbiterType" );
         }
-    } 
+    }
 
     CVArbiterTypes VController::ReadArbiterType( )
     {
@@ -70,11 +70,11 @@ namespace vmeplus
             throw VException( static_cast<VError_t>(ec), "GetArbiterType" );
         }
         return type;
-    } 
+    }
     //***********************
     //****** ARBITER - ******
     //***********************
-    
+
     //**********************
     //****** MASTER + ******
     //**********************
@@ -86,7 +86,7 @@ namespace vmeplus
             throw VException( static_cast<VError_t>(ec), "ReadCycle -> " + HelpStringCycle( address, am, dw ) );
         }
     }
-    
+
     void VController::WriteCycle( uint32_t address, void* data, CVAddressModifier am, CVDataWidth dw )
     {
         auto ec = CAENVME_WriteCycle( fHandle, address, data, am, dw );
@@ -95,7 +95,7 @@ namespace vmeplus
             throw VException( static_cast<VError_t>(ec), "WriteCycle -> " + HelpStringCycle( address, am, dw ) );
         }
     }
-    
+
     void VController::BLTReadCycle( uint32_t address, void *buffer, int size, CVAddressModifier am, CVDataWidth dw, int *count )
     {
         auto ec = CAENVME_BLTReadCycle( fHandle, address, buffer, size, am, dw, count );
@@ -104,7 +104,7 @@ namespace vmeplus
             throw VException( static_cast<VError_t>(ec), "BLTReadCycle -> " + HelpStringCycle( address, am, dw ) );
         }
     }
-    
+
     void VController::MBLTReadCycle( uint32_t address, void *buffer, int size, CVAddressModifier am, int *count )
     {
         auto ec = CAENVME_MBLTReadCycle( fHandle, address, buffer, size, am, count );
@@ -113,7 +113,7 @@ namespace vmeplus
             throw VException( static_cast<VError_t>(ec), "MBLTReadCycle -> " + HelpStringCycle( address, am ) );
         }
     }
-    
+
     void VController::FIFOMBLTReadCycle( uint32_t address, void *buffer, int size, CVAddressModifier am, int *count )
     {
         auto ec = CAENVME_FIFOMBLTReadCycle( fHandle, address, buffer, size, am, count );

@@ -24,6 +24,7 @@ int main()
         desc.ReadConfig( cfg );
 
         WriteConfigToFile( cfg, "config.json" );
+        ReadConfigFromFile( cfg, "config.json" );
     }
     catch( const VException &e )
     {

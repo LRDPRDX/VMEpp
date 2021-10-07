@@ -83,7 +83,7 @@ namespace vmeplus
 
         public :
             V895( uint32_t baseAddress, uint32_t range = V895_LUB );
-            virtual         ~V895();
+            ~V895() override = default;
 
         public :
             //Channel configuration

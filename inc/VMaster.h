@@ -16,7 +16,7 @@ namespace vmeplus
             std::vector<VSlave*>        fSlaves;
 
         public :
-            VMaster() { } 
+            VMaster() { }
             VMaster( const VMaster &other ) = delete;
             VMaster& operator=( const VMaster &other ) = delete;
             virtual ~VMaster();

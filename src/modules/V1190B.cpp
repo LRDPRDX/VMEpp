@@ -10,9 +10,9 @@ namespace vmeplus {
     /****** V1190B ******/
     /********************/
     V1190B::V1190B(uint32_t baseAddress, uint32_t range) :
-            VSlave("V1190B", baseAddress, range),
-            VSlaveInterrupter("V1190B", baseAddress, range),
-            VSlaveAcquisitor("V1190B", baseAddress, range),
+            VSlave( baseAddress, range),
+            VSlaveInterrupter( baseAddress, range),
+            VSlaveAcquisitor( baseAddress, range),
 
             fFirmwareRevision("N/A"),
             fOUI(0),
@@ -21,6 +21,9 @@ namespace vmeplus {
             fRevision(0)
     {
     }
+
+    template<>
+    std::string UConfigurable<V1190B>::fName = "V1190B";
 
     void V1190B::Initialize() {
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...");

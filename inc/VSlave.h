@@ -18,7 +18,6 @@ namespace vmeplus
             uint32_t            fRange;
 
         protected :
-            std::string         fName;
             std::string         fFirmware;
             uint16_t            fSerial;
 
@@ -40,7 +39,7 @@ namespace vmeplus
             virtual bool        GetBit16( uint32_t address, uint16_t bit );
 
         public :
-            VSlave( std::string name, uint32_t baseAddress, uint32_t range );
+            VSlave( uint32_t baseAddress, uint32_t range );
             VSlave( const VSlave &other ) = delete;
             VSlave& operator=( const VSlave &other ) = delete;
             virtual             ~VSlave();
@@ -49,7 +48,6 @@ namespace vmeplus
             uint32_t            GetBaseAddress() const { return fBaseAddress; }
             void                SetBaseAddress( uint32_t newAddress );
             uint32_t            GetRange() const { return fRange; }
-            std::string         GetName() const { return fName; }
             std::string         GetFirmware() const { return fFirmware; }
             uint16_t            GetSerialNumber() const { return fSerial; }
 

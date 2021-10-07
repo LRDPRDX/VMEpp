@@ -90,7 +90,7 @@ namespace vmeplus
 
         public :
             V6533N( uint32_t baseAddress, uint32_t range = V6533N_LUB );
-            virtual         ~V6533N();
+            ~V6533N() override = default;
 
         public :
             enum class      Polarity_t { NEGATIVE = 0, POSITIVE = 1 };

@@ -68,7 +68,6 @@ namespace vmeplus
             if( fTimeUnit == ss[i].unit )
             {
                 return ss[i].expo / ss[i].num / (double)fPeriod;
-                
             }
         }
 
@@ -245,7 +244,8 @@ namespace vmeplus
         fScaler.fOwner  = this;
     }
 
-    V2718::~V2718() { }
+    template<>
+    std::string UConfigurable<V2718>::fName = "V2718";
 
     void V2718::Open( short link, short bdNum )
     {
