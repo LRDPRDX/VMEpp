@@ -87,6 +87,7 @@ void V2718Window::CreateDockWidget()
     addDockWidget( Qt::RightDockWidgetArea, dock );
     dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable );
     fViewMenu->addAction( dock->toggleViewAction() );
+    dock->setVisible( false );
 }
 
 void V2718Window::CreateIOTab()
@@ -335,7 +336,7 @@ void V2718Window::UpdateDisplay()
     }
     catch( const VException &e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -349,8 +350,8 @@ void V2718Window::WriteConfig()
     }
     catch( const VException &e )
     {
-        Programmed( false );
-        Error( e );
+        emit Programmed( false );
+        emit Error( e );
     }
 }
 
@@ -366,7 +367,7 @@ void V2718Window::ReadConfig()
     }
     catch( const VException& e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -396,7 +397,7 @@ void V2718Window::StartPulser( CVPulserSelect p )
     }
     catch( const VException& e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -408,7 +409,7 @@ void V2718Window::StopPulser( CVPulserSelect p )
     }
     catch( const VException& e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -420,7 +421,7 @@ void V2718Window::StartScaler()
     }
     catch( const VException& e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -432,7 +433,7 @@ void V2718Window::StopScaler()
     }
     catch( const VException& e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
@@ -444,7 +445,7 @@ void V2718Window::ResetScaler()
     }
     catch( const VException& e )
     {
-        Error( e );
+        emit Error( e );
     }
 }
 
