@@ -175,7 +175,7 @@ namespace vmepp
             void serialize( Archive& ar )
             {
                 ar( cereal::make_nvp( "polarity", POLARITY ),
-                    cereal::make_nvp( "LED polarity", LED_POLARITY ) );
+                    cereal::make_nvp( "led_polarity", LED_POLARITY ) );
             }
         };
 
@@ -196,7 +196,7 @@ namespace vmepp
             void serialize( Archive& ar )
             {
                 ar( cereal::make_nvp( "polarity", POLARITY ),
-                    cereal::make_nvp( "LED polarity", LED_POLARITY ),
+                    cereal::make_nvp( "led_polarity", LED_POLARITY ),
                     cereal::make_nvp( "source", SOURCE ) );
             }
         };
@@ -268,8 +268,8 @@ namespace vmepp
         {
             ar( cereal::make_nvp( "inputs", INPUTS ),
                 cereal::make_nvp( "outputs", OUTPUTS ),
-                cereal::make_nvp( "pulser A", PULSER_A ),
-                cereal::make_nvp( "pulser B", PULSER_B ),
+                cereal::make_nvp( "pulser_A", PULSER_A ),
+                cereal::make_nvp( "pulser_B", PULSER_B ),
                 cereal::make_nvp( "scaler", SCALER ) );
         }
     };

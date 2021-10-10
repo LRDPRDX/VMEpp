@@ -152,8 +152,8 @@ namespace vmepp
         {
             ar( cereal::make_nvp( "thresholds", THRESHOLDS ),
                 cereal::make_nvp( "majority", MAJORITY ),
-                cereal::make_nvp( "width high", WIDTH_H ),
-                cereal::make_nvp( "width low", WIDTH_L ),
+                cereal::make_nvp( "width_high", WIDTH_H ),
+                cereal::make_nvp( "width_low", WIDTH_L ),
                 cereal::make_nvp( "mask", MASK ) );
         }
     };

@@ -211,14 +211,14 @@ namespace vmepp
             template <class Archive>
             void serialize( Archive& ar )
             {
-                ar( cereal::make_nvp( "voltage set", V_SET ),
-                    cereal::make_nvp( "current set", I_SET ),
-                    cereal::make_nvp( "trip time", TRIP_TIME ),
-                    cereal::make_nvp( "sw max voltage", SW_MAX ),
-                    cereal::make_nvp( "ramp up", RAMP_UP ),
-                    cereal::make_nvp( "ramp down", RAMP_DOWN ),
-                    cereal::make_nvp( "power down", PW_DOWN ),
-                    cereal::make_nvp( "current mon range", IMON_RANGE ) );
+                ar( cereal::make_nvp( "voltage_set", V_SET ),
+                    cereal::make_nvp( "current_set", I_SET ),
+                    cereal::make_nvp( "trip_time", TRIP_TIME ),
+                    cereal::make_nvp( "sw_max_voltage", SW_MAX ),
+                    cereal::make_nvp( "ramp_up", RAMP_UP ),
+                    cereal::make_nvp( "ramp_down", RAMP_DOWN ),
+                    cereal::make_nvp( "power_down", PW_DOWN ),
+                    cereal::make_nvp( "current_mon_range", IMON_RANGE ) );
             }
         };
 
