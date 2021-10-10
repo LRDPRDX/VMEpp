@@ -8,7 +8,7 @@
 #include "CAENVMEtypes.h"
 
 
-namespace vmeplus
+namespace vmepp
 {
     enum class VError_t {   vSuccess = cvSuccess,
                             vBusError = cvBusError,

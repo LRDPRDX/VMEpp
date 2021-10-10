@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <cassert>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 int main()
 {

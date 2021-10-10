@@ -3,9 +3,11 @@
 
 #include <CAENVMEtypes.h>
 
-namespace vmeplus
+#include "VModule.h"
+
+namespace vmepp
 {
-    class VRequester
+    class VRequester : virtual public VModule
     {
         public :
             VRequester() = default;

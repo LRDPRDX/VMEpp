@@ -234,7 +234,7 @@
 
 #include <string>
 
-namespace vmeplus
+namespace vmepp
 {
     class V1785N;
 
@@ -338,7 +338,10 @@ namespace vmeplus
         public :
             void    ReadConfig( UConfig<V1785N>& config ) override;
             void    WriteConfig( const UConfig<V1785N>& config ) override;
-    };
+    };// V1785N
+
+    template<>
+    const std::string UConfigurable<V1785N>::fName;
 
     //****** UEvent<V1785N> Part ******
     template<>
@@ -404,7 +407,6 @@ namespace vmeplus
             }
 
             friend class V1785N;
-    };
-
+    };// UEvent<V1785N>
 }
 #endif

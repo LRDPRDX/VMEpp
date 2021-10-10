@@ -5,7 +5,7 @@
 #include <cmath>
 #include <iomanip>
 
-namespace vmeplus
+namespace vmepp
 {
     V895::V895( uint32_t baseAddress, uint32_t range ) :
         VSlave( baseAddress, range ),
@@ -17,7 +17,7 @@ namespace vmeplus
     }
 
     template<>
-    std::string UConfigurable<V895>::fName = "V895";
+    const std::string UConfigurable<V895>::fName = "V895";
 
     void V895::Initialize()
     {

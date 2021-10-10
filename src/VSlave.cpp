@@ -5,7 +5,7 @@
 #include <iomanip>
 
 
-namespace vmeplus
+namespace vmepp
 {
     VSlave::VSlave( uint32_t baseAddress, uint32_t range ) :
         fMaster( nullptr ),
@@ -85,7 +85,7 @@ namespace vmeplus
     {
         uint16_t data;
         ReadRequest( address, &data );//D16 by default
-        return (data & msk); 
+        return (data & msk);
     }
 
     void VSlave::WriteRegister16( uint32_t address, uint16_t data, uint16_t msk )
@@ -175,7 +175,7 @@ namespace vmeplus
         std::cout << "\n";
     }
 
-    void VSlave::Release()
+    void VSlave::Release() noexcept( true )
     {
         if( fMaster != nullptr )
         {

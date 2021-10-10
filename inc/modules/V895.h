@@ -61,7 +61,7 @@
 #include "VSlave.h"
 #include "UConfigurable.h"
 
-namespace vmeplus
+namespace vmepp
 {
     class V895;
 
@@ -125,6 +125,9 @@ namespace vmeplus
             void    ReadConfig( UConfig<V895>& config ) override;
             void    WriteConfig( const UConfig<V895>& config ) override;
     };
+
+    template<>
+    const std::string UConfigurable<V895>::fName;
 
     template<>
     struct UConfig<V895>

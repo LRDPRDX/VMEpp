@@ -2,15 +2,16 @@
 #define V_PLUS_SLAVE_H
 
 #include "CAENVMEtypes.h"
+#include "VModule.h"
 
 #include <cstdint>
 #include <string>
 
-namespace vmeplus
+namespace vmepp
 {
     class VMaster;
 
-    class VSlave
+    class VSlave : virtual public VModule
     {
         private :
             VMaster            *fMaster;
@@ -40,8 +41,6 @@ namespace vmeplus
 
         public :
             VSlave( uint32_t baseAddress, uint32_t range );
-            VSlave( const VSlave &other ) = delete;
-            VSlave& operator=( const VSlave &other ) = delete;
             virtual             ~VSlave();
 
         public :
@@ -54,7 +53,7 @@ namespace vmeplus
             virtual void        Print() const;
             virtual void        Reset();
 
-            void                Release();
+            void                Release() noexcept( true );
 
             friend class VMaster;
     };

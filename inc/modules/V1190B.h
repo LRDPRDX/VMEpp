@@ -105,7 +105,7 @@
 #include "VEvent.h"
 #include "UConfigurable.h"
 
-namespace vmeplus {
+namespace vmepp {
 
     class V1190B;
 
@@ -635,6 +635,9 @@ namespace vmeplus {
             void    ReadConfig( UConfig<V1190B>& config ) override;
             void    WriteConfig( const UConfig<V1190B>& config ) override;
     };// V1190B
+
+    template<>
+    const std::string UConfigurable<V1190B>::fName;
 
     /*************************/
     /****** V1190BEvent ******/

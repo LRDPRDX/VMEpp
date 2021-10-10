@@ -11,7 +11,7 @@
 #include "cereal/types/array.hpp"
 
 
-namespace vmeplus
+namespace vmepp
 {
     class V2718;
 
@@ -153,6 +153,9 @@ namespace vmeplus
             void    ReadConfig( UConfig<V2718>& config ) override;
             void    WriteConfig( const UConfig<V2718>& config ) override;
     };
+
+    template<>
+    const std::string UConfigurable<V2718>::fName;
 
     template<>
     struct UConfig<V2718>

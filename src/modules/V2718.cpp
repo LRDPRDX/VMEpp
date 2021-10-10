@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-namespace vmeplus
+namespace vmepp
 {
     //**********************//
     //****** PULSER + ******//
@@ -245,7 +245,7 @@ namespace vmeplus
     }
 
     template<>
-    std::string UConfigurable<V2718>::fName = "V2718";
+    const std::string UConfigurable<V2718>::fName = "V2718";
 
     void V2718::Open( short link, short bdNum )
     {

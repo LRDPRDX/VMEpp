@@ -1,7 +1,7 @@
 #include <fstream>
 #include "UConfigurable.h"
 
-namespace vmeplus
+namespace vmepp
 {
     //void WriteConfigToFile( const json& j, const std::string& path )
     //{

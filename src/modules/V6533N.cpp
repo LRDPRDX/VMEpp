@@ -6,7 +6,7 @@
 #include <string>
 #include <cmath>
 
-namespace vmeplus
+namespace vmepp
 {
     V6533N::V6533N( uint32_t baseAddress, uint32_t range ) :
         VSlave(  baseAddress, range ),
@@ -19,7 +19,7 @@ namespace vmeplus
     }
 
     template<>
-    std::string UConfigurable<V6533N>::fName = "V6533N";
+    const std::string UConfigurable<V6533N>::fName = "V6533N";
 
     void V6533N::Initialize()
     {

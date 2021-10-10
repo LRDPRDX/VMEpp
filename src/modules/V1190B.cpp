@@ -4,7 +4,7 @@
 #include "CAENVMElib.h"
 #include "modules/V1190B.h"
 
-namespace vmeplus {
+namespace vmepp {
 
     /********************/
     /****** V1190B ******/
@@ -23,7 +23,7 @@ namespace vmeplus {
     }
 
     template<>
-    std::string UConfigurable<V1190B>::fName = "V1190B";
+    const std::string UConfigurable<V1190B>::fName = "V1190B";
 
     void V1190B::Initialize() {
         PrintMessage(Message_t::INFO, "Inititalizing " + fName + "...");

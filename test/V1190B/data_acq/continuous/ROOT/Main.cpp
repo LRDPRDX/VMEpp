@@ -10,7 +10,7 @@
 #include "modules/V2718.h"
 #include "modules/V1190B.h"
 
-using namespace vmeplus;
+using namespace vmepp;
 
 void Histo()
 {

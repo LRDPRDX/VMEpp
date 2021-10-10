@@ -4,7 +4,7 @@
 #include <memory>
 #include "VSlave.h"
 
-namespace vmeplus
+namespace vmepp
 {
     template<typename MODULE_NAME>
     class UEvent;

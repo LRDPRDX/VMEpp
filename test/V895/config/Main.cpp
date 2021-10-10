@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 int main()
 {

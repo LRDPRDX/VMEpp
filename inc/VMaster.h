@@ -5,25 +5,24 @@
 #include <vector>
 
 #include "CAENVMEtypes.h"
+#include "VModule.h"
 
-namespace vmeplus
+namespace vmepp
 {
     class VSlave;
 
-    class VMaster
+    class VMaster : virtual public VModule
     {
         protected :
             std::vector<VSlave*>        fSlaves;
 
         public :
             VMaster() { }
-            VMaster( const VMaster &other ) = delete;
-            VMaster& operator=( const VMaster &other ) = delete;
             virtual ~VMaster();
 
         public :
             void                        RegisterSlave( VSlave *slave );
-            void                        UnregisterSlave( VSlave *slave );
+            void                        UnregisterSlave( VSlave *slave ) noexcept( true );
             void                        Initialize();
             size_t                      GetNSlaves() const { return fSlaves.size(); }
 
@@ -32,10 +31,10 @@ namespace vmeplus
             virtual void                WriteCycle( uint32_t address, void* data, CVAddressModifier am, CVDataWidth dw ) = 0;
             virtual void                BLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, CVDataWidth dw, int *count ) = 0;
             virtual void                MBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) = 0;
-            virtual void                FIFOMBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) = 0;
+            virtual void                FIFOMBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count )  = 0;
             virtual void                ADOCycle( uint32_t address, CVAddressModifier am ) = 0;
             virtual void                ADOHCycle( uint32_t address, CVAddressModifier am ) = 0;
-            virtual void                WriteFIFOMode( short value ) = 0;
+            virtual void                WriteFIFOMode( short value )  = 0;
             virtual short               ReadFIFOMode() = 0;
 
         public :

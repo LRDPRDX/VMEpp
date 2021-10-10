@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace vmeplus
+namespace vmepp
 {
     class VEvent
     {

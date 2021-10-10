@@ -5,7 +5,7 @@
 #include <cstring>
 #include <iomanip>
 
-namespace vmeplus
+namespace vmepp
 {
 
     UEvent<V1785N>::UEvent() :
@@ -43,7 +43,7 @@ namespace vmeplus
     }
 
     template<>
-    std::string UConfigurable<V1785N>::fName = "V1785N";
+    const std::string UConfigurable<V1785N>::fName = "V1785N";
 
     void V1785N::Initialize()
     {

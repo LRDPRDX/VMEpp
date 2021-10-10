@@ -12,15 +12,15 @@
 #include "VInterruptHandler.h"
 
 
-namespace vmeplus
+namespace vmepp
 {
-    class VController : virtual public VArbiter,
-                        virtual public VMaster,
-                        virtual public VRequester,
-                        virtual public VInterruptHandler
+    class VController : public VArbiter,
+                        public VMaster,
+                        public VRequester,
+                        public VInterruptHandler
     {
         protected :
-            int32_t                 fHandle; 
+            int32_t                 fHandle;
 
         public :
             VController();
@@ -60,14 +60,14 @@ namespace vmeplus
             void    IRQWait( uint32_t mask, uint32_t timeout ) override;
 
             //  Additional functions
-            CVDisplay    ReadDisplay();
+            CVDisplay       ReadDisplay();
 
         public :
             virtual void    Open( short link, short bdNum ) = 0;
-            void            Close();//throws
+            void            Close();
 
         public :
-            int32_t             GetHandle() const { return fHandle; }
+            int32_t         GetHandle() const { return fHandle; }
     };
 }
 #endif

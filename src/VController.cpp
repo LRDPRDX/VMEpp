@@ -7,7 +7,7 @@
 #include "VException.h"
 
 
-namespace vmeplus
+namespace vmepp
 {
     VController::VController() :
         VMaster(),

@@ -9,7 +9,7 @@
 #include "cereal/archives/json.hpp"
 
 
-namespace vmeplus
+namespace vmepp
 {
     template <typename T>
     struct UConfig;
@@ -18,15 +18,18 @@ namespace vmeplus
     class UConfigurable
     {
         protected :
-            static std::string  fName;
+            static const std::string  fName;
 
         public :
             virtual void ReadConfig( UConfig<T>& cfg ) = 0;
             virtual void WriteConfig( const UConfig<T>& cfg ) = 0;
 
         public :
-            static std::string  GetName() { return fName; }
+            static const std::string&  GetName() { return fName; }
     };
+
+    template<typename T>
+    const std::string UConfigurable<T>::fName = "Unknown";
 
     template <typename T, typename Archive = typename cereal::JSONOutputArchive>
     void WriteConfigToFile( const UConfig<T>& cfg, const std::string& path )

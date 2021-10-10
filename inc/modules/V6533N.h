@@ -69,7 +69,7 @@
 #include <array>
 #include <string>
 
-namespace vmeplus
+namespace vmepp
 {
     class V6533N : public VSlave, public UConfigurable<V6533N>
     {
@@ -177,7 +177,10 @@ namespace vmeplus
             void    WriteConfig( const UConfig<V6533N>& config ) override;
 
             V6533N::MonitorData ReadMonitor();
-    };
+    };// V6533N
+
+    template<>
+    const std::string UConfigurable<V6533N>::fName;
 
     template<>
     struct UConfig<V6533N>
@@ -226,7 +229,7 @@ namespace vmeplus
         {
             ar( cereal::make_nvp( "channels", CHANNELS ) );
         }
-    };
+    };// UConfig<V6533N>
 }
 
 #endif

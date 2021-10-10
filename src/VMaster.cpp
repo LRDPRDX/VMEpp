@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-namespace vmeplus
+namespace vmepp
 {
     VMaster::~VMaster()
     {
@@ -37,14 +37,16 @@ namespace vmeplus
     }
 
 
-    void VMaster::UnregisterSlave( VSlave *slave )
+    void VMaster::UnregisterSlave( VSlave *slave ) noexcept( true )
     {
         for( auto it = fSlaves.begin(); it != fSlaves.end(); )
         {
             if( *it == slave )
             {
                 (*it)->fMaster = nullptr;
-                it = fSlaves.erase( it ); 
+                // std::vector::erase doesn't throw unless
+                // the assignment operator of VSlave*
+                it = fSlaves.erase( it );
             }
             else
             {
@@ -52,7 +54,7 @@ namespace vmeplus
             }
         }
     }
-    
+
 
     std::string VMaster::HelpStringCycle( uint32_t address, CVAddressModifier am, CVDataWidth dw ) const
     {
@@ -60,7 +62,7 @@ namespace vmeplus
         ss << std::hex << "Address: " << std::hex << address << " AM: " << std::hex << am << " DW: " << dw;
         return ss.str();
     }
-    
+
     std::string VMaster::HelpStringCycle( uint32_t address, CVAddressModifier am ) const
     {
         std::stringstream ss;
