@@ -490,6 +490,30 @@ namespace vmepp
         SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_CLR_DATA_BIT );
         ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_CLR_DATA_BIT );
     }
+
+    void V1785N::EnableZeroSupp( bool status )
+    {
+        if( status )
+        {
+            ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_LW_THR_PRG_BIT );
+        }
+        else
+        {
+            SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_LW_THR_PRG_BIT );
+        }
+    }
+
+    void V1785N::EnableOverSupp( bool status )
+    {
+        if( status )
+        {
+            ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
+        }
+        else
+        {
+            SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
+        }
+    }
     //****** DATA ACQUISITION - ******
     //
     void V1785N::ReadConfig( UConfig<V1785N>& config )

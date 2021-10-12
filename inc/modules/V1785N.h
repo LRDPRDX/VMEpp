@@ -319,6 +319,8 @@ namespace vmepp
             //bool            GetEvent( VEvent *event ) override;
             bool            GetEventAt( uint32_t index, UEvent<V1785N> &event ) const override;
             void            ClearData();
+            void            EnableZeroSupp( bool status = true );
+            void            EnableOverSupp( bool status = true );
 
         //State methods 
         public :
@@ -403,7 +405,7 @@ namespace vmepp
             V1785N::Range_t GetChannelRange( uint16_t i ) const
             {
                 i %= (V1785N_N_CHANNELS * 2U);
-                return (fData[i] & V1785N_WORD_TYPE_DT_RG_MSK) ? V1785N::Range_t::HIGH : V1785N::Range_t::LOW;
+                return (fData[i] & V1785N_WORD_TYPE_DT_RG_MSK) ? V1785N::Range_t::LOW : V1785N::Range_t::HIGH;
             }
 
             friend class V1785N;
