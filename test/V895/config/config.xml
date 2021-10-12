@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cereal>
-	<cfg>
+	<V895>
 		<thresholds>
 			<value0>0</value0>
 			<value1>0</value1>
@@ -20,9 +20,9 @@
 			<value15>0</value15>
 		</thresholds>
 		<majority>0</majority>
-		<width high>0</width high>
-		<width low>0</width low>
-		<mask>65535</mask>
-	</cfg>
+		<width_high>0</width_high>
+		<width_low>0</width_low>
+		<mask>0</mask>
+	</V895>
 </cereal>
 

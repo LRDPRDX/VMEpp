@@ -3,9 +3,12 @@
 #include "modules/V895.h"
 #include "modules/V2718.h"
 
+#include "cereal/archives/xml.hpp"
+
 #include <iostream>
 
 using namespace vmepp;
+using XMLA = cereal::XMLOutputArchive;
 
 int main()
 {
@@ -22,6 +25,8 @@ int main()
 
         UConfig<V895> cfg;
         desc.ReadConfig( cfg );
+
+        WriteConfigToFile<V895, XMLA>( cfg, "config.xml" );
 
         WriteConfigToFile( cfg, "config.json" );
         ReadConfigFromFile( cfg, "config.json" );
