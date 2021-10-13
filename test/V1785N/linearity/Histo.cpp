@@ -1,3 +1,8 @@
+/*
+   You can reproduce this test in the following way:
+
+       1) Connect the output  
+*/
 #include <iostream>
 
 #include <TH1F.h>
@@ -19,20 +24,15 @@ void Histo()
 
     V2718 controller;
     V1785N adc( 0x20000000 );
-    V895 disc( 0x40080000 );
 
     try
     {
         controller.Open( 0, 0 );
         controller.RegisterSlave( &adc );
-        controller.RegisterSlave( &disc );
         controller.Initialize();
 
-        disc.WriteOutWidthH( 40 );
-        disc.EnableOnly( 15 );
-
         controller.WriteOutputConfig( cvOutput0, cvMiscSignals );
-        controller.GetPulser( cvPulserA ).SetSquare( 1000, 1 );
+        controller.GetPulser( cvPulserA ).SetSquare( 5000, 1 );
         controller.GetPulser( cvPulserA ).SetNPulses( 0 );//continuous pulsing
         controller.GetPulser( cvPulserA ).Write();//configure
         controller.GetPulser( cvPulserA ).Start();
