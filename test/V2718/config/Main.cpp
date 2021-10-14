@@ -35,11 +35,11 @@ int main()
 
         WriteConfigToFile<V2718, cereal::XMLOutputArchive>( cfg, "config.xml" );
 
-        UConfig<V2718> cfg2;
-        ReadConfigFromFile( cfg2, "config.json" );
+        //UConfig<V2718> cfg2;
+        //ReadConfigFromFile( cfg2, "config.json" );
 
-        UConfig<V895> cfgV895;
-        WriteConfigToFile( cfgV895, "config2.json" );
+        //UConfig<V895> cfgV895;
+        //WriteConfigToFile( cfgV895, "config2.json" );
     }
     catch( const VException& e )
     {

@@ -97,13 +97,13 @@ namespace vmepp
         if( fOwner != nullptr )
         {
             auto ec = CAENVME_SetPulserConf( fOwner->GetHandle(),
-                                             fPulser,
+                                             static_cast<CVPulserSelect>( fPulser ),
                                              fPeriod,
                                              fWidth,
                                              fTimeUnit,
                                              fNPulses,
-                                             fStartSource,
-                                             fStopSource );
+                                             static_cast<CVIOSources>( fStartSource ),
+                                             static_cast<CVIOSources>( fStopSource ) );
             if( ec )
             {
                 throw VException( static_cast<VError_t>(ec), "SetPulserConf" );
@@ -113,16 +113,19 @@ namespace vmepp
 
     void V2718Pulser::Read()
     {
+        CVIOSources start, stop;
         if( fOwner != nullptr )
         {
             auto ec = CAENVME_GetPulserConf( fOwner->GetHandle(),
-                                             fPulser,
+                                             static_cast<CVPulserSelect>( fPulser ),
                                             &fPeriod,
                                             &fWidth,
                                             &fTimeUnit,
                                             &fNPulses,
-                                            &fStartSource,
-                                            &fStopSource );
+                                            &start,
+                                            &stop );
+            fStartSource = static_cast<V2718::Src_t>( start );
+            fStopSource = static_cast<V2718::Src_t>( stop );
             if( ec )
             {
                 throw VException( static_cast<VError_t>(ec), "GetPulserConf" );
@@ -134,7 +137,7 @@ namespace vmepp
     {
         if( fOwner != nullptr )
         {
-            auto ec = CAENVME_StartPulser( fOwner->GetHandle(), fPulser );
+            auto ec = CAENVME_StartPulser( fOwner->GetHandle(), static_cast<CVPulserSelect>( fPulser ) );
             if( ec )
             {
                 throw VException( static_cast<VError_t>(ec), "StartPulser" );
@@ -146,7 +149,7 @@ namespace vmepp
     {
         if( fOwner != nullptr )
         {
-            auto ec = CAENVME_StopPulser( fOwner->GetHandle(), fPulser );
+            auto ec = CAENVME_StopPulser( fOwner->GetHandle(), static_cast<CVPulserSelect>( fPulser ) );
             if( ec )
             {
                 throw VException( static_cast<VError_t>(ec), "StopPulser" );
@@ -167,9 +170,9 @@ namespace vmepp
             auto ec = CAENVME_SetScalerConf( fOwner->GetHandle(),
                                                      fLimit,
                                                      fAutoReset,
-                                                     fHitSource,
-                                                     fGateSource,
-                                                     fStopSource );
+                                                     static_cast<CVIOSources>( fHitSource ),
+                                                     static_cast<CVIOSources>( fGateSource ),
+                                                     static_cast<CVIOSources>( fStopSource ) );
             if( ec )
             {
                 throw VException( static_cast<VError_t>(ec), "SetScalerConf" );
@@ -179,14 +182,18 @@ namespace vmepp
 
     void V2718Scaler::Read()
     {
+        CVIOSources hit, gate, stop;
         if( fOwner != nullptr )
         {
             auto ec = CAENVME_GetScalerConf( fOwner->GetHandle(),
                                             &fLimit,
                                             &fAutoReset,
-                                            &fHitSource,
-                                            &fGateSource,
-                                            &fStopSource );
+                                            &hit,
+                                            &gate,
+                                            &stop );
+            fHitSource = static_cast<V2718::Src_t>( hit );
+            fGateSource = static_cast<V2718::Src_t>( gate );
+            fStopSource = static_cast<V2718::Src_t>( stop );
             if( ec )
             {
                 throw VException( static_cast<VError_t>(ec), "GetScalerConf" );
@@ -235,8 +242,8 @@ namespace vmepp
     V2718::V2718() :
         VController(),
         UConfigurable<V2718>(),
-        fPulserA( cvPulserA ),
-        fPulserB( cvPulserB ),
+        fPulserA( Pulser_t::A ),
+        fPulserB( Pulser_t::B ),
         fScaler()
     {
         fPulserA.fOwner = this;
@@ -256,14 +263,14 @@ namespace vmepp
         }
     }
 
-    V2718Pulser& V2718::GetPulser( CVPulserSelect pulser )
+    V2718Pulser& V2718::GetPulser( Pulser_t pulser )
     {
         switch( pulser )
         {
-            case( cvPulserA ) :
+            case( Pulser_t::A ) :
                 return fPulserA;
                 break;
-            case( cvPulserB ) :
+            case( Pulser_t::B ) :
                 return fPulserB;
                 break;
         }
@@ -274,50 +281,57 @@ namespace vmepp
         return fScaler;
     }
 
-    void V2718::WriteOutputConfig( CVOutputSelect outputNo, CVIOSources src, CVIOPolarity polarity, CVLEDPolarity ledPolarity )
+    void V2718::WriteOutputConfig( Out_t n, const OutputConfig& cfg )
     {
         auto ec = CAENVME_SetOutputConf( fHandle,
-                                         outputNo,
-                                         polarity,
-                                         ledPolarity,
-                                         src );
+                                         static_cast<CVOutputSelect>( n ),
+                                         static_cast<CVIOPolarity>( cfg.POLARITY ),
+                                         static_cast<CVLEDPolarity>( cfg.LED_POLARITY ),
+                                         static_cast<CVIOSources>( cfg.SOURCE ) );
         if( ec )
         {
             throw VException( static_cast<VError_t>(ec), "SetOutputConf" );
         }
     }
 
-    void V2718::ReadOutputConfig( CVOutputSelect outputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity, CVIOSources &src )
+    void V2718::ReadOutputConfig( Out_t n, OutputConfig& cfg )
     {
+        CVIOPolarity pol; CVLEDPolarity ledPol; CVIOSources src;
         auto ec = CAENVME_GetOutputConf( fHandle,
-                                         outputNo,
-                                         &polarity,
-                                         &ledPolarity,
+                                         static_cast<CVOutputSelect>( n ),
+                                         &pol,
+                                         &ledPol,
                                          &src );
+        cfg.POLARITY = static_cast<V2718::Polarity_t>( pol );
+        cfg.LED_POLARITY = static_cast<V2718::LEDPolarity_t>( ledPol );
+        cfg.SOURCE = static_cast<V2718::Src_t>( src );
         if( ec )
         {
             throw VException( static_cast<VError_t>(ec), "GetOutputConf" );
         }
     }
 
-    void V2718::WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity, CVLEDPolarity ledPolarity )
+    void V2718::WriteInputConfig( In_t n, const InputConfig& cfg )
     {
         auto ec = CAENVME_SetInputConf( fHandle,
-                                        inputNo,
-                                        polarity,
-                                        ledPolarity );
+                                        static_cast<CVInputSelect>( n ),
+                                        static_cast<CVIOPolarity>( cfg.POLARITY ),
+                                        static_cast<CVLEDPolarity>( cfg.LED_POLARITY ) );
         if( ec )
         {
             throw VException( static_cast<VError_t>(ec), "SetInputConf" );
         }
     }
 
-    void V2718::ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity )
+    void V2718::ReadInputConfig( In_t n, InputConfig& cfg )
     {
+        CVIOPolarity pol; CVLEDPolarity ledPol;
         auto ec = CAENVME_GetInputConf( fHandle,
-                                        inputNo,
-                                        &polarity,
-                                        &ledPolarity );
+                                        static_cast<CVInputSelect>( n ),
+                                        &pol,
+                                        &ledPol );
+        cfg.POLARITY = static_cast<V2718::Polarity_t>( pol );
+        cfg.LED_POLARITY = static_cast<V2718::LEDPolarity_t>( ledPol );
         if( ec )
         {
             throw VException( static_cast<VError_t>(ec), "GetInputConf" );
@@ -327,22 +341,21 @@ namespace vmepp
     void V2718::ReadConfig( UConfig<V2718>& cfg )
     {
         // In's and Out's
-        CVIOPolarity pol;
-        CVLEDPolarity ledPol;
-        CVIOSources src;
+        V2718::InputConfig iTemp;
         for( uint8_t i = 0; i < fInNumber; ++i )
         {
-            ReadInputConfig( static_cast<CVInputSelect>(i), pol, ledPol );
-            cfg.INPUTS.at( i ).POLARITY = pol;
-            cfg.INPUTS.at( i ).LED_POLARITY = ledPol;
+            ReadInputConfig( static_cast<In_t>(i), iTemp );
+            cfg.INPUTS.at( i ).POLARITY = iTemp.POLARITY;
+            cfg.INPUTS.at( i ).LED_POLARITY = iTemp.LED_POLARITY;
         }
 
+        V2718::OutputConfig oTemp;
         for( uint8_t i = 0; i < fOutNumber; ++i )
         {
-            ReadOutputConfig( static_cast<CVOutputSelect>(i), pol, ledPol, src );
-            cfg.OUTPUTS.at( i ).POLARITY = pol;
-            cfg.OUTPUTS.at( i ).LED_POLARITY = ledPol;
-            cfg.OUTPUTS.at( i ).SOURCE = src;
+            ReadOutputConfig( static_cast<Out_t>(i), oTemp );
+            cfg.OUTPUTS.at( i ).POLARITY = oTemp.POLARITY;
+            cfg.OUTPUTS.at( i ).LED_POLARITY = oTemp.LED_POLARITY;
+            cfg.OUTPUTS.at( i ).SOURCE = oTemp.SOURCE;
         }
 
         // Pulsers
@@ -380,17 +393,17 @@ namespace vmepp
         // In's and Out's
         for( uint8_t i = 0; i < fInNumber; ++i )
         {
-            WriteInputConfig( static_cast<CVInputSelect>(i),
-                              cfg.INPUTS.at( i ).POLARITY,
-                              cfg.INPUTS.at( i ).LED_POLARITY );
+            V2718::InputConfig iTemp( cfg.INPUTS.at( i ).POLARITY,
+                                      cfg.INPUTS.at( i ).LED_POLARITY );
+            WriteInputConfig( static_cast<In_t>(i), iTemp ); 
         }
 
         for( uint8_t i = 0; i < fOutNumber; ++i )
         {
-            WriteOutputConfig( static_cast<CVOutputSelect>(i),
-                               cfg.OUTPUTS.at( i ).SOURCE,
-                               cfg.OUTPUTS.at( i ).POLARITY,
-                               cfg.OUTPUTS.at( i ).LED_POLARITY );
+            V2718::OutputConfig oTemp( cfg.OUTPUTS.at( i ).SOURCE,
+                                       cfg.OUTPUTS.at( i ).POLARITY,
+                                       cfg.OUTPUTS.at( i ).LED_POLARITY );
+            WriteOutputConfig( static_cast<Out_t>(i), oTemp );
         }
         // Scaler
         // NOTE: It is important to write the config

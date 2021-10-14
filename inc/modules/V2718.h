@@ -21,30 +21,30 @@ namespace vmepp
             V2718          *fOwner;
 
         protected :
-            CVPulserSelect  fPulser;
+            V2718::Pulser_t fPulser;
             unsigned char   fPeriod;
             unsigned char   fWidth;
             CVTimeUnits     fTimeUnit;
             unsigned char   fNPulses;
-            CVIOSources     fStartSource;
-            CVIOSources     fStopSource;
+            V2718::Src_t    fStartSource;
+            V2718::Src_t    fStopSource;
 
-            V2718Pulser( CVPulserSelect pulser ) :
+            V2718Pulser( V2718::Pulser_t pulser ) :
                 fOwner( nullptr ),
                 fPulser( pulser ),
                 fPeriod( 1 ),
                 fWidth( 1 ),
                 fTimeUnit( cvUnit104ms ),
                 fNPulses( 1 ),
-                fStartSource( cvManualSW ),
-                fStopSource( cvManualSW )
+                fStartSource( V2718::Src_t::SW ),
+                fStopSource( V2718::Src_t::SW )
             {}
             ~V2718Pulser() { }
             V2718Pulser( const V2718Pulser &other ) = delete;
             V2718Pulser& operator=( const V2718Pulser &other ) = delete;
 
         public :
-            CVPulserSelect      GetPulser() const                 { return fPulser; }
+            V2718::Pulser_t     GetPulser() const                 { return fPulser; }
             void                SetPeriod( unsigned char period ) { fPeriod = period; }
             unsigned char       GetPeriod() const                 { return fPeriod; }
             void                SetWidth( unsigned char width )   { fWidth = width; }
@@ -55,10 +55,10 @@ namespace vmepp
             CVTimeUnits         GetTimeUnit()                     { return fTimeUnit; }
             void                SetNPulses( unsigned char n )     { fNPulses = n; }
             unsigned char       GetNPulses() const                { return fNPulses; }
-            void                SetStartSource( CVIOSources src ) { fStartSource = src; }
-            CVIOSources         GetStartSource()                  { return fStartSource; }
-            void                SetStopSource( CVIOSources src )  { fStopSource = src; }
-            CVIOSources         GetStopSource()                   { return fStopSource; }
+            void                SetStartSource( V2718::Src_t src ) { fStartSource = src; }
+            V2718::Src_t        GetStartSource()                  { return fStartSource; }
+            void                SetStopSource( V2718::Src_t src )  { fStopSource = src; }
+            V2718::Src_t        GetStopSource()                   { return fStopSource; }
 
             bool                SetSquare( uint32_t freq, uint8_t duty = 50 );
             void                GetSquare( uint32_t &freq, uint8_t &duty );
@@ -81,17 +81,17 @@ namespace vmepp
         protected :
             short           fLimit;
             short           fAutoReset;
-            CVIOSources     fHitSource;
-            CVIOSources     fGateSource;
-            CVIOSources     fStopSource;
+            V2718::Src_t    fHitSource;
+            V2718::Src_t    fGateSource;
+            V2718::Src_t    fStopSource;
 
             V2718Scaler( ) :
                 fOwner( nullptr ),
                 fLimit( 1 ),
                 fAutoReset( 1 ),
-                fHitSource( cvInputSrc0 ),
-                fGateSource( cvManualSW ),
-                fStopSource( cvManualSW )
+                fHitSource( V2718::Src_t::IN0 ),
+                fGateSource( V2718::Src_t::SW ),
+                fStopSource( V2718::Src_t::SW )
             {}
             ~V2718Scaler() = default;
             V2718Scaler( const V2718Scaler &other ) = delete;
@@ -103,12 +103,12 @@ namespace vmepp
             short           GetLimit()                          { return fLimit; }
             void            SetAutoReset( short autoReset )     { fAutoReset = (autoReset ? 1 : 0); }
             short           GetAutoReset()                      { return (fAutoReset ? 1 : 0); }
-            void            SetHitSource( CVIOSources src )     { fHitSource = src; }
-            CVIOSources     GetHitSource()                      { return fHitSource; }
-            void            SetGateSource( CVIOSources src )    { fGateSource = src; }
-            CVIOSources     GetGateSource()                     { return fGateSource; }
-            void            SetStopSource( CVIOSources src )    { fStopSource = src; }
-            CVIOSources     GetStopSource()                     { return fStopSource; }
+            void            SetHitSource( V2718::Src_t src )    { fHitSource = src; }
+            V2718::Src_t    GetHitSource()                      { return fHitSource; }
+            void            SetGateSource( V2718::Src_t src )   { fGateSource = src; }
+            V2718::Src_t    GetGateSource()                     { return fGateSource; }
+            void            SetStopSource( V2718::Src_t src )   { fStopSource = src; }
+            V2718::Src_t    GetStopSource()                     { return fStopSource; }
 
         public :
             void Write();
@@ -140,26 +140,51 @@ namespace vmepp
             virtual void Open( short link, short bdNum ) override;
 
         public :
-            enum class Out_t        { OUT0, OUT1, OUT2, OUT3, OUT4 };
-            enum class In_t         { IN0, IN1 };
-            enum class Polarity_t   { DIRECT, INVERTED };
-            enum class LED_t        { ACTIVE_HIGH, ACTIVE_LOW }; 
-            enum class Src_t        { SW, IN0, IN1, COINCIDENCE, VME, PULS_SCAL };
+            enum class Out_t            { OUT0, OUT1, OUT2, OUT3, OUT4 };
+            enum class In_t             { IN0, IN1 };
+            enum class Polarity_t       { DIRECT, INVERTED };
+            enum class LEDPolarity_t    { ACTIVE_HIGH, ACTIVE_LOW }; 
+            enum class Src_t            { SW, IN0, IN1, COINCIDENCE, VME, PULS_SCAL };
+            enum class Pulser_t         { A, B };
 
-            V2718Pulser& GetPulser( CVPulserSelect pulser );
+            struct OutputConfig
+            {
+                Src_t           SOURCE;
+                Polarity_t      POLARITY;
+                LEDPolarity_t   LED_POLARITY;
+
+                OutputConfig( Src_t src = Src_t::SW,
+                              Polarity_t pol = Polarity_t::DIRECT,
+                              LEDPolarity_t ledPol = LEDPolarity_t::ACTIVE_HIGH ) :
+                    SOURCE( src ), POLARITY( pol ), LED_POLARITY( ledPol )
+                {
+                }
+            };
+
+            struct InputConfig
+            {
+                Polarity_t      POLARITY;
+                LEDPolarity_t   LED_POLARITY;
+
+                InputConfig( Polarity_t pol = Polarity_t::DIRECT,
+                             LEDPolarity_t ledPol = LEDPolarity_t::ACTIVE_HIGH ) :
+                    POLARITY( pol ), LED_POLARITY( ledPol )
+                {
+                }
+            };
+
+            V2718Pulser& GetPulser( Pulser_t pulser );
             V2718Scaler& GetScaler();
 
-            void WriteOutputConfig( Out_t n, Src_t src,
-                                    Polarity_t pol = Polarity_t::DIRECT,
-                                    LED_t led = LED_t::ACTIVE_HIGH );
-            void ReadOutputConfig( CVOutputSelect outputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity, CVIOSources &src );
+            void WriteOutputConfig( Out_t n, const OutputConfig& cfg );
+            void ReadOutputConfig( Out_t n, OutputConfig& cfg );
 
-            void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
-            void ReadInputConfig( CVInputSelect inputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity );
+            void WriteInputConfig( In_t n, const InputConfig& cfg );
+            void ReadInputConfig( In_t n, InputConfig& cfg );
 
         public :
-            void    ReadConfig( UConfig<V2718>& config ) override;
-            void    WriteConfig( const UConfig<V2718>& config ) override;
+            void ReadConfig( UConfig<V2718>& config ) override;
+            void WriteConfig( const UConfig<V2718>& config ) override;
     };
 
     template<>
@@ -170,12 +195,12 @@ namespace vmepp
     {
         struct Input
         {
-            CVIOPolarity    POLARITY;
-            CVLEDPolarity   LED_POLARITY;
+            V2718::Polarity_t       POLARITY;
+            V2718::LEDPolarity_t    LED_POLARITY;
 
             Input() :
-                POLARITY( CVIOPolarity::cvDirect ),
-                LED_POLARITY( CVLEDPolarity::cvActiveHigh )
+                POLARITY( V2718::Polarity_t::DIRECT ),
+                LED_POLARITY( V2718::LEDPolarity_t::ACTIVE_HIGH )
             {
             }
 
@@ -189,14 +214,14 @@ namespace vmepp
 
         struct Output
         {
-            CVIOPolarity    POLARITY;
-            CVLEDPolarity   LED_POLARITY;
-            CVIOSources     SOURCE;
+            V2718::Polarity_t       POLARITY;
+            V2718::LEDPolarity_t    LED_POLARITY;
+            V2718::Src_t            SOURCE;
 
             Output() :
-                POLARITY( CVIOPolarity::cvDirect ),
-                LED_POLARITY( CVLEDPolarity::cvActiveHigh ),
-                SOURCE( CVIOSources::cvManualSW )
+                POLARITY( V2718::Polarity_t::DIRECT ),
+                LED_POLARITY( V2718::LEDPolarity_t::ACTIVE_HIGH ),
+                SOURCE( V2718::Src_t::SW )
             {
             }
 
@@ -214,15 +239,15 @@ namespace vmepp
             uint32_t        FREQUENCY;
             uint8_t         DUTY;
             unsigned char   N_PULSES;
-            CVIOSources     START_SOURCE;
-            CVIOSources     STOP_SOURCE;
+            V2718::Src_t    START_SOURCE;
+            V2718::Src_t    STOP_SOURCE;
 
             Pulser() :
                 FREQUENCY( 10 ),
                 DUTY( 50 ),
                 N_PULSES( 0 ),
-                START_SOURCE( CVIOSources::cvManualSW ),
-                STOP_SOURCE( CVIOSources::cvManualSW )
+                START_SOURCE( V2718::Src_t::SW ),
+                STOP_SOURCE( V2718::Src_t::SW )
             {
             }
 
@@ -241,16 +266,16 @@ namespace vmepp
         {
             short           LIMIT;
             short           AUTO_RESET;
-            CVIOSources     HIT_SOURCE;
-            CVIOSources     GATE_SOURCE;
-            CVIOSources     STOP_SOURCE;
+            V2718::Src_t    HIT_SOURCE;
+            V2718::Src_t    GATE_SOURCE;
+            V2718::Src_t    STOP_SOURCE;
 
             Scaler() :
                 LIMIT( 0 ),
                 AUTO_RESET( 1 ),
-                HIT_SOURCE( CVIOSources::cvInputSrc0 ),
-                GATE_SOURCE( CVIOSources::cvManualSW ),
-                STOP_SOURCE( CVIOSources::cvInputSrc1 )
+                HIT_SOURCE( V2718::Src_t::IN0 ),
+                GATE_SOURCE( V2718::Src_t::SW ),
+                STOP_SOURCE( V2718::Src_t::IN1 )
             {
             }
 
