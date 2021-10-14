@@ -31,45 +31,48 @@ void Histo()
         controller.RegisterSlave( &adc );
         controller.Initialize();
 
-        controller.WriteOutputConfig( cvOutput0, cvMiscSignals );
-        controller.GetPulser( cvPulserA ).SetSquare( 5000, 1 );
-        controller.GetPulser( cvPulserA ).SetNPulses( 0 );//continuous pulsing
-        controller.GetPulser( cvPulserA ).Write();//configure
-        controller.GetPulser( cvPulserA ).Start();
+        V2718::Pulser* pA = controller.GetPulser( V2718::Pulser_t::A );
+        pA->SetSquare( 5000, 1 );
+        pA->SetNPulses( 0 );//continuous pulsing
+        pA->Write();//configure
+        pA->Start();
 
-        //adc.EnableAll( false );
-        //adc.EnableZeroSupp( true );
-        //adc.EnableOverSupp( false );
-        //adc.WriteLowThreshold( 0, 1, 1 );
-        //adc.WriteHighThreshold( 0, 3000, 0 );
-        //adc.WriteIRQLevel( 7 );
-        //adc.WriteIRQVector( 7 );
-        //adc.WriteIRQEvents( 31 );
+        V2718::OutputConfig outCfg;
+            outCfg.SOURCE = V2718::Src_t::SW;
+        controller.WriteOutputConfig( V2718::Out_t::OUT0, outCfg );
 
-        //UEvent<V1785N> event;
-        //adc.AllocateBuffer();
+        adc.EnableAll( false );
+        adc.EnableZeroSupp( true );
+        adc.EnableOverSupp( false );
+        adc.WriteLowThreshold( 0, 1, 1 );
+        adc.WriteHighThreshold( 0, 3000, 0 );
+        adc.WriteIRQLevel( 7 );
+        adc.WriteIRQVector( 7 );
+        adc.WriteIRQEvents( 31 );
 
-        //size_t nEvents = 0;
-        //while( nEvents < 10000 )
-        //{
-        //    controller.IRQEnable( cvIRQ7 );
-        //    controller.IRQWait( cvIRQ7, 100 );
-        //    adc.ReadBuffer();
-        //    while( adc.GetEvent( event ) )
-        //    {
-        //        h->Fill( event.GetChannelData( 0 ) );
-        //    }
-        //    nEvents += adc.GetNEventsRead();
-        //}
+        UEvent<V1785N> event;
+        adc.AllocateBuffer();
 
-        //controller.GetPulser( cvPulserA ).Stop();
+        size_t nEvents = 0;
+        while( nEvents < 10000 )
+        {
+            controller.IRQEnable( cvIRQ7 );
+            controller.IRQWait( cvIRQ7, 100 );
+            adc.ReadBuffer();
+            while( adc.GetEvent( event ) )
+            {
+                h->Fill( event.GetChannelData( 0 ) );
+            }
+            nEvents += adc.GetNEventsRead();
+        }
 
-        //h->Draw();
-        //std::cout << h->GetMean() << " " << h->GetStdDev() << "\n";
+        pA->Stop();
+
+        h->Draw();
     }
     catch( const VException &e )
     {
-        std::cerr << e.what() << "\n"; 
+        std::cerr << e.what() << "\n";
         std::cerr << e.GetInfo() << "\n";
     }
 }
