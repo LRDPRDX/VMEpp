@@ -11,7 +11,7 @@ namespace vmepp
     //**********************//
     //****** PULSER + ******//
     //**********************//
-    bool V2718Pulser::SetSquare( uint32_t freq, uint8_t duty )
+    bool V2718::Pulser::SetSquare( uint32_t freq, uint8_t duty )
     {
         struct { double expo; double num; CVTimeUnits unit; } ss[4] = { { 1000000000., 25., cvUnit25ns },
                                                                         { 10000000.,   16., cvUnit1600ns },
@@ -55,7 +55,7 @@ namespace vmepp
         return true;
     }
 
-    double V2718Pulser::GetFrequencyReal() const
+    double V2718::Pulser::GetFrequencyReal() const
     {
         struct { double expo; double num; CVTimeUnits unit; } ss[4] = { { 1000000000., 25., cvUnit25ns },
                                                                         { 10000000.,   16., cvUnit1600ns },
@@ -74,7 +74,7 @@ namespace vmepp
         return freq;
     }
 
-    void V2718Pulser::GetSquare( uint32_t &freq, uint8_t &duty )
+    void V2718::Pulser::GetSquare( uint32_t &freq, uint8_t &duty )
     {
         uint32_t expo, num;
 
@@ -92,7 +92,7 @@ namespace vmepp
         }
     }
 
-    void V2718Pulser::Write()
+    void V2718::Pulser::Write()
     {
         if( fOwner != nullptr )
         {
@@ -111,7 +111,7 @@ namespace vmepp
         }
     }
 
-    void V2718Pulser::Read()
+    void V2718::Pulser::Read()
     {
         CVIOSources start, stop;
         if( fOwner != nullptr )
@@ -133,7 +133,7 @@ namespace vmepp
         }
     }
 
-    void V2718Pulser::Start()
+    void V2718::Pulser::Start()
     {
         if( fOwner != nullptr )
         {
@@ -145,7 +145,7 @@ namespace vmepp
         }
     }
 
-    void V2718Pulser::Stop()
+    void V2718::Pulser::Stop()
     {
         if( fOwner != nullptr )
         {
@@ -163,7 +163,7 @@ namespace vmepp
     //**********************//
     //****** SCALER + ******//
     //**********************//
-    void V2718Scaler::Write()
+    void V2718::Scaler::Write()
     {
         if( fOwner != nullptr )
         {
@@ -180,7 +180,7 @@ namespace vmepp
         }
     }
 
-    void V2718Scaler::Read()
+    void V2718::Scaler::Read()
     {
         CVIOSources hit, gate, stop;
         if( fOwner != nullptr )
@@ -201,7 +201,7 @@ namespace vmepp
         }
     }
 
-    void V2718Scaler::Reset()
+    void V2718::Scaler::Reset()
     {
         if( fOwner != nullptr )
         {
@@ -213,7 +213,7 @@ namespace vmepp
         }
     }
 
-    void V2718Scaler::EnableGate( bool enable )
+    void V2718::Scaler::EnableGate( bool enable )
     {
         if( fOwner != nullptr )
         {
@@ -242,13 +242,13 @@ namespace vmepp
     V2718::V2718() :
         VController(),
         UConfigurable<V2718>(),
-        fPulserA( Pulser_t::A ),
-        fPulserB( Pulser_t::B ),
-        fScaler()
+        fPulserA( new Pulser( Pulser_t::A ) ),
+        fPulserB( new Pulser( Pulser_t::B ) ),
+        fScaler( new Scaler )
     {
-        fPulserA.fOwner = this;
-        fPulserB.fOwner = this;
-        fScaler.fOwner  = this;
+        fPulserA->fOwner = this;
+        fPulserB->fOwner = this;
+        fScaler->fOwner  = this;
     }
 
     template<>
@@ -263,22 +263,22 @@ namespace vmepp
         }
     }
 
-    V2718Pulser& V2718::GetPulser( Pulser_t pulser )
+    V2718::Pulser* V2718::GetPulser( Pulser_t pulser )
     {
         switch( pulser )
         {
             case( Pulser_t::A ) :
-                return fPulserA;
+                return fPulserA.get();
                 break;
             case( Pulser_t::B ) :
-                return fPulserB;
+                return fPulserB.get();
                 break;
         }
     }
 
-    V2718Scaler& V2718::GetScaler()
+    V2718::Scaler* V2718::GetScaler()
     {
-        return fScaler;
+        return fScaler.get();
     }
 
     void V2718::WriteOutputConfig( Out_t n, const OutputConfig& cfg )
@@ -361,31 +361,31 @@ namespace vmepp
         // Pulsers
         uint32_t freq = 0;
         uint8_t  duty = 0;
-        fPulserA.Read();
-        fPulserA.GetSquare( freq, duty );
+        fPulserA->Read();
+        fPulserA->GetSquare( freq, duty );
 
         cfg.PULSER_A.FREQUENCY      = freq;
         cfg.PULSER_A.DUTY           = duty;
-        cfg.PULSER_A.N_PULSES       = fPulserA.GetNPulses();
-        cfg.PULSER_A.START_SOURCE   = fPulserA.GetStartSource();
-        cfg.PULSER_A.STOP_SOURCE    = fPulserA.GetStopSource();
+        cfg.PULSER_A.N_PULSES       = fPulserA->GetNPulses();
+        cfg.PULSER_A.START_SOURCE   = fPulserA->GetStartSource();
+        cfg.PULSER_A.STOP_SOURCE    = fPulserA->GetStopSource();
 
-        fPulserB.Read();
-        fPulserB.GetSquare( freq, duty );
+        fPulserB->Read();
+        fPulserB->GetSquare( freq, duty );
 
         cfg.PULSER_B.FREQUENCY      = freq;
         cfg.PULSER_B.DUTY           = duty;
-        cfg.PULSER_B.N_PULSES       = fPulserB.GetNPulses();
-        cfg.PULSER_B.START_SOURCE   = fPulserB.GetStartSource();
-        cfg.PULSER_B.STOP_SOURCE    = fPulserB.GetStopSource();
+        cfg.PULSER_B.N_PULSES       = fPulserB->GetNPulses();
+        cfg.PULSER_B.START_SOURCE   = fPulserB->GetStartSource();
+        cfg.PULSER_B.STOP_SOURCE    = fPulserB->GetStopSource();
 
         // Scaler
-        fScaler.Read();
-        cfg.SCALER.GATE_SOURCE  = fScaler.GetGateSource();
-        cfg.SCALER.STOP_SOURCE  = fScaler.GetStopSource();
-        cfg.SCALER.HIT_SOURCE   = fScaler.GetHitSource();
-        cfg.SCALER.LIMIT        = fScaler.GetLimit();
-        cfg.SCALER.AUTO_RESET   = fScaler.GetAutoReset();
+        fScaler->Read();
+        cfg.SCALER.GATE_SOURCE  = fScaler->GetGateSource();
+        cfg.SCALER.STOP_SOURCE  = fScaler->GetStopSource();
+        cfg.SCALER.HIT_SOURCE   = fScaler->GetHitSource();
+        cfg.SCALER.LIMIT        = fScaler->GetLimit();
+        cfg.SCALER.AUTO_RESET   = fScaler->GetAutoReset();
     }
 
     void V2718::WriteConfig( const UConfig<V2718>& cfg )
@@ -395,7 +395,7 @@ namespace vmepp
         {
             V2718::InputConfig iTemp( cfg.INPUTS.at( i ).POLARITY,
                                       cfg.INPUTS.at( i ).LED_POLARITY );
-            WriteInputConfig( static_cast<In_t>(i), iTemp ); 
+            WriteInputConfig( static_cast<In_t>(i), iTemp );
         }
 
         for( uint8_t i = 0; i < fOutNumber; ++i )
@@ -409,25 +409,25 @@ namespace vmepp
         // NOTE: It is important to write the config
         // for the Scaler first since it overwrites
         // the purpose of the signals on the inputs
-        fScaler.SetGateSource( cfg.SCALER.GATE_SOURCE );
-        fScaler.SetStopSource( cfg.SCALER.STOP_SOURCE );
-        fScaler.SetHitSource( cfg.SCALER.HIT_SOURCE );
-        fScaler.SetLimit( cfg.SCALER.LIMIT );
-        fScaler.SetAutoReset( cfg.SCALER.AUTO_RESET );
-        fScaler.Write();
+        fScaler->SetGateSource( cfg.SCALER.GATE_SOURCE );
+        fScaler->SetStopSource( cfg.SCALER.STOP_SOURCE );
+        fScaler->SetHitSource( cfg.SCALER.HIT_SOURCE );
+        fScaler->SetLimit( cfg.SCALER.LIMIT );
+        fScaler->SetAutoReset( cfg.SCALER.AUTO_RESET );
+        fScaler->Write();
 
         // Pulsers
-        fPulserA.SetSquare( cfg.PULSER_A.FREQUENCY, cfg.PULSER_A.DUTY );
-        fPulserA.SetNPulses( cfg.PULSER_A.N_PULSES );
-        fPulserA.SetStartSource( cfg.PULSER_A.START_SOURCE );
-        fPulserA.SetStopSource( cfg.PULSER_A.STOP_SOURCE );
-        fPulserA.Write();
+        fPulserA->SetSquare( cfg.PULSER_A.FREQUENCY, cfg.PULSER_A.DUTY );
+        fPulserA->SetNPulses( cfg.PULSER_A.N_PULSES );
+        fPulserA->SetStartSource( cfg.PULSER_A.START_SOURCE );
+        fPulserA->SetStopSource( cfg.PULSER_A.STOP_SOURCE );
+        fPulserA->Write();
 
-        fPulserB.SetSquare( cfg.PULSER_B.FREQUENCY, cfg.PULSER_B.DUTY );
-        fPulserB.SetNPulses( cfg.PULSER_B.N_PULSES );
-        fPulserB.SetStartSource( cfg.PULSER_B.START_SOURCE );
-        fPulserB.SetStopSource( cfg.PULSER_B.STOP_SOURCE );
-        fPulserB.Write();
+        fPulserB->SetSquare( cfg.PULSER_B.FREQUENCY, cfg.PULSER_B.DUTY );
+        fPulserB->SetNPulses( cfg.PULSER_B.N_PULSES );
+        fPulserB->SetStartSource( cfg.PULSER_B.START_SOURCE );
+        fPulserB->SetStopSource( cfg.PULSER_B.STOP_SOURCE );
+        fPulserB->Write();
     }
     //*********************//
     //****** V2718 - ******//
