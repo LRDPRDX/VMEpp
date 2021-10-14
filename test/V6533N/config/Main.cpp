@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "cereal/archives/xml.hpp"
+
 using namespace vmepp;
 
 int main()
@@ -24,7 +26,7 @@ int main()
 
         //hv.ReadConfig( cfg );
         //hv.WriteConfig( cfg );
-        WriteConfigToFile( cfg, "config.json" );
+        WriteConfigToFile<V6533N, cereal::XMLOutputArchive>( cfg, "config.xml" );
     }
     catch( const VException &cv )
     {

@@ -2,64 +2,64 @@
     "V6533N": {
         "channels": {
             "value0": {
-                "voltage set": 0.0,
-                "current set": 0.0,
-                "trip time": 0.0,
-                "sw max voltage": 0.0,
-                "ramp up": 0,
-                "ramp down": 0,
-                "power down": false,
-                "current mon range": 0
+                "voltage_set": 0.0,
+                "current_set": 0.0,
+                "trip_time": 0.0,
+                "sw_max_voltage": 0.0,
+                "ramp_up": 0,
+                "ramp_down": 0,
+                "power_down": false,
+                "current_mon_range": 0
             },
             "value1": {
-                "voltage set": 0.0,
-                "current set": 0.0,
-                "trip time": 0.0,
-                "sw max voltage": 0.0,
-                "ramp up": 0,
-                "ramp down": 0,
-                "power down": false,
-                "current mon range": 0
+                "voltage_set": 0.0,
+                "current_set": 0.0,
+                "trip_time": 0.0,
+                "sw_max_voltage": 0.0,
+                "ramp_up": 0,
+                "ramp_down": 0,
+                "power_down": false,
+                "current_mon_range": 0
             },
             "value2": {
-                "voltage set": 0.0,
-                "current set": 0.0,
-                "trip time": 0.0,
-                "sw max voltage": 0.0,
-                "ramp up": 0,
-                "ramp down": 0,
-                "power down": false,
-                "current mon range": 0
+                "voltage_set": 0.0,
+                "current_set": 0.0,
+                "trip_time": 0.0,
+                "sw_max_voltage": 0.0,
+                "ramp_up": 0,
+                "ramp_down": 0,
+                "power_down": false,
+                "current_mon_range": 0
             },
             "value3": {
-                "voltage set": 0.0,
-                "current set": 0.0,
-                "trip time": 0.0,
-                "sw max voltage": 0.0,
-                "ramp up": 0,
-                "ramp down": 0,
-                "power down": false,
-                "current mon range": 0
+                "voltage_set": 0.0,
+                "current_set": 0.0,
+                "trip_time": 0.0,
+                "sw_max_voltage": 0.0,
+                "ramp_up": 0,
+                "ramp_down": 0,
+                "power_down": false,
+                "current_mon_range": 0
             },
             "value4": {
-                "voltage set": 0.0,
-                "current set": 0.0,
-                "trip time": 0.0,
-                "sw max voltage": 0.0,
-                "ramp up": 0,
-                "ramp down": 0,
-                "power down": false,
-                "current mon range": 0
+                "voltage_set": 0.0,
+                "current_set": 0.0,
+                "trip_time": 0.0,
+                "sw_max_voltage": 0.0,
+                "ramp_up": 0,
+                "ramp_down": 0,
+                "power_down": false,
+                "current_mon_range": 0
             },
             "value5": {
-                "voltage set": 0.0,
-                "current set": 0.0,
-                "trip time": 0.0,
-                "sw max voltage": 0.0,
-                "ramp up": 0,
-                "ramp down": 0,
-                "power down": false,
-                "current mon range": 0
+                "voltage_set": 0.0,
+                "current_set": 0.0,
+                "trip_time": 0.0,
+                "sw_max_voltage": 0.0,
+                "ramp_up": 0,
+                "ramp_down": 0,
+                "power_down": false,
+                "current_mon_range": 0
             }
         }
     }

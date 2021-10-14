@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <cassert>
 
+#include "cereal/archives/xml.hpp"
+
 using namespace vmepp;
 
 int main()
@@ -31,7 +33,7 @@ int main()
 
         UConfig<V2718> cfg;
 
-        WriteConfigToFile( cfg, "config.json" );
+        WriteConfigToFile<V2718, cereal::XMLOutputArchive>( cfg, "config.xml" );
 
         UConfig<V2718> cfg2;
         ReadConfigFromFile( cfg2, "config.json" );
