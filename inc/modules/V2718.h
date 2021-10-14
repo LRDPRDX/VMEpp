@@ -140,10 +140,18 @@ namespace vmepp
             virtual void Open( short link, short bdNum ) override;
 
         public :
+            enum class Out_t        { OUT0, OUT1, OUT2, OUT3, OUT4 };
+            enum class In_t         { IN0, IN1 };
+            enum class Polarity_t   { DIRECT, INVERTED };
+            enum class LED_t        { ACTIVE_HIGH, ACTIVE_LOW }; 
+            enum class Src_t        { SW, IN0, IN1, COINCIDENCE, VME, PULS_SCAL };
+
             V2718Pulser& GetPulser( CVPulserSelect pulser );
             V2718Scaler& GetScaler();
 
-            void WriteOutputConfig( CVOutputSelect outputNo, CVIOSources src, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );
+            void WriteOutputConfig( Out_t n, Src_t src,
+                                    Polarity_t pol = Polarity_t::DIRECT,
+                                    LED_t led = LED_t::ACTIVE_HIGH );
             void ReadOutputConfig( CVOutputSelect outputNo, CVIOPolarity &polarity, CVLEDPolarity &ledPolarity, CVIOSources &src );
 
             void WriteInputConfig( CVInputSelect inputNo, CVIOPolarity polarity = cvDirect, CVLEDPolarity ledPolarity = cvActiveHigh );

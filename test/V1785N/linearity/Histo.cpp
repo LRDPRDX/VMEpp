@@ -37,35 +37,35 @@ void Histo()
         controller.GetPulser( cvPulserA ).Write();//configure
         controller.GetPulser( cvPulserA ).Start();
 
-        adc.EnableAll( false );
-        adc.EnableZeroSupp( true );
-        adc.EnableOverSupp( false );
-        adc.WriteLowThreshold( 0, 1, 1 );
-        adc.WriteHighThreshold( 0, 3000, 0 );
-        adc.WriteIRQLevel( 7 );
-        adc.WriteIRQVector( 7 );
-        adc.WriteIRQEvents( 31 );
+        //adc.EnableAll( false );
+        //adc.EnableZeroSupp( true );
+        //adc.EnableOverSupp( false );
+        //adc.WriteLowThreshold( 0, 1, 1 );
+        //adc.WriteHighThreshold( 0, 3000, 0 );
+        //adc.WriteIRQLevel( 7 );
+        //adc.WriteIRQVector( 7 );
+        //adc.WriteIRQEvents( 31 );
 
-        UEvent<V1785N> event;
-        adc.AllocateBuffer();
+        //UEvent<V1785N> event;
+        //adc.AllocateBuffer();
 
-        size_t nEvents = 0;
-        while( nEvents < 10000 )
-        {
-            controller.IRQEnable( cvIRQ7 );
-            controller.IRQWait( cvIRQ7, 100 );
-            adc.ReadBuffer();
-            while( adc.GetEvent( event ) )
-            {
-                h->Fill( event.GetChannelData( 0 ) );
-            }
-            nEvents += adc.GetNEventsRead();
-        }
+        //size_t nEvents = 0;
+        //while( nEvents < 10000 )
+        //{
+        //    controller.IRQEnable( cvIRQ7 );
+        //    controller.IRQWait( cvIRQ7, 100 );
+        //    adc.ReadBuffer();
+        //    while( adc.GetEvent( event ) )
+        //    {
+        //        h->Fill( event.GetChannelData( 0 ) );
+        //    }
+        //    nEvents += adc.GetNEventsRead();
+        //}
 
-        controller.GetPulser( cvPulserA ).Stop();
+        //controller.GetPulser( cvPulserA ).Stop();
 
-        h->Draw();
-        std::cout << h->GetMean() << " " << h->GetStdDev() << "\n";
+        //h->Draw();
+        //std::cout << h->GetMean() << " " << h->GetStdDev() << "\n";
     }
     catch( const VException &e )
     {
