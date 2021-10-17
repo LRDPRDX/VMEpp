@@ -3,6 +3,8 @@
 
 namespace vmepp
 {
+    constexpr unsigned MaxBlockTransferSize = 2048;
+
     class VModule
     {
         public :

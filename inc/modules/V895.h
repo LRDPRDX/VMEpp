@@ -147,8 +147,8 @@ namespace vmepp
         {
         }
 
-        template <class Archive>
-        void serialize( Archive& ar )
+        template <class TArchive>
+        void serialize( TArchive& ar )
         {
             ar( cereal::make_nvp( "thresholds", THRESHOLDS ),
                 cereal::make_nvp( "majority", MAJORITY ),

@@ -113,59 +113,6 @@ namespace vmepp {
     }
 
     /****** DATA ACQUISITION ******/
-    void V1190B::AllocateBuffer()
-    {
-        ResetIndex();
-        if( fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "Trying to reallocate buffer (not nullptr)" );
-        }
-        try
-        {
-            fBuffer.reset( new uint32_t[2048 / 4] );
-        }
-        catch( std::bad_alloc &e )
-        {
-            fBuffer.reset(); //noexcept
-            throw VException( VError_t::vBuffAllocFailed, "from V1190B::AllocateBuffer" );
-        }
-    }
-
-    uint32_t V1190B::ReadBuffer()
-    {
-        ResetIndex();
-
-        if( !fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "V1190B::ReadBuffer() : buffer is nullptr. Forgot to allocate?" );
-            return 0;
-        }
-        int count;
-        MBLTReadRequest( V1190B_OUTPUT_BUFFER, fBuffer.get(), 2048, &count );
-        return (fReadBytes = (count > 0) ? count : 0);
-    }
-
-    void V1190B::DropBuffer( const std::string& fileName )
-    {
-        if( !fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "V1190B::DropBuffer() : buffer is nullptr. Forgot to allocate?" );
-            return;
-        }
-
-        std::ofstream file;
-        file.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        try
-        {
-            file.open( fileName, std::ios::binary | std::ios::trunc );
-            file.write((char*)fBuffer.get(), fReadBytes);
-        }
-        catch( const std::ofstream::failure& e )
-        {
-            PrintMessage( Message_t::WARNING, "Couldn't write to the file \"" + fileName + "\"." );
-        }
-    }
-
     bool V1190B::GetEventAt( uint32_t index, UEvent<V1190B> &event ) const
     {
         if( !fBuffer )
@@ -194,7 +141,7 @@ namespace vmepp {
         // collecting data recorded in the CONTINUOUS mode
         if( wordTypeCurrent == UEvent<V1190B>::Word_t::T_MEAS )
         {
-            event.fHits.push_back( UEvent<V1190B>::V1190BHit( word ) );
+            event.fHits.push_back( UEvent<V1190B>::Hit( word ) );
             event.fStart = event.fStop = index;
             return true;
         }
@@ -223,7 +170,7 @@ namespace vmepp {
                     event.fErrors = word;
                     break;
                 case( UEvent<V1190B>::Word_t::T_MEAS ) :
-                    event.fHits.push_back( UEvent<V1190B>::V1190BHit( word ) );
+                    event.fHits.push_back( UEvent<V1190B>::Hit( word ) );
                     break;
                 case( UEvent<V1190B>::Word_t::G_TTT ) :
                     event.fETTT = word;
@@ -794,9 +741,11 @@ namespace vmepp {
 
     void V1190B::ReadConfig( UConfig<V1190B>& config )
     {
+        (void)(config);
     }
 
     void V1190B::WriteConfig( const UConfig<V1190B>& config )
     {
+        (void)(config);
     }
 }

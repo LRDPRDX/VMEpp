@@ -208,8 +208,8 @@ namespace vmepp
             {
             }
 
-            template <class Archive>
-            void serialize( Archive& ar )
+            template <class TArchive>
+            void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "voltage_set", V_SET ),
                     cereal::make_nvp( "current_set", I_SET ),
@@ -224,8 +224,8 @@ namespace vmepp
 
         std::array<Channel, V6533N::GetChNumber()> CHANNELS;
 
-        template <class Archive>
-        void serialize( Archive& ar )
+        template <class TArchive>
+        void serialize( TArchive& ar )
         {
             ar( cereal::make_nvp( "channels", CHANNELS ) );
         }
