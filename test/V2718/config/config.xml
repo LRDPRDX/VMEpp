@@ -14,50 +14,50 @@
 		<outputs>
 			<value0>
 				<polarity>0</polarity>
-				<led_polarity>0</led_polarity>
-				<source>0</source>
+				<led_polarity>1</led_polarity>
+				<source>4</source>
 			</value0>
 			<value1>
 				<polarity>0</polarity>
-				<led_polarity>0</led_polarity>
-				<source>0</source>
+				<led_polarity>1</led_polarity>
+				<source>4</source>
 			</value1>
 			<value2>
 				<polarity>0</polarity>
-				<led_polarity>0</led_polarity>
-				<source>0</source>
+				<led_polarity>1</led_polarity>
+				<source>4</source>
 			</value2>
 			<value3>
 				<polarity>0</polarity>
-				<led_polarity>0</led_polarity>
-				<source>0</source>
+				<led_polarity>1</led_polarity>
+				<source>4</source>
 			</value3>
 			<value4>
 				<polarity>0</polarity>
 				<led_polarity>0</led_polarity>
-				<source>0</source>
+				<source>4</source>
 			</value4>
 		</outputs>
 		<pulser_A>
 			<frequency>10</frequency>
 			<duty>50</duty>
-			<N>0</N>
+			<N>88</N>
 			<start>0</start>
 			<stop>0</stop>
 		</pulser_A>
 		<pulser_B>
-			<frequency>10</frequency>
-			<duty>50</duty>
-			<N>0</N>
+			<frequency>9920</frequency>
+			<duty>22</duty>
+			<N>240</N>
 			<start>0</start>
 			<stop>0</stop>
 		</pulser_B>
 		<scaler>
 			<limit>0</limit>
-			<duty>1</duty>
+			<duty>0</duty>
 			<hit>1</hit>
 			<gate>0</gate>
-			<stop>2</stop>
+			<stop>0</stop>
 		</scaler>
 	</V2718>
 </cereal>

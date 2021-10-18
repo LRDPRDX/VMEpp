@@ -9,6 +9,7 @@
 #include "VException.h"
 #include "modules/V2718.h"
 #include "modules/V1190B.h"
+#include "modules/V895.h"
 
 using namespace vmepp;
 
@@ -19,53 +20,76 @@ void Histo()
         h->Draw();
 
     V2718 controller;
-    V1190B tdc(0x20080000);
+    V1190B tdc( 0x20080000 );
+    V895 disc( 0x40080000 );
 
     try
     {
-        std::cout << "Test begins...\n";
-
         controller.Open( 0, 0 );
         controller.RegisterSlave( &tdc );
+        controller.RegisterSlave( &disc );
         controller.Initialize();
 
-        controller.WriteOutputConfig( static_cast<CVOutputSelect>( 0 ), cvMiscSignals );
-        controller.GetPulser( cvPulserA ).SetSquare( 1000, 50 );
-        controller.GetPulser( cvPulserA ).SetNPulses( 0 );
-        controller.GetPulser( cvPulserA ).SetStartSource( cvManualSW );
-        controller.GetPulser( cvPulserA ).SetStopSource( cvManualSW );
-        controller.GetPulser( cvPulserA ).Write();
+        disc.EnableOnly( 14 );
+        disc.WriteOutWidth( 30 );
 
-        controller.GetPulser( cvPulserA ).Start();
+        V2718::OutputConfig outCfg;
+        outCfg.SOURCE = V2718::Src_t::PULS_SCAL;
+        controller.WriteOutputConfig( V2718::Out_t::OUT0, outCfg );
+
+        V2718::Pulser* pA = controller.GetPulser( V2718::Pulser_t::A );
+        pA->SetSquare( 5000, 1 );
+        pA->SetNPulses( 0 );
+        pA->SetStartSource( V2718::Src_t::SW );
+        pA->SetStopSource( V2718::Src_t::SW );
+        pA->Write();
+        pA->Start();
+
+        tdc.WriteDetection( V1190B::EdgeDetect_t::PAIR );
+        V1190B::PairRes pRes;
+            pRes.EDGE = V1190B::ResLeadEdgeTime::ps100;
+            pRes.WIDTH = V1190B::ResPulseWidth::ps400;
+        tdc.WritePairRes( pRes );
+        tdc.WriteWindowWidth( 20 ); // 500 ns
+        tdc.WriteWindowOffset( -10 ); // -250 ns
+        tdc.WriteEnableSubTrigger( true );
+        tdc.WriteControl( V1190B::Control_t::EVENT_FIFO_EN, false );
 
         tdc.WriteAcqMode( V1190B::TriggerMode_t::CONTINUOUS );
-        tdc.WriteDetection( V1190B::EdgeDetect_t::PAIR );
-        V1190B::PairRes pRes = V1190B::PairRes( V1190B::ResLeadEdgeTime::ps100, V1190B::ResPulseWidth::ps800 );
-        tdc.WritePairRes( pRes );
+
+        tdc.WriteIRQEvents( 2048 );
+        tdc.WriteIRQVector( 3 );
+        tdc.WriteIRQLevel( 1 );
 
         tdc.AllocateBuffer();
 
         uint32_t nEvents = 0;
         while( nEvents < 20000 )
         {
+            controller.IRQEnable( cvIRQ1 );
+            controller.IRQWait( cvIRQ1, 2048 );
             tdc.ReadBuffer();
-            UEvent<V1190B> e;
-            while( tdc.GetEvent( e ) )
+            UEvent<V1190B> event;
+            while( tdc.GetEvent( event ) )
             {
-                for( auto it = e.cbegin(); it != e.cend(); ++it )
+                for( auto it = event.cbegin(); it != event.cend(); ++it )
                 {
-                    h->Fill( 0.8 * (int)(it->GetWidth()) );
+                    std::cout << it->value << "\n";
+                    float width = 0.4 * (it->GetWidth());
+                    if( width > 0.0 )
+                    {
+                        h->Fill( width );
+                    }
                 }
             }
             c->Modified();
             c->Update();
 
             nEvents += tdc.GetNEventsRead();
+            //tdc.WriteSoftwareClear();
         }
 
-        std::cout << "Mean : " << h->GetMean() << "\n";
-
-        std::cout << "Test has been passed...OK!\n";
+        pA->Stop();
     }
     catch( const VException &e )
     {
