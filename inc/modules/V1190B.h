@@ -294,10 +294,8 @@ namespace vmepp {
             uint16_t ReadEventsStored();
             void SendSWTrigger();
 
-            void AllocateBuffer() override;
-            uint32_t ReadBuffer() override;
-            void DropBuffer( const std::string& fileName );
             bool GetEventAt(uint32_t index, UEvent<V1190B> &event) const override;
+            uint32_t GetBufferAddress() const override { return 0; }
 
             /************************/
             /****** INTERRUPTS ******/
@@ -659,7 +657,7 @@ namespace vmepp {
                 MASK        = 0xf8000000U,
             };
 
-            struct V1190BHit
+            struct Hit
             {
                 uint32_t value;
 
@@ -669,7 +667,7 @@ namespace vmepp {
                 uint8_t  GetChannel() const { return ((value & 0x003f80000U) >> 19U); }
                 bool     IsLeading() const  { return (value & (1U << 26U)); }
 
-                V1190BHit( uint32_t value ) :
+                Hit( uint32_t value ) :
                     value( value )
                 {
                 }
@@ -680,10 +678,10 @@ namespace vmepp {
             uint32_t fETTT;
             uint32_t fErrors;
             uint32_t fGlobalTrailer;
-            std::vector<V1190BHit>   fHits;
+            std::vector<Hit>   fHits;
 
         public :
-            typedef typename std::vector<V1190BHit>::const_iterator const_iterator;
+            typedef typename std::vector<Hit>::const_iterator const_iterator;
             const_iterator cbegin() const noexcept  { return fHits.cbegin(); }
             const_iterator cend() const noexcept    { return fHits.cend(); }
 

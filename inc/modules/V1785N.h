@@ -312,12 +312,9 @@ namespace vmepp
             void            PrintStatus();
 
             //Data acquisition
-            void            AllocateBuffer() override;
-            //void            FreeBuffer() override;
-            uint32_t        ReadBuffer() override;
-            //void            ScanBuffer() override;
-            //bool            GetEvent( VEvent *event ) override;
             bool            GetEventAt( uint32_t index, UEvent<V1785N> &event ) const override;
+            uint32_t        GetBufferAddress() const override { return 0; }
+
             void            ClearData();
             void            EnableZeroSupp( bool status = true );
             void            EnableOverSupp( bool status = true );

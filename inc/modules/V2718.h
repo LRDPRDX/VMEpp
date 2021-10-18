@@ -115,8 +115,8 @@ namespace vmepp
             {
             }
 
-            template <class Archive>
-            void serialize( Archive& ar )
+            template <class TArchive>
+            void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "polarity", POLARITY ),
                     cereal::make_nvp( "led_polarity", LED_POLARITY ) );
@@ -136,8 +136,8 @@ namespace vmepp
             {
             }
 
-            template <class Archive>
-            void serialize( Archive& ar )
+            template <class TArchive>
+            void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "polarity", POLARITY ),
                     cereal::make_nvp( "led_polarity", LED_POLARITY ),
@@ -162,8 +162,8 @@ namespace vmepp
             {
             }
 
-            template <class Archive>
-            void serialize( Archive& ar )
+            template <class TArchive>
+            void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "frequency", FREQUENCY ),
                     cereal::make_nvp( "duty", DUTY ),
@@ -190,8 +190,8 @@ namespace vmepp
             {
             }
 
-            template <class Archive>
-            void serialize( Archive& ar )
+            template <class TArchive>
+            void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "limit", LIMIT ),
                     cereal::make_nvp( "duty", AUTO_RESET ),
@@ -207,8 +207,8 @@ namespace vmepp
         Pulser                                      PULSER_B;
         Scaler                                      SCALER;
 
-        template <class Archive>
-        void serialize( Archive& ar )
+        template <class TArchive>
+        void serialize( TArchive& ar )
         {
             ar( cereal::make_nvp( "inputs", INPUTS ),
                 cereal::make_nvp( "outputs", OUTPUTS ),

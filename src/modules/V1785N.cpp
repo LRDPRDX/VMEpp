@@ -396,46 +396,14 @@ namespace vmepp
     //****** INTERRUPTS - ******
 
     //****** DATA ACQUISITION + ******
-    void V1785N::AllocateBuffer()
-    {
-        ResetIndex();
-        if( fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "Trying to reallocate buffer (not nullptr)" );
-        }
-        try
-        {
-            fBuffer.reset( new uint32_t[V1785N_MAX_MBLT_SIZE / 4] );
-        }
-        catch( std::bad_alloc &e )
-        {
-            fBuffer.reset();
-            throw VException( VError_t::vBuffAllocFailed, "from V1785N::AllocateBuffer" );
-        }
-    }
-
-
-    uint32_t V1785N::ReadBuffer()
-    {
-        ResetIndex();
-        if( !fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "Read buffer : buffer is nullptr. Forgot to allocate?" );
-            return 0;
-        }
-        int count;
-        MBLTReadRequest( V1785N_OUTPUT_BUFFER_START, fBuffer.get(), V1785N_MAX_MBLT_SIZE, &count );
-        return (fReadBytes = (count > 0) ? count : 0);
-    }
 
     bool V1785N::GetEventAt( uint32_t index, UEvent<V1785N> &event ) const
     {
         if( !fBuffer )
         {
-            PrintMessage( Message_t::WARNING, "GetEventAt : buffer is nullptr. Forgot to allocate?" );
+            PrintMessage( Message_t::WARNING, "V1785N::GetEventAt : buffer is nullptr. Forgot to allocate?" );
             return false;
         }
-
         //Skip invalid data if present
         for( ; index < fReadBytes / 4; index++ )
         {
@@ -518,9 +486,11 @@ namespace vmepp
     //
     void V1785N::ReadConfig( UConfig<V1785N>& config )
     {
+        (void)(config);
     }
 
     void V1785N::WriteConfig( const UConfig<V1785N>& config )
     {
+        (void)(config);
     }
 }
