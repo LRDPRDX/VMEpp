@@ -39,12 +39,24 @@ namespace vmepp
             virtual void Open( short link, short bdNum ) override;
 
         public :
-            enum class Out_t            { OUT0, OUT1, OUT2, OUT3, OUT4 };
-            enum class In_t             { IN0, IN1 };
-            enum class Polarity_t       { DIRECT, INVERTED };
-            enum class LEDPolarity_t    { ACTIVE_HIGH, ACTIVE_LOW };
-            enum class Src_t            { SW, IN0, IN1, COINCIDENCE, VME, PULS_SCAL };
-            enum class Pulser_t         { A, B };
+            enum class Out_t            { OUT0 = cvOutput0,
+                                          OUT1 = cvOutput1,
+                                          OUT2 = cvOutput2,
+                                          OUT3 = cvOutput3,
+                                          OUT4 = cvOutput4 };
+
+            enum class In_t             { IN0 = cvInput0, IN1 = cvInput1 };
+            enum class Polarity_t       { DIRECT = cvDirect, INVERTED = cvInverted };
+            enum class LEDPolarity_t    { ACTIVE_HIGH = cvActiveHigh, ACTIVE_LOW = cvActiveLow };
+
+            enum class Src_t            { SW = cvManualSW,
+                                          IN0 = cvInputSrc0,
+                                          IN1 = cvInputSrc1,
+                                          COINCIDENCE = cvCoincidence,
+                                          VME = cvVMESignals,
+                                          PULS_SCAL = cvMiscSignals };
+
+            enum class Pulser_t         { A = cvPulserA, B = cvPulserB };
 
             struct OutputConfig
             {
