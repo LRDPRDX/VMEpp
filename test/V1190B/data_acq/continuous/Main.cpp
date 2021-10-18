@@ -45,27 +45,28 @@ int main()
         pA->Write();
         pA->Start();
 
-        tdc.WriteAcqMode( V1190B::TriggerMode_t::MATCHING );
         tdc.WriteDetection( V1190B::EdgeDetect_t::PAIR );
         V1190B::PairRes pRes;
             pRes.EDGE = V1190B::ResLeadEdgeTime::ps100;
             pRes.WIDTH = V1190B::ResPulseWidth::ps400;
         tdc.WritePairRes( pRes );
+        tdc.WriteAcqMode( V1190B::TriggerMode_t::MATCHING );
         tdc.WriteWindowWidth( 20 ); // 500 ns
         tdc.WriteWindowOffset( -10 ); // -250 ns
         tdc.WriteEnableSubTrigger( true );
 
-        tdc.WriteIRQEvents( 1000 );
+        tdc.WriteIRQEvents( 4000 );
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 
         tdc.WriteControl( V1190B::Control_t::EVENT_FIFO_EN, false );
 
+        tdc.SetReadCycles( 2 );
         tdc.AllocateBuffer();
 
         uint32_t nEvents = 0;
-        //while( nEvents < 2 )
-        //{
+        while( nEvents < 20000 )
+        {
             controller.IRQEnable( cvIRQ1 );
             controller.IRQWait( cvIRQ1, 1000 );
             tdc.ReadBuffer();
@@ -74,15 +75,14 @@ int main()
             UEvent<V1190B> event;
             while ( tdc.GetEvent( event ) )
             {
-                std::cout << tdc.GetCurrentIndex() << "\n";
                 //std::cout << event.GetStart() << "\n";
                 //for( auto hit = event.cbegin(); hit != event.cend(); ++hit )
                 //{
                 //}
             }
-        //    nEvents += tdc.GetNEventsRead();
+            nEvents += tdc.GetNEventsRead();
             //tdc.WriteSoftwareClear();
-        //}
+        }
 
         pA->Stop();
     }

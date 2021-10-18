@@ -38,7 +38,7 @@ namespace vmepp
             void    WriteCycle( uint32_t address, void* data, CVAddressModifier am, CVDataWidth dw ) override;//throws
             void    BLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, CVDataWidth dw, int *count ) override;//throws
             void    MBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) override;//throws
-            void    FIFOMBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) override;//throws
+            void    FIFOBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, CVDataWidth dw, int *count ) override;//throws
             void    ADOCycle( uint32_t address, CVAddressModifier am ) override;
             void    ADOHCycle( uint32_t address, CVAddressModifier am ) override;
 

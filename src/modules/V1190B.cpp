@@ -48,7 +48,7 @@ namespace vmepp {
         WriteControl( Control_t::COMPENSATION_EN );
         WriteControl( Control_t::TEST_FIFO_EN, false );
         WriteControl( Control_t::READ_COMPENSATION );
-        WriteControl( Control_t::EVENT_FIFO_EN );
+        WriteControl( Control_t::EVENT_FIFO_EN, false );
         WriteControl( Control_t::ETTT_EN );
         WriteControl( Control_t::MB16_ADDR_EN, false );
         PrintMessage(Message_t::INFO, "\tConfiguration of the Control register of " + fName + "...OK");
@@ -407,10 +407,10 @@ namespace vmepp {
         WriteMicro(static_cast<uint16_t>(lsb) & 0x0003);
     }
 
-    void V1190B::WritePairRes(PairRes pairRes) {
-        WriteMicro(Opcode(Command::SET_PAIR_RES));
-        WriteMicro(((static_cast<uint16_t>(pairRes.width) << 8U) |
-                    (static_cast<uint16_t>(pairRes.edgeTime))) & 0x0F07);
+    void V1190B::WritePairRes( PairRes pairRes ) {
+        WriteMicro( Opcode( Command::SET_PAIR_RES) );
+        WriteMicro( ( (static_cast<uint16_t>( pairRes.WIDTH ) << 8U ) |
+                    ( static_cast<uint16_t>( pairRes.EDGE) ) ) & 0x0F07 );
     }
 
     V1190B::TrLeadLSB V1190B::ReadEdgeRes() {
@@ -418,11 +418,11 @@ namespace vmepp {
         return static_cast<TrLeadLSB>(ReadMicro() & 0x0003);
     }
 
-    void V1190B::ReadPairRes(PairRes &pairRes) {
-        WriteMicro(Opcode(Command::READ_RES));
+    void V1190B::ReadPairRes( PairRes &pairRes ) {
+        WriteMicro( Opcode( Command::READ_RES ) );
         uint16_t data = ReadMicro();
-        pairRes.edgeTime = static_cast<ResLeadEdgeTime>(data & 0x0007);
-        pairRes.width = static_cast<ResPulseWidth>((data & 0x0F00) >> 8U);
+        pairRes.EDGE = static_cast<ResLeadEdgeTime>(data & 0x0007);
+        pairRes.WIDTH = static_cast<ResPulseWidth>((data & 0x0F00) >> 8U);
     }
 
     void V1190B::WriteDeadTime(DeadTime time) {

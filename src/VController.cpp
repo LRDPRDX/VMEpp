@@ -114,12 +114,12 @@ namespace vmepp
         }
     }
 
-    void VController::FIFOMBLTReadCycle( uint32_t address, void *buffer, int size, CVAddressModifier am, int *count )
+    void VController::FIFOBLTReadCycle( uint32_t address, void *buffer, int size, CVAddressModifier am, CVDataWidth dw, int *count )
     {
-        auto ec = CAENVME_FIFOMBLTReadCycle( fHandle, address, buffer, size, am, count );
+        auto ec = CAENVME_FIFOBLTReadCycle( fHandle, address, buffer, size, am, dw, count );
         if( ec )
         {
-            throw VException( static_cast<VError_t>(ec), "FIFOMBLTReadCycle -> " + HelpStringCycle( address, am ) );
+            throw VException( static_cast<VError_t>(ec), "FIFOBLTReadCycle -> " + HelpStringCycle( address, am ) );
         }
     }
 

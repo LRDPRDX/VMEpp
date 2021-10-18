@@ -69,11 +69,11 @@ namespace vmepp
         }
     }
 
-    void VSlave::FIFOMBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am )
+    void VSlave::FIFOBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am, CVDataWidth dw )
     {
         if( fMaster != nullptr )
         {
-            fMaster->FIFOMBLTReadCycle( fBaseAddress + address, buffer, size, am, count );
+            fMaster->FIFOBLTReadCycle( fBaseAddress + address, buffer, size, am, dw, count );
         }
         else
         {

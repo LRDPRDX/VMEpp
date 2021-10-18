@@ -43,50 +43,47 @@ void Histo()
         pA->SetStartSource( V2718::Src_t::SW );
         pA->SetStopSource( V2718::Src_t::SW );
         pA->Write();
-        pA->Start();
 
         tdc.WriteDetection( V1190B::EdgeDetect_t::PAIR );
         V1190B::PairRes pRes;
             pRes.EDGE = V1190B::ResLeadEdgeTime::ps100;
             pRes.WIDTH = V1190B::ResPulseWidth::ps400;
         tdc.WritePairRes( pRes );
+        tdc.WriteAcqMode( V1190B::TriggerMode_t::MATCHING );
         tdc.WriteWindowWidth( 20 ); // 500 ns
         tdc.WriteWindowOffset( -10 ); // -250 ns
         tdc.WriteEnableSubTrigger( true );
-        tdc.WriteControl( V1190B::Control_t::EVENT_FIFO_EN, false );
 
-        tdc.WriteAcqMode( V1190B::TriggerMode_t::CONTINUOUS );
-
-        tdc.WriteIRQEvents( 2048 );
+        tdc.WriteIRQEvents( 1000 );
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 
+        //tdc.WriteControl( V1190B::Control_t::EVENT_FIFO_EN, false );
+
+        //tdc.SetReadCycles( 4 );
         tdc.AllocateBuffer();
+
+        pA->Start();
 
         uint32_t nEvents = 0;
         while( nEvents < 20000 )
         {
             controller.IRQEnable( cvIRQ1 );
-            controller.IRQWait( cvIRQ1, 2048 );
+            controller.IRQWait( cvIRQ1, 2000 );
             tdc.ReadBuffer();
             UEvent<V1190B> event;
             while( tdc.GetEvent( event ) )
             {
                 for( auto it = event.cbegin(); it != event.cend(); ++it )
                 {
-                    std::cout << it->value << "\n";
                     float width = 0.4 * (it->GetWidth());
-                    if( width > 0.0 )
-                    {
-                        h->Fill( width );
-                    }
+                    h->Fill( width );
                 }
             }
             c->Modified();
             c->Update();
 
             nEvents += tdc.GetNEventsRead();
-            //tdc.WriteSoftwareClear();
         }
 
         pA->Stop();

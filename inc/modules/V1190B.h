@@ -486,13 +486,13 @@ namespace vmepp {
             };
 
             struct PairRes {
-                ResLeadEdgeTime edgeTime;
-                ResPulseWidth width;
+                ResLeadEdgeTime EDGE;
+                ResPulseWidth WIDTH;
 
-                PairRes(ResLeadEdgeTime edgeTime = ResLeadEdgeTime::ps100,
-                        ResPulseWidth width = ResPulseWidth::ps100) :
-                        edgeTime(edgeTime),
-                        width(width) {}
+                PairRes(ResLeadEdgeTime EDGE = ResLeadEdgeTime::ps100,
+                        ResPulseWidth WIDTH = ResPulseWidth::ps100) :
+                        EDGE( EDGE ),
+                        WIDTH( WIDTH ) {}
             };
 
             void WriteDetection(EdgeDetect_t detect);
