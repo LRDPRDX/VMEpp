@@ -214,7 +214,10 @@ namespace vmepp {
         return ReadRegister16(V1190B_INTERRUPT_VECTOR, V1190B_INTERRUPT_VECTOR_MSK);
     }
 
-    void V1190B::ISR(uint16_t vector) {}
+    void V1190B::ISR(uint16_t vector)
+    {
+        PrintMessage( Message_t::INFO, "V1190B ISR :: " + std::to_string( vector ) );
+    }
 
     /****** RESET ******/
     void V1190B::Reset() {

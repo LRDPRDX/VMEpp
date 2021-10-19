@@ -156,6 +156,7 @@ namespace vmepp
 
     void V895::ReadConfig( UConfig<V895>& cfg )
     {
+        (void)(cfg);
         PrintMessage( Message_t::WARNING, "The configuration cannot be read from V895" );
     }
 
