@@ -1,40 +1,52 @@
 #include "VException.h"
 #include "modules/V2718.h"
+#include "modules/V895.h"
 
 #include <iostream>
 #include <unistd.h>
 #include <cassert>
 
-using namespace vmeplus;
+#include "cereal/archives/xml.hpp"
+
+using namespace vmepp;
 
 int main()
 {
     V2718 controller;
+    V895 desc( 0, 0 );
 
     try
     {
-        controller.Open( 0, 0 );
+        //controller.Open( 0, 0 );
+        V2718::OutputConfig oCfg;
+            oCfg.LED_POLARITY = V2718::LEDPolarity_t::ACTIVE_LOW;
 
-        controller.GetPulser( cvPulserA ).SetSquare( 10, 50 );
-        controller.GetPulser( cvPulserA ).SetNPulses( 88 );
-        controller.GetPulser( cvPulserA ).SetStartSource( cvManualSW );
-        controller.GetPulser( cvPulserA ).SetStopSource( cvManualSW );
-        controller.GetPulser( cvPulserA ).Write();
+        //controller.WriteOutputConfig( V2718::Out_t::OUT0, oCfg );
 
-        controller.GetPulser( cvPulserB ).SetSquare( 10000, 20 );
-        controller.GetPulser( cvPulserB ).SetNPulses( 200 );
-        controller.GetPulser( cvPulserB ).SetStartSource( cvManualSW );
-        controller.GetPulser( cvPulserB ).SetStopSource( cvManualSW );
-        controller.GetPulser( cvPulserB ).Write();
+        V2718::Pulser* pA = controller.GetPulser( V2718::Pulser_t::A );
+        V2718::Pulser* pB = controller.GetPulser( V2718::Pulser_t::B );
+
+        pA->SetSquare( 11, 50 );
+        pA->SetNPulses( 88 );
+        pA->SetStartSource( V2718::Src_t::SW );
+        pA->SetStopSource( V2718::Src_t::SW );
+        //controller.GetPulser( cvPulserA ).Write();
+
+        pB->SetSquare( 10000, 23 );
+        pB->SetNPulses( 240 );
+        pB->SetStartSource( V2718::Src_t::SW );
+        pB->SetStopSource( V2718::Src_t::SW );
+        //controller.GetPulser( cvPulserB ).Write();
 
         UConfig<V2718> cfg;
-        controller.ReadConfig( cfg );
 
-        //WriteConfigToFile( cfg, "config.json" );
-        //WriteConfigToFile( cfg, "/usr/config.json" );
+        WriteConfigToFile<V2718, cereal::XMLOutputArchive>( cfg, "config.xml" );
 
-        UConfig<V2718> cfg2;
-        ReadConfigFromFile( cfg2, "config.json" );
+        //UConfig<V2718> cfg2;
+        //ReadConfigFromFile( cfg2, "config.json" );
+
+        //UConfig<V895> cfgV895;
+        //WriteConfigToFile( cfgV895, "config2.json" );
     }
     catch( const VException& e )
     {

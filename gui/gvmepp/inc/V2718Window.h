@@ -20,7 +20,7 @@ class QLineEdit;
 
 class Display;
 
-using namespace vmeplus;
+using namespace vmepp;
 
 class V2718Window : public DeviceWindow
 {
@@ -81,8 +81,8 @@ class V2718Window : public DeviceWindow
         void Connect( short link, short conet );
 
         void UpdateDisplay();
-        void StartPulser( CVPulserSelect p );
-        void StopPulser( CVPulserSelect p );
+        void StartPulser( V2718::Pulser_t p );
+        void StopPulser( V2718::Pulser_t p );
         void StartScaler();
         void StopScaler();
         void ResetScaler();
@@ -102,7 +102,7 @@ class Display : public QWidget
     Q_OBJECT
 
     protected :
-        static const size_t N_LED = 24; 
+        static const size_t N_LED = 24;
         static const std::array<QString, N_LED> fLEDNames;
         static size_t GetLED( const QString& name );
 

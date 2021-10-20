@@ -13,14 +13,14 @@ class QTabWidget;
 class QVBoxLayout;
 class QCheckBox;
 
-using namespace vmeplus;
+using namespace vmepp;
 
 class V895Window : public SlaveWindow
 {
     Q_OBJECT
 
     protected :
-        static constexpr uint8_t N_CH = vmeplus::V895::GetChNumber(); // 16 channels
+        static constexpr uint8_t N_CH = V895::GetChNumber(); // 16 channels
         static constexpr uint8_t N_GROUPS = 2;
         static constexpr uint8_t N_CH_IN_GROUP = N_CH / N_GROUPS; // 8 channels in group
 

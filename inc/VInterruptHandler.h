@@ -2,23 +2,23 @@
 #define V_PLUS_VINTERRUPT_HANDLER_H
 
 #include "CAENVMEtypes.h"
+#include "VModule.h"
+
 #include <cstdint>
 #include <vector>
 
-namespace vmeplus
+namespace vmepp
 {
     class VSlaveInterrupter;
 
-    class VInterruptHandler
+    class VInterruptHandler : virtual public VModule
     {
         protected :
             std::vector<VSlaveInterrupter*>     fInterrupters;
 
         public :
-            VInterruptHandler();
-            VInterruptHandler( const VInterruptHandler &other ) = delete;
-            VInterruptHandler& operator=( const VInterruptHandler &other ) = delete;
-            virtual ~VInterruptHandler();
+            VInterruptHandler() : fInterrupters( 0 ) { };
+            virtual ~VInterruptHandler() = default;
 
         public :
             bool    RegisterInterrupter( VSlaveInterrupter *interrupter );

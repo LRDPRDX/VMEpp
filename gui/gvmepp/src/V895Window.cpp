@@ -25,7 +25,8 @@
 #include "VException.h"
 #include "modules/V895.h"
 
-using namespace vmeplus;
+using namespace vmepp;
+
 
 V895Window::V895Window( uint32_t address, V2718Window *parent ) :
     SlaveWindow( parent )
@@ -187,6 +188,6 @@ QVariant V895Window::CollectConfig()
     cfg.MAJORITY = fMajLevelSpin->value();
 
     QVariant qv; qv.setValue( cfg );
-        
+
     return qv;
 }

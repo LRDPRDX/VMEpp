@@ -5,14 +5,13 @@
 #include <iomanip>
 
 
-namespace vmeplus
+namespace vmepp
 {
-    VSlave::VSlave( std::string name, uint32_t baseAddress, uint32_t range ) : 
+    VSlave::VSlave( uint32_t baseAddress, uint32_t range ) :
         fMaster( nullptr ),
         fBaseAddress( baseAddress ),
         fRange( range ),
 
-        fName( name ),
         fFirmware( "N/A" ),
         fSerial( 0 )
     {};
@@ -26,7 +25,7 @@ namespace vmeplus
     {
         if( fMaster != nullptr )
         {
-            fMaster->ReadCycle( fBaseAddress + address, data, am, dw ); 
+            fMaster->ReadCycle( fBaseAddress + address, data, am, dw );
         }
         else
         {
@@ -86,7 +85,7 @@ namespace vmeplus
     {
         uint16_t data;
         ReadRequest( address, &data );//D16 by default
-        return (data & msk); 
+        return (data & msk);
     }
 
     void VSlave::WriteRegister16( uint32_t address, uint16_t data, uint16_t msk )
@@ -140,8 +139,8 @@ namespace vmeplus
 
     void VSlave::Reset()
     {
-        PrintMessage( Message_t::INFO, "Resetting " + fName + "...\n" ); 
-        PrintMessage( Message_t::INFO, "Resetting " + fName + "...OK\n" );
+        PrintMessage( Message_t::INFO, "Resetting ...\n" );
+        PrintMessage( Message_t::INFO, "Resetting...OK\n" );
     }
 
     void VSlave::Print() const
@@ -151,7 +150,6 @@ namespace vmeplus
         std::cout << std::right << "    /" << std::setfill(' ') << std::setw(60) << " " <<                                                                        "/-|\n";
         std::cout << std::right << "   |" << std::setfill('=') << std::setw(60) << "=" <<                                                                        "/- |\n";
         std::cout << std::setfill(' ');
-        std::cout << std::right << "   |" << std::setw(30) << fName << std::setw(30) << " " <<                                                                  "|- |\n";
         std::cout << std::right << "   |" << std::setw(60) << " " <<                                                                                            "|- |\n";
         std::cout << std::right << "   |" << std::setw(60) << " " <<                                                                                            "|- |\n";
         std::cout << std::right << "   |" << std::setw(60) << " " <<                                                                                            "|- |\n";
@@ -177,7 +175,7 @@ namespace vmeplus
         std::cout << "\n";
     }
 
-    void VSlave::Release()
+    void VSlave::Release() noexcept( true )
     {
         if( fMaster != nullptr )
         {

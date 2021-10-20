@@ -14,6 +14,8 @@
 #include "Dialogs.h"
 #include "Style.h"
 
+using namespace vmepp;
+
 
 DeviceWindow::DeviceWindow( QWidget *parent ) :
     QMainWindow( parent )

@@ -5,18 +5,17 @@
 #include "modules/V895.h"
 #include "modules/V6533N.h"
 
-using namespace vmeplus;
-
-/* CAENVMElib types */
-Q_DECLARE_METATYPE(CVIOPolarity)   
-Q_DECLARE_METATYPE(CVLEDPolarity)   
-Q_DECLARE_METATYPE(CVIOSources)   
+using namespace vmepp;
 
 /* VMEpp types */
 Q_DECLARE_METATYPE(UConfig<V2718>)
 Q_DECLARE_METATYPE(UConfig<V895>)
 Q_DECLARE_METATYPE(UConfig<V6533N>)
-Q_DECLARE_METATYPE(V6533N::IMonRange_t)   
+Q_DECLARE_METATYPE(V6533N::IMonRange_t)
+
+Q_DECLARE_METATYPE(V2718::Polarity_t)
+Q_DECLARE_METATYPE(V2718::LEDPolarity_t)
+Q_DECLARE_METATYPE(V2718::Src_t)
 
 
 #include <QComboBox>

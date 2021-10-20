@@ -234,7 +234,7 @@
 
 #include <string>
 
-namespace vmeplus
+namespace vmepp
 {
     class V1785N;
 
@@ -312,13 +312,12 @@ namespace vmeplus
             void            PrintStatus();
 
             //Data acquisition
-            void            AllocateBuffer() override;
-            //void            FreeBuffer() override;
-            uint32_t        ReadBuffer() override;
-            //void            ScanBuffer() override;
-            //bool            GetEvent( VEvent *event ) override;
             bool            GetEventAt( uint32_t index, UEvent<V1785N> &event ) const override;
+            uint32_t        GetBufferAddress() const override { return 0; }
+
             void            ClearData();
+            void            EnableZeroSupp( bool status = true );
+            void            EnableOverSupp( bool status = true );
 
         //State methods 
         public :
@@ -338,7 +337,10 @@ namespace vmeplus
         public :
             void    ReadConfig( UConfig<V1785N>& config ) override;
             void    WriteConfig( const UConfig<V1785N>& config ) override;
-    };
+    };// V1785N
+
+    template<>
+    const std::string UConfigurable<V1785N>::fName;
 
     //****** UEvent<V1785N> Part ******
     template<>
@@ -400,11 +402,10 @@ namespace vmeplus
             V1785N::Range_t GetChannelRange( uint16_t i ) const
             {
                 i %= (V1785N_N_CHANNELS * 2U);
-                return (fData[i] & V1785N_WORD_TYPE_DT_RG_MSK) ? V1785N::Range_t::HIGH : V1785N::Range_t::LOW;
+                return (fData[i] & V1785N_WORD_TYPE_DT_RG_MSK) ? V1785N::Range_t::LOW : V1785N::Range_t::HIGH;
             }
 
             friend class V1785N;
-    };
-
+    };// UEvent<V1785N>
 }
 #endif

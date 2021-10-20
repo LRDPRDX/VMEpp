@@ -10,7 +10,7 @@ class QComboBox;
 class QSpinBox;
 class QTextEdit;
 
-namespace vmeplus
+namespace vmepp
 {
     class VException;
 }
@@ -63,5 +63,5 @@ class ErrorMessageBox : public QMessageBox
     Q_OBJECT
 
     public :
-        ErrorMessageBox( const vmeplus::VException& e, QWidget *parent = nullptr );
+        ErrorMessageBox( const vmepp::VException& e, QWidget *parent = nullptr );
 };

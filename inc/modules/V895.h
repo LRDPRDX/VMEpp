@@ -61,7 +61,7 @@
 #include "VSlave.h"
 #include "UConfigurable.h"
 
-namespace vmeplus
+namespace vmepp
 {
     class V895;
 
@@ -83,7 +83,7 @@ namespace vmeplus
 
         public :
             V895( uint32_t baseAddress, uint32_t range = V895_LUB );
-            virtual         ~V895();
+            ~V895() override = default;
 
         public :
             //Channel configuration
@@ -127,6 +127,9 @@ namespace vmeplus
     };
 
     template<>
+    const std::string UConfigurable<V895>::fName;
+
+    template<>
     struct UConfig<V895>
     {
         std::array<uint8_t, V895::GetChNumber()>    THRESHOLDS;
@@ -144,13 +147,13 @@ namespace vmeplus
         {
         }
 
-        template <class Archive>
-        void serialize( Archive& ar )
+        template <class TArchive>
+        void serialize( TArchive& ar )
         {
             ar( cereal::make_nvp( "thresholds", THRESHOLDS ),
                 cereal::make_nvp( "majority", MAJORITY ),
-                cereal::make_nvp( "width high", WIDTH_H ),
-                cereal::make_nvp( "width low", WIDTH_L ),
+                cereal::make_nvp( "width_high", WIDTH_H ),
+                cereal::make_nvp( "width_low", WIDTH_L ),
                 cereal::make_nvp( "mask", MASK ) );
         }
     };

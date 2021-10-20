@@ -5,19 +5,19 @@
 #include <cmath>
 #include <iomanip>
 
-namespace vmeplus
+namespace vmepp
 {
     V895::V895( uint32_t baseAddress, uint32_t range ) :
-        VSlave( "V895", baseAddress, range ),
+        VSlave( baseAddress, range ),
+
         fVersionSerial( 0 ),
         fManMType( 0 ),
         fFixedCode( 0 )
     {
     }
 
-    V895::~V895()
-    {
-    }
+    template<>
+    const std::string UConfigurable<V895>::fName = "V895";
 
     void V895::Initialize()
     {
@@ -156,6 +156,7 @@ namespace vmeplus
 
     void V895::ReadConfig( UConfig<V895>& cfg )
     {
+        (void)(cfg);
         PrintMessage( Message_t::WARNING, "The configuration cannot be read from V895" );
     }
 

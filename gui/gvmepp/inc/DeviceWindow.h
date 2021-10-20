@@ -12,7 +12,7 @@ class SFrame;
 class QAction;
 class QMenu;
 
-using namespace vmeplus;
+using namespace vmepp;
 
 
 class DeviceWindow : public QMainWindow

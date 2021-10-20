@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 typedef typename V1190B::IError_t Err_t;
 typedef typename V1190B::MaxHitsPerEvent NHits;

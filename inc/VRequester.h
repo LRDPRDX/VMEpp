@@ -3,15 +3,17 @@
 
 #include <CAENVMEtypes.h>
 
-namespace vmeplus
+#include "VModule.h"
+
+namespace vmepp
 {
-    class VRequester
+    class VRequester : virtual public VModule
     {
         public :
-            VRequester();
+            VRequester() = default;
             VRequester( const VRequester &other ) = delete;
             VRequester& operator=( const VRequester &other ) = delete;
-            virtual ~VRequester();
+            virtual ~VRequester() = default;
 
         public :
             virtual void                WriteRequesterType( CVRequesterTypes type ) = 0;

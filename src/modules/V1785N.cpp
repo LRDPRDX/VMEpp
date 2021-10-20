@@ -4,8 +4,9 @@
 #include <iostream>
 #include <cstring>
 #include <iomanip>
+#include <string>
 
-namespace vmeplus
+namespace vmepp
 {
 
     UEvent<V1785N>::UEvent() :
@@ -30,9 +31,9 @@ namespace vmeplus
 
     //****** V1785N Part ******
     V1785N::V1785N( uint32_t baseAddress, uint32_t range ) :
-        VSlave( "V1785N", baseAddress, range ),
-        VSlaveAcquisitor( "V1785N", baseAddress, range ),
-        VSlaveInterrupter( "V1785N", baseAddress, range ),
+        VSlave( baseAddress, range ),
+        VSlaveAcquisitor( baseAddress, range ),
+        VSlaveInterrupter( baseAddress, range ),
 
         fFirmwareRevision( "N/A" ),
         fOUI( 0 ),
@@ -41,6 +42,9 @@ namespace vmeplus
         fRevision( 0 )
     {
     }
+
+    template<>
+    const std::string UConfigurable<V1785N>::fName = "V1785N";
 
     void V1785N::Initialize()
     {
@@ -387,52 +391,19 @@ namespace vmeplus
 
     void V1785N::ISR( uint16_t vector )
     {
-        PrintMessage( Message_t::INFO, "V1785N ISR" );
-        return;
+        PrintMessage( Message_t::INFO, "V1785N ISR :: " + std::to_string( vector ) );
     }
     //****** INTERRUPTS - ******
 
     //****** DATA ACQUISITION + ******
-    void V1785N::AllocateBuffer()
-    {
-        ResetIndex();
-        if( fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "Trying to reallocate buffer (not nullptr)" );
-        }
-        try
-        {
-            fBuffer.reset( new uint32_t[V1785N_MAX_MBLT_SIZE / 4] );
-        }
-        catch( std::bad_alloc &e )
-        {
-            fBuffer.reset();
-            throw VException( VError_t::vBuffAllocFailed, "from V1785N::AllocateBuffer" );
-        }
-    }
-
-
-    uint32_t V1785N::ReadBuffer()
-    {
-        ResetIndex();
-        if( !fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "Read buffer : buffer is nullptr. Forgot to allocate?" );
-            return 0;
-        }
-        int count;
-        MBLTReadRequest( V1785N_OUTPUT_BUFFER_START, fBuffer.get(), V1785N_MAX_MBLT_SIZE, &count );
-        return (fReadBytes = (count > 0) ? count : 0);
-    }
 
     bool V1785N::GetEventAt( uint32_t index, UEvent<V1785N> &event ) const
     {
         if( !fBuffer )
         {
-            PrintMessage( Message_t::WARNING, "GetEventAt : buffer is nullptr. Forgot to allocate?" );
+            PrintMessage( Message_t::WARNING, "V1785N::GetEventAt : buffer is nullptr. Forgot to allocate?" );
             return false;
         }
-
         //Skip invalid data if present
         for( ; index < fReadBytes / 4; index++ )
         {
@@ -487,13 +458,39 @@ namespace vmeplus
         SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_CLR_DATA_BIT );
         ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_CLR_DATA_BIT );
     }
+
+    void V1785N::EnableZeroSupp( bool status )
+    {
+        if( status )
+        {
+            ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_LW_THR_PRG_BIT );
+        }
+        else
+        {
+            SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_LW_THR_PRG_BIT );
+        }
+    }
+
+    void V1785N::EnableOverSupp( bool status )
+    {
+        if( status )
+        {
+            ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
+        }
+        else
+        {
+            SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
+        }
+    }
     //****** DATA ACQUISITION - ******
     //
     void V1785N::ReadConfig( UConfig<V1785N>& config )
     {
+        (void)(config);
     }
 
     void V1785N::WriteConfig( const UConfig<V1785N>& config )
     {
+        (void)(config);
     }
 }

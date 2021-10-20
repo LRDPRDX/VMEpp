@@ -9,27 +9,36 @@
 #include "cereal/archives/json.hpp"
 
 
-namespace vmeplus
+namespace vmepp
 {
-    template <typename T>
+    template <typename TModuleName>
     struct UConfig;
 
-    template <typename T>
+    template <typename TModuleName>
     class UConfigurable
     {
+        protected :
+            static const std::string  fName;
+
         public :
-            virtual void ReadConfig( UConfig<T>& cfg ) = 0;
-            virtual void WriteConfig( const UConfig<T>& cfg ) = 0;
+            virtual void ReadConfig( UConfig<TModuleName>& cfg ) = 0;
+            virtual void WriteConfig( const UConfig<TModuleName>& cfg ) = 0;
+
+        public :
+            static const std::string&  GetName() { return fName; }
     };
 
-    template <typename T, typename Archive = typename cereal::JSONOutputArchive>
-    void WriteConfigToFile( const UConfig<T>& cfg, const std::string& path )
+    template<typename TModuleName>
+    const std::string UConfigurable<TModuleName>::fName = "Unknown";
+
+    template <typename TModuleName, typename TArchive = typename cereal::JSONOutputArchive>
+    void WriteConfigToFile( const UConfig<TModuleName>& cfg, const std::string& path )
     {
         try
         {
             std::ofstream os( path );
-            Archive archive( os );
-            archive( CEREAL_NVP( cfg ) );
+            TArchive archive( os );
+            archive( cereal::make_nvp( TModuleName::GetName() , cfg ) );
         }
         catch( const cereal::Exception& e )
         {
@@ -37,14 +46,14 @@ namespace vmeplus
         }
     }
 
-    template <typename T, typename Archive = typename cereal::JSONInputArchive>
-    void ReadConfigFromFile( UConfig<T>& cfg, const std::string& path )
+    template <typename TModuleName, typename TArchive = typename cereal::JSONInputArchive>
+    void ReadConfigFromFile( UConfig<TModuleName>& cfg, const std::string& path )
     {
         try
         {
             std::ifstream is( path );
-            Archive archive( is );
-            archive( CEREAL_NVP( cfg ) );
+            TArchive archive( is );
+            archive( cereal::make_nvp( TModuleName::GetName() , cfg ) );
         }
         catch( const cereal::Exception& e )
         {

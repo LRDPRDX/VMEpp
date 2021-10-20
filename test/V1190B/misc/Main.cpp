@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 //typedef typename V1190B::ChannelPattern Pat;
 typedef typename V1190B::TDC Tdc;

@@ -5,19 +5,19 @@
 #include <iostream>
 #include <cassert>
 
-using namespace vmeplus;
+using namespace vmepp;
 
-typedef typename V1190B::AdjustOffset AdjustOffset; 
+typedef typename V1190B::AdjustOffset AdjustOffset;
 
 int main()
 {
     V2718 controller;
     V1190B tdc(0x20080000);
-    
+
     try
     {
         std::cout << "Test begins...\n";
-        controller.Open( 0, 0 ); 
+        controller.Open( 0, 0 );
         controller.RegisterSlave( &tdc );
         controller.Initialize();
 

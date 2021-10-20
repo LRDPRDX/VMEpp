@@ -69,7 +69,7 @@
 #include <array>
 #include <string>
 
-namespace vmeplus
+namespace vmepp
 {
     class V6533N : public VSlave, public UConfigurable<V6533N>
     {
@@ -90,7 +90,7 @@ namespace vmeplus
 
         public :
             V6533N( uint32_t baseAddress, uint32_t range = V6533N_LUB );
-            virtual         ~V6533N();
+            ~V6533N() override = default;
 
         public :
             enum class      Polarity_t { NEGATIVE = 0, POSITIVE = 1 };
@@ -177,7 +177,10 @@ namespace vmeplus
             void    WriteConfig( const UConfig<V6533N>& config ) override;
 
             V6533N::MonitorData ReadMonitor();
-    };
+    };// V6533N
+
+    template<>
+    const std::string UConfigurable<V6533N>::fName;
 
     template<>
     struct UConfig<V6533N>
@@ -205,28 +208,28 @@ namespace vmeplus
             {
             }
 
-            template <class Archive>
-            void serialize( Archive& ar )
+            template <class TArchive>
+            void serialize( TArchive& ar )
             {
-                ar( cereal::make_nvp( "voltage set", V_SET ),
-                    cereal::make_nvp( "current set", I_SET ),
-                    cereal::make_nvp( "trip time", TRIP_TIME ),
-                    cereal::make_nvp( "sw max voltage", SW_MAX ),
-                    cereal::make_nvp( "ramp up", RAMP_UP ),
-                    cereal::make_nvp( "ramp down", RAMP_DOWN ),
-                    cereal::make_nvp( "power down", PW_DOWN ),
-                    cereal::make_nvp( "current mon range", IMON_RANGE ) );
+                ar( cereal::make_nvp( "voltage_set", V_SET ),
+                    cereal::make_nvp( "current_set", I_SET ),
+                    cereal::make_nvp( "trip_time", TRIP_TIME ),
+                    cereal::make_nvp( "sw_max_voltage", SW_MAX ),
+                    cereal::make_nvp( "ramp_up", RAMP_UP ),
+                    cereal::make_nvp( "ramp_down", RAMP_DOWN ),
+                    cereal::make_nvp( "power_down", PW_DOWN ),
+                    cereal::make_nvp( "current_mon_range", IMON_RANGE ) );
             }
         };
 
         std::array<Channel, V6533N::GetChNumber()> CHANNELS;
 
-        template <class Archive>
-        void serialize( Archive& ar )
+        template <class TArchive>
+        void serialize( TArchive& ar )
         {
             ar( cereal::make_nvp( "channels", CHANNELS ) );
         }
-    };
+    };// UConfig<V6533N>
 }
 
 #endif

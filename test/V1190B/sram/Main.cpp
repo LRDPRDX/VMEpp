@@ -7,7 +7,7 @@
 #include <vector>
 #include <fstream>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 int main()
 {

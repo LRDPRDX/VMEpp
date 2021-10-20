@@ -3,7 +3,7 @@
 
 #include "VSlave.h"
 
-namespace vmeplus
+namespace vmepp
 {
     class VInterruptHandler;
     class VSlave;
@@ -11,8 +11,8 @@ namespace vmeplus
     class VSlaveInterrupter : virtual public VSlave
     {
         public :
-            VSlaveInterrupter( std::string name, uint32_t address, uint32_t range );
-            virtual ~VSlaveInterrupter();
+            VSlaveInterrupter( uint32_t address, uint32_t range );
+            virtual ~VSlaveInterrupter() = default;
 
         public :
             virtual void        WriteIRQLevel( uint16_t level ) = 0;

@@ -31,6 +31,8 @@
 
 #include "VException.h"
 
+using namespace vmepp;
+
 
 V2718Window::V2718Window( QWidget *parent ) :
     DeviceWindow( parent )
@@ -147,7 +149,7 @@ void V2718Window::CreateIOTab()
                 dumCombo->addItem( "Coincidence", cvCoincidence );
                 dumCombo->addItem( "P & S", cvMiscSignals );
                 dumCombo->addItem( "SW", cvManualSW );
-            dumPolicy = dumCombo->sizePolicy(); 
+            dumPolicy = dumCombo->sizePolicy();
                 dumPolicy.setRetainSizeWhenHidden( true );
             dumCombo->setSizePolicy( dumPolicy );
             dumCombo->hide();
@@ -221,10 +223,10 @@ void V2718Window::CreatePulserTab()
             fPulStopCombo[i]->addItem( "SW", cvManualSW );
             fPulStopCombo[i]->addItem( "Input " + QString::number( i ), (i == 0) ? cvInputSrc0 : cvInputSrc1 );
 
-        SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
+        SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
         QHBoxLayout *buttonLayout = new QHBoxLayout();
 
-        fPulStartButton[i] = new SButton( "START", SColor_t::VIOLET ); 
+        fPulStartButton[i] = new SButton( "START", SColor_t::VIOLET );
             connect( this, &V2718Window::Connected, fPulStartButton[i], &SButton::setEnabled );
             connect( fPulStartButton[i], &SButton::clicked, this, &V2718Window::PulserSlot );
         fPulStopButton[i] = new SButton( "STOP", SColor_t::RED );
@@ -258,10 +260,10 @@ void V2718Window::CreatePulserTab()
     QLabel *limitLabel = new QLabel( "Limit:" );
     fScalLimitSpin = new QSpinBox();
         fScalLimitSpin->setRange( 0, 1023 );
-    fScalAutoCheck = new QCheckBox( "Auto reset" );    
+    fScalAutoCheck = new QCheckBox( "Auto reset" );
 
 
-    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET ); 
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
     fScalGateButton = new SButton( "GATE", SColor_t::VIOLET );
@@ -378,22 +380,22 @@ void V2718Window::PulserSlot()
     {
         if( obj == fPulStartButton[i] )
         {
-            StartPulser( (i == 0) ? cvPulserA : cvPulserB );
+            StartPulser( (i == 0) ? V2718::Pulser_t::A : V2718::Pulser_t::B );
             break;
         }
         else if( obj == fPulStopButton[i] )
         {
-            StopPulser( (i == 0) ? cvPulserA : cvPulserB );
+            StopPulser( (i == 0) ? V2718::Pulser_t::A : V2718::Pulser_t::B );
             break;
         }
     }
 }
 
-void V2718Window::StartPulser( CVPulserSelect p )
+void V2718Window::StartPulser( V2718::Pulser_t p )
 {
     try
     {
-        fController.GetPulser( p ).Start();
+        fController.GetPulser( p )->Start();
     }
     catch( const VException& e )
     {
@@ -401,11 +403,11 @@ void V2718Window::StartPulser( CVPulserSelect p )
     }
 }
 
-void V2718Window::StopPulser( CVPulserSelect p )
+void V2718Window::StopPulser( V2718::Pulser_t p )
 {
     try
     {
-        fController.GetPulser( p ).Stop();
+        fController.GetPulser( p )->Stop();
     }
     catch( const VException& e )
     {
@@ -417,7 +419,7 @@ void V2718Window::StartScaler()
 {
     try
     {
-        fController.GetScaler().EnableGate( true );
+        fController.GetScaler()->EnableGate( true );
     }
     catch( const VException& e )
     {
@@ -429,7 +431,7 @@ void V2718Window::StopScaler()
 {
     try
     {
-        fController.GetScaler().EnableGate( false );
+        fController.GetScaler()->EnableGate( false );
     }
     catch( const VException& e )
     {
@@ -441,7 +443,7 @@ void V2718Window::ResetScaler()
 {
     try
     {
-        fController.GetScaler().Reset();
+        fController.GetScaler()->Reset();
     }
     catch( const VException& e )
     {
@@ -456,15 +458,15 @@ QVariant V2718Window::CollectConfig()
     // In's and Out's
     for( uint8_t i = 0; i < N_INS; ++i )
     {
-        cfg.INPUTS.at( i ).POLARITY     = fInPolCombo[i]->currentData().value<CVIOPolarity>();
-        cfg.INPUTS.at( i ).LED_POLARITY = fInLedCombo[i]->currentData().value<CVLEDPolarity>();
+        cfg.INPUTS.at( i ).POLARITY     = fInPolCombo[i]->currentData().value<V2718::Polarity_t>();
+        cfg.INPUTS.at( i ).LED_POLARITY = fInLedCombo[i]->currentData().value<V2718::LEDPolarity_t>();
     }
 
     for( uint8_t i = 0; i < N_OUTS; ++i )
     {
-        cfg.OUTPUTS.at( i ).POLARITY        = fOutPolCombo[i]->currentData().value<CVIOPolarity>();
-        cfg.OUTPUTS.at( i ).LED_POLARITY    = fOutLedCombo[i]->currentData().value<CVLEDPolarity>();
-        cfg.OUTPUTS.at( i ).SOURCE          = fOutSrcCombo[i]->currentData().value<CVIOSources>();
+        cfg.OUTPUTS.at( i ).POLARITY        = fOutPolCombo[i]->currentData().value<V2718::Polarity_t>();
+        cfg.OUTPUTS.at( i ).LED_POLARITY    = fOutLedCombo[i]->currentData().value<V2718::LEDPolarity_t>();
+        cfg.OUTPUTS.at( i ).SOURCE          = fOutSrcCombo[i]->currentData().value<V2718::Src_t>();
     }
 
     // Pulsers
@@ -474,14 +476,14 @@ QVariant V2718Window::CollectConfig()
         pulser.FREQUENCY    = fPulFreqSpin[i]->value();
         pulser.DUTY         = fPulDutySpin[i]->value();
         pulser.N_PULSES     = fPulNSpin[i]->value();
-        pulser.START_SOURCE = fPulStartCombo[i]->currentData().value<CVIOSources>();
-        pulser.STOP_SOURCE  = fPulStopCombo[i]->currentData().value<CVIOSources>();
+        pulser.START_SOURCE = fPulStartCombo[i]->currentData().value<V2718::Src_t>();
+        pulser.STOP_SOURCE  = fPulStopCombo[i]->currentData().value<V2718::Src_t>();
     }
 
     // Scaler
-    cfg.SCALER.GATE_SOURCE  = fScalGateCombo->currentData().value<CVIOSources>();
-    cfg.SCALER.STOP_SOURCE  = fScalResetCombo->currentData().value<CVIOSources>();
-    cfg.SCALER.HIT_SOURCE   = fScalHitCombo->currentData().value<CVIOSources>();
+    cfg.SCALER.GATE_SOURCE  = fScalGateCombo->currentData().value<V2718::Src_t>();
+    cfg.SCALER.STOP_SOURCE  = fScalResetCombo->currentData().value<V2718::Src_t>();
+    cfg.SCALER.HIT_SOURCE   = fScalHitCombo->currentData().value<V2718::Src_t>();
     cfg.SCALER.LIMIT        = fScalLimitSpin->value();
     cfg.SCALER.AUTO_RESET   = fScalAutoCheck->isChecked();
 
@@ -510,7 +512,7 @@ void V2718Window::SpreadConfig( const QVariant& qConfig )
     // Pulsers
     for( uint8_t i = 0; i < N_PULSERS; ++i )
     {
-        const UConfig<V2718>::Pulser& pulser = (i == cvPulserA) ? cfg.PULSER_A : cfg.PULSER_B;
+        const UConfig<V2718>::Pulser& pulser = (i == static_cast<uint8_t>(V2718::Pulser_t::A)) ? cfg.PULSER_A : cfg.PULSER_B;
 
         fPulFreqSpin[i]->setValue( pulser.FREQUENCY );
         fPulDutySpin[i]->setValue( pulser.DUTY );
@@ -615,7 +617,7 @@ const std::array<QString, Display::N_LED> Display::fLEDNames = {"AM0", "AM1", "A
                                                                 "AS", "IACK", "WRITE", "LWORD",
                                                                 "IRQ1", "IRQ2", "IRQ3", "IRQ4", "IRQ5",
                                                                 "IRQ6", "IRQ7",
-                                                                "BREQ", "BGNT", "SRES", "DTK", "BERR" }; 
+                                                                "BREQ", "BGNT", "SRES", "DTK", "BERR" };
 
 Display::Display( V2718Window *controller, QWidget *parent ) :
     QWidget( parent ),

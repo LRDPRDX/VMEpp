@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <cassert>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 int main()
 {
@@ -19,10 +19,10 @@ int main()
         std::ofstream file( "./data.dat" );
         for( uint32_t freq = 1; freq < 10000000; ++freq )
         {
-            V2718Pulser& pulser = controller.GetPulser( cvPulserA );
-            if( pulser.SetSquare( freq, 50 ) )
+            V2718::Pulser* pulser = controller.GetPulser( V2718::Pulser_t::A );
+            if( pulser->SetSquare( freq, 50 ) )
             {
-                double error = ((double)freq - pulser.GetFrequencyReal()) / (double)freq;
+                double error = ((double)freq - pulser->GetFrequencyReal()) / (double)freq;
                 file << freq << "\t" << error << "\n";
             }
             else

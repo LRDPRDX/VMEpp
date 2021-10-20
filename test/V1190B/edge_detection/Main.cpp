@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 typedef typename V1190B::EdgeDetect_t       Edge_t;
 typedef typename V1190B::TrLeadLSB          EdgeRes;

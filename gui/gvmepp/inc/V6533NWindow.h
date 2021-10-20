@@ -20,7 +20,7 @@ class SLedIndicator;
 
 class V6533NMonitor;
 
-using namespace vmeplus;
+using namespace vmepp;
 
 
 class V6533NWindow : public SlaveWindow

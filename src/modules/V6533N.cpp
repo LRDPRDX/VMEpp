@@ -4,11 +4,13 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <cmath>
 
-namespace vmeplus
+namespace vmepp
 {
     V6533N::V6533N( uint32_t baseAddress, uint32_t range ) :
-        VSlave( "V6533N", baseAddress, range ),
+        VSlave(  baseAddress, range ),
+
         fChannels( 0 ),
         fDescription( "N/A" ),
         fModel( "N/A" ),
@@ -16,9 +18,8 @@ namespace vmeplus
     {
     }
 
-    V6533N::~V6533N()
-    {
-    }
+    template<>
+    const std::string UConfigurable<V6533N>::fName = "V6533N";
 
     void V6533N::Initialize()
     {
@@ -81,7 +82,7 @@ namespace vmeplus
 
     void V6533N::WriteVoltage( uint16_t ch, float voltage )
     {
-        uint16_t rawV = 10 * voltage;
+        uint16_t rawV = std::round( 10 * voltage );
         WriteRegister16( V6533N_VSET(ch % fChNumber), rawV );
     }
 
@@ -145,7 +146,7 @@ namespace vmeplus
 
     void V6533N::WriteTripTime( uint16_t ch, float ttime )
     {
-        uint16_t raw_data = ttime * 10;
+        uint16_t raw_data = std::round( ttime * 10 );
         WriteRegister16( V6533N_TRIP_TIME(ch % fChNumber), raw_data );
     }
 

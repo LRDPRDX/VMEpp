@@ -6,7 +6,7 @@
 #include <cassert>
 #include <vector>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 typedef typename V1190B::MicroFirmware MF;
 

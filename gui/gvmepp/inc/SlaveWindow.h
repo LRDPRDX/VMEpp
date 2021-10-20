@@ -13,7 +13,7 @@ class SlaveWindow : public DeviceWindow
 
         void CreateMenu();
 
-    protected : 
+    protected :
         VSlave          *fDevice;
 
     protected :

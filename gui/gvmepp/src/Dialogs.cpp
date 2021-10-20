@@ -13,6 +13,7 @@
 #include "V895Window.h"
 #include "V6533NWindow.h"
 
+using namespace vmepp;
 
 Connection::Connection( V2718Window *parent ) :
     QDialog( parent ),
@@ -71,7 +72,7 @@ void Connection::Connect()
         fParent->Connect( fLinkSpin->value(), fConetSpin->value() );
         this->close();
     }
-    catch( const vmeplus::VException& e )
+    catch( const VException& e )
     {
         ErrorMessageBox* msg = new ErrorMessageBox( e, this );
         msg->show();
@@ -165,7 +166,7 @@ void DeviceDialog::Cancel()
 /*****************************/
 /****** ErrorMessageBox ******/
 /*****************************/
-ErrorMessageBox::ErrorMessageBox( const vmeplus::VException& e, QWidget *parent ) :
+ErrorMessageBox::ErrorMessageBox( const VException& e, QWidget *parent ) :
     QMessageBox( parent )
 {
         setWindowTitle( "Error" );

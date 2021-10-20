@@ -3,19 +3,19 @@
 
 #include <CAENVMEtypes.h>
 
-namespace vmeplus
+#include "VModule.h"
+
+namespace vmepp
 {
-    class VArbiter
+    class VArbiter : virtual public VModule
     {
         public :
-            VArbiter();
-            VArbiter( const VArbiter &other ) = delete;
-            VArbiter& operator=( const VArbiter &other ) = delete;
-            virtual ~VArbiter();
+            VArbiter() {};
+            virtual ~VArbiter() = default;
 
         public :
-            virtual void            WriteArbiterType( CVArbiterTypes type ) = 0;
-            virtual CVArbiterTypes  ReadArbiterType() = 0;
+            virtual void            WriteArbiterType( CVArbiterTypes type ) noexcept( false ) = 0;
+            virtual CVArbiterTypes  ReadArbiterType() noexcept( false ) = 0;
     };
 }
 #endif

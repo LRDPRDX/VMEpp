@@ -4,6 +4,8 @@
 #include "SlaveWindow.h"
 #include "V2718Window.h"
 
+using namespace vmepp;
+
 
 SlaveWindow::SlaveWindow( V2718Window *parent ) :
     DeviceWindow( parent ),
@@ -42,7 +44,7 @@ void SlaveWindow::Connect()
     {
         fParent->fController.RegisterSlave( fDevice );
     }
-    catch( const vmeplus::VException &e )
+    catch( const VException &e )
     {
         success = false;
         QMessageBox::warning( this,

@@ -1,5 +1,5 @@
 {
-    "cfg": {
+    "V895": {
         "thresholds": {
             "value0": 0,
             "value1": 0,
@@ -19,8 +19,8 @@
             "value15": 0
         },
         "majority": 0,
-        "width high": 0,
-        "width low": 0,
+        "width_high": 0,
+        "width_low": 0,
         "mask": 0
     }
 }

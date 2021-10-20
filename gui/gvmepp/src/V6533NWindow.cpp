@@ -31,11 +31,13 @@
 #include "Style.h"
 #include "Prelude.h"
 
+using namespace vmepp;
+
 
 V6533NWindow::V6533NWindow( uint32_t address, V2718Window *parent ) :
     SlaveWindow( parent )
 {
-    fDevice = new vmeplus::V6533N( address );
+    fDevice = new V6533N( address );
 
     setWindowTitle( "V6533N" );
     CreateMenu();

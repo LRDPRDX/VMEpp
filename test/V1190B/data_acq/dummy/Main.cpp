@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <cassert>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 typedef typename V1190B::TriggerMode_t Trg_t;
 typedef typename V1190B::Config_t      Cfg_t;
