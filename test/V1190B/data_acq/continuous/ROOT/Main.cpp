@@ -30,8 +30,9 @@ void Histo()
         controller.RegisterSlave( &disc );
         controller.Initialize();
 
-        disc.EnableOnly( 14 );
-        disc.WriteOutWidth( 30 );
+        disc.Enable( (1 << 14) | (1 << 0) );
+        disc.WriteOutWidthH( 30 );
+        disc.WriteOutWidthL( 20 );
 
         V2718::OutputConfig outCfg;
         outCfg.SOURCE = V2718::Src_t::PULS_SCAL;
