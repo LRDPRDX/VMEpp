@@ -22,7 +22,7 @@ void MainWindow::CreateMenu()
 void MainWindow::CreateCentralWidget()
 {
     fLogoLabel = new QLabel();
-    QPixmap pixmap( "/home/lrdprdx/projects/VME/pics/small.xpm" );
+    QPixmap pixmap( "../../pics/small.xpm" );
     fLogoLabel->setPixmap( pixmap );
     setCentralWidget( fLogoLabel );
     resize( pixmap.width(), pixmap.height() );
