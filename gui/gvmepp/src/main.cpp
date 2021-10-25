@@ -1,17 +1,14 @@
 #include <QApplication>
 
-//#include "V2718Window.h"
-#include "MainWindow.h"
+#include "V2718Window.h"
 
 #include "Style.h"
 
 int main( int argc, char *argv[] )
 {
-
     QApplication app( argc, argv );
 
-    //V2718Window window;
-    MainWindow window;
+    V2718Window window;
 
     window.setWindowTitle( "gVME++" );
     window.show();
