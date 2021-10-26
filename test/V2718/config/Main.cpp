@@ -13,11 +13,11 @@ using namespace vmepp;
 int main()
 {
     V2718 controller;
-    V895 desc( 0, 0 );
 
     try
     {
-        //controller.Open( 0, 0 );
+        controller.Open( 0, 0 );
+
         V2718::OutputConfig oCfg;
             oCfg.LED_POLARITY = V2718::LEDPolarity_t::ACTIVE_LOW;
 
@@ -30,16 +30,17 @@ int main()
         pA->SetNPulses( 88 );
         pA->SetStartSource( V2718::Src_t::SW );
         pA->SetStopSource( V2718::Src_t::SW );
-        //controller.GetPulser( cvPulserA ).Write();
+        pA->Write();
 
         pB->SetSquare( 10000, 23 );
         pB->SetNPulses( 240 );
         pB->SetStartSource( V2718::Src_t::SW );
         pB->SetStopSource( V2718::Src_t::SW );
-        //controller.GetPulser( cvPulserB ).Write();
+        pB->Write();
 
         UConfig<V2718> cfg;
 
+        controller.ReadConfig( cfg );
         WriteConfigToFile<V2718, cereal::XMLOutputArchive>( cfg, "config.xml" );
 
         //UConfig<V2718> cfg2;

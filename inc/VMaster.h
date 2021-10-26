@@ -31,7 +31,7 @@ namespace vmepp
             virtual void                WriteCycle( uint32_t address, void* data, CVAddressModifier am, CVDataWidth dw ) = 0;
             virtual void                BLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, CVDataWidth dw, int *count ) = 0;
             virtual void                MBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count ) = 0;
-            virtual void                FIFOMBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, int *count )  = 0;
+            virtual void                FIFOBLTReadCycle( uint32_t address, void* data, int size, CVAddressModifier am, CVDataWidth dw,  int *count )  = 0;
             virtual void                ADOCycle( uint32_t address, CVAddressModifier am ) = 0;
             virtual void                ADOHCycle( uint32_t address, CVAddressModifier am ) = 0;
             virtual void                WriteFIFOMode( short value )  = 0;

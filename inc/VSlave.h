@@ -26,7 +26,7 @@ namespace vmepp
             void                WriteRequest( uint32_t address, void *data,  CVDataWidth dw = cvD16, CVAddressModifier am = cvA32_U_DATA );
             void                BLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVDataWidth dw, CVAddressModifier am = cvA32_U_BLT );
             void                MBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am = cvA32_U_MBLT );
-            void                FIFOMBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am = cvA32_U_MBLT );
+            void                FIFOBLTReadRequest( uint32_t address, void *buffer, int size, int *count, CVAddressModifier am = cvA32_U_BLT, CVDataWidth dw = cvD32 );
 
             virtual void        Initialize() = 0;
 

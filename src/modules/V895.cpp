@@ -57,8 +57,8 @@ namespace vmepp
 
     void V895::WriteOutWidth( uint16_t width )
     {
-        WriteOutWidthL( GetValueFromWidth( width ) );
-        WriteOutWidthH( GetValueFromWidth( width ) );
+        WriteOutWidthL( width );
+        WriteOutWidthH( width );
     }
 
     void V895::WriteOutWidthH( uint16_t width )

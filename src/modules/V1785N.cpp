@@ -261,7 +261,7 @@ namespace vmepp
     //****** CHANNELS + ******
     void V1785N::EnableAll( bool alive )
     {
-        for( uint16_t ch = 0; ch < V1785N_N_CHANNELS; ch++ )
+        for( uint16_t ch = 0; ch < fChNumber; ch++ )
         {
             if( alive )
             {
@@ -280,34 +280,34 @@ namespace vmepp
     {
         if( kill ) { thr |= (1U << V1785N_THR_KILL_BIT); }
         else       { thr &= ~(1U << V1785N_THR_KILL_BIT); }
-        WriteRegister16( V1785N_LOW_THRESHOLD(ch), thr );
+        WriteRegister16( V1785N_LOW_THRESHOLD(ch % fChNumber), thr );
     }
 
     void V1785N::WriteHighThreshold( uint16_t ch, uint16_t thr, bool kill )
     {
         if( kill ) { thr |= (1U << V1785N_THR_KILL_BIT); }
         else       { thr &= ~(1U << V1785N_THR_KILL_BIT); }
-        WriteRegister16( V1785N_HIGH_THRESHOLD(ch), thr );
+        WriteRegister16( V1785N_HIGH_THRESHOLD(ch % fChNumber), thr );
     }
 
     uint16_t V1785N::ReadLowThreshold( uint16_t ch )
     {
-        return ReadRegister16( V1785N_LOW_THRESHOLD(ch), V1785N_THRESHOLD_MSK );
+        return ReadRegister16( V1785N_LOW_THRESHOLD(ch % fChNumber), V1785N_THRESHOLD_MSK );
     }
 
     uint16_t V1785N::ReadHighThreshold( uint16_t ch )
     {
-        return ReadRegister16( V1785N_HIGH_THRESHOLD(ch), V1785N_THRESHOLD_MSK );
+        return ReadRegister16( V1785N_HIGH_THRESHOLD(ch % fChNumber), V1785N_THRESHOLD_MSK );
     }
 
     bool V1785N::ReadIfEnabledLow( uint16_t ch )
     {
-        return not ReadRegister16( V1785N_LOW_THRESHOLD(ch), V1785N_THR_KILL_MSK );
+        return not ReadRegister16( V1785N_LOW_THRESHOLD(ch % fChNumber), V1785N_THR_KILL_MSK );
     }
 
     bool V1785N::ReadIfEnabledHigh( uint16_t ch )
     {
-        return not ReadRegister16( V1785N_HIGH_THRESHOLD(ch), V1785N_THR_KILL_MSK );
+        return not ReadRegister16( V1785N_HIGH_THRESHOLD(ch % fChNumber), V1785N_THR_KILL_MSK );
     }
     //****** CHANNELS - ******
 
