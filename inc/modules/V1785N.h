@@ -250,6 +250,12 @@ namespace vmepp
             enum class Range_t : uint8_t { HIGH, LOW };
 
         protected :
+            static uint8_t constexpr fChNumber = 0x08U;   // 8
+
+        public :
+            static uint8_t constexpr GetChNumber() { return fChNumber; }
+
+        protected :
             //ROM Data
             std::string     fFirmwareRevision;
             uint32_t        fOUI;
@@ -348,7 +354,7 @@ namespace vmepp
     {
         protected :
             uint32_t    fHeader;
-            uint32_t    fData[V1785N_MAX_CHANNEL_DATA];
+            uint32_t    fData[V1785N::GetChNumber()];
             uint32_t    fEOB;
 
         public :
