@@ -41,9 +41,4 @@ ROOT/
 #### GUI ####
 #
 # Qt product
-moc_*
-*.pro
-
-/gui/gvmepp/gvmepp
-/gui/gvmepp/Makefile
-/gui/.qmake.stash
+/gui/gvmepp/build/*
