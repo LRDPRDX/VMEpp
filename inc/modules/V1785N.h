@@ -233,21 +233,18 @@
 #include "UConfigurable.h"
 
 #include <string>
+#include <array>
 
 namespace vmepp
 {
     class V1785N;
-
-    template<>
-    struct UConfig<V1785N>
-    {
-    };
 
     //****** V1785N Part ******
     class V1785N : public VSlaveAcquisitor<V1785N>, public VSlaveInterrupter, public UConfigurable<V1785N>
     {
         public :
             enum class Range_t : uint8_t { HIGH, LOW };
+            enum class ZeroSupp_t : uint8_t { Tx16, Tx2 };
 
         protected :
             static uint8_t constexpr fChNumber = 0x08U;   // 8
@@ -322,8 +319,15 @@ namespace vmepp
             uint32_t        GetBufferAddress() const override { return 0; }
 
             void            ClearData();
+
             void            EnableZeroSupp( bool status = true );
+            bool            ReadZeroSupp();
+
             void            EnableOverSupp( bool status = true );
+            bool            ReadOverSupp();
+
+            void            WriteZeroSuppType( ZeroSupp_t type );
+            ZeroSupp_t      ReadZeroSuppType();
 
         //State methods 
         public :
@@ -348,13 +352,71 @@ namespace vmepp
     template<>
     const std::string UConfigurable<V1785N>::fName;
 
+
+    //****************************
+    //****** UEVENT<V1785N> ******
+    //****************************
+    template<>
+    struct UConfig<V1785N>
+    {
+        struct Threshold
+        {
+            struct Value
+            {
+                uint8_t VALUE;
+                bool KILL;
+
+                Value() : VALUE( 0 ), KILL( true ) {}
+
+                template <class TArchive>
+                void serialize( TArchive& ar )
+                {
+                    ar( cereal::make_nvp( "value", VALUE ),
+                        cereal::make_nvp( "kill", KILL ) );
+                }
+            };
+
+            Value LOW;
+            Value HIGH;
+
+            template <class TArchive>
+            void serialize( TArchive& ar )
+            {
+                ar( cereal::make_nvp( "low" , LOW ),
+                    cereal::make_nvp( "high", HIGH ) ); 
+
+            }
+        };
+
+        std::array<Threshold, V1785N::GetChNumber()> THRESHOLDS;
+        bool OVER_SUPP;
+        bool ZERO_SUPP;
+        V1785N::ZeroSupp_t ZERO_SUPP_TYPE;
+        uint8_t IRQ_VECTOR;
+        uint8_t IRQ_LEVEL;
+        uint8_t IRQ_EVENTS;
+
+        template <class TArchive>
+        void serialize( TArchive& ar )
+        {
+            ar( cereal::make_nvp( "thresholds" , THRESHOLDS ),
+                cereal::make_nvp( "over_suppression", OVER_SUPP ),
+                cereal::make_nvp( "zero_suppression", ZERO_SUPP ),
+                cereal::make_nvp( "zero_supp_type", ZERO_SUPP_TYPE ),
+                cereal::make_nvp( "irq_vector", IRQ_VECTOR ),
+                cereal::make_nvp( "irq_level", IRQ_LEVEL ),
+                cereal::make_nvp( "irq_events", IRQ_EVENTS ) );
+        }
+    };
+
+
     //****** UEvent<V1785N> Part ******
     template<>
     class UEvent<V1785N> : public VEvent
     {
         protected :
             uint32_t    fHeader;
-            uint32_t    fData[V1785N::GetChNumber()];
+            uint32_t    fData[2 * V1785N::GetChNumber()];
             uint32_t    fEOB;
 
         public :

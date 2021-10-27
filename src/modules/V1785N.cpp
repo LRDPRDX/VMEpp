@@ -471,6 +471,11 @@ namespace vmepp
         }
     }
 
+    bool V1785N::ReadZeroSupp()
+    {
+        return GetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_LW_THR_PRG_BIT );
+    }
+
     void V1785N::EnableOverSupp( bool status )
     {
         if( status )
@@ -482,15 +487,62 @@ namespace vmepp
             SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
         }
     }
+
+    bool V1785N::ReadOverSupp()
+    {
+        return GetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
+    }
+
+    void V1785N::WriteZeroSuppType( ZeroSupp_t type )
+    {
+        switch( type )
+        {
+            case( ZeroSupp_t::Tx16 ) :
+                ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_STEP_TH_BIT );
+            case( ZeroSupp_t::Tx2 ) :
+                SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_STEP_TH_BIT );
+        }
+    }
+
+    V1785N::ZeroSupp_t V1785N::ReadZeroSuppType()
+    {
+        return static_cast<V1785N::ZeroSupp_t>( GetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_STEP_TH_BIT ) );
+    }
     //****** DATA ACQUISITION - ******
     //
     void V1785N::ReadConfig( UConfig<V1785N>& config )
     {
-        (void)(config);
+        for( uint8_t ch = 0; ch < fChNumber; ++ch )
+        {
+            config.THRESHOLDS.at( ch ).LOW.VALUE = ReadLowThreshold( ch );
+            config.THRESHOLDS.at( ch ).LOW.KILL = ReadIfEnabledLow( ch );
+            config.THRESHOLDS.at( ch ).HIGH.VALUE = ReadHighThreshold( ch );
+            config.THRESHOLDS.at( ch ).HIGH.KILL = ReadIfEnabledHigh( ch );
+        }
+        config.OVER_SUPP = ReadOverSupp();
+        config.ZERO_SUPP = ReadZeroSupp();
+        config.ZERO_SUPP_TYPE = ReadZeroSuppType();
+
+        config.IRQ_VECTOR = ReadIRQVector();
+        config.IRQ_LEVEL = ReadIRQLevel();
+        config.IRQ_EVENTS = ReadIRQEvents();
     }
 
     void V1785N::WriteConfig( const UConfig<V1785N>& config )
     {
-        (void)(config);
+        for( uint8_t ch = 0; ch < fChNumber; ++ch )
+        {
+            WriteLowThreshold( ch, config.THRESHOLDS.at( ch ).LOW.VALUE,
+                                   config.THRESHOLDS.at( ch ).LOW.KILL );
+            WriteHighThreshold( ch, config.THRESHOLDS.at( ch ).HIGH.VALUE,
+                                    config.THRESHOLDS.at( ch ).HIGH.KILL );
+        }
+        EnableOverSupp( config.OVER_SUPP );
+        EnableZeroSupp( config.ZERO_SUPP );
+        WriteZeroSuppType( config.ZERO_SUPP_TYPE );
+
+        WriteIRQVector( config.IRQ_VECTOR );
+        WriteIRQLevel( config.IRQ_LEVEL );
+        WriteIRQEvents( config.IRQ_EVENTS );
     }
 }
