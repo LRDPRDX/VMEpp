@@ -245,6 +245,16 @@ namespace vmepp
         public :
             enum class Range_t : uint8_t { HIGH, LOW };
             enum class ZeroSupp_t : uint8_t { Tx16, Tx2 };
+            struct Threshold
+            {
+                uint8_t value;
+                bool    kill;
+
+                Threshold( uint8_t value = 0, bool kill = false ) :
+                    value( value ),
+                    kill( kill )
+                { }
+            };
 
         protected :
             static uint8_t constexpr fChNumber = 0x08U;   // 8
@@ -286,12 +296,8 @@ namespace vmepp
         public :
             //Channels settings
             void            EnableAll( bool alive = true );
-            uint16_t        ReadLowThreshold( uint16_t ch );
-            void            WriteLowThreshold( uint16_t ch, uint16_t th, bool kill = true );
-            uint16_t        ReadHighThreshold( uint16_t ch );
-            void            WriteHighThreshold( uint16_t ch, uint16_t th, bool kill = true );
-            bool            ReadIfEnabledLow( uint16_t ch );
-            bool            ReadIfEnabledHigh( uint16_t ch );
+            Threshold       ReadThreshold( uint8_t ch, Range_t range = Range_t::HIGH );
+            void            WriteThreshold( uint8_t ch, Threshold thr, Range_t range = Range_t::HIGH );
 
         public :
             //Misc
@@ -383,7 +389,7 @@ namespace vmepp
             void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "low" , LOW ),
-                    cereal::make_nvp( "high", HIGH ) ); 
+                    cereal::make_nvp( "high", HIGH ) );
 
             }
         };

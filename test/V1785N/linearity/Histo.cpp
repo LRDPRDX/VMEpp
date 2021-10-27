@@ -53,9 +53,9 @@ void Histo()
         // Save over threshold
         adc.EnableOverSupp( false );
         // Low Range Disable
-        adc.WriteLowThreshold( 0, 1, 1 );
+        adc.WriteThreshold( 0, {0, true}, V1785N::Range_t::LOW );
         // High Range Enable
-        adc.WriteHighThreshold( 0, 0, 0 );
+        adc.WriteThreshold( 0, 0, V1785N::Range_t::HIGH );
         // Interrupt settings
         adc.WriteIRQLevel( 7 );
         adc.WriteIRQVector( 7 );
