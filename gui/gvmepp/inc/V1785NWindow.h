@@ -34,7 +34,19 @@ class V1785NWindow : public SlaveWindow
         void CreatePlotTab();
 
     private :
-        QTabWidget *fMainTab;
+        QTabWidget *fMainTab, *fChannelTab;
+
+        QCheckBox *fZeroSuppCheck, *fOverSuppCheck;
+        QComboBox *fZeroSuppTypeCombo;
+
+        QComboBox *fIRQLevelCombo;
+        QSpinBox  *fIRQVectorSpin, *fIRQEventsSpin;
+
+        QCheckBox *fChEnLowCheck[N_CH];
+        QSpinBox  *fChThrLowSpin[N_CH];
+
+        QCheckBox *fChEnHighCheck[N_CH];
+        QSpinBox  *fChThrHighSpin[N_CH];
 
     public slots :
         void WriteConfig() override;
