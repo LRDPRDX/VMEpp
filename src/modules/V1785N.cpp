@@ -276,38 +276,41 @@ namespace vmepp
         }
     }
 
-    void V1785N::WriteLowThreshold( uint16_t ch, uint16_t thr, bool kill )
+    V1785N::Threshold V1785N::ReadThreshold( uint8_t ch, Range_t range )
     {
-        if( kill ) { thr |= (1U << V1785N_THR_KILL_BIT); }
-        else       { thr &= ~(1U << V1785N_THR_KILL_BIT); }
-        WriteRegister16( V1785N_LOW_THRESHOLD(ch % fChNumber), thr );
+        Threshold threshold;
+        uint16_t regValue;
+        switch( range )
+        {
+            case( Range_t::LOW ) :
+                regValue = ReadRegister16( V1785N_LOW_THRESHOLD( ch % fChNumber ) );
+                break;
+            case( Range_t::HIGH ) :
+                regValue = ReadRegister16( V1785N_HIGH_THRESHOLD( ch % fChNumber ) );
+                break;
+        }
+        threshold.value = regValue & V1785N_THRESHOLD_MSK;
+        threshold.kill  = regValue & V1785N_THR_KILL_MSK;
+
+        return threshold;
     }
 
-    void V1785N::WriteHighThreshold( uint16_t ch, uint16_t thr, bool kill )
+    void V1785N::WriteThreshold( uint8_t ch, Threshold thr, Range_t range )
     {
-        if( kill ) { thr |= (1U << V1785N_THR_KILL_BIT); }
-        else       { thr &= ~(1U << V1785N_THR_KILL_BIT); }
-        WriteRegister16( V1785N_HIGH_THRESHOLD(ch % fChNumber), thr );
-    }
+        uint16_t regValue = thr.value;
 
-    uint16_t V1785N::ReadLowThreshold( uint16_t ch )
-    {
-        return ReadRegister16( V1785N_LOW_THRESHOLD(ch % fChNumber), V1785N_THRESHOLD_MSK );
-    }
+        if( thr.kill )  { regValue |= (1U << V1785N_THR_KILL_BIT); }
+        else            { regValue &= ~(1U << V1785N_THR_KILL_BIT); }
 
-    uint16_t V1785N::ReadHighThreshold( uint16_t ch )
-    {
-        return ReadRegister16( V1785N_HIGH_THRESHOLD(ch % fChNumber), V1785N_THRESHOLD_MSK );
-    }
-
-    bool V1785N::ReadIfEnabledLow( uint16_t ch )
-    {
-        return not ReadRegister16( V1785N_LOW_THRESHOLD(ch % fChNumber), V1785N_THR_KILL_MSK );
-    }
-
-    bool V1785N::ReadIfEnabledHigh( uint16_t ch )
-    {
-        return not ReadRegister16( V1785N_HIGH_THRESHOLD(ch % fChNumber), V1785N_THR_KILL_MSK );
+        switch( range )
+        {
+            case( Range_t::LOW ) :
+                WriteRegister16( V1785N_LOW_THRESHOLD(ch % fChNumber), regValue );
+                break;
+            case( Range_t::HIGH ) :
+                WriteRegister16( V1785N_HIGH_THRESHOLD(ch % fChNumber), regValue );
+                break;
+        }
     }
     //****** CHANNELS - ******
 
@@ -471,6 +474,11 @@ namespace vmepp
         }
     }
 
+    bool V1785N::ReadZeroSupp()
+    {
+        return not GetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_LW_THR_PRG_BIT );
+    }
+
     void V1785N::EnableOverSupp( bool status )
     {
         if( status )
@@ -482,15 +490,71 @@ namespace vmepp
             SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
         }
     }
+
+    bool V1785N::ReadOverSupp()
+    {
+        return not GetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_OV_RNG_PRG_BIT );
+    }
+
+    void V1785N::WriteZeroSuppType( ZeroSupp_t type )
+    {
+        switch( type )
+        {
+            case( ZeroSupp_t::Tx16 ) :
+                ClearBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_STEP_TH_BIT );
+                break;
+            case( ZeroSupp_t::Tx2 ) :
+                SetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_STEP_TH_BIT );
+                break;
+        }
+    }
+
+    V1785N::ZeroSupp_t V1785N::ReadZeroSuppType()
+    {
+        return static_cast<V1785N::ZeroSupp_t>( GetBit16( V1785N_BIT_SET_2, V1785N_BIT_SET_2_STEP_TH_BIT ) );
+    }
     //****** DATA ACQUISITION - ******
     //
     void V1785N::ReadConfig( UConfig<V1785N>& config )
     {
-        (void)(config);
+        Threshold thr;
+        for( uint8_t ch = 0; ch < fChNumber; ++ch )
+        {
+            thr = ReadThreshold( ch, Range_t::LOW );
+            config.THRESHOLDS.at( ch ).LOW.VALUE = thr.value;
+            config.THRESHOLDS.at( ch ).LOW.KILL = thr.kill;
+            thr = ReadThreshold( ch, Range_t::HIGH );
+            config.THRESHOLDS.at( ch ).HIGH.VALUE = thr.value;
+            config.THRESHOLDS.at( ch ).HIGH.KILL = thr.kill;
+        }
+        config.OVER_SUPP = ReadOverSupp();
+        config.ZERO_SUPP = ReadZeroSupp();
+        config.ZERO_SUPP_TYPE = ReadZeroSuppType();
+
+        config.IRQ_VECTOR = ReadIRQVector();
+        config.IRQ_LEVEL = ReadIRQLevel();
+        config.IRQ_EVENTS = ReadIRQEvents();
     }
 
     void V1785N::WriteConfig( const UConfig<V1785N>& config )
     {
-        (void)(config);
+        Threshold thr;
+        for( uint8_t ch = 0; ch < fChNumber; ++ch )
+        {
+            thr.value = config.THRESHOLDS.at( ch ).LOW.VALUE;
+            thr.kill = config.THRESHOLDS.at( ch ).LOW.KILL;
+            WriteThreshold(ch, thr, Range_t::LOW );
+
+            thr.value = config.THRESHOLDS.at( ch ).HIGH.VALUE;
+            thr.kill = config.THRESHOLDS.at( ch ).HIGH.KILL;
+            WriteThreshold( ch, thr, Range_t::HIGH );
+        }
+        EnableOverSupp( config.OVER_SUPP );
+        EnableZeroSupp( config.ZERO_SUPP );
+        WriteZeroSuppType( config.ZERO_SUPP_TYPE );
+
+        WriteIRQVector( config.IRQ_VECTOR );
+        WriteIRQLevel( config.IRQ_LEVEL );
+        WriteIRQEvents( config.IRQ_EVENTS );
     }
 }
