@@ -12,6 +12,7 @@
 #include "VException.h"
 #include "V895Window.h"
 #include "V6533NWindow.h"
+#include "V1785NWindow.h"
 
 using namespace vmepp;
 
@@ -102,6 +103,7 @@ DeviceDialog::DeviceDialog( V2718Window *parent ) :
     fDeviceCombo = new QComboBox();
         fDeviceCombo->addItem( "V895", Device::V895 );
         fDeviceCombo->addItem( "V6533N", Device::V6533N );
+        fDeviceCombo->addItem( "V1785N", Device::V1785N );
 
     auto *addressLabel = new QLabel( "Address [31:16]:" );
     fAddressSpin = new QSpinBox();
@@ -148,6 +150,9 @@ void DeviceDialog::Add()
             break;
         case( Device::V6533N ) :
             dw = new V6533NWindow( address, fParent );
+            break;
+        case( Device::V1785N ) :
+            dw = new V1785NWindow( address, fParent );
             break;
     }
     if( dw ) { dw->show(); }

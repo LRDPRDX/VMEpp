@@ -40,7 +40,7 @@ class DeviceDialog : public QDialog
     Q_OBJECT
 
     public :
-        enum Device { V895, V6533N };
+        enum Device { V895, V6533N, V1785N };
 
     private :
         V2718Window  *fParent;

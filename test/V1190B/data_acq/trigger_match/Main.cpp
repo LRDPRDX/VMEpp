@@ -1,5 +1,6 @@
 #include "VException.h"
 #include "modules/V2718.h"
+#include "modules/V895.h"
 #include "modules/V1190B.h"
 
 #include <iostream>
@@ -12,11 +13,11 @@ using namespace vmepp;
 int main()
 {
     V2718 controller;
-    V1190B tdc(0x20080000);
+    V1190B tdc( 0x20080000 );
+    V895 disc( 0x40080000 );
 
     try
     {
-        std::cout << "Test begins...\n";
         controller.Open( 0, 0 );
         controller.RegisterSlave( &tdc );
         controller.Initialize();
