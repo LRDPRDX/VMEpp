@@ -33,6 +33,7 @@ class V1785NWindow : public SlaveWindow
         void CreateChannelsTab();
         void CreatePlotTab();
 
+        // Widgets
     private :
         QTabWidget *fMainTab, *fChannelTab;
 
@@ -47,6 +48,10 @@ class V1785NWindow : public SlaveWindow
 
         QCheckBox *fChEnHighCheck[N_CH];
         QSpinBox  *fChThrHighSpin[N_CH];
+
+    private :
+        SButton *fStartButton, *fStopButton;
+        QSpinBox *fBinSpin, *fStartHistSpin, *fStopHistSpin;
 
     public slots :
         void WriteConfig() override;
