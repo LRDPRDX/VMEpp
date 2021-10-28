@@ -1,0 +1,92 @@
+{
+    "V1785N": {
+        "thresholds": {
+            "value0": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            },
+            "value1": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            },
+            "value2": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            },
+            "value3": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            },
+            "value4": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            },
+            "value5": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            },
+            "value6": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            },
+            "value7": {
+                "low": {
+                    "value": 0,
+                    "kill": true
+                },
+                "high": {
+                    "value": 0,
+                    "kill": true
+                }
+            }
+        },
+        "over_suppression": true,
+        "zero_suppression": true,
+        "zero_supp_type": 0,
+        "irq_vector": 3,
+        "irq_level": 0,
+        "irq_events": 0
+    }
+}
