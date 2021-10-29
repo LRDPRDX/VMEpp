@@ -96,6 +96,7 @@ get_python_inc(),
 '-I', '/usr/include/x86_64-linux-gnu/qt5/QtCore',
 '-I', '/usr/include/x86_64-linux-gnu/qt5/QtWidgets',
 '-I', '/usr/include/x86_64-linux-gnu/qt5/QtGui',
+'-I', '/usr/local/qwt-6.1.2/include'
 ]
 
 # Clang automatically sets the '-std=' flag to 'c++14' for MSVC 2015 or later,

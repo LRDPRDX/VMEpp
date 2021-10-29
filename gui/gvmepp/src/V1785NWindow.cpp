@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QFrame>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -19,6 +20,10 @@
 #include <QCloseEvent>
 #include <QTabWidget>
 #include "qnamespace.h"
+
+#include <qwt_plot_histogram.h>
+#include <qwt_plot_grid.h>
+#include <qwt_plot.h>
 
 #include "V2718Window.h"
 #include "V1785NWindow.h"
@@ -38,6 +43,7 @@ V1785NWindow::V1785NWindow( uint32_t address, V2718Window* parent ) :
 
     setWindowTitle( "V1785N" );
 
+    CreateTimer();
     CreateMenu();
     CreateCentralWidget();
 
@@ -171,8 +177,8 @@ void V1785NWindow::CreateChannelsTab()
         highLayout->addWidget( fChThrHighSpin[ch], 0, 2 );
         highGroup->setLayout( highLayout );
 
-        vLayout->addWidget( lowGroup ); 
-        vLayout->addWidget( highGroup ); 
+        vLayout->addWidget( lowGroup );
+        vLayout->addWidget( highGroup );
 
         tab->setLayout( vLayout );
 
@@ -193,7 +199,7 @@ void V1785NWindow::CreatePlotTab()
 
     QGroupBox* histGroup = new QGroupBox( "Histogram" );
     QGridLayout* histLayout = new QGridLayout();
-    
+
     QLabel* binLabel = new QLabel( "# of bins:" );
     fBinSpin = new QSpinBox();
         fBinSpin->setMinimum( 1 );
@@ -219,8 +225,56 @@ void V1785NWindow::CreatePlotTab()
     histGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
     vLayout->addWidget( histGroup );
 
+    // Buttons
+    fStartButton = new SButton( "START", SColor_t::VIOLET );
+        connect( this, &V1785NWindow::Connected, fStartButton, &SButton::setEnabled );
+        connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::StartTimer );
+    fStopButton = new SButton( "STOP", SColor_t::RED );
+        connect( this, &V1785NWindow::Connected, fStopButton, &SButton::setEnabled );
+        connect( fStopButton, &QPushButton::clicked, this, &V1785NWindow::StopTimer );
+
+    SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+
+    buttonLayout->addWidget( fStartButton );
+    buttonLayout->addWidget( fStopButton );
+
+    buttonFrame->setLayout( buttonLayout );
+    vLayout->addWidget( buttonFrame );
+
+    // Histogram
+    fPlot = new QwtPlot();
+        //fPlot->setCanvasBackground( QColor( style::pink ) );
+        fPlot->setAxisTitle( QwtPlot::yLeft, "Number of events" );
+        fPlot->setAxisTitle( QwtPlot::xBottom, "ADC value, [LSB]" );
+
+    QwtPlotGrid *grid = new QwtPlotGrid;
+        grid->enableX( true );
+        grid->enableY( true );
+        grid->attach( fPlot );
+        grid->setMajorPen( QPen( QColor( style::pink ), 0, Qt::DotLine ) );
+
+    fHisto = new QwtPlotHistogram( "Data" );
+        fHisto->setPen( QPen( QColor( style::violet ) ) );
+        fHisto->setBrush( QBrush( QColor( style::blue ) ) );
+    fHisto->attach( fPlot );
+
+    fPlot->replot();
+    fPlot->show();
+
+    vLayout->addWidget( fPlot );
+
     tab->setLayout( vLayout );
     fMainTab->addTab( tab, "Plots" );
+}
+
+void V1785NWindow::CreateTimer()
+{
+    fTimer = new QTimer( this );
+        fTimer->setInterval( 1000 );
+    connect( fTimer, &QTimer::timeout, this, &V1785NWindow::UpdatePlot );
+    connect( this, &V1785NWindow::Connected, this, &V1785NWindow::StopTimer );
+    connect( this, &V1785NWindow::Error, this, &V1785NWindow::StopTimer );
 }
 
 void V1785NWindow::WriteConfig()
@@ -301,4 +355,25 @@ void V1785NWindow::SpreadConfig( const QVariant& qConfig )
     ChangeCombo( fIRQLevelCombo, cfg.IRQ_LEVEL );
     fIRQVectorSpin->setValue( cfg.IRQ_VECTOR );
     fIRQEventsSpin->setValue( cfg.IRQ_EVENTS );
+}
+
+void V1785NWindow::StartTimer()
+{
+    if( fTimer->isActive() )
+    {
+        return;
+    }
+    fTimer->start();
+}
+
+void V1785NWindow::StopTimer()
+{
+    if( fTimer->isActive() )
+    {
+        fTimer->stop();
+    }
+}
+
+void V1785NWindow::UpdatePlot()
+{
 }

@@ -13,6 +13,10 @@ class QVBoxLayout;
 class QCheckBox;
 class SLedIndicatorWithLabel;
 class QLineEdit;
+class QTimer;
+
+class QwtPlot;
+class QwtPlotHistogram;
 
 using namespace vmepp;
 
@@ -32,6 +36,10 @@ class V1785NWindow : public SlaveWindow
         void CreateGeneralTab();
         void CreateChannelsTab();
         void CreatePlotTab();
+        void CreateTimer();
+
+    protected :
+        QTimer          *fTimer;
 
         // Widgets
     private :
@@ -53,12 +61,21 @@ class V1785NWindow : public SlaveWindow
         SButton *fStartButton, *fStopButton;
         QSpinBox *fBinSpin, *fStartHistSpin, *fStopHistSpin;
 
+        QwtPlotHistogram*   fHisto;
+        QwtPlot*            fPlot;
+
+    protected slots :
+        void StartTimer();
+        void StopTimer();
+
     public slots :
         void WriteConfig() override;
         void ReadConfig() override;
 
         QVariant CollectConfig() override;
         void SpreadConfig( const QVariant& qConfig ) override;
+
+        void UpdatePlot();
 
     public :
         V1785NWindow( uint32_t address, V2718Window *parent );

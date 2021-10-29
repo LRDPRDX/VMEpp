@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 
-namespace style 
+namespace style
 {
     static const QString white          =      "#ffffff";
     static const QString black          =      "#000000";
@@ -42,9 +42,9 @@ enum class SMode_t  { NORMAL, LIGHT, DARK };
 
 struct SColor
 {
-    QString normal; 
-    QString light; 
-    QString dark; 
+    QString normal;
+    QString light;
+    QString dark;
 
     SColor( SColor_t color )
     {
