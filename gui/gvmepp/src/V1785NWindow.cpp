@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <random>
+
 #include <QMenu>
 #include <QMenuBar>
 #include <QApplication>
@@ -204,15 +207,18 @@ void V1785NWindow::CreatePlotTab()
     fBinSpin = new QSpinBox();
         fBinSpin->setMinimum( 1 );
         fBinSpin->setMaximum( 100000 );
+        fBinSpin->setValue( 4096 );
 
     QLabel* startLabel = new QLabel( "X<sub>1</sub>:" );
     fStartHistSpin = new QSpinBox();
         fStartHistSpin->setMinimum( -1000000000 );
         fStartHistSpin->setMaximum( 1000000000 );
+        fStartHistSpin->setValue( 0 );
     QLabel* stopLabel = new QLabel( "X<sub>2</sub>:" );
     fStopHistSpin = new QSpinBox();
         fStopHistSpin->setMinimum( -1000000000 );
         fStopHistSpin->setMaximum( 1000000000 );
+        fStopHistSpin->setValue( 4096 );
 
     histLayout->addWidget( binLabel, 0, 0, Qt::AlignRight );
     histLayout->addWidget( fBinSpin, 0, 1 );
@@ -228,10 +234,11 @@ void V1785NWindow::CreatePlotTab()
     // Buttons
     fStartButton = new SButton( "START", SColor_t::VIOLET );
         connect( this, &V1785NWindow::Connected, fStartButton, &SButton::setEnabled );
-        connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::StartTimer );
+        connect( fStartButton, &SButton::clicked, this, &V1785NWindow::InitHistogram );
+        connect( fStartButton, &SButton::clicked, this, &V1785NWindow::StartTimer );
     fStopButton = new SButton( "STOP", SColor_t::RED );
         connect( this, &V1785NWindow::Connected, fStopButton, &SButton::setEnabled );
-        connect( fStopButton, &QPushButton::clicked, this, &V1785NWindow::StopTimer );
+        connect( fStopButton, &SButton::clicked, this, &V1785NWindow::StopTimer );
 
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -255,7 +262,7 @@ void V1785NWindow::CreatePlotTab()
         grid->setMajorPen( QPen( QColor( style::pink ), 0, Qt::DotLine ) );
 
     fHisto = new QwtPlotHistogram( "Data" );
-        fHisto->setPen( QPen( QColor( style::violet ) ) );
+        fHisto->setPen( QPen( QColor( style::red ) ) );
         fHisto->setBrush( QBrush( QColor( style::blue ) ) );
     fHisto->attach( fPlot );
 
@@ -376,4 +383,37 @@ void V1785NWindow::StopTimer()
 
 void V1785NWindow::UpdatePlot()
 {
+    size_t N = fHisto->dataSize();
+    QVector<QwtIntervalSample> newData( N );
+    for( size_t i = 0; i < N; ++i )
+    {
+        newData[i] = fHisto->sample( i );
+    }
+
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::normal_distribution<> g( N / 2., N / 20. );
+    for( size_t n = 0; n < 10000; ++n )
+    {
+        int rand = std::round( g(gen) );
+        if( rand >= 0 && rand < N )
+        {
+            newData[ rand ].value += 1;
+        }
+    }
+
+    fHisto->setSamples( newData );
+    fPlot->replot();
+}
+
+void V1785NWindow::InitHistogram()
+{
+    QVector<QwtIntervalSample> histData;
+
+    for( size_t i = 0; i < N_BITS; ++i )
+    {
+        histData.push_back( QwtIntervalSample( 0.0, i, i + 1 ) );
+    }
+
+    fHisto->setSamples( histData );
 }

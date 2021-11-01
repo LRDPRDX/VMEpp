@@ -28,6 +28,7 @@ class V1785NWindow : public SlaveWindow
     protected :
         // Auxiliary
         static constexpr uint8_t N_CH = V1785N::GetChNumber(); // 6 channels
+        static constexpr size_t  N_BITS = 4096;
 
     private :
         // Creational member functions
@@ -63,6 +64,9 @@ class V1785NWindow : public SlaveWindow
 
         QwtPlotHistogram*   fHisto;
         QwtPlot*            fPlot;
+
+    protected :
+        void InitHistogram();
 
     protected slots :
         void StartTimer();
