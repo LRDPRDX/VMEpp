@@ -12,7 +12,6 @@
 #include <QHBoxLayout>
 #include <QFormLayout>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -81,7 +80,7 @@ void V6533NWindow::CreateCentralWidget()
 
     for( uint8_t ch = 0; ch < N_CH; ++ch )
     {
-        QGroupBox *chGroup = new QGroupBox( QString( "Channel %1" ).arg( ch ) );
+        SGroupBox *chGroup = new SGroupBox( QString( "Channel %1" ).arg( ch ) );
         QGridLayout *gridLayout = new QGridLayout();
 
         QLabel *voltLabel = new QLabel( "U (V):" );
@@ -136,12 +135,14 @@ void V6533NWindow::CreateCentralWidget()
         QHBoxLayout *buttonLayout = new QHBoxLayout();
 
 
-        fOnButton[ch] = new SButton( "ON", SColor_t::VIOLET );
-           connect( this, &DeviceWindow::Connected, fOnButton[ch], &QPushButton::setEnabled );
-           connect( fOnButton[ch], &SButton::clicked, this, &V6533NWindow::ChannelOn );
-        fOffButton[ch] = new SButton( "OFF", SColor_t::RED );
-           connect( this, &DeviceWindow::Connected, fOffButton[ch], &QPushButton::setEnabled );
-           connect( fOffButton[ch], &SButton::clicked, this, &V6533NWindow::ChannelOff );
+        fOnButton[ch] = new QPushButton( "ON" );
+            connect( this, &DeviceWindow::Connected, fOnButton[ch], &QPushButton::setEnabled );
+            connect( fOnButton[ch], &QPushButton::clicked, this, &V6533NWindow::ChannelOn );
+            ColorButton( fOnButton[ch], style::yellow );
+        fOffButton[ch] = new QPushButton( "OFF" );
+            connect( this, &DeviceWindow::Connected, fOffButton[ch], &QPushButton::setEnabled );
+            connect( fOffButton[ch], &QPushButton::clicked, this, &V6533NWindow::ChannelOff );
+            ColorButton( fOffButton[ch], style::red );
 
         buttonLayout->addWidget( fOnButton[ch] );
         buttonLayout->addWidget( fOffButton[ch] );
@@ -379,14 +380,17 @@ void V6533NMonitor::CreateWidgets()
     CreateGeneralFrame();
     CreateChannelFrame();
 
-    fUpdateButton = new SButton( "UPDATE", SColor_t::VIOLET );
-        connect( fContainer, &V6533NWindow::Connected, fUpdateButton, &SButton::setEnabled );
+    fUpdateButton = new QPushButton( "UPDATE" );
+        ColorButton( fUpdateButton, style::yellow );
+        connect( fContainer, &V6533NWindow::Connected, fUpdateButton, &QPushButton::setEnabled );
         connect( fUpdateButton, &QPushButton::clicked, fContainer, &V6533NWindow::UpdateMonitor );
-    fStartButton = new SButton( "START", SColor_t::VIOLET );
-        connect( fContainer, &V6533NWindow::Connected, fStartButton, &SButton::setEnabled );
+    fStartButton = new QPushButton( "START" );
+        ColorButton( fStartButton, style::yellow );
+        connect( fContainer, &V6533NWindow::Connected, fStartButton, &QPushButton::setEnabled );
         connect( fStartButton, &QPushButton::clicked, this, &V6533NMonitor::StartTimer );
-    fStopButton = new SButton( "STOP", SColor_t::RED );
-        connect( fContainer, &V6533NWindow::Connected, fStopButton, &SButton::setEnabled );
+    fStopButton = new QPushButton( "STOP" );
+        ColorButton( fStopButton, style::red );
+        connect( fContainer, &V6533NWindow::Connected, fStopButton, &QPushButton::setEnabled );
         connect( fStopButton, &QPushButton::clicked, this, &V6533NMonitor::StopTimer );
 
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
@@ -446,7 +450,7 @@ void V6533NMonitor::CreateChannelFrame()
 {
     for( uint8_t ch = 0; ch < N_CH; ++ch )
     {
-        QGroupBox *chGroup = new QGroupBox( QString( "Channel %1" ).arg( ch ) );
+        SGroupBox *chGroup = new SGroupBox( QString( "Channel %1" ).arg( ch ) );
         QGridLayout *gridLayout = new QGridLayout();
 
         QLabel *voltLabel = new QLabel( "V" );
@@ -481,7 +485,7 @@ void V6533NMonitor::CreateChannelFrame()
             fChStatusLED[ch][l]->setToolTip( ledNames[l] );
             ledLayout->addWidget( fChStatusLED[ch][l], 0, l );
         }
-        fChStatusLED[ch][0]->SetColor( SColor_t::GREEN );// the ON LED should be green
+        fChStatusLED[ch][0]->SetColor( style::green );// the ON LED should be green
 
         ledFrame->setLayout( ledLayout );
 

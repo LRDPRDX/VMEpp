@@ -5,7 +5,7 @@
 
 #include "V2718Window.h"
 
-class SButton;
+class QPushButton;
 class QComboBox;
 class QSpinBox;
 class QTextEdit;
@@ -23,7 +23,7 @@ class Connection : public QDialog
     private :
         V2718Window  *fParent;
 
-        SButton     *fConnectButton, *fCancelButton;
+        QPushButton     *fConnectButton, *fCancelButton;
         QComboBox   *fTypeCombo;
         QSpinBox    *fLinkSpin, *fConetSpin;
 
@@ -47,7 +47,7 @@ class DeviceDialog : public QDialog
 
         QComboBox   *fDeviceCombo;
         QSpinBox    *fAddressSpin;
-        SButton     *fAddButton, *fCancelButton;
+        QPushButton     *fAddButton, *fCancelButton;
         QTextEdit   *fInfoText;
 
     public :

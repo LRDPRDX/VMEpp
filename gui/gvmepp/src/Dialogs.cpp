@@ -49,10 +49,10 @@ Connection::Connection( V2718Window *parent ) :
         settingsLayout->addWidget( fConetSpin );
 
     // Lower layout (buttons)
-    fConnectButton = new SButton( "Connect", SColor_t::VIOLET );
+    fConnectButton = new QPushButton( "Connect" );
     connect( fConnectButton, &QPushButton::clicked, this, &Connection::Connect );
 
-    fCancelButton = new SButton( "Cancel", SColor_t::RED );
+    fCancelButton = new QPushButton( "Cancel" );
     connect( fCancelButton, &QPushButton::clicked, this, &Connection::Cancel );
 
     auto *buttonsLayout = new QHBoxLayout();
@@ -122,11 +122,13 @@ DeviceDialog::DeviceDialog( V2718Window *parent ) :
         settingsLayout->setStretchFactor( fAddressSpin, 1  );
 
     // Lower layout (buttons)
-    fAddButton = new SButton( "Add", SColor_t::VIOLET );
-    connect( fAddButton, &SButton::clicked, this, &DeviceDialog::Add );
+    fAddButton = new QPushButton( "Add" );
+        ColorButton( fAddButton, style::yellow );
+        connect( fAddButton, &QPushButton::clicked, this, &DeviceDialog::Add );
 
-    fCancelButton = new SButton( "Cancel", SColor_t::RED );
-    connect( fCancelButton, &SButton::clicked, this, &DeviceDialog::Cancel );
+    fCancelButton = new QPushButton( "Cancel" );
+        ColorButton( fCancelButton, style::red );
+        connect( fCancelButton, &QPushButton::clicked, this, &DeviceDialog::Cancel );
 
     auto *buttonsLayout = new QHBoxLayout();
         buttonsLayout->addWidget( fAddButton );

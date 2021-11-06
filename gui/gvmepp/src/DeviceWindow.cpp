@@ -33,15 +33,17 @@ DeviceWindow::DeviceWindow( QWidget *parent ) :
 //**********************************
 void DeviceWindow::CreateBottomFrame()
 {
-    fWriteButton = new SButton( "WRITE", SColor_t::VIOLET );
+    fWriteButton = new QPushButton( "WRITE" );
+        ColorButton( fWriteButton, QColor( style::yellow ) );
         connect( this, &DeviceWindow::Connected, fWriteButton, &QPushButton::setEnabled );
         connect( fWriteButton, &QPushButton::clicked, this, &DeviceWindow::WriteConfig );
 
-    fReadButton = new SButton( "READ", SColor_t::VIOLET );
+    fReadButton = new QPushButton( "READ" );
+        ColorButton( fReadButton, QColor( style::yellow ) );
         connect( this, &DeviceWindow::Connected, fReadButton, &QPushButton::setEnabled );
         connect( fReadButton, &QPushButton::clicked, this, &DeviceWindow::ReadConfig );
 
-    fBottomFrame = new SFrame( SColor_t::VIOLET ); 
+    fBottomFrame = new SFrame( SColor_t::VIOLET );
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
         buttonLayout->addWidget( fWriteButton );
@@ -122,7 +124,7 @@ void DeviceWindow::OnError( const VException& error )
     statusBar()->showMessage( QString( "Error %1 : %2" ).arg( QString::number( static_cast<int>(error.GetErrorCode()) ),
                                                               QString::fromStdString( error.GetErrorMessage() ) ) );
     this->DoOnError( error );
-    
+ 
     ErrorMessageBox* msg = new ErrorMessageBox( error, this );
     msg->show();
 }

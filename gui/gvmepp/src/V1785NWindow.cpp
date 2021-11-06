@@ -15,7 +15,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QDockWidget>
@@ -87,7 +86,7 @@ void V1785NWindow::CreateGeneralTab()
 
     QVBoxLayout *vLayout = new QVBoxLayout();
 
-    QGroupBox *suppGroup = new QGroupBox( "Suppression" );
+    SGroupBox *suppGroup = new SGroupBox( "Suppression" );
     QGridLayout *suppLayout = new QGridLayout();
 
     fZeroSuppCheck = new QCheckBox( "Zero suppression" );
@@ -105,7 +104,7 @@ void V1785NWindow::CreateGeneralTab()
 
     suppGroup->setLayout( suppLayout );
 
-    QGroupBox *irqGroup = new QGroupBox( "Interrupt" );
+    SGroupBox *irqGroup = new SGroupBox( "Interrupt" );
     QGridLayout *irqLayout = new QGridLayout();
 
     QLabel* irqLevelLabel = new QLabel( "Level:" );
@@ -156,7 +155,7 @@ void V1785NWindow::CreateChannelsTab()
         QWidget* tab = new QWidget();
         QVBoxLayout* vLayout = new QVBoxLayout();
 
-        QGroupBox* lowGroup = new QGroupBox( "Low range" );
+        SGroupBox* lowGroup = new SGroupBox( "Low range" );
         QGridLayout* lowLayout = new QGridLayout();
         fChEnLowCheck[ch] = new QCheckBox( "Enable" );
         QLabel* lowLabel = new QLabel( "Threshold:" );
@@ -168,7 +167,7 @@ void V1785NWindow::CreateChannelsTab()
         lowLayout->addWidget( fChThrLowSpin[ch], 0, 2 );
         lowGroup->setLayout( lowLayout );
 
-        QGroupBox* highGroup = new QGroupBox( "High range" );
+        SGroupBox* highGroup = new SGroupBox( "High range" );
         QGridLayout* highLayout = new QGridLayout();
         fChEnHighCheck[ch] = new QCheckBox( "Enable" );
         QLabel* highLabel = new QLabel( "Threshold:" );
@@ -200,7 +199,7 @@ void V1785NWindow::CreatePlotTab()
 
     QVBoxLayout* vLayout = new QVBoxLayout();
 
-    QGroupBox* histGroup = new QGroupBox( "Histogram" );
+    SGroupBox* histGroup = new SGroupBox( "Histogram" );
     QGridLayout* histLayout = new QGridLayout();
 
     QLabel* binLabel = new QLabel( "# of bins:" );
@@ -232,13 +231,15 @@ void V1785NWindow::CreatePlotTab()
     vLayout->addWidget( histGroup );
 
     // Buttons
-    fStartButton = new SButton( "START", SColor_t::VIOLET );
-        connect( this, &V1785NWindow::Connected, fStartButton, &SButton::setEnabled );
-        connect( fStartButton, &SButton::clicked, this, &V1785NWindow::InitHistogram );
-        connect( fStartButton, &SButton::clicked, this, &V1785NWindow::StartTimer );
-    fStopButton = new SButton( "STOP", SColor_t::RED );
-        connect( this, &V1785NWindow::Connected, fStopButton, &SButton::setEnabled );
-        connect( fStopButton, &SButton::clicked, this, &V1785NWindow::StopTimer );
+    fStartButton = new QPushButton( "START" );
+        ColorButton( fStartButton, style::yellow );
+        connect( this, &V1785NWindow::Connected, fStartButton, &QPushButton::setEnabled );
+        connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::InitHistogram );
+        connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::StartTimer );
+    fStopButton = new QPushButton( "STOP" );
+        ColorButton( fStopButton, style::red );
+        connect( this, &V1785NWindow::Connected, fStopButton, &QPushButton::setEnabled );
+        connect( fStopButton, &QPushButton::clicked, this, &V1785NWindow::StopTimer );
 
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();

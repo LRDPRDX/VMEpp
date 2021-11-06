@@ -6,7 +6,7 @@
 
 
 class QAction;
-class SButton;
+class QPushButton;
 class QComboBox;
 class QSpinBox;
 class QTabWidget;
@@ -29,7 +29,7 @@ class V895Window : public SlaveWindow
         QCheckBox   *fEnableCheck[N_CH];
         QSpinBox    *fWidthSpin[N_GROUPS];
         QSpinBox    *fMajLevelSpin;
-        SButton     *fTestButton;
+        QPushButton     *fTestButton;
 
     protected :
         void CreateActions();

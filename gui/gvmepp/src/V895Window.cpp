@@ -11,7 +11,6 @@
 #include <QHBoxLayout>
 #include <QFormLayout>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -54,11 +53,11 @@ void V895Window::CreateCentralWidget()
     QVBoxLayout *vLayout = new QVBoxLayout();
 
     QHBoxLayout *chLayout = new QHBoxLayout();
-    QGroupBox *chGroup = new QGroupBox( "Channels" );
+    SGroupBox *chGroup = new SGroupBox( "Channels" );
 
     for( int nG = 0; nG < N_GROUPS; ++nG )
     {
-        QGroupBox *groupOfEight = new QGroupBox( QString::number(nG * N_CH_IN_GROUP) +
+        SGroupBox *groupOfEight = new SGroupBox( QString::number(nG * N_CH_IN_GROUP) +
                                                  "-" + QString::number((nG + 1) * N_CH_IN_GROUP - 1) );
         QGridLayout *gridLayout = new QGridLayout();
         for( uint8_t i = 0; i < N_CH_IN_GROUP; ++i )
@@ -89,7 +88,7 @@ void V895Window::CreateCentralWidget()
     chGroup->setLayout( chLayout );
     vLayout->addWidget( chGroup );
 
-    QGroupBox *commonGroup = new QGroupBox( "Common" );
+    SGroupBox *commonGroup = new SGroupBox( "Common" );
     QHBoxLayout *commLayout = new QHBoxLayout();
 
     QLabel *majLabel = new QLabel( "Majority level: " );
@@ -98,7 +97,8 @@ void V895Window::CreateCentralWidget()
         fMajLevelSpin->setRange( 0, N_CH );
         fMajLevelSpin->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
 
-    fTestButton = new SButton( "TEST", SColor_t::VIOLET );
+    fTestButton = new QPushButton( "TEST" );
+        ColorButton( fTestButton, style::yellow );
         fTestButton->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
         connect( this, &V895Window::Connected, fTestButton, &QPushButton::setEnabled );
         connect( fTestButton, &QPushButton::clicked, this, &V895Window::SendTest );

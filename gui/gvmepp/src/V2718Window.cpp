@@ -14,7 +14,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
-#include <QGroupBox>
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QDockWidget>
@@ -99,7 +98,7 @@ void V2718Window::CreateIOTab()
 
     QVBoxLayout *vLayout = new QVBoxLayout();
 
-    QGroupBox *outGroup = new QGroupBox( tr("Outputs") );
+    SGroupBox *outGroup = new SGroupBox( tr("Outputs") );
     QGridLayout *outLayout = new QGridLayout();
     QString vmeNames[N_OUTS] = { "DS", "AS", "DTACK", "BERR", "LMON" };
     QString miscNames[N_OUTS] = { "Pulser A", "Pulser A", "Pulser B", "Pulser B", "Scaler END" };
@@ -130,9 +129,8 @@ void V2718Window::CreateIOTab()
         outLayout->addWidget( fOutLedCombo[i], i + 1, 5 );
     }
     outGroup->setLayout( outLayout );
-    outGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
 
-    QGroupBox *inGroup = new QGroupBox( tr("Inputs") );
+    SGroupBox *inGroup = new SGroupBox( tr("Inputs") );
     QGridLayout *inLayout = new QGridLayout();
     for( uint8_t i = 0; i < N_INS; ++i )
     {
@@ -174,7 +172,6 @@ void V2718Window::CreateIOTab()
         inLayout->addWidget( fInLedCombo[i], i, 5 );
     }
     inGroup->setLayout( inLayout );
-    inGroup->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum );
 
     vLayout->addWidget( outGroup );
     vLayout->addWidget( inGroup );
@@ -194,7 +191,7 @@ void V2718Window::CreatePulserTab()
     {
         QString pulserName = (i == cvPulserA) ? "Pulser A" : "Pulser B";
 
-        QGroupBox *pulserGroup = new QGroupBox( pulserName );
+        SGroupBox *pulserGroup = new SGroupBox( pulserName );
         QGridLayout *pulLayout = new QGridLayout();
 
         QLabel* freqLabel = new QLabel( tr("Frequency(Hz):") );
@@ -226,12 +223,14 @@ void V2718Window::CreatePulserTab()
         SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
         QHBoxLayout *buttonLayout = new QHBoxLayout();
 
-        fPulStartButton[i] = new SButton( "START", SColor_t::VIOLET );
-            connect( this, &V2718Window::Connected, fPulStartButton[i], &SButton::setEnabled );
-            connect( fPulStartButton[i], &SButton::clicked, this, &V2718Window::PulserSlot );
-        fPulStopButton[i] = new SButton( "STOP", SColor_t::RED );
-            connect( this, &V2718Window::Connected, fPulStopButton[i], &SButton::setEnabled );
-            connect( fPulStopButton[i], &SButton::clicked, this, &V2718Window::PulserSlot );
+        fPulStartButton[i] = new QPushButton( "START" );
+            ColorButton( fPulStartButton[i], QColor( style::yellow ) );
+            connect( this, &V2718Window::Connected, fPulStartButton[i], &QPushButton::setEnabled );
+            connect( fPulStartButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
+        fPulStopButton[i] = new QPushButton( "STOP" );
+            ColorButton( fPulStopButton[i], QColor( style::red ) );
+            connect( this, &V2718Window::Connected, fPulStopButton[i], &QPushButton::setEnabled );
+            connect( fPulStopButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
 
         buttonLayout->addWidget( fPulStartButton[i] );
         buttonLayout->addWidget( fPulStopButton[i] );
@@ -254,7 +253,7 @@ void V2718Window::CreatePulserTab()
         vLayout->addWidget( pulserGroup );
     }
     // Scaler
-    QGroupBox *scalerGroup = new QGroupBox( "Scaler" );
+    SGroupBox *scalerGroup = new SGroupBox( "Scaler" );
     QGridLayout *scalLayout = new QGridLayout();
 
     QLabel *limitLabel = new QLabel( "Limit:" );
@@ -266,15 +265,18 @@ void V2718Window::CreatePulserTab()
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
-    fScalGateButton = new SButton( "GATE", SColor_t::VIOLET );
-        connect( this, &V2718Window::Connected, fScalGateButton, &SButton::setEnabled );
-        connect( fScalGateButton, &SButton::clicked, this, &V2718Window::StartScaler );
-    fScalStopButton = new SButton( "STOP", SColor_t::RED );
-        connect( this, &V2718Window::Connected, fScalStopButton, &SButton::setEnabled );
-        connect( fScalStopButton, &SButton::clicked, this, &V2718Window::StopScaler );
-    fScalResetButton = new SButton( "RESET", SColor_t::VIOLET );
-        connect( this, &V2718Window::Connected, fScalResetButton, &SButton::setEnabled );
-        connect( fScalResetButton, &SButton::clicked, this, &V2718Window::ResetScaler );
+    fScalGateButton = new QPushButton( "GATE" );
+        ColorButton( fScalGateButton, style::yellow );
+        connect( this, &V2718Window::Connected, fScalGateButton, &QPushButton::setEnabled );
+        connect( fScalGateButton, &QPushButton::clicked, this, &V2718Window::StartScaler );
+    fScalStopButton = new QPushButton( "STOP" );
+        ColorButton( fScalStopButton, style::red );
+        connect( this, &V2718Window::Connected, fScalStopButton, &QPushButton::setEnabled );
+        connect( fScalStopButton, &QPushButton::clicked, this, &V2718Window::StopScaler );
+    fScalResetButton = new QPushButton( "RESET" );
+        ColorButton( fScalResetButton, style::yellow );
+        connect( this, &V2718Window::Connected, fScalResetButton, &QPushButton::setEnabled );
+        connect( fScalResetButton, &QPushButton::clicked, this, &V2718Window::ResetScaler );
 
     buttonLayout->addWidget( fScalGateButton );
     buttonLayout->addWidget( fScalStopButton );
@@ -660,25 +662,25 @@ void Display::CreateDisplay()
     for( size_t i = 0; i < N_LED/2; ++i )
     {
         fLED[i] = new SLedIndicatorWithLabel( fLEDNames[i], false );
-        fLED[i]->SetColor( SColor_t::VIOLET );
+        fLED[i]->SetColor( style::green );
         lowerLayout->addWidget( fLED[i], i, 0 );
     }
 
     for( size_t i = N_LED/2; i < N_LED; ++i )
     {
         fLED[i] = new SLedIndicatorWithLabel( fLEDNames[i], true );
-        fLED[i]->SetColor( SColor_t::VIOLET );
+        fLED[i]->SetColor( style::green );
         lowerLayout->addWidget( fLED[i], i - N_LED/2, 1 );
     }
-    fLED[GetLED("BERR")]->SetColor( SColor_t::RED );
+    fLED[GetLED("BERR")]->SetColor( style::red );
 
     lowerLayout->setSpacing( 1 );
     lowerFrame->setLayout( lowerLayout );
     layout->addWidget( lowerFrame );
 
-    fUpdateButton = new SButton( "UPDATE", SColor_t::VIOLET );
-        connect( fUpdateButton, &SButton::clicked, fController, &V2718Window::UpdateDisplay );
-        connect( fController, &V2718Window::Connected, fUpdateButton, &SButton::setEnabled );
+    fUpdateButton = new QPushButton( "UPDATE" );
+        connect( fUpdateButton, &QPushButton::clicked, fController, &V2718Window::UpdateDisplay );
+        connect( fController, &V2718Window::Connected, fUpdateButton, &QPushButton::setEnabled );
 
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();

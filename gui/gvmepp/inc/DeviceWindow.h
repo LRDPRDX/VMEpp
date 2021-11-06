@@ -7,7 +7,7 @@
 
 #include "Prelude.h"
 
-class SButton;
+class QPushButton;
 class SFrame;
 class QAction;
 class QMenu;
@@ -35,7 +35,7 @@ class DeviceWindow : public QMainWindow
         QMenu           *fViewMenu;
         QAction         *fViewStatusBarAction;
 
-        SButton         *fWriteButton, *fReadButton;
+        QPushButton         *fWriteButton, *fReadButton;
         SFrame          *fBottomFrame;
 
     protected :

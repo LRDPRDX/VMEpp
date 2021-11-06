@@ -8,7 +8,7 @@
 #include "modules/V2718.h"
 
 class QAction;
-class SButton;
+class QPushButton;
 class QComboBox;
 class QMenu;
 class QSpinBox;
@@ -56,11 +56,11 @@ class V2718Window : public DeviceWindow
         //Pulsers and Scaler tab
         QSpinBox  *fPulFreqSpin[N_PULSERS], *fPulDutySpin[N_PULSERS], *fPulNSpin[N_PULSERS];
         QComboBox *fPulStartCombo[N_PULSERS], *fPulStopCombo[N_PULSERS];
-        SButton *fPulStartButton[N_PULSERS], *fPulStopButton[N_PULSERS];
+        QPushButton *fPulStartButton[N_PULSERS], *fPulStopButton[N_PULSERS];
         QSpinBox  *fScalLimitSpin;
         QComboBox *fScalHitCombo, *fScalGateCombo, *fScalResetCombo;
         QCheckBox *fScalAutoCheck;
-        SButton *fScalGateButton, *fScalStopButton, *fScalResetButton;
+        QPushButton *fScalGateButton, *fScalStopButton, *fScalResetButton;
 
     protected :
         void closeEvent( QCloseEvent *event ) override;
@@ -111,7 +111,7 @@ class Display : public QWidget
 
         QLineEdit               *fAddressText, *fDataText;
         SLedIndicatorWithLabel  *fLED[N_LED];
-        SButton                 *fUpdateButton;
+        QPushButton                 *fUpdateButton;
 
     protected :
         void CreateDisplay();

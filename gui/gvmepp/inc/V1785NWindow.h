@@ -4,7 +4,7 @@
 #include "SlaveWindow.h"
 
 class QAction;
-class SButton;
+class QPushButton;
 class QComboBox;
 class QMenu;
 class QSpinBox;
@@ -59,7 +59,7 @@ class V1785NWindow : public SlaveWindow
         QSpinBox  *fChThrHighSpin[N_CH];
 
     private :
-        SButton *fStartButton, *fStopButton;
+        QPushButton *fStartButton, *fStopButton;
         QSpinBox *fBinSpin, *fStartHistSpin, *fStopHistSpin;
 
         QwtPlotHistogram*   fHisto;
