@@ -127,7 +127,7 @@ DeviceDialog::DeviceDialog( V2718Window *parent ) :
         connect( fAddButton, &QPushButton::clicked, this, &DeviceDialog::Add );
 
     fCancelButton = new QPushButton( "Cancel" );
-        ColorButton( fCancelButton, style::red );
+        ColorButton( fCancelButton, style::pink );
         connect( fCancelButton, &QPushButton::clicked, this, &DeviceDialog::Cancel );
 
     auto *buttonsLayout = new QHBoxLayout();

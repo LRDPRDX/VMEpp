@@ -142,7 +142,7 @@ void V6533NWindow::CreateCentralWidget()
         fOffButton[ch] = new QPushButton( "OFF" );
             connect( this, &DeviceWindow::Connected, fOffButton[ch], &QPushButton::setEnabled );
             connect( fOffButton[ch], &QPushButton::clicked, this, &V6533NWindow::ChannelOff );
-            ColorButton( fOffButton[ch], style::red );
+            ColorButton( fOffButton[ch], style::pink );
 
         buttonLayout->addWidget( fOnButton[ch] );
         buttonLayout->addWidget( fOffButton[ch] );
@@ -389,7 +389,7 @@ void V6533NMonitor::CreateWidgets()
         connect( fContainer, &V6533NWindow::Connected, fStartButton, &QPushButton::setEnabled );
         connect( fStartButton, &QPushButton::clicked, this, &V6533NMonitor::StartTimer );
     fStopButton = new QPushButton( "STOP" );
-        ColorButton( fStopButton, style::red );
+        ColorButton( fStopButton, style::pink );
         connect( fContainer, &V6533NWindow::Connected, fStopButton, &QPushButton::setEnabled );
         connect( fStopButton, &QPushButton::clicked, this, &V6533NMonitor::StopTimer );
 

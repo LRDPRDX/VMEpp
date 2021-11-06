@@ -228,7 +228,7 @@ void V2718Window::CreatePulserTab()
             connect( this, &V2718Window::Connected, fPulStartButton[i], &QPushButton::setEnabled );
             connect( fPulStartButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
         fPulStopButton[i] = new QPushButton( "STOP" );
-            ColorButton( fPulStopButton[i], QColor( style::red ) );
+            ColorButton( fPulStopButton[i], QColor( style::pink ) );
             connect( this, &V2718Window::Connected, fPulStopButton[i], &QPushButton::setEnabled );
             connect( fPulStopButton[i], &QPushButton::clicked, this, &V2718Window::PulserSlot );
 
@@ -270,7 +270,7 @@ void V2718Window::CreatePulserTab()
         connect( this, &V2718Window::Connected, fScalGateButton, &QPushButton::setEnabled );
         connect( fScalGateButton, &QPushButton::clicked, this, &V2718Window::StartScaler );
     fScalStopButton = new QPushButton( "STOP" );
-        ColorButton( fScalStopButton, style::red );
+        ColorButton( fScalStopButton, style::pink );
         connect( this, &V2718Window::Connected, fScalStopButton, &QPushButton::setEnabled );
         connect( fScalStopButton, &QPushButton::clicked, this, &V2718Window::StopScaler );
     fScalResetButton = new QPushButton( "RESET" );

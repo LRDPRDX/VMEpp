@@ -237,7 +237,7 @@ void V1785NWindow::CreatePlotTab()
         connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::InitHistogram );
         connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::StartTimer );
     fStopButton = new QPushButton( "STOP" );
-        ColorButton( fStopButton, style::red );
+        ColorButton( fStopButton, style::pink );
         connect( this, &V1785NWindow::Connected, fStopButton, &QPushButton::setEnabled );
         connect( fStopButton, &QPushButton::clicked, this, &V1785NWindow::StopTimer );
 

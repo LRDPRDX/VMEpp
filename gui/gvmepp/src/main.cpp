@@ -8,12 +8,6 @@ int main( int argc, char *argv[] )
 {
     QApplication app( argc, argv );
 
-    //QColor darkGray(53, 53, 53);
-    //QColor gray(128, 128, 128);
-    //QColor black(25, 25, 25);
-    //QColor blue( style::violet );
-    //QColor white( style::white );
-
     QPalette darkPalette;
     /****** ALL GROUPS ******/
     darkPalette.setColor( QPalette::Window,             style::darkGray);
@@ -47,6 +41,10 @@ int main( int argc, char *argv[] )
                           QPalette::Light, style::darkGray);
 
     qApp->setPalette( darkPalette );
+
+    /****** FONT ******/
+    QFont font( "Hermit", 9 );
+    qApp->setFont( font );
 
     V2718Window window;
 
