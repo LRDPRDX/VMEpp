@@ -13,6 +13,7 @@
 #include "V2718Window.h"
 #include "Dialogs.h"
 #include "Style.h"
+#include "qnamespace.h"
 
 using namespace vmepp;
 
@@ -90,20 +91,15 @@ void DeviceWindow::CreateMenu()
 //*******************
 void DeviceWindow::closeEvent( QCloseEvent *event )
 {
-    const QMessageBox::StandardButton ret =
-        QMessageBox::warning( this,
-                              tr( "Exit" ),
-                              tr( "Are you sure?" ),
-                              QMessageBox::Ok | QMessageBox::Cancel );
-    switch( ret )
+    OkCancelDialog d( "Are you sure?" );
+    int ret = d.exec();
+    if( ret == QDialog::Accepted )
     {
-        case( QMessageBox::Ok ) :
-            Disconnect();
-            event->accept();
-            break;
-        default :
-            event->ignore();
-            break;
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
     }
 }
 
@@ -124,7 +120,7 @@ void DeviceWindow::OnError( const VException& error )
     statusBar()->showMessage( QString( "Error %1 : %2" ).arg( QString::number( static_cast<int>(error.GetErrorCode()) ),
                                                               QString::fromStdString( error.GetErrorMessage() ) ) );
     this->DoOnError( error );
- 
+
     ErrorMessageBox* msg = new ErrorMessageBox( error, this );
     msg->show();
 }

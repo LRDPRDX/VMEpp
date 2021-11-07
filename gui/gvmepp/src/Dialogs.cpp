@@ -50,10 +50,12 @@ Connection::Connection( V2718Window *parent ) :
 
     // Lower layout (buttons)
     fConnectButton = new QPushButton( "Connect" );
-    connect( fConnectButton, &QPushButton::clicked, this, &Connection::Connect );
+        ColorButton( fConnectButton, style::yellow );
+        connect( fConnectButton, &QPushButton::clicked, this, &Connection::Connect );
 
     fCancelButton = new QPushButton( "Cancel" );
-    connect( fCancelButton, &QPushButton::clicked, this, &Connection::Cancel );
+        ColorButton( fCancelButton, style::red );
+        connect( fCancelButton, &QPushButton::clicked, this, &Connection::Cancel );
 
     auto *buttonsLayout = new QHBoxLayout();
         buttonsLayout->addWidget( fConnectButton );
@@ -185,4 +187,27 @@ ErrorMessageBox::ErrorMessageBox( const VException& e, QWidget *parent ) :
 
         setModal( true );
         setAttribute( Qt::WA_DeleteOnClose, true );
+}
+
+OkCancelDialog::OkCancelDialog( const QString& message, QWidget* parent ) :
+    QDialog( parent )
+{
+    setModal( true );
+
+    QGridLayout* layout = new QGridLayout();
+
+    QLabel* text = new QLabel( message );
+    layout->addWidget( text, 0, 0, 1, 2 );
+
+    fOkButton = new QPushButton( "OK" );
+        ColorButton( fOkButton, style::yellow );
+        connect( fOkButton, &QPushButton::clicked, this, &QDialog::accept );
+    fCancelButton = new QPushButton( "Cancel" );
+        ColorButton( fCancelButton, style::red );
+        connect( fCancelButton, &QPushButton::clicked, this, &QDialog::reject );
+
+    layout->addWidget( fOkButton, 1, 0 );
+    layout->addWidget( fCancelButton, 1, 1 );
+
+    setLayout( layout );
 }

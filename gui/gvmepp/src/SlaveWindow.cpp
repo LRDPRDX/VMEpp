@@ -1,5 +1,6 @@
 #include <QStatusBar>
 #include <QAction>
+#include <QDebug>
 
 #include "SlaveWindow.h"
 #include "V2718Window.h"
@@ -12,6 +13,7 @@ SlaveWindow::SlaveWindow( V2718Window *parent ) :
     fParent( parent ),
     fDevice( nullptr )
 {
+    setAttribute( Qt::WA_DeleteOnClose, true );
     connect( fParent, &V2718Window::Connected, this, &SlaveWindow::OnControllerDisconnect );
 
     CreateMenu();

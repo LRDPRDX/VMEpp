@@ -2,6 +2,7 @@
 
 #include <QDialog>
 #include <QMessageBox>
+#include <QDialogButtonBox>
 
 #include "V2718Window.h"
 
@@ -64,4 +65,16 @@ class ErrorMessageBox : public QMessageBox
 
     public :
         ErrorMessageBox( const vmepp::VException& e, QWidget *parent = nullptr );
+};
+
+class OkCancelDialog : public QDialog
+{
+    Q_OBJECT
+
+    protected :
+        QPushButton *fOkButton, *fCancelButton;
+
+    public :
+        OkCancelDialog( const QString& message, QWidget* parent = nullptr );
+        ~OkCancelDialog() override = default;
 };

@@ -569,19 +569,15 @@ void V2718Window::Disconnect()
 
 void V2718Window::closeEvent( QCloseEvent *event )
 {
-    const QMessageBox::StandardButton ret =
-        QMessageBox::warning( this,
-                              tr( "Exit" ),
-                              tr( "Are you sure?" ),
-                              QMessageBox::Ok | QMessageBox::Cancel );
-    switch( ret )
+    OkCancelDialog d( "Are you sure? " );
+    int ret = d.exec();
+    if( ret == QDialog::Accepted )
     {
-        case( QMessageBox::Ok ) :
-            event->accept();
-            break;
-        default :
-            event->ignore();
-            break;
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
     }
 }
 
