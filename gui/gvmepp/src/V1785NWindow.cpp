@@ -21,9 +21,11 @@
 #include <QLineEdit>
 #include <QCloseEvent>
 #include <QTabWidget>
+#include <QMutexLocker>
 #include "qnamespace.h"
 
 #include <qwt_plot_histogram.h>
+#include <qwt_plot_marker.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot.h>
 
@@ -48,6 +50,8 @@ V1785NWindow::V1785NWindow( uint32_t address, V2718Window* parent ) :
     CreateTimer();
     CreateMenu();
     CreateCentralWidget();
+
+    connect( &fThread, &V1785NThread::DataReady, this, &V1785NWindow::UpdateData );
 
     emit Connected( false );
 
@@ -240,6 +244,7 @@ void V1785NWindow::CreatePlotTab()
         ColorButton( fStopButton, style::pink );
         connect( this, &V1785NWindow::Connected, fStopButton, &QPushButton::setEnabled );
         connect( fStopButton, &QPushButton::clicked, this, &V1785NWindow::StopTimer );
+        connect( fStopButton, &QPushButton::clicked, &fThread, &V1785NThread::OnStop );
 
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -267,8 +272,13 @@ void V1785NWindow::CreatePlotTab()
         fHisto->setBrush( QBrush( QColor( style::blue ) ) );
     fHisto->attach( fPlot );
 
+    fStatistics = new QwtPlotMarker();
+    fStatistics->attach( fPlot );
+
     fPlot->replot();
     fPlot->show();
+
+    UpdateStat( 0 );
 
     vLayout->addWidget( fPlot );
 
@@ -280,7 +290,7 @@ void V1785NWindow::CreateTimer()
 {
     fTimer = new QTimer( this );
         fTimer->setInterval( 1000 );
-    connect( fTimer, &QTimer::timeout, this, &V1785NWindow::UpdatePlot );
+    connect( fTimer, &QTimer::timeout, &fThread, &V1785NThread::OnDump );
     connect( this, &V1785NWindow::Connected, this, &V1785NWindow::StopTimer );
     connect( this, &V1785NWindow::Error, this, &V1785NWindow::StopTimer );
 }
@@ -367,11 +377,10 @@ void V1785NWindow::SpreadConfig( const QVariant& qConfig )
 
 void V1785NWindow::StartTimer()
 {
-    if( fTimer->isActive() )
+    if( not fTimer->isActive() )
     {
-        return;
+        fTimer->start();
     }
-    fTimer->start();
 }
 
 void V1785NWindow::StopTimer()
@@ -382,29 +391,11 @@ void V1785NWindow::StopTimer()
     }
 }
 
-void V1785NWindow::UpdatePlot()
+void V1785NWindow::UpdateData( const QVector<QwtIntervalSample>& data, unsigned nEvents )
 {
-    size_t N = fHisto->dataSize();
-    QVector<QwtIntervalSample> newData( N );
-    for( size_t i = 0; i < N; ++i )
-    {
-        newData[i] = fHisto->sample( i );
-    }
-
-    std::random_device rd{};
-    std::mt19937 gen{rd()};
-    std::normal_distribution<> g( N / 2., N / 20. );
-    for( size_t n = 0; n < 10000; ++n )
-    {
-        int rand = std::round( g(gen) );
-        if( rand >= 0 && rand < N )
-        {
-            newData[ rand ].value += 1;
-        }
-    }
-
-    fHisto->setSamples( newData );
+    fHisto->setSamples( data );
     fPlot->replot();
+    UpdateStat( nEvents );
 }
 
 void V1785NWindow::InitHistogram()
@@ -417,4 +408,116 @@ void V1785NWindow::InitHistogram()
     }
 
     fHisto->setSamples( histData );
+    fThread.OnStart( N_BITS );
+}
+
+void V1785NWindow::UpdateStat( unsigned nEvents )
+{
+    QwtScaleMap xMap = fPlot->canvasMap( QwtPlot::xBottom );
+        double x = (xMap.s1() + xMap.s2()) * 0.8;
+    QwtScaleMap yMap = fPlot->canvasMap( QwtPlot::yLeft );
+        double y = (yMap.s1() + yMap.s2()) * 0.8;
+    fStatistics->setValue( x, y );
+    QwtText text = QString( "N = %1" ).arg( nEvents );
+        text.setColor( style::white );
+    fStatistics->setLabel( text );
+}
+
+
+//***************************
+//****** V1785N THREAD ******
+//***************************
+
+V1785NThread::V1785NThread( QObject* parent ) :
+    QThread( parent ),
+
+    fAbortRequest( false ),
+    fRestartRequest( false ),
+    fDumpRequest( false ),
+
+    fSize( 0 )
+{
+    qRegisterMetaType<QVector<QwtIntervalSample>>();
+}
+
+V1785NThread::~V1785NThread()
+{
+    fMutex.lock();
+        fAbortRequest = true;
+        fCondition.wakeOne();
+    fMutex.unlock();
+
+    wait();
+}
+
+void V1785NThread::OnStart( size_t size )
+{
+    QMutexLocker locker( &fMutex );
+    fAbortRequest = false;
+    fSize = size;
+
+    if( not isRunning() )
+    {
+        start( LowPriority );
+    }
+    else
+    {
+        fRestartRequest = true;
+        fCondition.wakeOne();
+    }
+}
+
+void V1785NThread::OnStop()
+{
+    QMutexLocker locker( &fMutex );
+    fAbortRequest = true;
+    fCondition.wakeOne();
+}
+
+void V1785NThread::OnDump()
+{
+    QMutexLocker locker( &fMutex );
+    fDumpRequest = true;
+}
+
+void V1785NThread::run()
+{
+    forever
+    {
+        fMutex.lock();
+            const size_t size = fSize;
+        fMutex.unlock();
+
+        QVector<QwtIntervalSample> data( size );
+        unsigned nEvents = 0;
+
+        for( size_t bin = 0; bin < size; ++bin )
+        {
+            data[bin] = QwtIntervalSample( 0.0, bin, bin + 1 );
+        }
+
+        forever
+        {
+            if( fAbortRequest ) return;
+
+            if( fDumpRequest )
+            {
+                emit DataReady( data, nEvents );
+                fMutex.lock();
+                    fDumpRequest = false;
+                fMutex.unlock();
+            }
+
+            if( fRestartRequest )
+            {
+                break;
+            }
+            nEvents++;
+        }
+        // The only way to break from the above forever loop is
+        // the fRestartRequest flag
+        fMutex.lock();
+            fRestartRequest = false;
+        fMutex.unlock();
+    }
 }

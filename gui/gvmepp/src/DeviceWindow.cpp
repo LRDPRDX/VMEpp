@@ -91,8 +91,9 @@ void DeviceWindow::CreateMenu()
 //*******************
 void DeviceWindow::closeEvent( QCloseEvent *event )
 {
-    OkCancelDialog d( "Are you sure?" );
-    int ret = d.exec();
+    OkCancelDialog* d = new OkCancelDialog( "Are you sure?", this );
+        d->setAttribute( Qt::WA_DeleteOnClose, true );
+    int ret = d->exec();
     if( ret == QDialog::Accepted )
     {
         event->accept();

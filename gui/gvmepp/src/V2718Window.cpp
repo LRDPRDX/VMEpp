@@ -569,8 +569,9 @@ void V2718Window::Disconnect()
 
 void V2718Window::closeEvent( QCloseEvent *event )
 {
-    OkCancelDialog d( "Are you sure? " );
-    int ret = d.exec();
+    OkCancelDialog* d = new OkCancelDialog( "Are you sure?", this );
+        d->setAttribute( Qt::WA_DeleteOnClose, true );
+    int ret = d->exec();
     if( ret == QDialog::Accepted )
     {
         event->accept();
@@ -658,14 +659,14 @@ void Display::CreateDisplay()
     for( size_t i = 0; i < N_LED/2; ++i )
     {
         fLED[i] = new SLedIndicatorWithLabel( fLEDNames[i], false );
-        fLED[i]->SetColor( style::green );
+        fLED[i]->SetColor( style::yellow );
         lowerLayout->addWidget( fLED[i], i, 0 );
     }
 
     for( size_t i = N_LED/2; i < N_LED; ++i )
     {
         fLED[i] = new SLedIndicatorWithLabel( fLEDNames[i], true );
-        fLED[i]->SetColor( style::green );
+        fLED[i]->SetColor( style::yellow );
         lowerLayout->addWidget( fLED[i], i - N_LED/2, 1 );
     }
     fLED[GetLED("BERR")]->SetColor( style::red );

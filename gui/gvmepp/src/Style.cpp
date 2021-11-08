@@ -37,7 +37,7 @@ SLedIndicator::SLedIndicator( int size, QWidget *parent ) :
 
 void SLedIndicator::SetState( bool state )
 {
-    QString on =       QString( "#SLedIndicator {color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2 ); border-radius: %3px; border: 1px solid #000000; }" ).arg( fColor.lighter().name(), fColor.darker().name(), QString::number( fSize / 5 ) );
+    QString on =       QString( "#SLedIndicator {color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2 ); border-radius: %3px; border: 1px solid #000000; }" ).arg( fColor.name(), fColor.darker().name(), QString::number( fSize / 5 ) );
     QString off =      QString( "#SLedIndicator {color: white;background-color: qlineargradient(spread:pad, x1:0.145, y1:0.16, x2:1, y2:1, stop:0 %1, stop:1 %2); border-radius: %3px; border: 1px solid #000000; }" ).arg( QColor( style::gray ).lighter().name(), style::gray, QString::number( fSize / 5 ) );
 
     setStyleSheet( state ? on : off );

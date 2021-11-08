@@ -485,7 +485,7 @@ void V6533NMonitor::CreateChannelFrame()
             fChStatusLED[ch][l]->setToolTip( ledNames[l] );
             ledLayout->addWidget( fChStatusLED[ch][l], 0, l );
         }
-        fChStatusLED[ch][0]->SetColor( style::green );// the ON LED should be green
+        fChStatusLED[ch][0]->SetColor( style::yellow );// the ON LED should be of a "positive" color
 
         ledFrame->setLayout( ledLayout );
 
