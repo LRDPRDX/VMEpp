@@ -45,13 +45,18 @@ V1785NWindow::V1785NWindow( uint32_t address, V2718Window* parent ) :
 {
     fDevice = new V1785N( address );
 
+    fProcessor = new V1785NProcessor();
+    fProcessor->moveToThread( &fThread );
+
+    connect( &fThread, &QThread::finished, fProcessor, &QObject::deleteLater );
+    connect( fProcessor, &V1785NProcessor::PlotDataReady, this, &V1785NWindow::UpdatePlot );
+    connect( this, &V1785NWindow::DataReady, fProcessor, &V1785NProcessor::Process );
+
     setWindowTitle( "V1785N" );
 
     CreateTimer();
     CreateMenu();
     CreateCentralWidget();
-
-    connect( &fThread, &V1785NThread::DataReady, this, &V1785NWindow::UpdateData );
 
     emit Connected( false );
 
@@ -238,13 +243,12 @@ void V1785NWindow::CreatePlotTab()
     fStartButton = new QPushButton( "START" );
         ColorButton( fStartButton, style::yellow );
         connect( this, &V1785NWindow::Connected, fStartButton, &QPushButton::setEnabled );
-        connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::InitHistogram );
+        connect( fStartButton, &QPushButton::clicked, fProcessor, &V1785NProcessor::OnStart );
         connect( fStartButton, &QPushButton::clicked, this, &V1785NWindow::StartTimer );
     fStopButton = new QPushButton( "STOP" );
         ColorButton( fStopButton, style::pink );
         connect( this, &V1785NWindow::Connected, fStopButton, &QPushButton::setEnabled );
         connect( fStopButton, &QPushButton::clicked, this, &V1785NWindow::StopTimer );
-        connect( fStopButton, &QPushButton::clicked, &fThread, &V1785NThread::OnStop );
 
     SFrame *buttonFrame = new SFrame( SColor_t::VIOLET );
     QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -290,17 +294,19 @@ void V1785NWindow::CreateTimer()
 {
     fTimer = new QTimer( this );
         fTimer->setInterval( 1000 );
-    connect( fTimer, &QTimer::timeout, &fThread, &V1785NThread::OnDump );
+    connect( fTimer, &QTimer::timeout, this, &V1785NWindow::ReadData );
     connect( this, &V1785NWindow::Connected, this, &V1785NWindow::StopTimer );
     connect( this, &V1785NWindow::Error, this, &V1785NWindow::StopTimer );
 }
 
 void V1785NWindow::WriteConfig()
 {
+    V1785N* v1785n = dynamic_cast<V1785N*>(fDevice);
     try
     {
         UConfig<V1785N> cfg = qvariant_cast< UConfig<V1785N> >( this->CollectConfig() );
-        dynamic_cast<V1785N*>(fDevice)->WriteConfig( cfg );
+        v1785n->WriteConfig( cfg );
+        v1785n->AllocateBuffer();
         emit Programmed( true );
     }
     catch( const VException& e )
@@ -391,24 +397,11 @@ void V1785NWindow::StopTimer()
     }
 }
 
-void V1785NWindow::UpdateData( const QVector<QwtIntervalSample>& data, unsigned nEvents )
+void V1785NWindow::UpdatePlot( const QVector<QwtIntervalSample>& data, unsigned nEvents )
 {
     fHisto->setSamples( data );
     fPlot->replot();
     UpdateStat( nEvents );
-}
-
-void V1785NWindow::InitHistogram()
-{
-    QVector<QwtIntervalSample> histData;
-
-    for( size_t i = 0; i < N_BITS; ++i )
-    {
-        histData.push_back( QwtIntervalSample( 0.0, i, i + 1 ) );
-    }
-
-    fHisto->setSamples( histData );
-    fThread.OnStart( N_BITS );
 }
 
 void V1785NWindow::UpdateStat( unsigned nEvents )
@@ -423,101 +416,49 @@ void V1785NWindow::UpdateStat( unsigned nEvents )
     fStatistics->setLabel( text );
 }
 
+void V1785NWindow::ReadData()
+{
+    V1785N* v1785n = dynamic_cast<V1785N*>(fDevice);
+    try
+    {
+        v1785n->ReadBuffer();
+        qInfo() << v1785n->GetReadBytes() << " bytes have been read";
+    }
+    catch( const VException& e )
+    {
+        emit Error( e );
+    }
+}
 
-//***************************
-//****** V1785N THREAD ******
-//***************************
+//******************************
+//****** V1785N PROCESSOR ******
+//******************************
+V1785NProcessor::V1785NProcessor( QObject* parent ) :
+    QObject( parent ),
 
-V1785NThread::V1785NThread( QObject* parent ) :
-    QThread( parent ),
-
-    fAbortRequest( false ),
-    fRestartRequest( false ),
-    fDumpRequest( false ),
-
-    fSize( 0 )
+    fBins( 1 ),
+    fEntries( 0 )
 {
     qRegisterMetaType<QVector<QwtIntervalSample>>();
+    qRegisterMetaType<std::vector<uint32_t>>();
 }
 
-V1785NThread::~V1785NThread()
+void V1785NProcessor::OnStart()
 {
-    fMutex.lock();
-        fAbortRequest = true;
-        fCondition.wakeOne();
-    fMutex.unlock();
-
-    wait();
-}
-
-void V1785NThread::OnStart( size_t size )
-{
-    QMutexLocker locker( &fMutex );
-    fAbortRequest = false;
-    fSize = size;
-
-    if( not isRunning() )
+    fData.resize( fBins );
+    for( size_t i = 0; i < fBins; ++i )
     {
-        start( LowPriority );
+        fData[i] = QwtIntervalSample( 0.0, i, i + 1 );
     }
-    else
+    fEntries = 0;
+}
+
+void V1785NProcessor::Process( std::vector<uint32_t> data )
+{
+    for( int index = 0; index < data.size(); ++index )
     {
-        fRestartRequest = true;
-        fCondition.wakeOne();
+        fData[data[index] % fBins].value += 1;
+        fEntries++;
     }
-}
-
-void V1785NThread::OnStop()
-{
-    QMutexLocker locker( &fMutex );
-    fAbortRequest = true;
-    fCondition.wakeOne();
-}
-
-void V1785NThread::OnDump()
-{
-    QMutexLocker locker( &fMutex );
-    fDumpRequest = true;
-}
-
-void V1785NThread::run()
-{
-    forever
-    {
-        fMutex.lock();
-            const size_t size = fSize;
-        fMutex.unlock();
-
-        QVector<QwtIntervalSample> data( size );
-        unsigned nEvents = 0;
-
-        for( size_t bin = 0; bin < size; ++bin )
-        {
-            data[bin] = QwtIntervalSample( 0.0, bin, bin + 1 );
-        }
-
-        forever
-        {
-            if( fAbortRequest ) return;
-
-            if( fDumpRequest )
-            {
-                emit DataReady( data, nEvents );
-                fMutex.lock();
-                    fDumpRequest = false;
-                fMutex.unlock();
-            }
-
-            if( fRestartRequest )
-            {
-                break;
-            }
-            nEvents++;
-        }
-        // The only way to break from the above forever loop is
-        // the fRestartRequest flag
-        fMutex.lock();
-            fRestartRequest = false;
-        fMutex.unlock();
-    }
+    emit PlotDataReady( fData, fEntries );
 }

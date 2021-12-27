@@ -30,40 +30,29 @@ class QwtPlotMarker;
 using namespace vmepp;
 
 Q_DECLARE_METATYPE(QVector<QwtIntervalSample>)
+Q_DECLARE_METATYPE(std::vector<uint32_t>);
 
 
-class V1785NThread : public QThread
+class V1785NProcessor : public QObject
 {
     Q_OBJECT
 
     private :
-        bool fAbortRequest;
-        bool fRestartRequest;
-        bool fDumpRequest; 
-
-        QMutex fMutex;
-        QWaitCondition fCondition;
-
-        size_t fSize;
+        size_t                      fBins;
+        QVector<QwtIntervalSample>  fData;
+        size_t                      fEntries;
 
     public :
-        V1785NThread( QObject* parent = nullptr );
-        ~V1785NThread() override;
+        V1785NProcessor( QObject* parent = nullptr );
+        ~V1785NProcessor() override = default;
 
     public slots :
-        void OnStart( size_t size );
-        void OnStop();
-        //void OnPause();
-        //void OnResume();
-        void OnDump();
+        void OnStart();
+        void Process( std::vector<uint32_t> data );
 
     signals :
-        void DataReady( const QVector<QwtIntervalSample>& data, unsigned nEvents );
-
-    protected :
-        void run() override;
-
-};// V1785NThread
+        void PlotDataReady( const QVector<QwtIntervalSample>& data, unsigned nEvents );
+};// V1785NProcessor
 
 class V1785NWindow : public SlaveWindow
 {
@@ -72,7 +61,6 @@ class V1785NWindow : public SlaveWindow
     protected :
         // Auxiliary
         static constexpr uint8_t N_CH = V1785N::GetChNumber(); // 6 channels
-        static constexpr size_t  N_BITS = 4096;
 
     private :
         // Creational member functions
@@ -86,7 +74,8 @@ class V1785NWindow : public SlaveWindow
     private :
         QTimer          *fTimer;
 
-        V1785NThread    fThread;
+        QThread         fThread;
+        V1785NProcessor *fProcessor;
 
         // Widgets
     private :
@@ -112,11 +101,14 @@ class V1785NWindow : public SlaveWindow
         QwtPlot*            fPlot;
         QwtPlotMarker*      fStatistics;
 
+    signals :
+        void DataReady( std::vector<uint32_t> data );
+
     protected slots :
-        void InitHistogram();
         void StartTimer();
         void StopTimer();
-        void UpdateData( const QVector<QwtIntervalSample>& data, unsigned nEvents );
+        void ReadData();
+        void UpdatePlot( const QVector<QwtIntervalSample>& data, unsigned nEvents );
         void UpdateStat( unsigned nEvents );
 
     public slots :
