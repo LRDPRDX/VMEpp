@@ -41,7 +41,8 @@ using namespace vmepp;
 
 
 V1785NWindow::V1785NWindow( uint32_t address, V2718Window* parent ) :
-    SlaveWindow( parent )
+    SlaveWindow( parent ),
+    fDataProcessed( false )
 {
     fDevice = new V1785N( address );
 
@@ -49,6 +50,7 @@ V1785NWindow::V1785NWindow( uint32_t address, V2718Window* parent ) :
     fProcessor->moveToThread( &fThread );
 
     connect( &fThread, &QThread::finished, fProcessor, &QObject::deleteLater );
+    connect( fProcessor, &V1785NProcessor::DataProcessed, this, &V1785NWindow::OnDataProcessed );
     connect( fProcessor, &V1785NProcessor::PlotDataReady, this, &V1785NWindow::UpdatePlot );
     connect( this, &V1785NWindow::DataReady, fProcessor, &V1785NProcessor::Process );
 
@@ -58,10 +60,19 @@ V1785NWindow::V1785NWindow( uint32_t address, V2718Window* parent ) :
     CreateMenu();
     CreateCentralWidget();
 
+    fThread.start();
+
     emit Connected( false );
 
     statusBar()->showMessage( "Ready..." );
 }
+
+V1785NWindow::~V1785NWindow()
+{
+    fThread.quit();
+    fThread.wait();
+}
+
 
 void V1785NWindow::CreateMenu()
 {
@@ -294,9 +305,9 @@ void V1785NWindow::CreateTimer()
 {
     fTimer = new QTimer( this );
         fTimer->setInterval( 1000 );
-    connect( fTimer, &QTimer::timeout, this, &V1785NWindow::ReadData );
     connect( this, &V1785NWindow::Connected, this, &V1785NWindow::StopTimer );
     connect( this, &V1785NWindow::Error, this, &V1785NWindow::StopTimer );
+    connect( fTimer, &QTimer::timeout, this, &V1785NWindow::ReadData );
 }
 
 void V1785NWindow::WriteConfig()
@@ -423,11 +434,22 @@ void V1785NWindow::ReadData()
     {
         v1785n->ReadBuffer();
         qInfo() << v1785n->GetReadBytes() << " bytes have been read";
+        fMutex.lock();
+            fDataProcessed = false;
+        fMutex.unlock();
+
+        emit DataReady( std::vector<uint32_t>{} );
     }
     catch( const VException& e )
     {
         emit Error( e );
     }
+}
+
+void V1785NWindow::OnDataProcessed( bool status )
+{
+    QMutexLocker locker( &fMutex );
+    fDataProcessed = status;
 }
 
 //******************************
@@ -436,7 +458,7 @@ void V1785NWindow::ReadData()
 V1785NProcessor::V1785NProcessor( QObject* parent ) :
     QObject( parent ),
 
-    fBins( 1 ),
+    fBins( 4096 ),
     fEntries( 0 )
 {
     qRegisterMetaType<QVector<QwtIntervalSample>>();
@@ -451,6 +473,7 @@ void V1785NProcessor::OnStart()
         fData[i] = QwtIntervalSample( 0.0, i, i + 1 );
     }
     fEntries = 0;
+    emit DataProcessed( true );
 }
 
 void V1785NProcessor::Process( std::vector<uint32_t> data )
@@ -460,5 +483,6 @@ void V1785NProcessor::Process( std::vector<uint32_t> data )
         fData[data[index] % fBins].value += 1;
         fEntries++;
     }
+    emit DataProcessed( true );
     emit PlotDataReady( fData, fEntries );
 }

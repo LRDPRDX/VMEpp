@@ -40,7 +40,7 @@ V2718Window::V2718Window( QWidget *parent ) :
     CreateCentralWidget();
     CreateDockWidget();
 
-    //emit Connected( false );
+    emit Connected( false );
 
     statusBar()->showMessage( "Ready..." );
 }
@@ -676,6 +676,7 @@ void Display::CreateDisplay()
     layout->addWidget( lowerFrame );
 
     fUpdateButton = new QPushButton( "UPDATE" );
+        ColorButton( fUpdateButton, style::yellow );
         connect( fUpdateButton, &QPushButton::clicked, fController, &V2718Window::UpdateDisplay );
         connect( fController, &V2718Window::Connected, fUpdateButton, &QPushButton::setEnabled );
 

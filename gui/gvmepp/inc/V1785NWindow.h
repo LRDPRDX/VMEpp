@@ -52,6 +52,7 @@ class V1785NProcessor : public QObject
 
     signals :
         void PlotDataReady( const QVector<QwtIntervalSample>& data, unsigned nEvents );
+        void DataProcessed( bool );
 };// V1785NProcessor
 
 class V1785NWindow : public SlaveWindow
@@ -76,6 +77,8 @@ class V1785NWindow : public SlaveWindow
 
         QThread         fThread;
         V1785NProcessor *fProcessor;
+        bool            fDataProcessed;
+        QMutex          fMutex;
 
         // Widgets
     private :
@@ -110,6 +113,7 @@ class V1785NWindow : public SlaveWindow
         void ReadData();
         void UpdatePlot( const QVector<QwtIntervalSample>& data, unsigned nEvents );
         void UpdateStat( unsigned nEvents );
+        void OnDataProcessed( bool status );
 
     public slots :
         void WriteConfig() override;
@@ -120,5 +124,5 @@ class V1785NWindow : public SlaveWindow
 
     public :
         V1785NWindow( uint32_t address, V2718Window *parent );
-        ~V1785NWindow() override = default;
+        ~V1785NWindow() override;
 };// V1785NWindow
