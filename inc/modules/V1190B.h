@@ -294,7 +294,7 @@ namespace vmepp {
             uint16_t ReadEventsStored();
             void SendSWTrigger();
 
-            bool GetEventAt(uint32_t index, UEvent<V1190B> &event) const override;
+            bool GetEventAt( size_t index, UEvent<V1190B> &event ) const override;
             uint32_t GetBufferAddress() const override { return 0; }
 
             /************************/

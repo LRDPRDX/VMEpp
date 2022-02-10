@@ -400,7 +400,7 @@ namespace vmepp
 
     //****** DATA ACQUISITION + ******
 
-    bool V1785N::GetEventAt( uint32_t index, UEvent<V1785N> &event ) const
+    bool V1785N::GetEventAt( size_t index, UEvent<V1785N> &event ) const
     {
         if( !fBuffer )
         {
@@ -416,10 +416,10 @@ namespace vmepp
             }
         }
 
-        uint32_t word;
+        DataWord_t word;
         uint16_t chCurrent;
-        uint32_t wordTypeCurrent = V1785N_WORD_TYPE_INVALID;
-        uint32_t wordTypeExpected = V1785N_WORD_TYPE_HEADER;
+        DataWord_t wordTypeCurrent = V1785N_WORD_TYPE_INVALID;
+        DataWord_t wordTypeExpected = V1785N_WORD_TYPE_HEADER;
 
         for( ; index < fReadBytes / 4; index++ )
         {

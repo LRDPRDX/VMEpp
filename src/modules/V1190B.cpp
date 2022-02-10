@@ -113,7 +113,7 @@ namespace vmepp {
     }
 
     /****** DATA ACQUISITION ******/
-    bool V1190B::GetEventAt( uint32_t index, UEvent<V1190B> &event ) const
+    bool V1190B::GetEventAt( size_t index, UEvent<V1190B> &event ) const
     {
         if( !fBuffer )
         {
@@ -123,7 +123,7 @@ namespace vmepp {
 
         event.fHits.clear();
 
-        uint32_t word;
+        DataWord_t word;
 
         // Skip fillers if present
         for( ; index < fReadBytes / 4; ++index )
@@ -135,7 +135,7 @@ namespace vmepp {
             }
         }
 
-        uint32_t wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
+        DataWord_t wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
 
         // If the first non-filler word is T_MEAS it means we are
         // collecting data recorded in the CONTINUOUS mode

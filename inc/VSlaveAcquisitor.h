@@ -16,13 +16,13 @@ namespace vmepp
     class VSlaveAcquisitor : virtual public VSlave
     {
         protected :
-            std::unique_ptr<uint32_t[]> fBuffer;
-            uint32_t                    fBufferSize;
-            uint32_t                    fReadBytes;
-            uint32_t                    fNEventsRead;
-            uint32_t                    fCurrentEvent;
-            uint32_t                    fCurrentIndex;
-            uint32_t                    fReadCycles;
+            std::unique_ptr<DataWord_t[]> fBuffer;
+            size_t                        fBufferSize;
+            size_t                        fReadBytes;
+            size_t                        fNEventsRead;
+            size_t                        fCurrentEvent;
+            size_t                        fCurrentIndex;
+            size_t                        fReadCycles;
 
         public :
             VSlaveAcquisitor( uint32_t address, uint32_t range ) :
@@ -41,21 +41,21 @@ namespace vmepp
 
         public :
             void                AllocateBuffer();
-            uint32_t            ReadBuffer();
+            size_t              ReadBuffer();
             void                DropBuffer( const std::string& fileName );
             bool                GetEvent( UEvent<TModuleName> &event );
 
-            virtual bool        GetEventAt( uint32_t index, UEvent<TModuleName> &event ) const = 0;
+            virtual bool        GetEventAt( size_t index, UEvent<TModuleName> &event ) const = 0;
             virtual uint32_t    GetBufferAddress() const = 0;
 
-            void                SetReadCycles( uint32_t n ) { fReadCycles = (n ? (n <= 32 ? n : 32) : 1); }
-            uint32_t            GetReadCycles() { return fReadCycles; }
+            void                SetReadCycles( size_t n ) { fReadCycles = (n ? (n <= gMaxNBLT ? n : gMaxNBLT) : 1); }
+            size_t              GetReadCycles() { return fReadCycles; }
 
-            uint32_t            GetBufferSize() const { return fBufferSize; }
-            uint32_t            GetNEventsRead() const { return fNEventsRead; }
-            uint32_t            GetReadBytes() const { return fReadBytes; }
-            uint32_t            GetCurrentIndex() const { return fCurrentIndex; }
-            uint32_t            GetCurrentEvent() const { return fCurrentEvent; }
+            size_t              GetBufferSize() const { return fBufferSize; }
+            size_t              GetNEventsRead() const { return fNEventsRead; }
+            size_t              GetReadBytes() const { return fReadBytes; }
+            size_t              GetCurrentIndex() const { return fCurrentIndex; }
+            size_t              GetCurrentEvent() const { return fCurrentEvent; }
 
             void                ResetIndex()
                                 {
@@ -76,10 +76,10 @@ namespace vmepp
         }
         try
         {
-            fBufferSize = fReadCycles * MaxBlockTransferSize / 4;
+            fBufferSize = fReadCycles * gMaxBLT / sizeof(DataWord_t);
             if( fBufferSize )
             {
-                fBuffer.reset( new uint32_t[fBufferSize] );
+                fBuffer.reset( new DataWord_t[fBufferSize] );
             }
         }
         catch( std::bad_alloc &e )
@@ -91,7 +91,7 @@ namespace vmepp
     }
 
     template<typename TModuleName>
-    uint32_t VSlaveAcquisitor<TModuleName>::ReadBuffer()
+    size_t VSlaveAcquisitor<TModuleName>::ReadBuffer()
     {
         this->ResetIndex();
 
@@ -101,7 +101,7 @@ namespace vmepp
             return 0;
         }
         int count;
-        FIFOBLTReadRequest( this->GetBufferAddress(), fBuffer.get(), fBufferSize * 4, &count );
+        FIFOBLTReadRequest( this->GetBufferAddress(), fBuffer.get(), fBufferSize * sizeof(DataWord_t), &count );
         return (fReadBytes = (count > 0) ? count : 0);
     }
 
@@ -114,7 +114,7 @@ namespace vmepp
             return false;
         }
 
-        if( fCurrentIndex >= fReadBytes / 4 )
+        if( fCurrentIndex >= fReadBytes / sizeof(DataWord_t) )
         {
             return false;
         }
