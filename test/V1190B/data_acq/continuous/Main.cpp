@@ -62,25 +62,29 @@ int main()
         tdc.WriteControl( V1190B::Control_t::EVENT_FIFO_EN, false );
 
         tdc.SetReadCycles( 2 );
-        tdc.AllocateBuffer();
+
+        VBuffer data;
+        UParser<V1190B> parser;
 
         uint32_t nEvents = 0;
         while( nEvents < 20000 )
         {
             controller.IRQEnable( cvIRQ1 );
             controller.IRQWait( cvIRQ1, 1000 );
-            tdc.ReadBuffer();
+
+            tdc.ReadBuffer( data );
             std::cout << tdc.GetReadBytes() << "\n";
 
             UEvent<V1190B> event;
-            while ( tdc.GetEvent( event ) )
+            parser.ResetIndex();
+            while ( parser.GetEvent( event, data ) )
             {
                 //std::cout << event.GetStart() << "\n";
                 //for( auto hit = event.cbegin(); hit != event.cend(); ++hit )
                 //{
                 //}
             }
-            nEvents += tdc.GetNEventsRead();
+            nEvents += parser.GetNEventsRead();
             //tdc.WriteSoftwareClear();
         }
 

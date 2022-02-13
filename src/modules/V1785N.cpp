@@ -8,7 +8,9 @@
 
 namespace vmepp
 {
-
+    /****************************/
+    /****** UEVENT<V1785N> ******/
+    /****************************/
     UEvent<V1785N>::UEvent() :
         fHeader( V1785N_WORD_TYPE_HEADER ),//Default header should be here
         fData{ 0 },
@@ -16,20 +18,59 @@ namespace vmepp
     {
     };
 
-    UEvent<V1785N>::UEvent( const UEvent<V1785N> &other ) :
-        fHeader( other.fHeader ),
-        fEOB( other.fEOB )
+    bool UEvent<V1785N>::Fill( size_t index, const VBuffer &buffer )
     {
-        std::memcpy( fData, other.fData, sizeof( other.fData ) );
+        //Skip invalid data if present
+        for( ; index < buffer.GetSize(); index++ )
+        {
+            if( (buffer[index] & V1785N_WORD_TYPE_MSK) != V1785N_WORD_TYPE_INVALID )
+            {
+                break;
+            }
+        }
+
+        DataWord_t word;
+        uint16_t chCurrent;
+        DataWord_t wordTypeCurrent = V1785N_WORD_TYPE_INVALID;
+        DataWord_t wordTypeExpected = V1785N_WORD_TYPE_HEADER;
+
+        for( ; index < buffer.GetSize(); index++ )
+        {
+            word = buffer[index];
+            wordTypeCurrent = word & V1785N_WORD_TYPE_MSK;
+            if( wordTypeCurrent != wordTypeExpected )
+            {
+                return false;
+            }
+
+            switch( wordTypeCurrent )
+            {
+                case( V1785N_WORD_TYPE_HEADER ):
+                    chCurrent = 0;
+                    fHeader = word;
+                    fStart = index;
+                    wordTypeExpected = GetMemoChannels() ? V1785N_WORD_TYPE_DATA : V1785N_WORD_TYPE_EOB;
+                    break;
+                case( V1785N_WORD_TYPE_DATA ) :
+                    fData[chCurrent] = word;
+                    chCurrent++;
+                    wordTypeExpected = (chCurrent < GetMemoChannels()) ? V1785N_WORD_TYPE_DATA : V1785N_WORD_TYPE_EOB;
+                    break;
+                case( V1785N_WORD_TYPE_EOB ):
+                    fEOB = word;
+                    fStop = index;
+                    return true;
+                case( V1785N_WORD_TYPE_INVALID ):
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 
-    UEvent<V1785N>& UEvent<V1785N>::operator=( UEvent<V1785N> other )
-    {
-        swap( *this, other );
-        return *this;
-    }
-
-    //****** V1785N Part ******
+    /********************/
+    /****** V1785N ******/
+    /********************/
     V1785N::V1785N( uint32_t baseAddress, uint32_t range ) :
         VSlave( baseAddress, range ),
         VSlaveAcquisitor( baseAddress, range ),
@@ -400,60 +441,6 @@ namespace vmepp
 
     //****** DATA ACQUISITION + ******
 
-    bool V1785N::GetEventAt( uint32_t index, UEvent<V1785N> &event ) const
-    {
-        if( !fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "V1785N::GetEventAt : buffer is nullptr. Forgot to allocate?" );
-            return false;
-        }
-        //Skip invalid data if present
-        for( ; index < fReadBytes / 4; index++ )
-        {
-            if( (fBuffer[index] & V1785N_WORD_TYPE_MSK) != V1785N_WORD_TYPE_INVALID )
-            {
-                break;
-            }
-        }
-
-        uint32_t word;
-        uint16_t chCurrent;
-        uint32_t wordTypeCurrent = V1785N_WORD_TYPE_INVALID;
-        uint32_t wordTypeExpected = V1785N_WORD_TYPE_HEADER;
-
-        for( ; index < fReadBytes / 4; index++ )
-        {
-            word = fBuffer[index];
-            wordTypeCurrent = word & V1785N_WORD_TYPE_MSK;
-            if( wordTypeCurrent != wordTypeExpected )
-            {
-                return false;
-            }
-
-            switch( wordTypeCurrent )
-            {
-                case( V1785N_WORD_TYPE_HEADER ):
-                    chCurrent = 0;
-                    event.fHeader = word;
-                    event.fStart = index;
-                    wordTypeExpected = event.GetMemoChannels() ? V1785N_WORD_TYPE_DATA : V1785N_WORD_TYPE_EOB;
-                    break;
-                case( V1785N_WORD_TYPE_DATA ) :
-                    event.fData[chCurrent] = word;
-                    chCurrent++;
-                    wordTypeExpected = (chCurrent < event.GetMemoChannels()) ? V1785N_WORD_TYPE_DATA : V1785N_WORD_TYPE_EOB;
-                    break;
-                case( V1785N_WORD_TYPE_EOB ):
-                    event.fEOB = word;
-                    event.fStop = index;
-                    return true;
-                case( V1785N_WORD_TYPE_INVALID ):
-                default:
-                    return false;
-            }
-        }
-        return false;
-    }
 
 
     void V1785N::ClearData()

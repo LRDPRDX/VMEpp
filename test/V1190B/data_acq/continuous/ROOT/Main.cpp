@@ -60,18 +60,19 @@ void Histo()
         //tdc.WriteIRQLevel( 1 );
 
         tdc.SetReadCycles( 4 );
-        tdc.AllocateBuffer();
 
         pA->Start();
 
+        VBuffer data;
         uint32_t nEvents = 0;
+        UParser<V1190B> parser;
         while( nEvents < 20000 )
         {
             //controller.IRQEnable( cvIRQ1 );
             //controller.IRQWait( cvIRQ1, 2000 );
-            tdc.ReadBuffer();
+            tdc.ReadBuffer( data );
             UEvent<V1190B> event;
-            while( tdc.GetEvent( event ) )
+            while( parser.GetEvent( event, data ) )
             {
                 for( auto hit = event.cbegin(); hit != event.cend(); ++hit )
                 {
@@ -82,7 +83,7 @@ void Histo()
             canvas->Modified();
             canvas->Update();
 
-            nEvents += tdc.GetNEventsRead();
+            nEvents += parser.GetNEventsRead();
         }
 
         pA->Stop();

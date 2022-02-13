@@ -35,8 +35,6 @@ int main()
         tdc.WriteIRQVector( 3 );
         tdc.WriteIRQLevel( 1 );
 
-        tdc.AllocateBuffer();
-
         controller.IRQEnable( cvIRQ1 );
 
         std::cout << "Waiting for data...\n";
@@ -47,10 +45,12 @@ int main()
 
         assert( status == 3 );
 
-        tdc.ReadBuffer();
+        VBuffer data;
+        tdc.ReadBuffer( data );
 
         UEvent<V1190B> e;
-        while( tdc.GetEvent( e ) )
+        UParser<V1190B> parser;
+        while( parser.GetEvent( e, data ) )
         {
             for( auto hit = e.cbegin(); hit != e.cend(); ++hit )
             {
@@ -58,9 +58,7 @@ int main()
             }
         }
 
-        tdc.DropBuffer( "Data.dat" );
-
-        std::cout << "Number of events read : " << tdc.GetNEventsRead() << "\n";
+        std::cout << "Number of events read : " << parser.GetNEventsRead() << "\n";
 
         std::cout << "Test has been passed...OK!\n";
     }

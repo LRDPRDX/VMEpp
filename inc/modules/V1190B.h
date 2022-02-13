@@ -104,6 +104,7 @@
 #include "VSlaveInterrupter.h"
 #include "VEvent.h"
 #include "UConfigurable.h"
+#include "UParser.h"
 
 namespace vmepp {
 
@@ -116,7 +117,7 @@ namespace vmepp {
     /********************/
     /****** V1190B ******/
     /********************/
-    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor<V1190B>, public UConfigurable<V1190B> {
+    class V1190B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1190B> {
 
         private :
             static uint8_t const fChNumber = 0x40;    // Number of channels 64
@@ -294,7 +295,6 @@ namespace vmepp {
             uint16_t ReadEventsStored();
             void SendSWTrigger();
 
-            bool GetEventAt(uint32_t index, UEvent<V1190B> &event) const override;
             uint32_t GetBufferAddress() const override { return 0; }
 
             /************************/
@@ -686,6 +686,9 @@ namespace vmepp {
             const_iterator cend() const noexcept    { return fHits.cend(); }
 
         public :
+            bool Fill( size_t index, const VBuffer &buffer) override;
+
+        public :
             UEvent() { };
             ~UEvent() override = default;
             //UEvent( const UEvent& other );
@@ -694,8 +697,6 @@ namespace vmepp {
             uint32_t GetEventCount()    { return ((fGlobalHeader & 0x07ffffe0U) >> 5U); }
             uint32_t GetETTT()          { return (fETTT & 0x07ffffffU); }
             uint32_t GetWordCount()     { return ((fGlobalTrailer & 0x001fffeU) >> 5U); }
-
-        friend class V1190B;
     };// UEvent<V1990B>
 }// vmepp
 

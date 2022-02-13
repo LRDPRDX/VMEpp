@@ -4,7 +4,81 @@
 #include "CAENVMElib.h"
 #include "modules/V1190B.h"
 
-namespace vmepp {
+namespace vmepp
+{
+    /****************************/
+    /****** UEVENT<V1190B> ******/
+    /****************************/
+    bool UEvent<V1190B>::Fill( size_t index, const VBuffer &buffer )
+    {
+        fHits.clear();
+
+        DataWord_t word;
+
+        // Skip fillers if present
+        for( ; index < buffer.GetSize(); ++index )
+        {
+            word = buffer[index];
+            if( (word & UEvent<V1190B>::Word_t::MASK) != UEvent<V1190B>::Word_t::FILLER )
+            {
+                break;
+            }
+        }
+
+        uint32_t wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
+
+        // If the first non-filler word is T_MEAS it means we are
+        // collecting the data recorded in the CONTINUOUS mode
+        if( wordTypeCurrent == UEvent<V1190B>::Word_t::T_MEAS )
+        {
+            fHits.push_back( UEvent<V1190B>::Hit( word ) );
+            fStart = fStop = index;
+            return true;
+        }
+        else if( wordTypeCurrent == UEvent<V1190B>::Word_t::G_HEADER )
+        {
+            fGlobalHeader = word;
+            fStart = index;
+            ++index;
+        }
+        else
+        {
+            return false;
+        }
+
+        for( ; index < buffer.GetSize(); ++index )
+        {
+            word = buffer[index];
+            wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
+
+            switch( wordTypeCurrent )
+            {
+                case( UEvent<V1190B>::Word_t::T_HEADER ) :
+                case( UEvent<V1190B>::Word_t::T_TRAILER ) :
+                    break;
+                case( UEvent<V1190B>::Word_t::T_ERROR ) :
+                    fErrors = word;
+                    break;
+                case( UEvent<V1190B>::Word_t::T_MEAS ) :
+                    fHits.push_back( UEvent<V1190B>::Hit( word ) );
+                    break;
+                case( UEvent<V1190B>::Word_t::G_TTT ) :
+                    fETTT = word;
+                    break;
+                case( UEvent<V1190B>::Word_t::G_TRAILER ) :
+                    fGlobalTrailer = word;
+                    fStop = index;
+                    return true;
+                    break;
+                default :
+                    return false;
+                    break;
+            }
+        }
+
+        return false;
+    }
+
 
     /********************/
     /****** V1190B ******/
@@ -113,82 +187,6 @@ namespace vmepp {
     }
 
     /****** DATA ACQUISITION ******/
-    bool V1190B::GetEventAt( uint32_t index, UEvent<V1190B> &event ) const
-    {
-        if( !fBuffer )
-        {
-            PrintMessage( Message_t::WARNING, "V1190B::GetEventAt : buffer is nullptr. Forgot to allocate?" );
-            return false;
-        }
-
-        event.fHits.clear();
-
-        uint32_t word;
-
-        // Skip fillers if present
-        for( ; index < fReadBytes / 4; ++index )
-        {
-            word = fBuffer[index];
-            if( (word & UEvent<V1190B>::Word_t::MASK) != UEvent<V1190B>::Word_t::FILLER )
-            {
-                break;
-            }
-        }
-
-        uint32_t wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
-
-        // If the first non-filler word is T_MEAS it means we are
-        // collecting data recorded in the CONTINUOUS mode
-        if( wordTypeCurrent == UEvent<V1190B>::Word_t::T_MEAS )
-        {
-            event.fHits.push_back( UEvent<V1190B>::Hit( word ) );
-            event.fStart = event.fStop = index;
-            return true;
-        }
-        else if( wordTypeCurrent == UEvent<V1190B>::Word_t::G_HEADER )
-        {
-            event.fGlobalHeader = word;
-            event.fStart = index;
-            ++index;
-        }
-        else
-        {
-            return false;
-        }
-
-        for( ; index < fReadBytes / 4; ++index )
-        {
-            word = fBuffer[index];
-            wordTypeCurrent = word & UEvent<V1190B>::Word_t::MASK;
-
-            switch( wordTypeCurrent )
-            {
-                case( UEvent<V1190B>::Word_t::T_HEADER ) :
-                case( UEvent<V1190B>::Word_t::T_TRAILER ) :
-                    break;
-                case( UEvent<V1190B>::Word_t::T_ERROR ) :
-                    event.fErrors = word;
-                    break;
-                case( UEvent<V1190B>::Word_t::T_MEAS ) :
-                    event.fHits.push_back( UEvent<V1190B>::Hit( word ) );
-                    break;
-                case( UEvent<V1190B>::Word_t::G_TTT ) :
-                    event.fETTT = word;
-                    break;
-                case( UEvent<V1190B>::Word_t::G_TRAILER ) :
-                    event.fGlobalTrailer = word;
-                    event.fStop = index;
-                    return true;
-                    break;
-                default :
-                    return false;
-                    break;
-            }
-        }
-
-        return false;
-    }
-
     /****** INTERRUPTER ******/
     void V1190B::WriteIRQEvents(uint16_t n) {
         WriteRegister16(V1190B_ALMOST_FULL_LEVEL, (n > 0) ? n : 1);

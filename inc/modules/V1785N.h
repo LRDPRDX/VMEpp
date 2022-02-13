@@ -231,6 +231,7 @@
 #include "VSlaveInterrupter.h"
 #include "VEvent.h"
 #include "UConfigurable.h"
+#include "UParser.h"
 
 #include <string>
 #include <array>
@@ -240,7 +241,7 @@ namespace vmepp
     class V1785N;
 
     //****** V1785N Part ******
-    class V1785N : public VSlaveAcquisitor<V1785N>, public VSlaveInterrupter, public UConfigurable<V1785N>
+    class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter, public UConfigurable<V1785N>
     {
         public :
             enum class Range_t : uint8_t { HIGH, LOW };
@@ -321,7 +322,6 @@ namespace vmepp
             void            PrintStatus();
 
             //Data acquisition
-            bool            GetEventAt( uint32_t index, UEvent<V1785N> &event ) const override;
             uint32_t        GetBufferAddress() const override { return 0; }
 
             void            ClearData();
@@ -428,15 +428,9 @@ namespace vmepp
         public :
             UEvent();
             ~UEvent() override = default;
-            UEvent( const UEvent &other );
-            UEvent& operator=( UEvent other );
-            friend void swap( UEvent &first, UEvent &second )
-            {
-                using std::swap;
-                swap( first.fHeader, second.fHeader );
-                swap( first.fData, second.fData );
-                swap( first.fEOB, second.fEOB );
-            }
+
+        public :
+            bool Fill( size_t index, const VBuffer &buffer ) override;
 
         public :
             uint16_t GetMemoChannels() const
@@ -478,8 +472,6 @@ namespace vmepp
                 i %= (V1785N_N_CHANNELS * 2U);
                 return (fData[i] & V1785N_WORD_TYPE_DT_RG_MSK) ? V1785N::Range_t::LOW : V1785N::Range_t::HIGH;
             }
-
-            friend class V1785N;
     };// UEvent<V1785N>
 }
 #endif

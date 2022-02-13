@@ -26,20 +26,21 @@ int main()
 
         adc.ClearData();
 
-        adc.AllocateBuffer();
-
         controller.IRQEnable( cvIRQ7 );
         controller.IRQWait( cvIRQ7, 10000 );
         uint16_t vector;
         controller.IACK( cvIRQ7, &vector, cvD16 );
         std::cout << "STATUS : " << vector << "\n";
-        adc.ReadBuffer();
 
+        VBuffer data;
+        adc.ReadBuffer( data );
+
+        UParser parser;
         UEvent<V1785N> event;
-        while( adc.GetEvent( event ) ) { ; }
+        while( parser.GetEvent( event, data ) ) { ; }
 
         std::cout << "Number of channels active : " << event.GetMemoChannels() << "\n";
-        std::cout << "Events read : " << adc.GetNEventsRead() << "\n";
+        std::cout << "Events read : " << parser.GetNEventsRead() << "\n";
     }
     catch( const VException &e )
     {

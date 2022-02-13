@@ -1,9 +1,15 @@
 #ifndef V_PLUS_MOODLE
 #define V_PLUS_MOODLE
 
+#include <cstddef>
+#include <cstdint>
+
 namespace vmepp
 {
-    constexpr unsigned MaxBlockTransferSize = 2048;
+    typedef uint32_t    DataWord_t;
+
+    constexpr size_t    gMaxBLT  = 2048;
+    constexpr size_t    gMaxNBLT = 32;
 
     class VModule
     {
