@@ -4,86 +4,86 @@
             "value0": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             },
             "value1": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             },
             "value2": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             },
             "value3": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             },
             "value4": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             },
             "value5": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             },
             "value6": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             },
             "value7": {
                 "low": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 },
                 "high": {
                     "value": 0,
-                    "kill": true
+                    "kill": false
                 }
             }
         },
-        "over_suppression": true,
-        "zero_suppression": true,
+        "over_suppression": false,
+        "zero_suppression": false,
         "zero_supp_type": 0,
         "irq_vector": 3,
         "irq_level": 0,

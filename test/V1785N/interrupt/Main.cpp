@@ -22,8 +22,6 @@ int main()
         adc.WriteIRQLevel( 7 );
         adc.WriteIRQVector( 25 );
 
-        std::cout << adc.ReadIRQEvents() << "\n";
-
         adc.ClearData();
 
         controller.IRQEnable( cvIRQ7 );

@@ -1,7 +1,7 @@
 /*
    To test this example you may use the following configuration:
    
-   1) Connect any output (say ch 12) of the Descriminator V895 to the
+   1) Connect any output (say ch 12) of the Discriminator V895 to the
       TRIGGER input of the CONTROL connector of the TDC V1190B
 
    2) Connect the output (ch 12) of the Descriminator V895 to the input of TDC V1190B

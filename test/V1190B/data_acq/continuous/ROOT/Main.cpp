@@ -64,14 +64,17 @@ void Histo()
         pA->Start();
 
         VBuffer data;
+        UParser parser;
+        UEvent<V1190B> event;
+
         uint32_t nEvents = 0;
-        UParser<V1190B> parser;
+
         while( nEvents < 20000 )
         {
             //controller.IRQEnable( cvIRQ1 );
             //controller.IRQWait( cvIRQ1, 2000 );
+            parser.ResetIndex();
             tdc.ReadBuffer( data );
-            UEvent<V1190B> event;
             while( parser.GetEvent( event, data ) )
             {
                 for( auto hit = event.cbegin(); hit != event.cend(); ++hit )
