@@ -30,7 +30,7 @@ class QwtPlotMarker;
 using namespace vmepp;
 
 Q_DECLARE_METATYPE(QVector<QwtIntervalSample>)
-Q_DECLARE_METATYPE(std::vector<uint32_t>);
+Q_DECLARE_METATYPE(VBuffer);
 
 
 class V1785NProcessor : public QObject
@@ -48,7 +48,7 @@ class V1785NProcessor : public QObject
 
     public slots :
         void OnStart();
-        void Process( std::vector<uint32_t> data );
+        void Process( VBuffer data );
 
     signals :
         void PlotDataReady( const QVector<QwtIntervalSample>& data, unsigned nEvents );
@@ -105,7 +105,7 @@ class V1785NWindow : public SlaveWindow
         QwtPlotMarker*      fStatistics;
 
     signals :
-        void DataReady( std::vector<uint32_t> data );
+        void DataReady( VBuffer data );
 
     protected slots :
         void StartTimer();

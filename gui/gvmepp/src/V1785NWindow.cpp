@@ -317,7 +317,6 @@ void V1785NWindow::WriteConfig()
     {
         UConfig<V1785N> cfg = qvariant_cast< UConfig<V1785N> >( this->CollectConfig() );
         v1785n->WriteConfig( cfg );
-        v1785n->AllocateBuffer();
         emit Programmed( true );
     }
     catch( const VException& e )
@@ -432,13 +431,14 @@ void V1785NWindow::ReadData()
     V1785N* v1785n = dynamic_cast<V1785N*>(fDevice);
     try
     {
-        v1785n->ReadBuffer();
-        qInfo() << v1785n->GetReadBytes() << " bytes have been read";
+        VBuffer buffer;
+        v1785n->ReadBuffer( buffer );
+        qInfo() << buffer.GetSize() << " bytes have been read";
         fMutex.lock();
             fDataProcessed = false;
         fMutex.unlock();
 
-        emit DataReady( std::vector<uint32_t>{} );
+        emit DataReady( buffer );
     }
     catch( const VException& e )
     {
@@ -462,7 +462,7 @@ V1785NProcessor::V1785NProcessor( QObject* parent ) :
     fEntries( 0 )
 {
     qRegisterMetaType<QVector<QwtIntervalSample>>();
-    qRegisterMetaType<std::vector<uint32_t>>();
+    qRegisterMetaType<VBuffer>();
 }
 
 void V1785NProcessor::OnStart()
@@ -476,11 +476,14 @@ void V1785NProcessor::OnStart()
     emit DataProcessed( true );
 }
 
-void V1785NProcessor::Process( std::vector<uint32_t> data )
+void V1785NProcessor::Process( VBuffer data )
 {
-    for( int index = 0; index < data.size(); ++index )
+    UParser parser;
+    UEvent<V1785N> event;
+    while( parser.GetEvent( event, data ) )
     {
-        fData[data[index] % fBins].value += 1;
+        uint32_t value = event.GetChannelData( 0 ); 
+        fData[value % fBins].value += 1;
         fEntries++;
     }
     emit DataProcessed( true );
