@@ -62,7 +62,8 @@ void Histo()
         adc.WriteIRQEvents( 31 );
 
         UEvent<V1785N> event;
-        adc.AllocateBuffer();
+        VBuffer data;
+        UParser parser;
 
         // Start pulser
         pA->Start();
@@ -70,14 +71,16 @@ void Histo()
         size_t nEvents = 0;
         while( nEvents < 10000 )
         {
+            parser.ResetIndex(); 
+
             controller.IRQEnable( cvIRQ7 );
             controller.IRQWait( cvIRQ7, 100 );
-            adc.ReadBuffer();
-            while( adc.GetEvent( event ) )
+            adc.ReadBuffer( data );
+            while( parser.GetEvent( event, data ) )
             {
                 h->Fill( event.GetChannelData( 0 ) );
             }
-            nEvents += adc.GetNEventsRead();
+            nEvents += parser.GetNEventsRead();
         }
 
         pA->Stop();

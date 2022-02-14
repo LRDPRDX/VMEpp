@@ -6,10 +6,10 @@
 
 namespace vmepp
 {
-    typedef uint32_t DataWord_t;
+    typedef uint32_t    DataWord_t;
 
-    constexpr size_t gMaxBLT    = 2048;
-    constexpr size_t gMaxNBLT   = 32;
+    constexpr size_t    gMaxBLT  = 2048;
+    constexpr size_t    gMaxNBLT = 32;
 
     class VModule
     {
