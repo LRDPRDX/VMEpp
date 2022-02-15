@@ -96,6 +96,8 @@ class V1785NWindow : public SlaveWindow
         QCheckBox *fChEnHighCheck[N_CH];
         QSpinBox  *fChThrHighSpin[N_CH];
 
+        QSpinBox  *fCyclesSpin;
+
     private :
         QPushButton *fStartButton, *fStopButton;
         QSpinBox *fBinSpin, *fStartHistSpin, *fStopHistSpin;

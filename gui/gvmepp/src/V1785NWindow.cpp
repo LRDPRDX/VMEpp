@@ -124,6 +124,19 @@ void V1785NWindow::CreateGeneralTab()
 
     suppGroup->setLayout( suppLayout );
 
+    SGroupBox *dataGroup = new SGroupBox( "Data acquisition" );
+    QHBoxLayout *dataLayout = new QHBoxLayout();
+
+    QLabel* cyclesLabel = new QLabel( "BLT cycles:" );
+    fCyclesSpin = new QSpinBox();
+        fCyclesSpin->setMinimum( 1 );
+        fCyclesSpin->setMaximum( gMaxNBLT );
+
+    dataLayout->addWidget( cyclesLabel, 10, Qt::AlignRight );
+    dataLayout->addWidget( fCyclesSpin, 1 );
+
+    dataGroup->setLayout( dataLayout );
+
     SGroupBox *irqGroup = new SGroupBox( "Interrupt" );
     QGridLayout *irqLayout = new QGridLayout();
 
@@ -158,6 +171,7 @@ void V1785NWindow::CreateGeneralTab()
     irqGroup->setLayout( irqLayout );
 
     vLayout->addWidget( suppGroup );
+    vLayout->addWidget( dataGroup );
     vLayout->addWidget( irqGroup );
 
     tab->setLayout( vLayout );
@@ -275,6 +289,7 @@ void V1785NWindow::CreatePlotTab()
         //fPlot->setCanvasBackground( QColor( style::pink ) );
         fPlot->setAxisTitle( QwtPlot::yLeft, "Number of events" );
         fPlot->setAxisTitle( QwtPlot::xBottom, "ADC value, [LSB]" );
+        fPlot->canvas()->resize( 800, 800 );
 
     QwtPlotGrid *grid = new QwtPlotGrid;
         grid->enableX( true );
@@ -431,9 +446,9 @@ void V1785NWindow::ReadData()
     V1785N* v1785n = dynamic_cast<V1785N*>(fDevice);
     try
     {
+        v1785n->SetReadCycles( fCyclesSpin->value() );
         VBuffer buffer;
         v1785n->ReadBuffer( buffer );
-        qInfo() << buffer.GetSize() << " bytes have been read";
         fMutex.lock();
             fDataProcessed = false;
         fMutex.unlock();
