@@ -32,10 +32,10 @@ int main()
         //But enable only the channels 15
         dm.Enable( 0x8000 );
     }
-    catch( VException &sw )
+    catch( VException &e )
     {
-        std::cerr << sw.what() << "\n"; 
-        std::cerr << sw.GetInfo() << "\n"; 
+        std::cerr << e.what() << "\n"; 
+        std::cerr << e.GetInfo() << "\n"; 
     }
     return 0;
 }

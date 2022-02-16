@@ -12,21 +12,20 @@ using namespace vmepp;
 int main()
 {
     V2718 controller;
-    //Next create a board which you want to work with
-    //For example,
     V6533N hv( 0x40000000 );
 
     try
     {
-        //controller.Open( 0, 0 );
-        //controller.RegisterSlave( &hv );//Connect the board we want to work with
-        //controller.Initialize();//Initialize all the registered boards
+        controller.Open( 0, 0 );
+        controller.RegisterSlave( &hv );//Connect the board we want to work with
+        controller.Initialize();//Initialize all the registered boards
 
         UConfig<V6533N> cfg;
 
-        //hv.ReadConfig( cfg );
-        //hv.WriteConfig( cfg );
-        WriteConfigToFile<V6533N, cereal::XMLOutputArchive>( cfg, "config.xml" );
+        hv.ReadConfig( cfg );//Read config from module
+        hv.WriteConfig( cfg );//Write config to module
+
+        WriteConfigToFile<V6533N, cereal::XMLOutputArchive>( cfg, "/usr/config.xml" );//Write config to file
     }
     catch( const VException &cv )
     {

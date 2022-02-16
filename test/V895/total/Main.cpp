@@ -38,16 +38,14 @@ int main()
         dm.WriteMajLevel( 3 );
         //Generate every (enabled) outputs 100 times
         //(for test purposes)
-        int counter = 100;
+        int counter = 10;
         std::cout << "Wait...\n";
         while( counter )
         {
             dm.SendTest();
             counter--;
-            usleep( 100000 ); //~10Hz
+            usleep( 1000000 ); //~1Hz
         }
-        //Release resources (not necessary)
-        //controller.Close();        
     }
     catch( const VException& e )
     {

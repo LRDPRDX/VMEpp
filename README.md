@@ -1,29 +1,47 @@
 # VME++
+
 A C++ library (based on [CAENVMElib](https://www.caen.it/products/caenvmelib-library/))
-which provides a UI for CAEN VME modules
+which provides a higher-level UI for CAEN VME modules
 
-# Prerequisites
- - GCC compiler with c++11 support
- - [CAENVMElib](https://www.caen.it/products/caenvmelib-library/)
+## Prerequisites
 
-# Installation
+ - GCC compiler with c++11 support (>= 4.8.5)
+ - [CAENVMElib](https://www.caen.it/products/caenvmelib-library/) (>= 3.2.0)
+ - [Cereal](https://uscilab.github.io/cereal/)
+
+## Installation
+
 ```
-cd <root_dir>
+git clone git@github.com:LRDPRDX/VMEpp.git
+cd VMEpp 
 make
 sudo make install
 ```
 
-# Run the first example
+## Supported modules
+
+The following modules are represented in the library:
+
+ - V2718 (VME controller)
+ - V1190B (TDC)
+ - V895 (Discriminator)
+ - V6533N (High Voltage Source)
+ - V1785N (ADC)
+
+## Run the first example
+
 ```
-cd <root_dir>/template
+cd template
 make
 ./Main
 ```
 
+For other examples see the `test` directory.
+
 # TODO
-- [ ] Add the *Advanced* OPCODEs' functions
-- [x] Add the *Miscellaneous* OPCODEs' functions
-- [ ] Consider to add a delay in case of firmware revision <= 0.3 (EEPROM)
+
+- [ ] Documentation 
+- [ ] Classes for other modules
 
 # Disclaimer
-It is not stable. Do not use it for now.
+It is not stable. Usage of this product is under your own responsibility. 

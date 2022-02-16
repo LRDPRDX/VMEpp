@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-using namespace vmeplus;
+using namespace vmepp;
 
 int main()
 {
@@ -28,7 +28,7 @@ int main()
     }
     catch( const VException &e )
     {
-        std::cerr << e.what() << "\n";
+        std::cerr << e.GetErrorMessage() << "\n";
         std::cerr << e.GetInfo() << "\n";
     }
 

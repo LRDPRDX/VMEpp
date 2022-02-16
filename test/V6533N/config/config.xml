@@ -3,64 +3,64 @@
 	<V6533N>
 		<channels>
 			<value0>
-				<voltage_set>0</voltage_set>
-				<current_set>0</current_set>
-				<trip_time>0</trip_time>
-				<sw_max_voltage>0</sw_max_voltage>
-				<ramp_up>0</ramp_up>
-				<ramp_down>0</ramp_down>
+				<voltage_set>40</voltage_set>
+				<current_set>100</current_set>
+				<trip_time>0.10000000149011612</trip_time>
+				<sw_max_voltage>100</sw_max_voltage>
+				<ramp_up>100</ramp_up>
+				<ramp_down>100</ramp_down>
 				<power_down>false</power_down>
-				<current_mon_range>0</current_mon_range>
+				<current_mon_range>1</current_mon_range>
 			</value0>
 			<value1>
-				<voltage_set>0</voltage_set>
-				<current_set>0</current_set>
-				<trip_time>0</trip_time>
-				<sw_max_voltage>0</sw_max_voltage>
-				<ramp_up>0</ramp_up>
-				<ramp_down>0</ramp_down>
+				<voltage_set>1400</voltage_set>
+				<current_set>1000</current_set>
+				<trip_time>0.10000000149011612</trip_time>
+				<sw_max_voltage>1500</sw_max_voltage>
+				<ramp_up>400</ramp_up>
+				<ramp_down>400</ramp_down>
 				<power_down>false</power_down>
 				<current_mon_range>0</current_mon_range>
 			</value1>
 			<value2>
 				<voltage_set>0</voltage_set>
-				<current_set>0</current_set>
-				<trip_time>0</trip_time>
-				<sw_max_voltage>0</sw_max_voltage>
-				<ramp_up>0</ramp_up>
-				<ramp_down>0</ramp_down>
+				<current_set>100</current_set>
+				<trip_time>0.10000000149011612</trip_time>
+				<sw_max_voltage>100</sw_max_voltage>
+				<ramp_up>100</ramp_up>
+				<ramp_down>100</ramp_down>
 				<power_down>false</power_down>
-				<current_mon_range>0</current_mon_range>
+				<current_mon_range>1</current_mon_range>
 			</value2>
 			<value3>
 				<voltage_set>0</voltage_set>
-				<current_set>0</current_set>
-				<trip_time>0</trip_time>
-				<sw_max_voltage>0</sw_max_voltage>
-				<ramp_up>0</ramp_up>
-				<ramp_down>0</ramp_down>
+				<current_set>100</current_set>
+				<trip_time>0.10000000149011612</trip_time>
+				<sw_max_voltage>100</sw_max_voltage>
+				<ramp_up>100</ramp_up>
+				<ramp_down>100</ramp_down>
 				<power_down>false</power_down>
-				<current_mon_range>0</current_mon_range>
+				<current_mon_range>1</current_mon_range>
 			</value3>
 			<value4>
 				<voltage_set>0</voltage_set>
-				<current_set>0</current_set>
-				<trip_time>0</trip_time>
-				<sw_max_voltage>0</sw_max_voltage>
-				<ramp_up>0</ramp_up>
-				<ramp_down>0</ramp_down>
+				<current_set>100</current_set>
+				<trip_time>0.10000000149011612</trip_time>
+				<sw_max_voltage>100</sw_max_voltage>
+				<ramp_up>100</ramp_up>
+				<ramp_down>100</ramp_down>
 				<power_down>false</power_down>
-				<current_mon_range>0</current_mon_range>
+				<current_mon_range>1</current_mon_range>
 			</value4>
 			<value5>
 				<voltage_set>0</voltage_set>
-				<current_set>0</current_set>
-				<trip_time>0</trip_time>
-				<sw_max_voltage>0</sw_max_voltage>
-				<ramp_up>0</ramp_up>
-				<ramp_down>0</ramp_down>
+				<current_set>100</current_set>
+				<trip_time>0.10000000149011612</trip_time>
+				<sw_max_voltage>100</sw_max_voltage>
+				<ramp_up>100</ramp_up>
+				<ramp_down>100</ramp_down>
 				<power_down>false</power_down>
-				<current_mon_range>0</current_mon_range>
+				<current_mon_range>1</current_mon_range>
 			</value5>
 		</channels>
 	</V6533N>

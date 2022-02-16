@@ -15,7 +15,7 @@
 			<value0>
 				<polarity>0</polarity>
 				<led_polarity>1</led_polarity>
-				<source>4</source>
+				<source>0</source>
 			</value0>
 			<value1>
 				<polarity>0</polarity>
