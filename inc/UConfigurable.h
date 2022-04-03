@@ -12,7 +12,12 @@
 namespace vmepp
 {
     template <typename TModuleName>
-    struct UConfig;
+    struct UConfig
+    {
+        static_assert(  not std::is_same<TModuleName, TModuleName>::value,
+                        "Instantiation of primary template is detected. "
+                        "UConfig class template must be specialized for each module." );
+    };
 
     template <typename TModuleName>
     class UConfigurable

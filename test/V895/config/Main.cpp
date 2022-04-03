@@ -22,6 +22,7 @@ int main()
         controller.Initialize();//Initialize all the registered boards
 
         UConfig<V895> cfg;
+        // UConfig<int> cfgBad;
         desc.ReadConfig( cfg );
 
         WriteConfigToFile<V895, XMLA>( cfg, "config.xml" );

@@ -1,12 +1,19 @@
 #pragma once
 
+#include <utility>
+
 #include "VModule.h"
 #include "VSlaveAcquisitor.h"
 
 namespace vmepp
 {
     template<typename TModuleName>
-    class UEvent;
+    class UEvent
+    {
+        static_assert(  not std::is_same<TModuleName, TModuleName>::value,
+                        "Instantiation of primary template is detected. "
+                        "UEvent class template must be specialized for each module." );
+    };
 
     class UParser
     {
