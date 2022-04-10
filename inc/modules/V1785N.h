@@ -4,12 +4,12 @@
 //*******************************************************************
 //
 // Description :
-//      Header for CAEN V1785N module.
+//      Header for the CAEN V1785N module.
 //      V1785N is a 8 channel Dual Range Multievent Peak Sensing ADC
 // Author :
 //      Sikach Bogdan
 // Location :
-//      Budker Institute of Nuclear Physics. Room 210/2, Phone 51-57
+//      Budker Institute of Nuclear Physics, Room 210/2, Phone 51-57
 // Feedback :
 //      paradox1859@gmail.com
 //
@@ -29,7 +29,7 @@
 //****** Multi Event Buffer Definition ******
 #define     V1785N_OUTPUT_BUFFER            0x0000UL//A32/D32 R DR/SR/HR
 #define     V1785N_OUTPUT_BUFFER_START      V1785N_OUTPUT_BUFFER//Aux
-#define     V1785N_OUTPUT_BUFFER_STOP       0x07FFUL//Aux, This is the last byte used by buffer
+#define     V1785N_OUTPUT_BUFFER_STOP       0x07FFUL//Aux, This is the last byte occupied by buffer
 #define     V1785N_OUTPUT_BUFFER_SIZE       (V1785N_OUTPUT_BUFFER_STOP - V1785N_OUTPUT_BUFFER_START + 1UL)
 
 //****** Firmware Revision Register Definition ******
