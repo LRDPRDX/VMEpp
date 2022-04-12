@@ -62,5 +62,50 @@
 #define     V1742B_CHANNEL_SEL(X)           V1742B_GROUP_ADDRESS(0x10A4UL,X)//A32/D32 RW G
 #define     V1742B_CHANNEL_SEL_VAL_MSK      0x000FUL//Aux
 
+#define     V1742B_CHANNEL_TRG_MASK(X)      V1742B_GROUP_ADDRESS(0x10A8UL,X)//A32/D32 RW G
+#define     V1742B_CHANNEL_TRG_MASK_MSK     0x00FFUL//Aux
+
+//WARNING: before writing this register, it is necessary to check that bit[2] = 0 at 0x1X88,
+//otherwise the writing process will not run properly!
+#define     V1742B_TR_TRG_THR(X)            V1742B_GROUP_ADDRESS(0x10D4UL,X)//A32/D32 RW G
+#define     V1742B_TR_TRG_THR_VAL_MSK       0xFFFFUL//Aux
+
+#define     V1742B_TR_DC_OFST(X)            V1742B_GROUP_ADDRESS(0x10DCUL,X)//A32/D32 RW G
+#define     V1742B_TR_DC_OFST_VAL_MSK       0xFFFFUL//Aux
+
+#define     V1742B_BOARD_CFG                0x8000UL//A32/D32 R C
+#define     V1742B_BOARD_CFG_SET            0x8004UL//A32/D32 W C
+#define     V1742B_BOARD_CFG_CLR            0x8008UL//A32/D32 W C
+
+//WARNING: this register must not be written while the acquisition is running.
+#define     V1742B_CUSTOM_SIZE              0x8020UL//A32/D32 RW C
+#define     V1742B_CUSTOM_SIZE_VAL_MSK      0x0003UL//Aux
+
+#define     V1742B_TEST_MODE_INIT_READ(X)   V1742B_GROUP_ADDRESS(0x107CUL,X)//A32/D32 R G 
+#define     V1742B_TEST_MODE_INIT_WRITE     0x807CUL//A32/D32 W C
+#define     V1742B_TEST_MODE_INIT_VAL_MSK   0x0FFFUL//Aux
+
+//WARNING: This register must not be written while the acquisition is running.
+#define     V1742B_DRS4_SAMP_FREQ_READ(X)   V1742B_GROUP_ADDRESS(0x10D8UL,X)//A32/D32 R G           
+#define     V1742B_DRS4_SAMP_FREQ_WRITE     0x80D8UL//A32/D32 W C
+#define     V1742B_DRS4_SAMP_FREQ_VAL_MSK   0x0003UL//Aux
+
+#define     V1742B_ACQ_CONTROL              0x8100UL//A32/D32 RW C
+
+#define     V1742B_ACQ_STATUS               0x8104UL//A32/D32 R C
+
+#define     V1742B_SOFT_TRG                 0x8108UL//A32/D32 W C
+
+#define     V1742B_GLB_TRG_MASK             0x810CUL//A32/D32 RW C
+
+#define     V1742B_FRNT_PANEL_TRG           0x8110UL//A32/D32 RW C
+#define     V1742B_FRNT_PANEL_TRG_INDX_MSK  0x000FUL//Aux
+#define     V1742B_FRNT_PANEL_TRG_LOGIC_MSK 0x0300UL//Aux
+
+#define     V1742B_SCRATCH                  0xEF20UL//A32/D32 RW C
+
+#define     V1742B_SOFTWARE_RST             0xEF24UL//A32/D32 W C
+
+#define     V1742B_SOFTWARE_CLR             0xEF28UL//A32/D32 W C
 
 #endif
