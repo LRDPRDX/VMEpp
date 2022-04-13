@@ -102,6 +102,18 @@
 #define     V1742B_FRNT_PANEL_TRG_INDX_MSK  0x000FUL//Aux
 #define     V1742B_FRNT_PANEL_TRG_LOGIC_MSK 0x0300UL//Aux
 
+#define     V1742B_LVDS_IO_DATA             0x8118UL//A32/D32 RW C
+#define     V1742B_LVDS_IO_DATA_VAL_MSK     0xFFFFUL//Aux
+
+#define     V1742B_FRNT_PANEL_IO_CNTL       0x811CUL//A32/D32 RW C 
+
+#define     V1742B_GROUP_EN_MASK            0x8120UL//A32/D32 RW C
+#define     V1742B_GROUP_EN_MASK_VAL_MSK    0x000FUL//Aux
+
+#define     V1742B_ROC_FPGA_FWM_REV         0x8124UL//A32/D32 R C
+
+#define     V1742B_SOFTWARE_CLK_SYNC        0x813CUL//A32/D32 W C
+
 #define     V1742B_BOARD_INFO               0x8140UL//A32/D32 R C
 
 #define     V1742B_EVENT_SIZE               0x814CUL//A32/D32 R C
