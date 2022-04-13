@@ -102,6 +102,47 @@
 #define     V1742B_FRNT_PANEL_TRG_INDX_MSK  0x000FUL//Aux
 #define     V1742B_FRNT_PANEL_TRG_LOGIC_MSK 0x0300UL//Aux
 
+#define     V1742B_BOARD_INFO               0x8140UL//A32/D32 R C
+
+#define     V1742B_EVENT_SIZE               0x814CUL//A32/D32 R C
+
+//NOTE: this register is supported by Desktop (DT) boards only.
+#define     V1742B_FAN_SPEED_CTRL           0x8168UL//A32/D32 RW C
+
+#define     V1742B_RUN_DELAY                0x8170UL//A32/D32 RW C
+#define     V1742B_RUN_DELAY_VAL_MSK        0x00FFUL//Aux
+
+#define     V1742B_BOARD_FAIL_STATUS        0x8178UL//A32/D32 R C
+
+#define     V1742B_FRNT_PANEL_LVDS          0x81A0UL//A32/D32 RW C
+
+#define     V1742B_EXTD_VETO_DELAY          0x81C4UL//A32/D32 RW C 
+#define     V1742B_EXTD_VETO_DELAY_VAL_MSK  0xFFFFUL//Aux
+
+#define     V1742B_READOUT_CTRL             0xEF00UL//A32/D32 RW C
+#define     V1742B_READOUT_CTRL_VAL_MSK     0x01FFUL//Aux
+
+#define     V1742B_READOUT_STATUS           0xEF04UL//A32/D32 R C
+#define     V1742B_READOUT_STATUS_VAL_MSK   0x000FUL//Aux
+
+#define     V1742B_BOARD_ID                 0xEF08UL//A32/D32 RW C
+#define     V1742B_BOARD_ID_GEO_MSK         0x001FUL//Aux
+
+#define     V1742B_MCST_ADDR_CTRL           0xEF0CUL//A32/D32 RW C
+#define     V1742B_MCST_ADDR_CTRL_ADDR_MSK  0x00FFUL//Aux
+#define     V1742B_MCST_ADDR_CTRL_POS_MSK   0x0300UL//Aux
+
+#define     V1742B_RELOC_ADDR               0xEF10UL//A32/D32 RW C
+#define     V1742B_RELOC_ADDR_VAL_MSK       0xFFFFUL//Aux
+
+#define     V1742B_INTRPT_STATUS            0xEF14UL//A32/D32 RW C
+
+#define     V1742B_INTRPT_EVNT_NUM          0xEF18UL//A32/D32 RW C
+#define     V1742B_INTRPT_EVNT_NUM_VAL_MSK  0x03FFUL//Aux
+
+#define     V1742B_MAX_EVENT_BLT            0xEF1CUL//A32/D32 RW C
+#define     V1742B_MAX_EVENT_BLT_VAL_MSK    0x03FFUL//Aux
+
 #define     V1742B_SCRATCH                  0xEF20UL//A32/D32 RW C
 
 #define     V1742B_SOFTWARE_RST             0xEF24UL//A32/D32 W C
