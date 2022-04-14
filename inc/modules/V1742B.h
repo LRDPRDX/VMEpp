@@ -133,6 +133,7 @@
 
 #define     V1742B_READOUT_CTRL             0xEF00UL//A32/D32 RW C
 #define     V1742B_READOUT_CTRL_VAL_MSK     0x01FFUL//Aux
+#define     V1742B_READOUT_CTRL_INT_MSK     0x0007UL//Aux
 
 #define     V1742B_READOUT_STATUS           0xEF04UL//A32/D32 R C
 #define     V1742B_READOUT_STATUS_VAL_MSK   0x000FUL//Aux
@@ -160,5 +161,40 @@
 #define     V1742B_SOFTWARE_RST             0xEF24UL//A32/D32 W C
 
 #define     V1742B_SOFTWARE_CLR             0xEF28UL//A32/D32 W C
+
+#define     V1742B_LUB                      0xF08BUL//Aux, The Last Used Byte
+
+
+namespace vmepp
+{
+    class V1742B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1742B>
+    {
+        protected :
+            virtual void    Initialize() override;
+
+        public :
+            V1742B( uint32_t baseAddress, uint32_t range = V1742B_LUB );
+            ~V1742B() override = default;
+
+        public :
+            //Misc
+            virtual void    Reset() override;
+
+        public :
+            //Interrupts
+            void            WriteIRQEvents( uint16_t n );
+            uint16_t        ReadIRQEvents();
+            void            WriteIRQLevel( uint16_t level ) override;
+            uint16_t        ReadIRQLevel() override;
+            void            WriteIRQVector( uint16_t level ) override;
+            uint16_t        ReadIRQVector() override;
+            void            ISR( uint16_t vector ) override;
+
+        public :
+            //Control
+            void            WriteReadoutCtrl( uint32_t value );
+            uint32_t        ReadReadoutCtrl();
+    };
+}
 
 #endif

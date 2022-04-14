@@ -238,8 +238,6 @@
 
 namespace vmepp
 {
-    class V1785N;
-
     //****** V1785N Part ******
     class V1785N : public VSlaveAcquisitor, public VSlaveInterrupter, public UConfigurable<V1785N>
     {
