@@ -90,5 +90,10 @@ namespace vmepp
     {
         return ReadRegister32( V1742B_POST_TRIGGER(static_cast<uint8_t>(group)), V1742B_POST_TRIGGER_VAL_MSK );
     }
+
+    void V1742B::WriteChannelThreshold( uint8_t ch, uint16_t threshold )
+    {
+        WriteRegister32( V1742B_CH)
+    }
     //****** TRIGGER - ******
 }

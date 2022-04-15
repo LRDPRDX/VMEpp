@@ -239,6 +239,8 @@ namespace vmepp
             void WritePostTrigger( Group_t group, uint16_t n );
             uint16_t ReadPostTrigger( Group_t group );
 
+            void WriteChannelThreshold( uint8_t ch, uint16_t threshold );
+            uint16_t ReadChannelThreshold( uint8_t ch );
     };
 }
 
