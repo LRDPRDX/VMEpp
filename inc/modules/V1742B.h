@@ -164,11 +164,48 @@
 
 #define     V1742B_LUB                      0xF08BUL//Aux, The Last Used Byte
 
+#include "VSlaveInterrupter.h"
+#include "VSlaveAcquisitor.h"
+#include "UConfigurable.h"
+
 
 namespace vmepp
 {
     class V1742B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1742B>
     {
+        public :
+            enum class RecordLength_t : uint8_t
+            {
+                s1024 = 0x00,
+                s520  = 0x01,
+                s256  = 0x02,
+                s136  = 0x03,
+            };
+
+            enum class SamplingRate_t : uint8_t
+            {
+                M5000 = 0x00,
+                M2500 = 0x01,
+                M1000 = 0x02,
+                M750  = 0x03,
+            };
+
+            enum class FanSpeed_t : uint8_t
+            {
+                LowAuto = 0x00,
+                High    = 0x01,
+            };
+
+            enum class Group_t : uint8_t { G1 = 0, G2, G3, G4, };
+
+        protected :
+            static uint8_t constexpr fChNumber      = 0x20U;   // 32 
+            static uint8_t constexpr fGroupNumber   = 0x04; // 4
+
+        public :
+            static uint8_t constexpr GetChNumber() { return fChNumber; }
+            static uint8_t constexpr GetGroupNumber() { return fGroupNumber; }
+
         protected :
             virtual void    Initialize() override;
 
@@ -179,6 +216,8 @@ namespace vmepp
         public :
             //Misc
             virtual void    Reset() override;
+            void            WriteDummy32( Group_t group, uint32_t word );
+            uint32_t        ReadDummy32( Group_t group );
 
         public :
             //Interrupts
@@ -191,9 +230,15 @@ namespace vmepp
             void            ISR( uint16_t vector ) override;
 
         public :
-            //Control
+            // Control
             void            WriteReadoutCtrl( uint32_t value );
             uint32_t        ReadReadoutCtrl();
+
+        public :
+            // Trigger
+            void WritePostTrigger( Group_t group, uint16_t n );
+            uint16_t ReadPostTrigger( Group_t group );
+
     };
 }
 

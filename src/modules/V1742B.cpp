@@ -7,16 +7,27 @@ namespace vmepp
     //********************
     //****** V1742B ******
     //********************
-    
+
     V1742B::V1742B( uint32_t baseAddress, uint32_t range ) :
         VSlave( baseAddress, range ),
-        VSlaveAcquisitor( baseAddress, range ),
-        VSlaveInterrupter( baseAddress, range )
+        VSlaveInterrupter( baseAddress, range ),
+        VSlaveAcquisitor( baseAddress, range )
     {
     }
 
     template<>
     const std::string UConfigurable<V1742B>::fName = "V1742B";
+
+    //****** MISC + ******
+    void V1742B::WriteDummy32( Group_t group, uint32_t word )
+    {
+        WriteRegister32( V1742B_DUMMY32(static_cast<uint8_t>(group)), word );
+    }
+
+    uint32_t V1742B::ReadDummy32( Group_t group )
+    {
+        return ReadRegister32( V1742B_DUMMY32( static_cast<uint8_t>(group) ) );
+    }
 
     //****** CONTROL + ******
     void V1742B::WriteReadoutCtrl( uint32_t value )
@@ -43,7 +54,7 @@ namespace vmepp
 
     void V1742B::WriteIRQLevel( uint16_t level )
     {
-        uint32_t readCtrl = ReadReadoutCtrl(); 
+        uint32_t readCtrl = ReadReadoutCtrl();
         WriteReadoutCtrl( readCtrl | (level & V1742B_READOUT_CTRL_INT_MSK) );
     }
 
@@ -67,4 +78,17 @@ namespace vmepp
         PrintMessage( Message_t::INFO, "V1742B ISR :: " + std::to_string( vector ) );
     }
     //****** INTERRUPTS - ******
+
+    //****** TRIGGER + ******
+
+    void V1742B::WritePostTrigger( Group_t group, uint16_t n )
+    {
+        WriteRegister32( V1742B_POST_TRIGGER(static_cast<uint8_t>(group)), n, V1742B_POST_TRIGGER_VAL_MSK );
+    }
+
+    uint16_t V1742B::ReadPostTrigger( Group_t group )
+    {
+        return ReadRegister32( V1742B_POST_TRIGGER(static_cast<uint8_t>(group)), V1742B_POST_TRIGGER_VAL_MSK );
+    }
+    //****** TRIGGER - ******
 }
