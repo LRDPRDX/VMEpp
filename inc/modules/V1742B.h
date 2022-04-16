@@ -43,7 +43,8 @@
 
 #define     V1742B_CHANNEL_THR(X)           V1742B_GROUP_ADDRESS(0x1080UL,X)//A32/D32 RW G
 #define     V1742B_CHANNEL_THR_VAL_MSK      0x0FFFUL//Aux 
-#define     V1742B_CHANNEL_THR_INDX_MSK     0xF000UL//Aux 
+#define     V1742B_CHANNEL_THR_IDX_MSK      0xF000UL//Aux 
+#define     V1742B_CHANNEL_THR_IDX_SHFT     0x000CU//Aux
 
 #define     V1742B_STATUS(X)                V1742B_GROUP_ADDRESS(0x1088UL,X)//A32/D32 R G
 
@@ -54,7 +55,8 @@
 
 #define     V1742B_CHANNEL_DC_OFST(X)       V1742B_GROUP_ADDRESS(0x1098UL,X)//A32/D32 RW G
 #define     V1742B_CHANNEL_DC_OFST_VAL_MSK  0x0000FFFFUL//Aux
-#define     V1742B_CHANNEL_DC_OFST_INDX_MSK 0x000F0000UL//Aux
+#define     V1742B_CHANNEL_DC_OFST_IDX_MSK  0x000F0000UL//Aux
+#define     V1742B_CHANNEL_DC_OFST_IDX_SHFT 0x0010U//Aux
 
 #define     V1742B_CHIP_TEMP(X)             V1742B_GROUP_ADDRESS(0x10A0UL,X)//A32/D32 R G
 #define     V1742B_CHIP_TEMP_VAL_MSK        0x00FFUL//Aux
@@ -198,6 +200,20 @@ namespace vmepp
 
             enum class Group_t : uint8_t { G1 = 0, G2, G3, G4, };
 
+            enum class TR_t : uint8_t { TR0 = 0, TR1 = 1, };
+
+            enum StatusBit : uint32_t
+            {
+                MemoryFull      = 0x0001,
+                MemoryEmpty     = 0x0002,
+                BusySPI         = 0x0004,
+                LockedPLLEven   = 0x0040,
+                LockedPLLOdd    = 0x0080,
+                BusyDRS4        = 0x0100,
+                MezzRevision    = 0x0200,
+                All             = 0x03C7,
+            };
+
         protected :
             static uint8_t constexpr fChNumber      = 0x20U;   // 32 
             static uint8_t constexpr fGroupNumber   = 0x04; // 4
@@ -209,18 +225,26 @@ namespace vmepp
         protected :
             virtual void    Initialize() override;
 
+        protected :
+            void            WaitForSPI( Group_t group );
+
         public :
             V1742B( uint32_t baseAddress, uint32_t range = V1742B_LUB );
             ~V1742B() override = default;
 
         public :
-            //Misc
+            // Misc
             virtual void    Reset() override;
             void            WriteDummy32( Group_t group, uint32_t word );
             uint32_t        ReadDummy32( Group_t group );
 
+            int16_t         ReadChipTemperature( Group_t group );
+
         public :
-            //Interrupts
+            // Info & ROM
+
+        public :
+            // Interrupts
             void            WriteIRQEvents( uint16_t n );
             uint16_t        ReadIRQEvents();
             void            WriteIRQLevel( uint16_t level ) override;
@@ -230,9 +254,12 @@ namespace vmepp
             void            ISR( uint16_t vector ) override;
 
         public :
-            // Control
+            // Control & Status
             void            WriteReadoutCtrl( uint32_t value );
             uint32_t        ReadReadoutCtrl();
+
+            uint32_t        ReadStatus( Group_t group );
+            bool            ReadStatus( Group_t, StatusBit bit );
 
         public :
             // Trigger
@@ -241,6 +268,22 @@ namespace vmepp
 
             void WriteChannelThreshold( uint8_t ch, uint16_t threshold );
             uint16_t ReadChannelThreshold( uint8_t ch );
+
+            void WriteEnableTrigger( uint8_t ch, bool enable = true );
+            bool ReadEnableTriggerC( uint8_t ch );
+            void WriteEnableTrigger( Group_t group, uint8_t mask );
+            uint8_t ReadEnableTrigger( Group_t group );
+
+            void WriteThresholdTR( TR_t tr, uint16_t threshold );
+            uint16_t ReadThresholdTR( TR_t tr );
+
+            void WriteOffsetTR( TR_t tr, uint16_t offset );
+            uint16_t ReadOffsetTR( TR_t tr );
+
+        public :
+            // Channel
+            void WriteChannelOffset( uint8_t ch, uint16_t offset );
+            uint16_t ReadChannelOffset( uint8_t ch );
     };
 }
 
