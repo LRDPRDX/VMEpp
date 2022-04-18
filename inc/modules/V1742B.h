@@ -48,10 +48,13 @@
 
 #define     V1742B_STATUS(X)                V1742B_GROUP_ADDRESS(0x1088UL,X)//A32/D32 R G
 
-#define     V1742B_AMC_FRMW_REV(x)          V1742B_GROUP_ADDRESS(0x108CUL,X)//A32/D32 R G
+#define     V1742B_AMC_FRMW_REV(X)          V1742B_GROUP_ADDRESS(0x108CUL,X)//A32/D32 R G
 #define     V1742B_AMC_FRMW_REV_MIN_MSK     0x000000FFUL//Aux
+#define     V1742B_AMC_FRMW_REV_MIN_SHFT    0x00U//Aux
 #define     V1742B_AMC_FRMW_REV_MAJ_MSK     0x0000FF00UL//Aux
+#define     V1742B_AMC_FRMW_REV_MAJ_SHFT    0x08U//Aux
 #define     V1742B_AMC_FRMW_REV_DATE_MSK    0xFFFF0000UL//Aux
+#define     V1742B_AMC_FRMW_REV_DATE_SHFT   0x10U//Aux
 
 #define     V1742B_CHANNEL_DC_OFST(X)       V1742B_GROUP_ADDRESS(0x1098UL,X)//A32/D32 RW G
 #define     V1742B_CHANNEL_DC_OFST_VAL_MSK  0x0000FFFFUL//Aux
@@ -99,6 +102,8 @@
 #define     V1742B_SOFT_TRG                 0x8108UL//A32/D32 W C
 
 #define     V1742B_GLB_TRG_MASK             0x810CUL//A32/D32 RW C
+#define     V1742B_GLB_TRG_MASK_VAL_MSK     0xC0000000UL//Aux
+#define     V1742B_GLB_TRG_MASK_VAL_SHFT    0x1EU//Aux 
 
 #define     V1742B_FRNT_PANEL_TRG           0x8110UL//A32/D32 RW C
 #define     V1742B_FRNT_PANEL_TRG_INDX_MSK  0x000FUL//Aux
@@ -117,6 +122,12 @@
 #define     V1742B_SOFTWARE_CLK_SYNC        0x813CUL//A32/D32 W C
 
 #define     V1742B_BOARD_INFO               0x8140UL//A32/D32 R C
+#define     V1742B_BOARD_INFO_CODE_MSK      0x000000FFUL//Aux
+#define     V1742B_BOARD_INFO_CODE_SHFT     0x0U//Aux
+#define     V1742B_BOARD_INFO_MEM_MSK       0x0000FF00UL//Aux
+#define     V1742B_BOARD_INFO_MEM_SHFT      0x8U//Aux
+#define     V1742B_BOARD_INFO_GROUP_MSK     0x00FF0000UL//Aux
+#define     V1742B_BOARD_INFO_GROUP_SHFT    0x10U//Aux
 
 #define     V1742B_EVENT_SIZE               0x814CUL//A32/D32 R C
 
@@ -126,7 +137,8 @@
 #define     V1742B_RUN_DELAY                0x8170UL//A32/D32 RW C
 #define     V1742B_RUN_DELAY_VAL_MSK        0x00FFUL//Aux
 
-#define     V1742B_BOARD_FAIL_STATUS        0x8178UL//A32/D32 R C
+#define     V1742B_BOARD_FAIL               0x8178UL//A32/D32 R C
+#define     V1742B_BOARD_FAIL_VAL_MSK       0x0010UL//Aux
 
 #define     V1742B_FRNT_PANEL_LVDS          0x81A0UL//A32/D32 RW C
 
@@ -214,6 +226,40 @@ namespace vmepp
                 All             = 0x03C7,
             };
 
+            enum class GlobalTrigger_t : uint8_t
+            {
+                None = 0x00,
+                ExternalOnly = 0x01,
+                SWOnly = 0x10,
+                All = 0x11
+            };
+
+            struct BoardInfo
+            {
+                uint8_t FAMILY_CODE;
+                uint8_t CHANNEL_MEM_SIZE;
+                uint8_t GROUP_NUMBER;
+
+                BoardInfo( uint8_t code, uint8_t memSize, uint8_t groupN ) :
+                    FAMILY_CODE( code ),
+                    CHANNEL_MEM_SIZE( memSize ),
+                    GROUP_NUMBER( groupN )
+                { }
+            };
+
+            struct AMCFirmwareRev 
+            {
+                uint8_t     MINOR;
+                uint8_t     MAJOR;
+                uint16_t    DATE;
+
+                AMCFirmwareRev( uint8_t min, uint8_t maj, uint16_t date ) :
+                    MINOR( min ),
+                    MAJOR( maj ),
+                    DATE( date )
+                { }
+            };
+
         protected :
             static uint8_t constexpr fChNumber      = 0x20U;   // 32 
             static uint8_t constexpr fGroupNumber   = 0x04; // 4
@@ -240,8 +286,16 @@ namespace vmepp
 
             int16_t         ReadChipTemperature( Group_t group );
 
+            void WriteLVDS( uint16_t mask );
+            uint16_t ReadLVDS();
+
         public :
             // Info & ROM
+            BoardInfo ReadBoardInfo();
+
+            bool ReadPLLFailure();
+
+            AMCFirmwareRev ReadAMCFirmwareRev( Group_t group );
 
         public :
             // Interrupts
@@ -280,10 +334,35 @@ namespace vmepp
             void WriteOffsetTR( TR_t tr, uint16_t offset );
             uint16_t ReadOffsetTR( TR_t tr );
 
+            void WriteVetoDelay( uint16_t value );
+            uint16_t ReadVetoDelay();
+
         public :
-            // Channel
+            // Acquisition
             void WriteChannelOffset( uint8_t ch, uint16_t offset );
             uint16_t ReadChannelOffset( uint8_t ch );
+
+            void WriteRecordLength( RecordLength_t length );
+            RecordLength_t ReadRecordLength();
+
+            void WriteInitTestValue( uint16_t value );
+            uint16_t ReadInitTestValue( Group_t group = Group_t::G1 );
+
+            void WriteSamplingRate( SamplingRate_t rate );
+            SamplingRate_t ReadSamplingRate( Group_t group = Group_t::G1 );
+
+            void WriteSWTrigger();
+
+            void WriteGlobalTrigger( GlobalTrigger_t trigger );
+            GlobalTrigger_t ReadGlobalTrigger();
+
+            uint32_t ReadEventSize();
+
+            void WriteScratch( uint32_t value );
+            uint32_t ReadScratch();
+
+            void WriteMaxEventBLT( uint16_t n );
+            uint16_t ReadMaxEventBLT();
     };
 }
 
