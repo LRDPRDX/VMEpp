@@ -7,7 +7,6 @@ namespace vmepp
     //********************
     //****** V1742B ******
     //********************
-
     V1742B::V1742B( uint32_t baseAddress, uint32_t range ) :
         VSlave( baseAddress, range ),
         VSlaveInterrupter( baseAddress, range ),
@@ -21,6 +20,17 @@ namespace vmepp
     void V1742B::WaitForSPI( Group_t group )
     {
         while( not ReadStatus( group, StatusBit::BusySPI ) ) { }
+    }
+
+    void V1742B::Initialize()
+    {
+        WriteRegister32( V1742B_BOARD_CFG_SET, V1742B_BOARD_CFG_MUST_SET );
+        WriteRegister32( V1742B_BOARD_CFG_CLR, V1742B_BOARD_CFG_MUST_CLR );
+    }
+    
+    void V1742B::Reset()
+    {
+        PrintMessage( Message_t::INFO, "Reset is Not Implemented Yet !" );
     }
 
     //****** MISC + ******
@@ -47,6 +57,24 @@ namespace vmepp
     uint16_t V1742B::ReadLVDS()
     {
         return ReadRegister32( V1742B_LVDS_IO_DATA, V1742B_LVDS_IO_DATA_VAL_MSK );
+    }
+
+    void V1742B::WriteTestModeEnable( bool enable )
+    {
+        uint32_t value = (1U << V1742B_BOARD_CFG_TM_SHFT);
+        if( enable )
+        {
+            WriteRegister32( V1742B_BOARD_CFG_SET, value );
+        }
+        else
+        {
+            WriteRegister32( V1742B_BOARD_CFG_CLR, value );
+        }
+    }
+
+    bool V1742B::ReadTestModeEnable()
+    {
+        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TM_SHFT) );
     }
     //****** MISC - ******
 
@@ -96,6 +124,11 @@ namespace vmepp
     bool V1742B::ReadStatus( Group_t group, StatusBit bit )
     {
         return ReadStatus( group ) & bit;
+    }
+
+    uint32_t V1742B::ReadBoardConfiguration()
+    {
+        return ReadRegister32( V1742B_BOARD_CFG );
     }
     //****** CONTROL & STATUS - ******
 
@@ -261,6 +294,61 @@ namespace vmepp
     {
         return ReadRegister32( V1742B_EXTD_VETO_DELAY, V1742B_EXTD_VETO_DELAY_VAL_MSK );
     }
+
+    void V1742B::WriteTRPolarity( TriggerPolarity_t pol )
+    {
+        uint32_t value = (1U << V1742B_BOARD_CFG_TRG_POL_SHFT);
+        if( pol == TriggerPolarity_t::FallingEdge )
+        {
+            WriteRegister32( V1742B_BOARD_CFG_SET, value );
+        }
+        else
+        {
+            WriteRegister32( V1742B_BOARD_CFG_CLR, value );
+        }
+    }
+
+    V1742B::TriggerPolarity_t V1742B::ReadTRPolarity()
+    {
+        bool value = ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_POL_SHFT) );
+        return (value ? TriggerPolarity_t::FallingEdge : TriggerPolarity_t::RisingEdge);
+    }
+
+    void V1742B::WriteTRDigitize( bool enable )
+    {
+        uint32_t value = (1U << V1742B_BOARD_CFG_TRG_DG_SHFT);
+        if( enable )
+        {
+            WriteRegister32( V1742B_BOARD_CFG_SET, value );
+        }
+        else
+        {
+            WriteRegister32( V1742B_BOARD_CFG_CLR, value );
+        }
+    }
+
+    bool V1742B::ReadTRDigitize()
+    {
+        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_DG_SHFT) ); 
+    }
+
+    void V1742B::WriteTREnable( bool enable )
+    {
+        uint32_t value = (1U << V1742B_BOARD_CFG_TRG_EN_SHFT);
+        if( enable )
+        {
+            WriteRegister32( V1742B_BOARD_CFG_SET, value );
+        }
+        else
+        {
+            WriteRegister32( V1742B_BOARD_CFG_CLR, value );
+        }
+    }
+
+    bool V1742B::ReadTREnable()
+    {
+        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_EN_SHFT) ); 
+    }
     //****** TRIGGER - ******
 
     //****** ACQUISITION + ******
@@ -342,5 +430,69 @@ namespace vmepp
     {
         return ReadRegister32( V1742B_MAX_EVENT_BLT, V1742B_MAX_EVENT_BLT_VAL_MSK );
     }
+
+    void V1742B::WriteAcqMode( AcqMode_t mode )
+    {
+        uint32_t value = (1U << V1742B_BOARD_CFG_MODE_SHFT);
+        if( mode == AcqMode_t::Transparent )
+        {
+            WriteRegister32( V1742B_BOARD_CFG_SET, value );
+        }
+        else
+        {
+            WriteRegister32( V1742B_BOARD_CFG_CLR, value );
+        }
+    }
+
+    V1742B::AcqMode_t V1742B::ReadAcqMode()
+    {
+        bool value = ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_MODE_SHFT) );
+        return (value ? AcqMode_t::Transparent : AcqMode_t::Output);
+    }
+
+    void V1742B::WriteTRGINEnable( bool enable )
+    {
+        uint32_t value = (1U << V1742B_BOARD_CFG_TGIN_EN_SHFT);
+        if( enable )
+        {
+            WriteRegister32( V1742B_BOARD_CFG_SET, value );
+        }
+        else
+        {
+            WriteRegister32( V1742B_BOARD_CFG_CLR, value );
+        }
+    } 
+
+    bool V1742B::ReadTRGINEnable()
+    {
+        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TGIN_EN_SHFT) );
+    }
+
+    void V1742B::WriteTRGINSignal( TriggerInput_t trigger )
+    {
+        uint32_t value = (1U << V1742B_BOARD_CFG_TGIN_SIG_SHFT);
+        if( trigger == TriggerInput_t::Veto )
+        {
+            WriteRegister32( V1742B_BOARD_CFG_SET, value );
+        }
+        else
+        {
+            WriteRegister32( V1742B_BOARD_CFG_CLR, value );
+        }
+    } 
+
+    V1742B::TriggerInput_t V1742B::ReadTRGINSignal()
+    {
+        bool value = ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TGIN_SIG_SHFT) );
+        return value ? TriggerInput_t::Veto : TriggerInput_t::Gate; 
+    }
     //****** ACQUISITION - ******
+
+    void V1742B::ReadConfig( UConfig<V1742B>& config )
+    {
+    }
+
+    void V1742B::WriteConfig( const UConfig<V1742B>& config )
+    {
+    }
 }

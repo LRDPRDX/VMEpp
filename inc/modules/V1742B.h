@@ -80,7 +80,16 @@
 
 #define     V1742B_BOARD_CFG                0x8000UL//A32/D32 R C
 #define     V1742B_BOARD_CFG_SET            0x8004UL//A32/D32 W C
+#define     V1742B_BOARD_CFG_MUST_SET       0x00000110UL//Aux
+#define     V1742B_BOARD_CFG_MUST_CLR       0x00006000UL//Aux
 #define     V1742B_BOARD_CFG_CLR            0x8008UL//A32/D32 W C
+#define     V1742B_BOARD_CFG_TM_SHFT        0x03U//Aux
+#define     V1742B_BOARD_CFG_TRG_POL_SHFT   0x06U//Aux
+#define     V1742B_BOARD_CFG_TRG_DG_SHFT    0x0BU//Aux
+#define     V1742B_BOARD_CFG_TRG_EN_SHFT    0x0CU//Aux
+#define     V1742B_BOARD_CFG_MODE_SHFT      0x0DU//Aux
+#define     V1742B_BOARD_CFG_TGIN_EN_SHFT   0x0FU//Aux
+#define     V1742B_BOARD_CFG_TGIN_SIG_SHFT  0x11U//Aux
 
 //WARNING: this register must not be written while the acquisition is running.
 #define     V1742B_CUSTOM_SIZE              0x8020UL//A32/D32 RW C
@@ -260,6 +269,38 @@ namespace vmepp
                 { }
             };
 
+            enum class TriggerPolarity_t : uint8_t
+            {
+                RisingEdge = 0x00,
+                FallingEdge = 0x01,
+            };
+            
+            enum class TriggerInput_t : uint8_t
+            {
+                Gate = 0x00,
+                Veto = 0x01,
+            };
+
+            enum class TriggerOut_t : uint8_t
+            {
+                NoSignal    = 0x00,
+                AllTRn      = 0x01,
+                AcceptedTRn = 0x02,
+                BusyGroups  = 0x03,
+            };
+
+            enum class Level_t : uint8_t
+            {
+                NIM = 0x00,
+                TTL = 0x01,
+            };
+
+            enum class AcqMode_t : uint8_t
+            {
+                Output      = 0x00,
+                Transparent = 0x01,
+            };
+
         protected :
             static uint8_t constexpr fChNumber      = 0x20U;   // 32 
             static uint8_t constexpr fGroupNumber   = 0x04; // 4
@@ -281,6 +322,7 @@ namespace vmepp
         public :
             // Misc
             virtual void    Reset() override;
+
             void            WriteDummy32( Group_t group, uint32_t word );
             uint32_t        ReadDummy32( Group_t group );
 
@@ -288,6 +330,9 @@ namespace vmepp
 
             void WriteLVDS( uint16_t mask );
             uint16_t ReadLVDS();
+
+            void WriteTestModeEnable( bool enable = true );
+            bool ReadTestModeEnable();
 
         public :
             // Info & ROM
@@ -315,6 +360,10 @@ namespace vmepp
             uint32_t        ReadStatus( Group_t group );
             bool            ReadStatus( Group_t, StatusBit bit );
 
+            uint32_t        ReadBoardConfiguration();
+            void            WriteBoardConfiguration( uint32_t value );
+            void            WriteBoardConfiguration2( uint32_t value );
+
         public :
             // Trigger
             void WritePostTrigger( Group_t group, uint16_t n );
@@ -337,8 +386,19 @@ namespace vmepp
             void WriteVetoDelay( uint16_t value );
             uint16_t ReadVetoDelay();
 
+            void WriteTRPolarity( TriggerPolarity_t pol );
+            TriggerPolarity_t ReadTRPolarity();
+
+            void WriteTRDigitize( bool enable = true );
+            bool ReadTRDigitize();
+
+            void WriteTREnable( bool enable = true );
+            bool ReadTREnable();
+
         public :
             // Acquisition
+            uint32_t GetBufferAddress() const override { return V1742B_OUTPUT_BUFFER_START; };
+
             void WriteChannelOffset( uint8_t ch, uint16_t offset );
             uint16_t ReadChannelOffset( uint8_t ch );
 
@@ -363,7 +423,29 @@ namespace vmepp
 
             void WriteMaxEventBLT( uint16_t n );
             uint16_t ReadMaxEventBLT();
+
+            void WriteAcqMode( AcqMode_t mode );
+            AcqMode_t ReadAcqMode();
+
+            void WriteTRGINEnable( bool enable = true );
+            bool ReadTRGINEnable();
+
+            void WriteTRGINSignal( TriggerInput_t trigger );
+            TriggerInput_t ReadTRGINSignal();
+
+        public :
+            // Config
+            void    ReadConfig( UConfig<V1742B>& config ) override;
+            void    WriteConfig( const UConfig<V1742B>& config ) override;
     };
+
+    template<>
+    const std::string UConfigurable<V1742B>::fName;
+
+    template <>
+    class UConfig<V1742B>
+    {
+    }; 
 }
 
 #endif
