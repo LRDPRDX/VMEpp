@@ -90,6 +90,8 @@
 #define     V1742B_BOARD_CFG_MODE_SHFT      0x0DU//Aux
 #define     V1742B_BOARD_CFG_TGIN_EN_SHFT   0x0FU//Aux
 #define     V1742B_BOARD_CFG_TGIN_SIG_SHFT  0x11U//Aux
+#define     V1742B_BOARD_CFG_TGOUT_SIG_SHFT 0x1CU//Aux
+#define     V1742B_BOARD_CFG_TGOUT_SIG_MSK  0x30000000UL//Aux
 
 //WARNING: this register must not be written while the acquisition is running.
 #define     V1742B_CUSTOM_SIZE              0x8020UL//A32/D32 RW C
@@ -256,7 +258,7 @@ namespace vmepp
                 { }
             };
 
-            struct AMCFirmwareRev 
+            struct AMCFirmwareRev
             {
                 uint8_t     MINOR;
                 uint8_t     MAJOR;
@@ -274,8 +276,8 @@ namespace vmepp
                 RisingEdge = 0x00,
                 FallingEdge = 0x01,
             };
-            
-            enum class TriggerInput_t : uint8_t
+
+            enum class TriggerIn_t : uint8_t
             {
                 Gate = 0x00,
                 Veto = 0x01,
@@ -299,6 +301,14 @@ namespace vmepp
             {
                 Output      = 0x00,
                 Transparent = 0x01,
+            };
+
+            enum class StartSource_t : uint8_t
+            {
+                SW          = 0x00,
+                S_IN        = 0x01,
+                FirstTrg    = 0x02,
+                LVDS        = 0x03,
             };
 
         protected :
@@ -430,8 +440,11 @@ namespace vmepp
             void WriteTRGINEnable( bool enable = true );
             bool ReadTRGINEnable();
 
-            void WriteTRGINSignal( TriggerInput_t trigger );
-            TriggerInput_t ReadTRGINSignal();
+            void WriteTRGINSignal( TriggerIn_t trigger );
+            TriggerIn_t ReadTRGINSignal();
+
+            void WriteTRGOUTSignal( TriggerOut_t trigger );
+            TriggerOut_t ReadTRGOUTSignal();
 
         public :
             // Config
@@ -445,7 +458,7 @@ namespace vmepp
     template <>
     class UConfig<V1742B>
     {
-    }; 
+    };
 }
 
 #endif

@@ -27,7 +27,7 @@ namespace vmepp
         WriteRegister32( V1742B_BOARD_CFG_SET, V1742B_BOARD_CFG_MUST_SET );
         WriteRegister32( V1742B_BOARD_CFG_CLR, V1742B_BOARD_CFG_MUST_CLR );
     }
-    
+
     void V1742B::Reset()
     {
         PrintMessage( Message_t::INFO, "Reset is Not Implemented Yet !" );
@@ -461,17 +461,17 @@ namespace vmepp
         {
             WriteRegister32( V1742B_BOARD_CFG_CLR, value );
         }
-    } 
+    }
 
     bool V1742B::ReadTRGINEnable()
     {
         return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TGIN_EN_SHFT) );
     }
 
-    void V1742B::WriteTRGINSignal( TriggerInput_t trigger )
+    void V1742B::WriteTRGINSignal( TriggerIn_t trigger )
     {
         uint32_t value = (1U << V1742B_BOARD_CFG_TGIN_SIG_SHFT);
-        if( trigger == TriggerInput_t::Veto )
+        if( trigger == TriggerIn_t::Veto )
         {
             WriteRegister32( V1742B_BOARD_CFG_SET, value );
         }
@@ -479,12 +479,25 @@ namespace vmepp
         {
             WriteRegister32( V1742B_BOARD_CFG_CLR, value );
         }
-    } 
+    }
 
-    V1742B::TriggerInput_t V1742B::ReadTRGINSignal()
+    V1742B::TriggerIn_t V1742B::ReadTRGINSignal()
     {
         bool value = ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TGIN_SIG_SHFT) );
-        return value ? TriggerInput_t::Veto : TriggerInput_t::Gate; 
+        return value ? TriggerIn_t::Veto : TriggerIn_t::Gate;
+    }
+
+    void V1742B::WriteTRGOUTSignal( TriggerOut_t trigger )
+    {
+        uint32_t value = static_cast<uint32_t>(trigger) << V1742B_BOARD_CFG_TGOUT_SIG_SHFT;
+        WriteRegister32( V1742B_BOARD_CFG_SET, value & V1742B_BOARD_CFG_TGOUT_SIG_MSK );
+        WriteRegister32( V1742B_BOARD_CFG_CLR, value ^ V1742B_BOARD_CFG_TGOUT_SIG_MSK );
+    }
+
+    V1742B::TriggerOut_t V1742B::ReadTRGOUTSignal()
+    {
+        uint32_t value = ReadRegister32( V1742B_BOARD_CFG, V1742B_BOARD_CFG_TGOUT_SIG_MSK );
+        return static_cast<TriggerOut_t>( value >> V1742B_BOARD_CFG_TGOUT_SIG_SHFT );
     }
     //****** ACQUISITION - ******
 
