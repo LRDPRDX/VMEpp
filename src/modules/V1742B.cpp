@@ -499,7 +499,61 @@ namespace vmepp
         uint32_t value = ReadRegister32( V1742B_BOARD_CFG, V1742B_BOARD_CFG_TGOUT_SIG_MSK );
         return static_cast<TriggerOut_t>( value >> V1742B_BOARD_CFG_TGOUT_SIG_SHFT );
     }
+
+    void V1742B::WriteStartSource( StartSource_t source )
+    {
+        WriteRegister32( V1742B_ACQ_CTRL, static_cast<uint32_t>(source), V1742B_ACQ_CTRL_SRC_MSK );
+    }
+
+    V1742B::StartSource_t V1742B::ReadStartSource()
+    {
+        return static_cast<StartSource_t>( ReadRegister32( V1742B_ACQ_CTRL, V1742B_ACQ_CTRL_SRC_MSK ) );
+    }
+
+    void V1742B::WriteStartStop( bool start )
+    {
+        uint32_t value = ReadRegister32( V1742B_ACQ_CTRL );
+        if( start )
+        {
+            WriteRegister32( V1742B_ACQ_CTRL, value | (1U << V1742B_ACQ_CTRL_START_SHFT) );
+        }
+        else
+        {
+            WriteRegister32( V1742B_ACQ_CTRL, value & ~(1U << V1742B_ACQ_CTRL_START_SHFT) );
+        }
+    }
+
+    uint32_t V1742B::ReadAcqStatus()
+    {
+        return ReadRegister32( V1742B_ACQ_STATUS, static_cast<uint32_t>( AcqStatusBit::All ) );
+    }
+
+    bool V1742B::ReadAcqStatus( AcqStatusBit bit )
+    {
+        return ReadRegister32( V1742B_ACQ_STATUS, static_cast<uint32_t>( bit ) );
+    }
     //****** ACQUISITION - ******
+
+    //****** FRONT PANEL + ******
+    void V1742B::WriteLEMOLevel( Level_t level )
+    {
+        uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL );
+        if( level == Level_t::NIM )
+        {
+            WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value & ~(1U << V1742B_FRNT_PNL_IO_LEMO_SHFT) );
+        }
+        else
+        {
+            WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value | (1U << V1742B_FRNT_PNL_IO_LEMO_SHFT) );
+        }
+    }
+
+    V1742B::Level_t V1742B::ReadLEMOLevel()
+    {
+        uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL, (1U << V1742B_FRNT_PNL_IO_LEMO_SHFT) );
+        return static_cast<Level_t>( value );
+    }
+    //****** FRONT PANEL - ******
 
     void V1742B::ReadConfig( UConfig<V1742B>& config )
     {
