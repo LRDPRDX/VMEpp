@@ -498,6 +498,26 @@ namespace vmepp
     class UConfig<V1742B>
     {
     };
+
+
+    //*****************************
+    //****** UEVENT<V1742B>  ******
+    //*****************************
+    template<>
+    class UEvent<V1785N> : public VEvent
+    {
+        protected :
+            uint32_t fHeader[4];
+
+        public :
+            size_t GetEventSize() const     { return fHeader[0] & V1742B_HDR_EVENT_SIZE_MSK; }
+            uint8_t GetBoardID() const      { return (fHeader[1] & V1742B_HDR_BOARD_ID_MSK) >> V1742B_HDR_BOARD_ID_SHFT; }
+            bool GetBoardFail() const       { return fHeader[1] & V1742B_HDR_BOARD_FAIL_MSK; }
+            uint16_t GetLVDSPattern() const { return (fHeader[1] & V1742B_HDR_LVDS_MSK) >> V1742B_HDR_LVDS_SHFT; }
+            uint8_t GetGroupMask() const    { return (fHeader[1] & V1742B_HDR_GROUP_MSK); }
+            size_t GetEventCounter() const  { return (fHeader[2] & V1742B_HDR_EVENT_CNT_MSK); } 
+            uint32_t GetEventTTT() const    { return (fHeader[3] & V1742B_HDR_EVENT_TTT_MSK); }
+    };
 }
 
 #endif
