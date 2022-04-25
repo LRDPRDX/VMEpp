@@ -53,6 +53,8 @@ namespace vmepp
             size_t GetSize() const { return fData.size(); }
             const DataWord_t& operator [](size_t i) const { return fData[i]; }
 
+            void Dump( const std::string& fileName );
+
             friend void VSlaveAcquisitor::ReadBuffer( VBuffer& );
     };
 }

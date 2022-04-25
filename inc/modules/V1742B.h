@@ -34,21 +34,23 @@
 #define     V1742B_OUTPUT_BUFFER_SIZE           (V1742B_OUTPUT_BUFFER_STOP - V1742B_OUTPUT_BUFFER_START + 1UL)//Aux
 
 #define     V1742B_N_GROUPS                     0x4U//Aux
-#define     V1742B_GROUP_ADDRESS(BASE,G)        ((BASE) + (0x0100UL * ((G) % V1742B_N_GROUPS)))//Aux
+#define     V1742B_GROUP_SINGLE(BASE,G)         ((BASE) + (0x0100UL * ((G) % V1742B_N_GROUPS)))
+#define     V1742B_GROUP_BCST(BASE)             (((BASE) & 0x00FFUL) | 0x8000UL)
+#define     V1742B_GROUP_ADDRESS(BASE,G)        (((G) < V1742B_N_GROUPS) ? V1742B_GROUP_SINGLE(BASE,G) : V1742B_GROUP_BCST(BASE))//Aux
 
-#define     V1742B_POST_TRIGGER(X)              V1742B_GROUP_ADDRESS(0x1014UL,X)//A32/D32 RW G
+#define     V1742B_POST_TRIGGER(X)              V1742B_GROUP_ADDRESS(0x1014UL,(X))//A32/D32 RW G
 #define     V1742B_POST_TRIGGER_VAL_MSK         0x03FFUL//Aux
 
-#define     V1742B_DUMMY32(X)                   V1742B_GROUP_ADDRESS(0x1024UL,X)//A32/D32 RW G
+#define     V1742B_DUMMY32(X)                   V1742B_GROUP_ADDRESS(0x1024UL,(X))//A32/D32 RW G
 
-#define     V1742B_CHANNEL_THR(X)               V1742B_GROUP_ADDRESS(0x1080UL,X)//A32/D32 RW G
+#define     V1742B_CHANNEL_THR(X)               V1742B_GROUP_ADDRESS(0x1080UL,(X))//A32/D32 RW G
 #define     V1742B_CHANNEL_THR_VAL_MSK          0x0FFFUL//Aux 
 #define     V1742B_CHANNEL_THR_IDX_MSK          0xF000UL//Aux 
 #define     V1742B_CHANNEL_THR_IDX_SHFT         0x000CU//Aux
 
-#define     V1742B_STATUS(X)                    V1742B_GROUP_ADDRESS(0x1088UL,X)//A32/D32 R G
+#define     V1742B_STATUS(X)                    V1742B_GROUP_ADDRESS(0x1088UL,(X))//A32/D32 R G
 
-#define     V1742B_AMC_FRMW_REV(X)              V1742B_GROUP_ADDRESS(0x108CUL,X)//A32/D32 R G
+#define     V1742B_AMC_FRMW_REV(X)              V1742B_GROUP_ADDRESS(0x108CUL,(X))//A32/D32 R G
 #define     V1742B_AMC_FRMW_REV_MIN_MSK         0x000000FFUL//Aux
 #define     V1742B_AMC_FRMW_REV_MIN_SHFT        0x00U//Aux
 #define     V1742B_AMC_FRMW_REV_MAJ_MSK         0x0000FF00UL//Aux
@@ -56,26 +58,26 @@
 #define     V1742B_AMC_FRMW_REV_DATE_MSK        0xFFFF0000UL//Aux
 #define     V1742B_AMC_FRMW_REV_DATE_SHFT       0x10U//Aux
 
-#define     V1742B_CHANNEL_DC_OFST(X)           V1742B_GROUP_ADDRESS(0x1098UL,X)//A32/D32 RW G
+#define     V1742B_CHANNEL_DC_OFST(X)           V1742B_GROUP_ADDRESS(0x1098UL,(X))//A32/D32 RW G
 #define     V1742B_CHANNEL_DC_OFST_VAL_MSK      0x0000FFFFUL//Aux
 #define     V1742B_CHANNEL_DC_OFST_IDX_MSK      0x000F0000UL//Aux
 #define     V1742B_CHANNEL_DC_OFST_IDX_SHFT     0x0010U//Aux
 
-#define     V1742B_CHIP_TEMP(X)                 V1742B_GROUP_ADDRESS(0x10A0UL,X)//A32/D32 R G
+#define     V1742B_CHIP_TEMP(X)                 V1742B_GROUP_ADDRESS(0x10A0UL,(X))//A32/D32 R G
 #define     V1742B_CHIP_TEMP_VAL_MSK            0x00FFUL//Aux
 
-#define     V1742B_CHANNEL_SEL(X)               V1742B_GROUP_ADDRESS(0x10A4UL,X)//A32/D32 RW G
+#define     V1742B_CHANNEL_SEL(X)               V1742B_GROUP_ADDRESS(0x10A4UL,(X))//A32/D32 RW G
 #define     V1742B_CHANNEL_SEL_VAL_MSK          0x000FUL//Aux
 
-#define     V1742B_CHANNEL_TRG_MASK(X)          V1742B_GROUP_ADDRESS(0x10A8UL,X)//A32/D32 RW G
+#define     V1742B_CHANNEL_TRG_MASK(X)          V1742B_GROUP_ADDRESS(0x10A8UL,(X))//A32/D32 RW G
 #define     V1742B_CHANNEL_TRG_MASK_MSK         0x00FFUL//Aux
 
 //WARNING: before writing this register, it is necessary to check that bit[2] = 0 at 0x1X88,
 //otherwise the writing process will not run properly!
-#define     V1742B_TR_TRG_THR(X)                V1742B_GROUP_ADDRESS(0x10D4UL,X)//A32/D32 RW G
+#define     V1742B_TR_TRG_THR(X)                V1742B_GROUP_ADDRESS(0x10D4UL,(X))//A32/D32 RW G
 #define     V1742B_TR_TRG_THR_VAL_MSK           0xFFFFUL//Aux
 
-#define     V1742B_TR_DC_OFST(X)                V1742B_GROUP_ADDRESS(0x10DCUL,X)//A32/D32 RW G
+#define     V1742B_TR_DC_OFST(X)                V1742B_GROUP_ADDRESS(0x10DCUL,(X))//A32/D32 RW G
 #define     V1742B_TR_DC_OFST_VAL_MSK           0xFFFFUL//Aux
 
 #define     V1742B_BOARD_CFG                    0x8000UL//A32/D32 R C
@@ -102,7 +104,7 @@
 #define     V1742B_TEST_MODE_INIT_VAL_MSK       0x0FFFUL//Aux
 
 //WARNING: This register must not be written while the acquisition is running.
-#define     V1742B_DRS4_SAMP_FREQ_READ(X)       V1742B_GROUP_ADDRESS(0x10D8UL,X)//A32/D32 R G           
+#define     V1742B_DRS4_SAMP_FREQ_READ(X)       V1742B_GROUP_ADDRESS(0x10D8UL,X)//A32/D32 R G
 #define     V1742B_DRS4_SAMP_FREQ_WRITE         0x80D8UL//A32/D32 W C
 #define     V1742B_DRS4_SAMP_FREQ_VAL_MSK       0x0003UL//Aux
 
@@ -202,9 +204,25 @@
 
 #define     V1742B_LUB                          0xF08BUL//Aux, The Last Used Byte
 
+// Event Description
+#define     V1742B_HDR_EVENT_SIZE_MSK           0x0FFFFFFFUL//Aux
+#define     V1742B_HDR_BOARD_ID_MSK             0xF8000000UL//Aux
+#define     V1742B_HDR_BOARD_ID_SHFT            0x1BU//Aux
+#define     V1742B_HDR_BOARD_FAIL_MSK           0x04000000UL//Aux
+#define     V1742B_HDR_LVDS_MSK                 0x00FFFF00UL//Aux
+#define     V1742B_HDR_LVDS_SHFT                0x8U//Aux
+#define     V1742B_HDR_GROUP_MSK                0x0000000FUL//Aux
+#define     V1742B_HDR_EVENT_CNT_MSK            0x00FFFFFFUL//Aux
+#define     V1742B_HDR_EVENT_TTT_MSK            0xFFFFFFFFUL//Aux
+
 #include "VSlaveInterrupter.h"
 #include "VSlaveAcquisitor.h"
+#include "VEvent.h"
 #include "UConfigurable.h"
+#include "UParser.h"
+
+#include <vector>
+#include <array>
 
 
 namespace vmepp
@@ -234,7 +252,7 @@ namespace vmepp
                 High    = 0x01,
             };
 
-            enum class Group_t : uint8_t { G1 = 0, G2, G3, G4, };
+            enum class Group_t : uint8_t { G1 = 0, G2, G3, G4, All };
 
             enum class TR_t : uint8_t { TR0 = 0, TR1 = 1, };
 
@@ -252,10 +270,10 @@ namespace vmepp
 
             enum class GlobalTrigger_t : uint8_t
             {
-                None = 0x00,
-                ExternalOnly = 0x01,
-                SWOnly = 0x10,
-                All = 0x11
+                None            = 0x00,
+                ExternalOnly    = 0x01,
+                SWOnly          = 0x02,
+                All             = 0x03,
             };
 
             struct BoardInfo
@@ -348,7 +366,7 @@ namespace vmepp
         protected :
             virtual void    Initialize() override;
 
-        protected :
+        public :
             void            WaitForSPI( Group_t group );
 
         public :
@@ -397,8 +415,6 @@ namespace vmepp
             bool            ReadStatus( Group_t, StatusBit bit );
 
             uint32_t        ReadBoardConfiguration();
-            void            WriteBoardConfiguration( uint32_t value );
-            void            WriteBoardConfiguration2( uint32_t value );
 
         public :
             // Trigger
@@ -443,6 +459,8 @@ namespace vmepp
         public :
             // Acquisition
             uint32_t GetBufferAddress() const override { return V1742B_OUTPUT_BUFFER_START; };
+
+            void WriteGroupEnable( Group_t g, bool enable = true );
 
             void WriteChannelOffset( uint8_t ch, uint16_t offset );
             uint16_t ReadChannelOffset( uint8_t ch );
@@ -504,10 +522,19 @@ namespace vmepp
     //****** UEVENT<V1742B>  ******
     //*****************************
     template<>
-    class UEvent<V1785N> : public VEvent
+    class UEvent<V1742B> : public VEvent
     {
+        public :
+            typedef std::vector<uint16_t> Waveform; 
+
         protected :
-            uint32_t fHeader[4];
+            uint32_t                                    fHeader[4];
+            std::array<Waveform, V1742B::GetChNumber()> fData;
+            Waveform                                    fTR0;
+            Waveform                                    fTR1;
+
+        public :
+            bool Fill( size_t index, const VBuffer &buffer) override;
 
         public :
             size_t GetEventSize() const     { return fHeader[0] & V1742B_HDR_EVENT_SIZE_MSK; }

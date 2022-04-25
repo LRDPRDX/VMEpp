@@ -19,13 +19,73 @@ namespace vmepp
 
     void V1742B::WaitForSPI( Group_t group )
     {
-        while( not ReadStatus( group, StatusBit::BusySPI ) ) { }
+        while( ReadStatus( group, StatusBit::BusySPI ) ) { }
     }
 
     void V1742B::Initialize()
     {
+        PrintMessage( Message_t::INFO, "Initialization " + fName + "...\n" );
+
+        // Misc
+        WriteDummy32( Group_t::All, 0x12345678 );
+        WriteTestModeEnable( false );
+
+        // Interrupts
+        WriteIRQEvents( 1 );
+        WriteIRQLevel( 0 );
+        WriteIRQVector( 0 );
+
+        // Control & Status
         WriteRegister32( V1742B_BOARD_CFG_SET, V1742B_BOARD_CFG_MUST_SET );
         WriteRegister32( V1742B_BOARD_CFG_CLR, V1742B_BOARD_CFG_MUST_CLR );
+
+        // Trigger
+        WritePostTrigger( Group_t::All, 0 );
+
+        for( uint8_t ch = 0; ch < GetChNumber(); ++ch )
+        {
+            WriteChannelThreshold( ch, 0 );
+            WriteChannelOffset( ch, 0x7FFF );
+        }
+
+        WriteEnableTrigger( Group_t::All, 0 );
+
+        WriteThresholdTR( TR_t::TR0, 0 );
+        WriteThresholdTR( TR_t::TR1, 0 );
+        WriteOffsetTR( TR_t::TR0, 0x7FFF );
+        WriteOffsetTR( TR_t::TR1, 0x7FFF );
+        WriteTRPolarity( TriggerPolarity_t::RisingEdge );
+        WriteTRDigitize( false );
+        WriteTREnable( false );
+
+        WriteTRGINEnable( false );
+        WriteTRGINSignal( TriggerIn_t::Gate );
+
+        WriteTRGOUTSignal( TriggerOut_t::NoSignal );
+
+        //WriteVetoDelay( 0 );
+
+        WriteGlobalTrigger( GlobalTrigger_t::SWOnly );
+
+        // Acquisition
+        WriteRecordLength( RecordLength_t::s1024 );
+        WriteInitTestValue( 0 );
+        WriteSamplingRate( SamplingRate_t::M5000 );
+        WriteScratch( 0x12345678 );
+        WriteMaxEventBLT( 1024 );
+        WriteAcqMode( AcqMode_t::Transparent );
+        WriteStartSource( StartSource_t::SW );
+
+        // Front Panel
+        WriteLEMOLevel( Level_t::TTL );
+
+        // Print Some Info
+        for( uint8_t g = 0; g < GetGroupNumber(); ++g )
+        {
+            std::cout << "Temperature of Chip #" << (int)g << " is " << ReadChipTemperature( static_cast<Group_t>( g )) << " C\n"; 
+        }
+
+        PrintMessage( Message_t::INFO, "Initialization " + fName + " Done!\n" );
     }
 
     void V1742B::Reset()
@@ -123,7 +183,7 @@ namespace vmepp
 
     bool V1742B::ReadStatus( Group_t group, StatusBit bit )
     {
-        return ReadStatus( group ) & bit;
+        return (ReadStatus( group ) & bit);
     }
 
     uint32_t V1742B::ReadBoardConfiguration()
@@ -352,6 +412,14 @@ namespace vmepp
     //****** TRIGGER - ******
 
     //****** ACQUISITION + ******
+    void V1742B::WriteGroupEnable( Group_t g, bool enable )
+    {
+        if( g == Group_t::All )
+        {
+            WriteRegister32( V1742B_GROUP_EN_MASK, (1U << 0U), V1742B_GROUP_EN_MASK_VAL_MSK );
+        }
+    }
+
     void V1742B::WriteChannelOffset( uint8_t ch, uint16_t offset )
     {
         ch = ch / GetChNumber();
@@ -561,5 +629,35 @@ namespace vmepp
 
     void V1742B::WriteConfig( const UConfig<V1742B>& config )
     {
+    }
+
+    //****************************
+    //****** UEVENT<V1742B> ******
+    //****************************
+
+    bool UEvent<V1742B>::Fill( size_t index, const VBuffer &buffer )
+    {
+        for( ; index < buffer.GetSize(); ++index )
+        {
+            if( buffer[index] != V1742B_WORD_TYPE_FILLER ) { break; }
+        }
+
+        DataWord_t word;
+        DataWord_t wordTypeCurrent = V1742B_WORD_TYPE_FILLER;
+        DataWord_t wordTypeExpected = V1742B_WORD_TYPE_HEADER;
+
+        for( ; index < buffer.GetSize(); ++index )
+        {
+            switch( wordTypeCurrent )
+            {
+                case( V1742B_WORD_TYPE_HEADER ) :
+                    if( index + 4 >= buffer.GetSize() ) { return false; }
+                    for( size_t i = 0; i < 4; ++i, ++index ) { fHeader[index] = buffer[index]; } 
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 }
