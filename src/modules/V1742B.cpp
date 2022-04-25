@@ -416,7 +416,7 @@ namespace vmepp
     {
         if( g == Group_t::All )
         {
-            WriteRegister32( V1742B_GROUP_EN_MASK, (1U << 0U), V1742B_GROUP_EN_MASK_VAL_MSK );
+            WriteRegister32( V1742B_GROUP_EN_MASK, 0xF, V1742B_GROUP_EN_MASK_VAL_MSK );
         }
     }
 
@@ -642,22 +642,28 @@ namespace vmepp
             if( buffer[index] != V1742B_WORD_TYPE_FILLER ) { break; }
         }
 
-        DataWord_t word;
-        DataWord_t wordTypeCurrent = V1742B_WORD_TYPE_FILLER;
-        DataWord_t wordTypeExpected = V1742B_WORD_TYPE_HEADER;
-
-        for( ; index < buffer.GetSize(); ++index )
+        if( (buffer[index] & 0xF0000000) == 0xA0000000 )
         {
-            switch( wordTypeCurrent )
+            // Fill Header 
+            if( index + fHeader.size() < buffer.GetSize() )
             {
-                case( V1742B_WORD_TYPE_HEADER ) :
-                    if( index + 4 >= buffer.GetSize() ) { return false; }
-                    for( size_t i = 0; i < 4; ++i, ++index ) { fHeader[index] = buffer[index]; } 
-                    return true;
-                default:
-                    return false;
+                fStart = index;
+                for( size_t i = 0; i < fHeader.size(); ++i, ++index ) { fHeader[index] = buffer[index]; } 
+                fStop = index;
+                return true;
             }
         }
         return false;
+    }
+
+    void UEvent<V1742B>::Print() const
+    {
+        std::cout << "Event size: " << GetEventSize() << "\n";
+        std::cout << "Board ID: " << (unsigned)GetBoardID() << "\n";
+        std::cout << "FAIL: " << GetBoardFail() << "\n";
+        std::cout << "LVDS: " << (unsigned)GetLVDSPattern() << "\n";
+        std::cout << "Group mask: " << (unsigned)GetGroupMask() << "\n";
+        std::cout << "Event counter: " << GetEventCounter() << "\n";
+        std::cout << "Event TTT: " << GetEventTTT() << "\n";
     }
 }

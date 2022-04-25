@@ -215,6 +215,8 @@
 #define     V1742B_HDR_EVENT_CNT_MSK            0x00FFFFFFUL//Aux
 #define     V1742B_HDR_EVENT_TTT_MSK            0xFFFFFFFFUL//Aux
 
+#define     V1742B_WORD_TYPE_FILLER             0xFFFFFFFFUL//Aux
+
 #include "VSlaveInterrupter.h"
 #include "VSlaveAcquisitor.h"
 #include "VEvent.h"
@@ -528,13 +530,14 @@ namespace vmepp
             typedef std::vector<uint16_t> Waveform; 
 
         protected :
-            uint32_t                                    fHeader[4];
+            std::array<uint32_t, 4>                     fHeader;
             std::array<Waveform, V1742B::GetChNumber()> fData;
             Waveform                                    fTR0;
             Waveform                                    fTR1;
 
         public :
             bool Fill( size_t index, const VBuffer &buffer) override;
+            void Print() const;
 
         public :
             size_t GetEventSize() const     { return fHeader[0] & V1742B_HDR_EVENT_SIZE_MSK; }
