@@ -75,6 +75,7 @@ namespace vmepp
         WriteMaxEventBLT( 1024 );
         WriteAcqMode( AcqMode_t::Transparent );
         WriteStartSource( StartSource_t::SW );
+        WriteGroupEnable( Group_t::All, false );
 
         // Front Panel
         WriteLEMOLevel( Level_t::TTL );
@@ -414,10 +415,11 @@ namespace vmepp
     //****** ACQUISITION + ******
     void V1742B::WriteGroupEnable( Group_t g, bool enable )
     {
-        if( g == Group_t::All )
-        {
-            WriteRegister32( V1742B_GROUP_EN_MASK, 0xF, V1742B_GROUP_EN_MASK_VAL_MSK );
-        }
+        uint32_t value = ReadRegister32( V1742B_GROUP_EN_MASK, V1742B_GROUP_EN_MASK_VAL_MSK );
+        uint32_t change = (g == Group_t::All) ? 0xF : (1U << static_cast<uint8_t>( g ));
+        if( enable ) { value |= change; }
+        else         { value &= ~(change); }
+        WriteRegister32( V1742B_GROUP_EN_MASK, value, V1742B_GROUP_EN_MASK_VAL_MSK );
     }
 
     void V1742B::WriteChannelOffset( uint8_t ch, uint16_t offset )
@@ -641,23 +643,49 @@ namespace vmepp
         {
             if( buffer[index] != V1742B_WORD_TYPE_FILLER ) { break; }
         }
+        // Parse Header
+        if( index + fHeader.size() > buffer.GetSize() ) { return false; }
+        if( (buffer[index] & 0xF0000000) != 0xA0000000 ) { return false; }
 
-        if( (buffer[index] & 0xF0000000) == 0xA0000000 )
+        fStart = index;
+        for( size_t i = 0; i < fHeader.size(); ++i, ++index ) { fHeader[index] = buffer[index]; } 
+        index--;
+        // Parse Groups
+        for( size_t g = 0; g < V1742B::GetGroupNumber(); ++g )
         {
-            // Fill Header 
-            if( index + fHeader.size() < buffer.GetSize() )
+            // Parse Group Header
+            if( ((1U << g) & GetGroupMask()) )
             {
-                fStart = index;
-                for( size_t i = 0; i < fHeader.size(); ++i, ++index ) { fHeader[index] = buffer[index]; } 
-                fStop = index;
-                return true;
+                ++index;
+                if( index >= buffer.GetSize() ) { return false; }
+                fData[g].fHeader = buffer[index];
+                size_t expectedSize = fData[g].GetChannelSize();
+                if( fData[g].GetTRPresent() )
+                {
+                    expectedSize += fData[g].GetChannelSize() / V1742B::GetChInGroup();
+                }
+                // Parse Group Data
+                index++;
+                if( (index + expectedSize + 1) > buffer.GetSize() ) { return false; }
+                for( size_t i = 0; i < expectedSize; ++i, ++index )
+                {
+                }
+                // Parse Trigger Time Tag
+                fData[g].fTTT = buffer[index];
             }
         }
-        return false;
+        fStop = index;
+        return true;
+    }
+
+    const UEvent<V1742B>::Group& UEvent<V1742B>::GetGroup( V1742B::Group_t g ) const
+    {
+        return fData[static_cast<uint8_t>]
     }
 
     void UEvent<V1742B>::Print() const
     {
+        std::cout << "================== EVENT::" << V1742B::GetName() << " (start)==================\n";
         std::cout << "Event size: " << GetEventSize() << "\n";
         std::cout << "Board ID: " << (unsigned)GetBoardID() << "\n";
         std::cout << "FAIL: " << GetBoardFail() << "\n";
@@ -665,5 +693,6 @@ namespace vmepp
         std::cout << "Group mask: " << (unsigned)GetGroupMask() << "\n";
         std::cout << "Event counter: " << GetEventCounter() << "\n";
         std::cout << "Event TTT: " << GetEventTTT() << "\n";
+        std::cout << "================== EVENT::" << V1742B::GetName() << "  (end)===================\n";
     }
 }

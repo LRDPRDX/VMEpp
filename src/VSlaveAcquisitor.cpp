@@ -9,8 +9,13 @@ namespace vmepp
         buffer.fData.resize( bufSize ); // reallocation only if needed
 
         int count;
-        FIFOBLTReadRequest( this->GetBufferAddress(), buffer.fData.data(), bufSize * sizeof(DataWord_t), &count );
-        buffer.fData.resize( count >= 0 ? count : 0 );
+        size_t writePointer = 0;
+        for( size_t i = 0; i < fReadCycles; ++i )
+        {
+            FIFOBLTReadRequest( this->GetBufferAddress(), &(buffer.fData.data()[writePointer]), gMaxBLT, &count );
+            writePointer += (count >= 0 ? count / sizeof(DataWord_t) : 0);
+        }
+        buffer.fData.resize( writePointer );
         buffer.fData.shrink_to_fit();
     }
 

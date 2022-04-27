@@ -204,7 +204,8 @@
 
 #define     V1742B_LUB                          0xF08BUL//Aux, The Last Used Byte
 
-// Event Description
+/****** Event Description ******/
+// Header
 #define     V1742B_HDR_EVENT_SIZE_MSK           0x0FFFFFFFUL//Aux
 #define     V1742B_HDR_BOARD_ID_MSK             0xF8000000UL//Aux
 #define     V1742B_HDR_BOARD_ID_SHFT            0x1BU//Aux
@@ -215,6 +216,16 @@
 #define     V1742B_HDR_EVENT_CNT_MSK            0x00FFFFFFUL//Aux
 #define     V1742B_HDR_EVENT_TTT_MSK            0xFFFFFFFFUL//Aux
 
+// Group Description word
+#define     V1742B_GRP_START_IDX_MSK            0x3FF00000UL//Aux
+#define     V1742B_GRP_START_IDX_SHFT           0x14U//Aux
+#define     V1742B_GRP_SAMP_MSK                 0x00030000UL//Aux
+#define     V1742B_GRP_SAMP_SHFT                0x10U//Aux
+#define     V1742B_GRP_TR_MSK                   0x00001000UL//Aux
+#define     V1742B_GRP_CH_MSK                   0x00000FFFUL//Aux
+#define     V1742B_GRP_TTT_MSK                  0x3FFFFFFFUL//Aux
+
+// Filler
 #define     V1742B_WORD_TYPE_FILLER             0xFFFFFFFFUL//Aux
 
 #include "VSlaveInterrupter.h"
@@ -360,10 +371,12 @@ namespace vmepp
         protected :
             static uint8_t constexpr fChNumber      = 0x20U;   // 32 
             static uint8_t constexpr fGroupNumber   = 0x04; // 4
+            static uint8_t constexpr fChInGroup     = fChNumber / fGroupNumber;
 
         public :
             static uint8_t constexpr GetChNumber() { return fChNumber; }
             static uint8_t constexpr GetGroupNumber() { return fGroupNumber; }
+            static uint8_t constexpr GetChInGroup() { return fChInGroup; }
 
         protected :
             virtual void    Initialize() override;
@@ -529,11 +542,38 @@ namespace vmepp
         public :
             typedef std::vector<uint16_t> Waveform; 
 
+            struct Group
+            {
+                protected :
+                    uint32_t                                        fHeader;
+                    uint32_t                                        fTTT;
+                    std::array<Waveform, V1742B::GetChInGroup()>    fData;
+                    Waveform                                        fTR;
+
+                public :
+                // Auxiliary functions for retreiving info from the group description word
+                uint16_t                GetStartIndex() const
+                {
+                    return ((fHeader & V1742B_GRP_START_IDX_MSK) >> V1742B_GRP_START_IDX_SHFT);
+                };
+
+                V1742B::SamplingRate_t  GetSamplingRate() const
+                {
+                    return static_cast<V1742B::SamplingRate_t>((fHeader & V1742B_GRP_SAMP_MSK) >> V1742B_GRP_SAMP_SHFT);
+                }
+
+                bool                    GetTRPresent() const { return (fHeader & V1742B_GRP_TR_MSK); }
+                uint16_t                GetChannelSize() const { return (fHeader & V1742B_GRP_CH_MSK); }
+                uint32_t                GetTTT() const { return (fTTT & V1742B_GRP_TTT_MSK); }
+
+                friend class UEvent<V1742B>;
+            };
+
         protected :
-            std::array<uint32_t, 4>                     fHeader;
-            std::array<Waveform, V1742B::GetChNumber()> fData;
-            Waveform                                    fTR0;
-            Waveform                                    fTR1;
+            std::array<DataWord_t, 4>                   fHeader;
+            std::array<Group, V1742B::GetGroupNumber()> fData;
+
+        protected :
 
         public :
             bool Fill( size_t index, const VBuffer &buffer) override;
@@ -547,6 +587,8 @@ namespace vmepp
             uint8_t GetGroupMask() const    { return (fHeader[1] & V1742B_HDR_GROUP_MSK); }
             size_t GetEventCounter() const  { return (fHeader[2] & V1742B_HDR_EVENT_CNT_MSK); } 
             uint32_t GetEventTTT() const    { return (fHeader[3] & V1742B_HDR_EVENT_TTT_MSK); }
+
+            const Group& GetGroup( V1742B::Group_t group ) const;
     };
 }
 
