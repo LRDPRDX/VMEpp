@@ -4,6 +4,7 @@
 #include <iostream>
 #include <exception>
 #include <string>
+#include <array>
 
 #include "CAENVMEtypes.h"
 
@@ -151,6 +152,20 @@ namespace vmepp
                 break;
         }
         std::cerr << prefix << " : " << msg << "\033[0;0m" << std::endl;
+    }
+
+    template <typename T, size_t N>
+    inline void WriteStdArrayToStream( const std::array<T,N>& ar, std::ostream& stream )
+    {
+        stream.write( reinterpret_cast<char const*>( ar.data() ),
+                      ar.size() * sizeof( T ) );
+    }
+
+    template <typename T, size_t N>
+    inline void ReadStdArrayFromStream( std::array<T,N>& ar, std::istream& stream )
+    {
+        stream.read( reinterpret_cast<char*>( ar.data() ),
+                     ar.size() * sizeof( T ) );
     }
 }
 #endif//V_PLUS_EXCEPTION_H
