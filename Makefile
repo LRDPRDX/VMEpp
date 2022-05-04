@@ -5,6 +5,7 @@ export INC_DIR  := $(TOP_DIR)/inc
 export SRC_DIR  := $(TOP_DIR)/src
 export BIN_DIR  := $(TOP_DIR)/bin
 export LIB_DIR  := $(TOP_DIR)/lib
+export UTL_DIR  := $(TOP_DIR)/utilities
 TMPL_DIR        := $(TOP_DIR)/template
 
 export CXX      := g++
@@ -42,6 +43,10 @@ $(MAIN_TMPL) : $(SRC_DIR)/.Main_tmpl | $(TMPL_DIR)
 
 $(TMPL_DIR) : ; mkdir $@
 
+#******** UTILS ***********
+.PHONY : utils
+utils :
+	$(MAKE) -C $(UTL_DIR)/x742corrections
 
 #******** INSTALL ********
 .PHONY : install
