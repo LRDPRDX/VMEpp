@@ -143,7 +143,13 @@
 #define     V1742B_GROUP_EN_MASK                0x8120UL//A32/D32 RW C
 #define     V1742B_GROUP_EN_MASK_VAL_MSK        0x000FUL//Aux
 
-#define     V1742B_ROC_FPGA_FWM_REV             0x8124UL//A32/D32 R C
+#define     V1742B_ROC_FRMW_REV                 0x8124UL//A32/D32 R C
+#define     V1742B_ROC_FRMW_REV_MIN_MSK         0x000000FFUL//Aux
+#define     V1742B_ROC_FRMW_REV_MIN_SHFT        0x00U//Aux
+#define     V1742B_ROC_FRMW_REV_MAJ_MSK         0x0000FF00UL//Aux
+#define     V1742B_ROC_FRMW_REV_MAJ_SHFT        0x08U//Aux
+#define     V1742B_ROC_FRMW_REV_DATE_MSK        0xFFFF0000UL//Aux
+#define     V1742B_ROC_FRMW_REV_DATE_SHFT       0x10U//Aux
 
 #define     V1742B_SOFTWARE_CLK_SYNC            0x813CUL//A32/D32 W C
 
@@ -234,6 +240,8 @@
 #include "UConfigurable.h"
 #include "UParser.h"
 
+#include "CAENDigitizerType.h"
+
 #include <vector>
 #include <array>
 
@@ -242,6 +250,111 @@ namespace vmepp
 {
     class V1742B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1742B>
     {
+        protected :
+            static uint8_t constexpr fChNumber      = 0x20U;                    // 32 
+            static uint8_t constexpr fGroupNumber   = 0x04U;                    // 4
+            static uint8_t constexpr fChInGroup     = fChNumber / fGroupNumber; // 8
+            static size_t  constexpr fNSamples      = 0x0400U;                  // 1024
+
+        public :
+            static uint8_t constexpr GetChNumber()      { return fChNumber; }
+            static uint8_t constexpr GetGroupNumber()   { return fGroupNumber; }
+            static uint8_t constexpr GetChInGroup()     { return fChInGroup; }
+            static size_t  constexpr GetNSamples()      { return fNSamples; }
+
+        public :
+            enum class SamplingRate_t : uint8_t
+            {
+                M5000 = CAEN_DGTZ_DRS4_5GHz,
+                M2500 = CAEN_DGTZ_DRS4_2_5GHz,
+                M1000 = CAEN_DGTZ_DRS4_1GHz,
+                M750,
+            };
+
+
+
+            //**************************
+            //****** CORRECTION + ******
+            //**************************
+        public :
+            // Bad
+            struct ChannelCorrection
+            {
+                std::array<int16_t, fNSamples> cell;
+                std::array<int8_t, fNSamples>  sample;
+
+                friend std::ostream& operator<<( std::ostream& lhs, const ChannelCorrection& rhs )
+                {
+                    WriteStdArrayToStream( rhs.cell, lhs );
+                    WriteStdArrayToStream( rhs.sample, lhs );
+                    return lhs;
+                }
+
+                friend std::istream& operator>>( std::istream& lhs, ChannelCorrection& rhs )
+                {
+                    ReadStdArrayFromStream( rhs.cell, lhs );
+                    ReadStdArrayFromStream( rhs.sample, lhs );
+                    return lhs;
+                }
+            };
+
+            struct GroupCorrection
+            {
+                std::array<ChannelCorrection, fChInGroup>       channels;
+                ChannelCorrection                               trN;
+                std::array<float, fNSamples>                    time;
+
+                friend std::ostream& operator<<( std::ostream& lhs, const GroupCorrection& rhs )
+                {
+                    for( auto& c : rhs.channels ) { lhs << c; }
+                    lhs << rhs.trN;
+                    WriteStdArrayToStream( rhs.time, lhs );
+
+                    return lhs;
+                }
+
+                friend std::istream& operator>>( std::istream& lhs, GroupCorrection& rhs )
+                {
+                    for( auto& c : rhs.channels ) { lhs >> c; }
+                    lhs >> rhs.trN;
+                    ReadStdArrayFromStream( rhs.time, lhs );
+
+                    return lhs;
+                }
+            };
+
+            struct CorrectionTable
+            {
+                SamplingRate_t                                  freq; 
+                std::array<GroupCorrection, fGroupNumber>       table;
+
+                friend std::ostream& operator<<( std::ostream& lhs, const CorrectionTable& rhs )
+                {
+                    lhs.write( reinterpret_cast<char const*>( &(rhs.freq) ), sizeof( (rhs.freq) ) );
+                    for( auto& g : rhs.table ) { lhs << g; }
+                    return lhs;
+                }
+
+                friend std::istream& operator>>( std::istream& lhs, CorrectionTable& rhs )
+                {
+                    lhs.read( reinterpret_cast<char*>( &(rhs.freq) ), sizeof( (rhs.freq) );
+                    for( auto& g : rhs.table ) { lhs >> g; }
+                    return lhs;
+                }
+            };
+
+            enum class Group_t : uint8_t { G1 = 0, G2, G3, G4, All };
+
+        protected :
+            CorrectionTable fCorrectionTable;
+
+        public :
+            void LoadCorrectionTable( const std::string& fileName );
+            const CorrectionTable& GetCorrectionTable();
+            //**************************
+            //****** CORRECTION - ******
+            //**************************
+
         public :
             enum class RecordLength_t : uint8_t
             {
@@ -251,21 +364,12 @@ namespace vmepp
                 s136  = 0x03,
             };
 
-            enum class SamplingRate_t : uint8_t
-            {
-                M5000 = 0x00,
-                M2500 = 0x01,
-                M1000 = 0x02,
-                M750  = 0x03,
-            };
-
             enum class FanSpeed_t : uint8_t
             {
                 LowAuto = 0x00,
                 High    = 0x01,
             };
 
-            enum class Group_t : uint8_t { G1 = 0, G2, G3, G4, All };
 
             enum class TR_t : uint8_t { TR0 = 0, TR1 = 1, };
 
@@ -309,6 +413,19 @@ namespace vmepp
                 uint16_t    DATE;
 
                 AMCFirmwareRev( uint8_t min, uint8_t maj, uint16_t date ) :
+                    MINOR( min ),
+                    MAJOR( maj ),
+                    DATE( date )
+                { }
+            };
+
+            struct ROCFirmwareRev
+            {
+                uint8_t     MINOR;
+                uint8_t     MAJOR;
+                uint16_t    DATE;
+
+                ROCFirmwareRev( uint8_t min, uint8_t maj, uint16_t date ) :
                     MINOR( min ),
                     MAJOR( maj ),
                     DATE( date )
@@ -369,17 +486,9 @@ namespace vmepp
             };
 
         protected :
-            static uint8_t constexpr fChNumber      = 0x20U;   // 32 
-            static uint8_t constexpr fGroupNumber   = 0x04; // 4
-            static uint8_t constexpr fChInGroup     = fChNumber / fGroupNumber;
-
-        public :
-            static uint8_t constexpr GetChNumber() { return fChNumber; }
-            static uint8_t constexpr GetGroupNumber() { return fGroupNumber; }
-            static uint8_t constexpr GetChInGroup() { return fChInGroup; }
-
-        protected :
             virtual void    Initialize() override;
+            void            WriteSWReset();
+            void            WriteSWClear();
 
         public :
             void            WaitForSPI( Group_t group );
@@ -410,6 +519,7 @@ namespace vmepp
             bool ReadPLLFailure();
 
             AMCFirmwareRev ReadAMCFirmwareRev( Group_t group );
+            ROCFirmwareRev ReadROCFirmwareRev();
 
         public :
             // Interrupts
@@ -539,6 +649,38 @@ namespace vmepp
     template<>
     class UEvent<V1742B> : public VEvent
     {
+        private :
+            struct Helper12Bit 
+            {
+                bool        overlap;
+                uint8_t     s1;
+                uint8_t     s2;
+                uint32_t    m1;
+                uint32_t    m2;
+                size_t      n;
+            
+                constexpr
+                Helper12Bit( bool overlap,
+                             uint8_t s1, uint8_t s2,
+                             uint32_t m1, uint32_t m2,
+                             size_t n ) :
+                    overlap( overlap ),
+                    s1( s1 ), s2( s2 ),
+                    m1( m1 ), m2( m2 ),
+                    n( n )
+                { }
+            };
+
+            static constexpr uint8_t fNHelpers = 8;
+            static const std::array<Helper12Bit, fNHelpers> fH;
+
+            // Helper functions
+            static uint16_t Read12BitWord( const VBuffer& b, size_t ib, size_t n )
+            {
+                return (                 (b[ib + fH[n].n]     & fH[n].m1) >> fH[n].s1) |
+                       (fH[n].overlap ? ((b[ib + fH[n].n + 1] & fH[n].m2) << fH[n].s2) : 0);
+            }
+
         public :
             typedef std::vector<uint16_t> Waveform; 
 
@@ -551,20 +693,27 @@ namespace vmepp
                     Waveform                                        fTR;
 
                 public :
-                // Auxiliary functions for retreiving info from the group description word
-                uint16_t                GetStartIndex() const
-                {
-                    return ((fHeader & V1742B_GRP_START_IDX_MSK) >> V1742B_GRP_START_IDX_SHFT);
-                };
+                    // Auxiliary functions for retreiving info from the group description word
+                    uint16_t                GetStartIndex() const
+                    {
+                        return ((fHeader & V1742B_GRP_START_IDX_MSK) >> V1742B_GRP_START_IDX_SHFT);
+                    };
 
-                V1742B::SamplingRate_t  GetSamplingRate() const
-                {
-                    return static_cast<V1742B::SamplingRate_t>((fHeader & V1742B_GRP_SAMP_MSK) >> V1742B_GRP_SAMP_SHFT);
-                }
+                    V1742B::SamplingRate_t  GetSamplingRate() const
+                    {
+                        return static_cast<V1742B::SamplingRate_t>((fHeader & V1742B_GRP_SAMP_MSK) >> V1742B_GRP_SAMP_SHFT);
+                    }
 
-                bool                    GetTRPresent() const { return (fHeader & V1742B_GRP_TR_MSK); }
-                uint16_t                GetChannelSize() const { return (fHeader & V1742B_GRP_CH_MSK); }
-                uint32_t                GetTTT() const { return (fTTT & V1742B_GRP_TTT_MSK); }
+                    bool                    GetTRPresent() const { return (fHeader & V1742B_GRP_TR_MSK); }
+                    uint16_t                GetChannelSize() const { return (fHeader & V1742B_GRP_CH_MSK); }
+                    uint32_t                GetTTT() const { return (fTTT & V1742B_GRP_TTT_MSK); }
+
+                    void                    Clear();
+
+                    void                    Print() const;
+
+                    const Waveform&         GetTR() const { return fTR; }
+                    const Waveform&         GetChannel( uint8_t ch ) const { return fData.at( ch ); }
 
                 friend class UEvent<V1742B>;
             };
@@ -573,11 +722,10 @@ namespace vmepp
             std::array<DataWord_t, 4>                   fHeader;
             std::array<Group, V1742B::GetGroupNumber()> fData;
 
-        protected :
-
         public :
             bool Fill( size_t index, const VBuffer &buffer) override;
             void Print() const;
+            const Group& GetGroup( V1742B::Group_t g ) const;
 
         public :
             size_t GetEventSize() const     { return fHeader[0] & V1742B_HDR_EVENT_SIZE_MSK; }
@@ -587,8 +735,6 @@ namespace vmepp
             uint8_t GetGroupMask() const    { return (fHeader[1] & V1742B_HDR_GROUP_MSK); }
             size_t GetEventCounter() const  { return (fHeader[2] & V1742B_HDR_EVENT_CNT_MSK); } 
             uint32_t GetEventTTT() const    { return (fHeader[3] & V1742B_HDR_EVENT_TTT_MSK); }
-
-            const Group& GetGroup( V1742B::Group_t group ) const;
     };
 }
 

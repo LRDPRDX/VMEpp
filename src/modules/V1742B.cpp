@@ -1,6 +1,8 @@
 #include "VException.h"
 #include "modules/V1742B.h"
 
+#include <iomanip>
+
 
 namespace vmepp
 {
@@ -22,16 +24,42 @@ namespace vmepp
         while( ReadStatus( group, StatusBit::BusySPI ) ) { }
     }
 
+    void V1742B::LoadCorrectionTable( const std::string& fileName )
+    {
+        PrintMessage( Message_t::INFO, "Loading correction tables from " + fileName + "..." );
+        std::ifstream f( fileName, std::ios_base::in | std::ios_base::binary );
+        f >> fCorrectionTable;
+    }
+
+    const V1742B::CorrectionTable& V1742B::GetCorrectionTable()
+    {
+        return fCorrectionTable;
+    }
+
+    void V1742B::WriteSWReset()
+    {
+        WriteRegister32( V1742B_SOFTWARE_RST, 1 );
+    }
+
+    void V1742B::WriteSWClear()
+    {
+        WriteRegister32( V1742B_SOFTWARE_CLR, 1 );
+    }
+
     void V1742B::Initialize()
     {
         PrintMessage( Message_t::INFO, "Initialization " + fName + "...\n" );
 
+        LoadCorrectionTable( "./correction.x742_corr");
+
+        WriteSWReset();
+        WriteSWClear();
         // Misc
         WriteDummy32( Group_t::All, 0x12345678 );
         WriteTestModeEnable( false );
 
         // Interrupts
-        WriteIRQEvents( 1 );
+        WriteIRQEvents( 0 );
         WriteIRQLevel( 0 );
         WriteIRQVector( 0 );
 
@@ -148,6 +176,16 @@ namespace vmepp
         uint16_t date = (value & V1742B_AMC_FRMW_REV_DATE_MSK) >> V1742B_AMC_FRMW_REV_DATE_SHFT;
 
         return AMCFirmwareRev( minor, major, date );
+    }
+
+    V1742B::ROCFirmwareRev V1742B::ReadROCFirmwareRev()
+    {
+        uint32_t value = ReadRegister32( V1742B_ROC_FRMW_REV );
+        uint8_t minor = (value & V1742B_ROC_FRMW_REV_MIN_MSK) >> V1742B_ROC_FRMW_REV_MIN_SHFT;
+        uint8_t major = (value & V1742B_ROC_FRMW_REV_MAJ_MSK) >> V1742B_ROC_FRMW_REV_MAJ_SHFT;
+        uint16_t date = (value & V1742B_ROC_FRMW_REV_DATE_MSK) >> V1742B_ROC_FRMW_REV_DATE_SHFT;
+
+        return ROCFirmwareRev( minor, major, date );
     }
 
     V1742B::BoardInfo V1742B::ReadBoardInfo()
@@ -636,6 +674,17 @@ namespace vmepp
     //****************************
     //****** UEVENT<V1742B> ******
     //****************************
+    const std::array<UEvent<V1742B>::Helper12Bit, UEvent<V1742B>::fNHelpers> UEvent<V1742B>::fH =
+                                        {
+                                            Helper12Bit( false, 0,  0, 0x00000FFF, 0x000000000, 0 ),
+                                            Helper12Bit( false, 12, 0, 0x00FFF000, 0x000000000, 0 ),
+                                            Helper12Bit( true , 24, 8, 0xFF000000, 0x00000000F, 0 ),
+                                            Helper12Bit( false,  4, 0, 0x0000FFF0, 0x000000000, 1 ),
+                                            Helper12Bit( false, 16, 0, 0x0FFF0000, 0x000000000, 1 ),
+                                            Helper12Bit( true,  28, 4, 0xF0000000, 0x0000000FF, 1 ),
+                                            Helper12Bit( false,  8, 0, 0x000FFF00, 0x000000000, 2 ),
+                                            Helper12Bit( false, 20, 0, 0xFFF00000, 0x000000000, 2 )
+                                        };
 
     bool UEvent<V1742B>::Fill( size_t index, const VBuffer &buffer )
     {
@@ -653,22 +702,38 @@ namespace vmepp
         // Parse Groups
         for( size_t g = 0; g < V1742B::GetGroupNumber(); ++g )
         {
+            fData[g].Clear();
             // Parse Group Header
             if( ((1U << g) & GetGroupMask()) )
             {
                 ++index;
                 if( index >= buffer.GetSize() ) { return false; }
                 fData[g].fHeader = buffer[index];
-                size_t expectedSize = fData[g].GetChannelSize();
+                // Parse Channels
+                ++index;
+                size_t ch07Size = fData[g].GetChannelSize();
+                if( index + ch07Size > buffer.GetSize() ) { return false; }
+                for( size_t i = 0; i < ch07Size; i += 3 )
+                {
+                    for( size_t j = 0; j < fNHelpers; ++j )
+                    {
+                        fData[g].fData[j].push_back( Read12BitWord( buffer, index + i, j ) );
+                    }
+                }
+                index += ch07Size;
+                // Parse TRn if present
                 if( fData[g].GetTRPresent() )
                 {
-                    expectedSize += fData[g].GetChannelSize() / V1742B::GetChInGroup();
-                }
-                // Parse Group Data
-                index++;
-                if( (index + expectedSize + 1) > buffer.GetSize() ) { return false; }
-                for( size_t i = 0; i < expectedSize; ++i, ++index )
-                {
+                    size_t trSize = fData[g].GetChannelSize() / V1742B::GetChInGroup();
+                    if( index + trSize > buffer.GetSize() ) { return false; }
+                    for( size_t i = 0; i < trSize; i += 3 )
+                    {
+                        for( size_t j = 0; j < fNHelpers; ++j )
+                        {
+                            fData[g].fTR.push_back( Read12BitWord( buffer, index + i, j ) );
+                        }
+                    }
+                    index += trSize;
                 }
                 // Parse Trigger Time Tag
                 fData[g].fTTT = buffer[index];
@@ -680,19 +745,43 @@ namespace vmepp
 
     const UEvent<V1742B>::Group& UEvent<V1742B>::GetGroup( V1742B::Group_t g ) const
     {
-        return fData[static_cast<uint8_t>]
+        if ( g == V1742B::Group_t::All ) { g = V1742B::Group_t::G1; }
+        return fData.at( static_cast<uint8_t>( g ) );
     }
+
+    void UEvent<V1742B>::Group::Clear()
+    {
+        fHeader = 0;
+        fTTT = 0;
+        fTR.clear();
+        for( auto& ch : fData ) { ch.clear(); }
+    }
+
+    void UEvent<V1742B>::Group::Print() const
+    {
+        std::cout << "========== GROUP::" << V1742B::GetName() << " (start)===========\n";
+        std::cout << std::setw( 20 ) << "Start index: " << GetStartIndex() << "\n";
+        std::cout << std::setw( 20 ) << "Sampling rate: " << (unsigned)GetSamplingRate() << "\n";
+        std::cout << std::setw( 20 ) << "TRn present: " << GetTRPresent() << "\n";
+        std::cout << std::setw( 20 ) << "ChannelSize: " << GetChannelSize() << "\n";
+        std::cout << std::setw( 20 ) << "TTT: " << GetTTT() << "\n";
+        std::cout << "========== GROUP::" << V1742B::GetName() << " ( end )===========\n";
+    }
+
+    //const UEvent<V1742B>::Group& UEvent<V1742B>::GetGroup( V1742B::Group_t g ) const
+    //{
+    //}
 
     void UEvent<V1742B>::Print() const
     {
         std::cout << "================== EVENT::" << V1742B::GetName() << " (start)==================\n";
-        std::cout << "Event size: " << GetEventSize() << "\n";
-        std::cout << "Board ID: " << (unsigned)GetBoardID() << "\n";
-        std::cout << "FAIL: " << GetBoardFail() << "\n";
-        std::cout << "LVDS: " << (unsigned)GetLVDSPattern() << "\n";
-        std::cout << "Group mask: " << (unsigned)GetGroupMask() << "\n";
-        std::cout << "Event counter: " << GetEventCounter() << "\n";
-        std::cout << "Event TTT: " << GetEventTTT() << "\n";
+        std::cout << std::setw( 20 ) << "Event size: " << GetEventSize() << "\n";
+        std::cout << std::setw( 20 ) << "Board ID: " << (unsigned)GetBoardID() << "\n";
+        std::cout << std::setw( 20 ) << "FAIL: " << GetBoardFail() << "\n";
+        std::cout << std::setw( 20 ) << "LVDS: " << (unsigned)GetLVDSPattern() << "\n";
+        std::cout << std::setw( 20 ) << "Group mask: " << (unsigned)GetGroupMask() << "\n";
+        std::cout << std::setw( 20 ) << "Event counter: " << GetEventCounter() << "\n";
+        std::cout << std::setw( 20 ) << "Event TTT: " << GetEventTTT() << "\n";
         std::cout << "================== EVENT::" << V1742B::GetName() << "  (end)===================\n";
     }
 }
