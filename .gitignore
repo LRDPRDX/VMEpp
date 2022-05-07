@@ -28,6 +28,9 @@ Main
 ROOT/
 !/test/V1190B/data_acq/continuous/ROOT/
 
+# Correction tables
+*.x742_corr
+
 # rsync script
 /backup.sh
 

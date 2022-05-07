@@ -16,12 +16,14 @@ namespace vmepp
         protected :
             size_t fReadBytes;
             size_t fReadCycles;
+            size_t fNEventRequest;
 
         public :
             VSlaveAcquisitor( uint32_t address, uint32_t range ) :
                 VSlave( address, range ),
                 fReadBytes( 0 ),
-                fReadCycles( 1 )
+                fReadCycles( 1 ),
+                fNEventRequest( 1 )
             {
             }
             ~VSlaveAcquisitor() override = default;
@@ -30,9 +32,13 @@ namespace vmepp
             virtual uint32_t    GetBufferAddress() const = 0;
 
         public :
+            virtual size_t      HelperReadCycles();
             void                ReadBuffer( VBuffer& buffer );
+            
             void                SetReadCycles( uint32_t n ) { fReadCycles = (n ? (n <= gMaxNBLT ? n : gMaxNBLT) : 1); }
             size_t              GetReadCycles() { return fReadCycles; }
+            void                SetNEventRequest( size_t n ) { fNEventRequest = ((n > 0 ) ? n : 1); }
+            size_t              GetNEventRequest() const { return fNEventRequest; }
             size_t              GetReadBytes() const { return fReadBytes; }
 
     };

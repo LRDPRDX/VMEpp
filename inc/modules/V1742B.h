@@ -30,7 +30,7 @@
 //****** Multi Event Buffer Definition ******
 #define     V1742B_OUTPUT_BUFFER                0x0000UL//A32/D32 R DR/SR/HR C
 #define     V1742B_OUTPUT_BUFFER_START          V1742B_OUTPUT_BUFFER//Aux
-#define     V1742B_OUTPUT_BUFFER_STOP           0x0FFCUL//Aux, This is the last byte occupied by buffer
+#define     V1742B_OUTPUT_BUFFER_STOP           0x0FFFUL//Aux, This is the last byte occupied by buffer
 #define     V1742B_OUTPUT_BUFFER_SIZE           (V1742B_OUTPUT_BUFFER_STOP - V1742B_OUTPUT_BUFFER_START + 1UL)//Aux
 
 #define     V1742B_N_GROUPS                     0x4U//Aux
@@ -208,6 +208,9 @@
 
 #define     V1742B_SOFTWARE_CLR                 0xEF28UL//A32/D32 W C
 
+/****** ROM ******/
+#define     V1742B_ROM_BOARD_VERSION            0xF030//A32/D32 R C
+
 #define     V1742B_LUB                          0xF08BUL//Aux, The Last Used Byte
 
 /****** Event Description ******/
@@ -272,7 +275,6 @@ namespace vmepp
             };
 
 
-
             //**************************
             //****** CORRECTION + ******
             //**************************
@@ -330,14 +332,14 @@ namespace vmepp
 
                 friend std::ostream& operator<<( std::ostream& lhs, const CorrectionTable& rhs )
                 {
-                    lhs.write( reinterpret_cast<char const*>( &(rhs.freq) ), sizeof( (rhs.freq) ) );
+                    lhs.write( reinterpret_cast<char const*>( &(rhs.freq) ), sizeof( rhs.freq ) );
                     for( auto& g : rhs.table ) { lhs << g; }
                     return lhs;
                 }
 
                 friend std::istream& operator>>( std::istream& lhs, CorrectionTable& rhs )
                 {
-                    lhs.read( reinterpret_cast<char*>( &(rhs.freq) ), sizeof( (rhs.freq) );
+                    lhs.read( reinterpret_cast<char*>( &(rhs.freq) ), sizeof( rhs.freq ) );
                     for( auto& g : rhs.table ) { lhs >> g; }
                     return lhs;
                 }
@@ -512,6 +514,8 @@ namespace vmepp
             void WriteTestModeEnable( bool enable = true );
             bool ReadTestModeEnable();
 
+            void ApplyCorrection( UEvent<V1742B>& event ) const;
+
         public :
             // Info & ROM
             BoardInfo ReadBoardInfo();
@@ -581,8 +585,13 @@ namespace vmepp
             void WriteTRGOUTSignal( TriggerOut_t trigger );
             TriggerOut_t ReadTRGOUTSignal();
 
+            void WriteGlobalTrigger( GlobalTrigger_t trigger );
+            GlobalTrigger_t ReadGlobalTrigger();
+
         public :
             // Acquisition
+            virtual size_t HelperReadCycles() override;
+
             uint32_t GetBufferAddress() const override { return V1742B_OUTPUT_BUFFER_START; };
 
             void WriteGroupEnable( Group_t g, bool enable = true );
@@ -600,9 +609,6 @@ namespace vmepp
             SamplingRate_t ReadSamplingRate( Group_t group = Group_t::G1 );
 
             void WriteSWTrigger();
-
-            void WriteGlobalTrigger( GlobalTrigger_t trigger );
-            GlobalTrigger_t ReadGlobalTrigger();
 
             uint32_t ReadEventSize();
 
@@ -716,6 +722,7 @@ namespace vmepp
                     const Waveform&         GetChannel( uint8_t ch ) const { return fData.at( ch ); }
 
                 friend class UEvent<V1742B>;
+                friend void V1742B::ApplyCorrection( UEvent<V1742B>& event ) const;
             };
 
         protected :
@@ -735,6 +742,8 @@ namespace vmepp
             uint8_t GetGroupMask() const    { return (fHeader[1] & V1742B_HDR_GROUP_MSK); }
             size_t GetEventCounter() const  { return (fHeader[2] & V1742B_HDR_EVENT_CNT_MSK); } 
             uint32_t GetEventTTT() const    { return (fHeader[3] & V1742B_HDR_EVENT_TTT_MSK); }
+
+            friend void V1742B::ApplyCorrection( UEvent<V1742B>& event ) const;
     };
 }
 
