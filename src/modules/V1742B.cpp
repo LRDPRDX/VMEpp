@@ -50,9 +50,9 @@ namespace vmepp
     {
         PrintMessage( Message_t::INFO, "Initialization " + fName + "...\n" );
 
-        LoadCorrectionTable( "./correction.x742_corr");
+        LoadCorrectionTable( "./0.x742_corr");
 
-        WriteSWReset();
+        //WriteSWReset();
         WriteSWClear();
         // Misc
         WriteDummy32( Group_t::All, 0x12345678 );
@@ -112,6 +112,7 @@ namespace vmepp
         for( uint8_t g = 0; g < GetGroupNumber(); ++g )
         {
             std::cout << "Temperature of Chip #" << (int)g << " is " << ReadChipTemperature( static_cast<Group_t>( g )) << " C\n"; 
+            std::cout << "Mezzanine Revision: " << ReadStatus( static_cast<Group_t>( g ), StatusBit::MezzRevision ) << "\n";
         }
 
         PrintMessage( Message_t::INFO, "Initialization " + fName + " Done!\n" );
@@ -164,6 +165,38 @@ namespace vmepp
     bool V1742B::ReadTestModeEnable()
     {
         return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TM_SHFT) );
+    }
+
+    void V1742B::ApplyCorrection( UEvent<V1742B>& event ) const
+    {
+        for( uint8_t ng = 0; ng < fGroupNumber; ++ng )
+        {
+            if( event.GetGroupMask() & (1U << ng) )
+            {
+                if( event.fData[ng].GetSamplingRate() != fCorrectionTable.freq )
+                {
+                    PrintMessage( Message_t::WARNING, "Correction process for group #" + std::to_string(ng) + " stopped: " + "sampling frequencies don't match" );
+                    continue;
+                }
+                auto start = event.fData[ng].GetStartIndex();
+                for( uint8_t ch = 0; ch < fChInGroup; ++ch )
+                {
+                    for( size_t i = 0; i < fNSamples; ++i )
+                    {
+                        event.fData[ng].fData[ch][i] -= fCorrectionTable.table[ng].channels[ch].cell[(i+start) % fNSamples];
+                        event.fData[ng].fData[ch][i] -= fCorrectionTable.table[ng].channels[ch].sample[i];
+                    }
+                }
+                if( event.fData[ng].GetTRPresent() )
+                {
+                    for( size_t i = 0; i < fNSamples; ++i )
+                    {
+                        event.fData[ng].fTR[i] -= fCorrectionTable.table[ng].trN.cell[(i + start) % fNSamples];
+                        event.fData[ng].fTR[i] -= fCorrectionTable.table[ng].trN.sample[i];
+                    }
+                }
+            }
+        }
     }
     //****** MISC - ******
 
@@ -451,6 +484,12 @@ namespace vmepp
     //****** TRIGGER - ******
 
     //****** ACQUISITION + ******
+    size_t V1742B::HelperReadCycles()
+    {
+        size_t nWords = ReadEventSize() * fNEventRequest * sizeof( DataWord_t );
+        return ((nWords % gMaxBLT == 0) ? (nWords / gMaxBLT) : (nWords / gMaxBLT + 1));
+    }
+
     void V1742B::WriteGroupEnable( Group_t g, bool enable )
     {
         uint32_t value = ReadRegister32( V1742B_GROUP_EN_MASK, V1742B_GROUP_EN_MASK_VAL_MSK );
@@ -697,7 +736,9 @@ namespace vmepp
         if( (buffer[index] & 0xF0000000) != 0xA0000000 ) { return false; }
 
         fStart = index;
-        for( size_t i = 0; i < fHeader.size(); ++i, ++index ) { fHeader[index] = buffer[index]; } 
+        for( size_t i = 0; i < fHeader.size(); ++i, ++index ) {
+            fHeader[i] = buffer[index];
+        } 
         index--;
         // Parse Groups
         for( size_t g = 0; g < V1742B::GetGroupNumber(); ++g )

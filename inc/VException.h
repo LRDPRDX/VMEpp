@@ -167,5 +167,11 @@ namespace vmepp
         stream.read( reinterpret_cast<char*>( ar.data() ),
                      ar.size() * sizeof( T ) );
     }
+
+    template <typename T>
+    inline void WriteValueToStream( const T& value, std::ostream& stream )
+    {
+        stream.write( reinterpret_cast<char const*>( value ), sizeof( value ) );
+    }
 }
 #endif//V_PLUS_EXCEPTION_H

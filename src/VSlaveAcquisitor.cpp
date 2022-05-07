@@ -4,19 +4,26 @@ namespace vmepp
 {
     void VSlaveAcquisitor::ReadBuffer( VBuffer& buffer )
     {
-        size_t bufSize = fReadCycles * gMaxBLT / sizeof(DataWord_t);
+        size_t nCycles          = HelperReadCycles();
+        size_t nWordsInCycle    = gMaxBLT / sizeof( DataWord_t );
+        size_t nWords           = nCycles * nWordsInCycle;
 
-        buffer.fData.resize( bufSize ); // reallocation only if needed
+        buffer.fData.resize( nWords ); // reallocation only if necessary
 
         int count;
         size_t writePointer = 0;
-        for( size_t i = 0; i < fReadCycles; ++i )
+        for( size_t i = 0; i < nCycles; ++i )
         {
             FIFOBLTReadRequest( this->GetBufferAddress(), &(buffer.fData.data()[writePointer]), gMaxBLT, &count );
-            writePointer += (count >= 0 ? count / sizeof(DataWord_t) : 0);
+            writePointer += (count == gMaxBLT ? nWordsInCycle : 0); // Only full read is accepted
         }
         buffer.fData.resize( writePointer );
         buffer.fData.shrink_to_fit();
+    }
+
+    size_t VSlaveAcquisitor::HelperReadCycles()
+    {
+        return fReadCycles;
     }
 
     void VBuffer::Dump( const std::string& fileName )
