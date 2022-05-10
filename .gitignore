@@ -22,7 +22,8 @@ Main
 *.dat
 
 # Documentation
-# /doc
+/doc/*
+!/doc/doxy_config
 
 # ROOT directories
 ROOT/

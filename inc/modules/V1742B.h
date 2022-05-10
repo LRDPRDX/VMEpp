@@ -34,23 +34,20 @@
 #define     V1742B_OUTPUT_BUFFER_SIZE           (V1742B_OUTPUT_BUFFER_STOP - V1742B_OUTPUT_BUFFER_START + 1UL)//Aux
 
 #define     V1742B_N_GROUPS                     0x4U//Aux
-#define     V1742B_GROUP_SINGLE(BASE,G)         ((BASE) + (0x0100UL * ((G) % V1742B_N_GROUPS)))
-#define     V1742B_GROUP_BCST(BASE)             (((BASE) & 0x00FFUL) | 0x8000UL)
-#define     V1742B_GROUP_ADDRESS(BASE,G)        (((G) < V1742B_N_GROUPS) ? V1742B_GROUP_SINGLE(BASE,G) : V1742B_GROUP_BCST(BASE))//Aux
 
-#define     V1742B_POST_TRIGGER(X)              V1742B_GROUP_ADDRESS(0x1014UL,(X))//A32/D32 RW G
+#define     V1742B_POST_TRIGGER                 0x1014UL//A32/D32 RW G
 #define     V1742B_POST_TRIGGER_VAL_MSK         0x03FFUL//Aux
 
-#define     V1742B_DUMMY32(X)                   V1742B_GROUP_ADDRESS(0x1024UL,(X))//A32/D32 RW G
+#define     V1742B_DUMMY32                      0x1024UL//A32/D32 RW G
 
-#define     V1742B_CHANNEL_THR(X)               V1742B_GROUP_ADDRESS(0x1080UL,(X))//A32/D32 RW G
+#define     V1742B_CHANNEL_THR                  0x1080UL//A32/D32 RW G
 #define     V1742B_CHANNEL_THR_VAL_MSK          0x0FFFUL//Aux 
 #define     V1742B_CHANNEL_THR_IDX_MSK          0xF000UL//Aux 
 #define     V1742B_CHANNEL_THR_IDX_SHFT         0x000CU//Aux
 
-#define     V1742B_STATUS(X)                    V1742B_GROUP_ADDRESS(0x1088UL,(X))//A32/D32 R G
+#define     V1742B_STATUS                       0x1088UL//A32/D32 R G
 
-#define     V1742B_AMC_FRMW_REV(X)              V1742B_GROUP_ADDRESS(0x108CUL,(X))//A32/D32 R G
+#define     V1742B_AMC_FRMW_REV                 0x108CUL//A32/D32 R G
 #define     V1742B_AMC_FRMW_REV_MIN_MSK         0x000000FFUL//Aux
 #define     V1742B_AMC_FRMW_REV_MIN_SHFT        0x00U//Aux
 #define     V1742B_AMC_FRMW_REV_MAJ_MSK         0x0000FF00UL//Aux
@@ -58,26 +55,26 @@
 #define     V1742B_AMC_FRMW_REV_DATE_MSK        0xFFFF0000UL//Aux
 #define     V1742B_AMC_FRMW_REV_DATE_SHFT       0x10U//Aux
 
-#define     V1742B_CHANNEL_DC_OFST(X)           V1742B_GROUP_ADDRESS(0x1098UL,(X))//A32/D32 RW G
+#define     V1742B_CHANNEL_DC_OFST              0x1098UL//A32/D32 RW G
 #define     V1742B_CHANNEL_DC_OFST_VAL_MSK      0x0000FFFFUL//Aux
 #define     V1742B_CHANNEL_DC_OFST_IDX_MSK      0x000F0000UL//Aux
 #define     V1742B_CHANNEL_DC_OFST_IDX_SHFT     0x0010U//Aux
 
-#define     V1742B_CHIP_TEMP(X)                 V1742B_GROUP_ADDRESS(0x10A0UL,(X))//A32/D32 R G
+#define     V1742B_CHIP_TEMP                    0x10A0UL//A32/D32 R G
 #define     V1742B_CHIP_TEMP_VAL_MSK            0x00FFUL//Aux
 
-#define     V1742B_CHANNEL_SEL(X)               V1742B_GROUP_ADDRESS(0x10A4UL,(X))//A32/D32 RW G
+#define     V1742B_CHANNEL_SEL                  0x10A4UL//A32/D32 RW G
 #define     V1742B_CHANNEL_SEL_VAL_MSK          0x000FUL//Aux
 
-#define     V1742B_CHANNEL_TRG_MASK(X)          V1742B_GROUP_ADDRESS(0x10A8UL,(X))//A32/D32 RW G
+#define     V1742B_CHANNEL_TRG_MASK             0x10A8UL//A32/D32 RW G
 #define     V1742B_CHANNEL_TRG_MASK_MSK         0x00FFUL//Aux
 
 //WARNING: before writing this register, it is necessary to check that bit[2] = 0 at 0x1X88,
 //otherwise the writing process will not run properly!
-#define     V1742B_TR_TRG_THR(X)                V1742B_GROUP_ADDRESS(0x10D4UL,(X))//A32/D32 RW G
+#define     V1742B_TR_TRG_THR                   0x10D4UL//A32/D32 RW G
 #define     V1742B_TR_TRG_THR_VAL_MSK           0xFFFFUL//Aux
 
-#define     V1742B_TR_DC_OFST(X)                V1742B_GROUP_ADDRESS(0x10DCUL,(X))//A32/D32 RW G
+#define     V1742B_TR_DC_OFST                   0x10DCUL//A32/D32 RW G
 #define     V1742B_TR_DC_OFST_VAL_MSK           0xFFFFUL//Aux
 
 #define     V1742B_BOARD_CFG                    0x8000UL//A32/D32 R C
@@ -99,12 +96,12 @@
 #define     V1742B_CUSTOM_SIZE                  0x8020UL//A32/D32 RW C
 #define     V1742B_CUSTOM_SIZE_VAL_MSK          0x0003UL//Aux
 
-#define     V1742B_TEST_MODE_INIT_READ(X)       V1742B_GROUP_ADDRESS(0x107CUL,X)//A32/D32 R G 
+#define     V1742B_TEST_MODE_INIT_READ          0x107CUL//A32/D32 R G 
 #define     V1742B_TEST_MODE_INIT_WRITE         0x807CUL//A32/D32 W C
 #define     V1742B_TEST_MODE_INIT_VAL_MSK       0x0FFFUL//Aux
 
 //WARNING: This register must not be written while the acquisition is running.
-#define     V1742B_DRS4_SAMP_FREQ_READ(X)       V1742B_GROUP_ADDRESS(0x10D8UL,X)//A32/D32 R G
+#define     V1742B_DRS4_SAMP_FREQ_READ          0x10D8UL//A32/D32 R G
 #define     V1742B_DRS4_SAMP_FREQ_WRITE         0x80D8UL//A32/D32 W C
 #define     V1742B_DRS4_SAMP_FREQ_VAL_MSK       0x0003UL//Aux
 
@@ -251,27 +248,48 @@
 
 namespace vmepp
 {
+    /**
+     * This class represents the V1742B module.
+//   * V1742B is a 32+2 channel 12 bit 5 GS/s Digitizer 
+     */
     class V1742B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1742B>
     {
         protected :
-            static uint8_t constexpr fChNumber      = 0x20U;                    // 32 
-            static uint8_t constexpr fGroupNumber   = 0x04U;                    // 4
-            static uint8_t constexpr fChInGroup     = fChNumber / fGroupNumber; // 8
-            static size_t  constexpr fNSamples      = 0x0400U;                  // 1024
+            static uint8_t constexpr fChNumber      = 0x20U;                    /*!< number of channels (32) */
+            static uint8_t constexpr fGroupNumber   = 0x04U;                    /*!< number of groups   (4) */
+            static uint8_t constexpr fChInGroup     = fChNumber / fGroupNumber; /*!< number of channels per group (8) */
+            static size_t  constexpr fNSamples      = 0x0400U;                  /*!< number of cells (samples) (1024) */
 
         public :
+            /**
+             * Get number of channels
+             */
             static uint8_t constexpr GetChNumber()      { return fChNumber; }
+
+            /**
+             * Get number of groups
+             */
             static uint8_t constexpr GetGroupNumber()   { return fGroupNumber; }
+
+            /**
+             * Get number of channels in one group (= number of channels / number of groups)
+             */
             static uint8_t constexpr GetChInGroup()     { return fChInGroup; }
+
+            /**
+             * Get number of samples per channel.
+             * NOTE: it always returns the maximum number of samples
+             * despite the value set via the WriteRecordLength member function 
+             */
             static size_t  constexpr GetNSamples()      { return fNSamples; }
 
         public :
             enum class SamplingRate_t : uint8_t
             {
-                M5000 = CAEN_DGTZ_DRS4_5GHz,
-                M2500 = CAEN_DGTZ_DRS4_2_5GHz,
-                M1000 = CAEN_DGTZ_DRS4_1GHz,
-                M750,
+                M5000 = CAEN_DGTZ_DRS4_5GHz,    /*!< 5   GS/sec, sample = 200 ps */
+                M2500 = CAEN_DGTZ_DRS4_2_5GHz,  /*!< 2.5 GS/sec, sample = 400 ps */
+                M1000 = CAEN_DGTZ_DRS4_1GHz,    /*!< 1   GS/sec, sample = 1 ns */
+                M750,                           /*!< 750 MS/sec, sample = 1.33 ns */
             };
 
 
@@ -279,7 +297,6 @@ namespace vmepp
             //****** CORRECTION + ******
             //**************************
         public :
-            // Bad
             struct ChannelCorrection
             {
                 std::array<int16_t, fNSamples> cell;
@@ -327,7 +344,7 @@ namespace vmepp
 
             struct CorrectionTable
             {
-                SamplingRate_t                                  freq; 
+                SamplingRate_t                                  freq;
                 std::array<GroupCorrection, fGroupNumber>       table;
 
                 friend std::ostream& operator<<( std::ostream& lhs, const CorrectionTable& rhs )
@@ -345,13 +362,26 @@ namespace vmepp
                 }
             };
 
-            enum class Group_t : uint8_t { G1 = 0, G2, G3, G4, All };
+            enum class Group_t : uint8_t
+            {
+                G1 = 0,
+                G2,
+                G3,
+                G4
+            };
 
         protected :
             CorrectionTable fCorrectionTable;
 
-        public :
+            /**
+             * Read correction table from a file.
+             */
             void LoadCorrectionTable( const std::string& fileName );
+
+        public :
+            /**
+             * Get current correction table
+             */
             const CorrectionTable& GetCorrectionTable();
             //**************************
             //****** CORRECTION - ******
@@ -360,20 +390,24 @@ namespace vmepp
         public :
             enum class RecordLength_t : uint8_t
             {
-                s1024 = 0x00,
-                s520  = 0x01,
-                s256  = 0x02,
-                s136  = 0x03,
+                s1024 = 0x00, /*!< Record length is 1024 samples */
+                s520  = 0x01, /*!< Record length is 520 samples */
+                s256  = 0x02, /*!< Record length is 256 samples */
+                s136  = 0x03, /*!< Record length is 136 samples */
             };
 
             enum class FanSpeed_t : uint8_t
             {
-                LowAuto = 0x00,
-                High    = 0x01,
+                LowAuto = 0x00, /*<! NOT USED in this module */
+                High    = 0x01, /*<! NOT USED in this module */
             };
 
 
-            enum class TR_t : uint8_t { TR0 = 0, TR1 = 1, };
+            enum class TR_t : uint8_t
+            {
+                TR0 = 0, /*!< TR0 input connector on the front panel */
+                TR1 = 1, /*!< TR0 input connector on the front panel */
+            };
 
             enum StatusBit : uint32_t
             {
@@ -389,10 +423,10 @@ namespace vmepp
 
             enum class GlobalTrigger_t : uint8_t
             {
-                None            = 0x00,
-                ExternalOnly    = 0x01,
-                SWOnly          = 0x02,
-                All             = 0x03,
+                None            = 0x00, /*!< Global trigger disabled */
+                ExternalOnly    = 0x01, /*!< Only the trigger on TRG-IN participates in the global trigger generation */
+                SWOnly          = 0x02, /*!< Only the software trigger participates in the global trigger generation */
+                All             = 0x03, /*!< Both: TRG-IN and software trigger are enabled */
             };
 
             struct BoardInfo
@@ -436,8 +470,8 @@ namespace vmepp
 
             enum class TriggerPolarity_t : uint8_t
             {
-                RisingEdge = 0x00,
-                FallingEdge = 0x01,
+                RisingEdge = 0x00,  /*!< Trigger on a rising edge */
+                FallingEdge = 0x01, /*!< Trigger on a falling edge */
             };
 
             enum class TriggerIn_t : uint8_t
@@ -456,8 +490,8 @@ namespace vmepp
 
             enum class Level_t : uint8_t
             {
-                NIM = 0x00,
-                TTL = 0x01,
+                NIM = 0x00, /*!< NIM Logic */
+                TTL = 0x01, /*!< TTL Logic */
             };
 
             enum class AcqMode_t : uint8_t
@@ -468,10 +502,10 @@ namespace vmepp
 
             enum class StartSource_t : uint8_t
             {
-                SW          = 0x00,
-                S_IN        = 0x01,
-                FirstTrg    = 0x02,
-                LVDS        = 0x03,
+                SW          = 0x00, /*!< Start/Stop of a run is SW controlled */
+                S_IN        = 0x01, /*!< Start/Stop of a run takes place on the active/inactive S-IN */
+                FirstTrg    = 0x02, /*!< A run starts on the first trigger pulse (TRG-IN). The Stop of a run must be SW controlled */
+                LVDS        = 0x03, /*!< LVDS controlled */
             };
 
             enum class AcqStatusBit : uint32_t
@@ -492,6 +526,16 @@ namespace vmepp
             void            WriteSWReset();
             void            WriteSWClear();
 
+            static uint32_t constexpr GroupAddress( uint32_t base )
+            {
+                return ((base & 0x00FF) | 0x8000);
+            }
+
+            static uint32_t constexpr GroupAddress( uint32_t base, Group_t g )
+            {
+                return (base | (0x0100 * static_cast<uint32_t>(g)));
+            };
+
         public :
             void            WaitForSPI( Group_t group );
 
@@ -504,6 +548,7 @@ namespace vmepp
             virtual void    Reset() override;
 
             void            WriteDummy32( Group_t group, uint32_t word );
+            void            WriteDummy32( uint32_t word );
             uint32_t        ReadDummy32( Group_t group );
 
             int16_t         ReadChipTemperature( Group_t group );
@@ -548,14 +593,16 @@ namespace vmepp
         public :
             // Trigger
             void WritePostTrigger( Group_t group, uint16_t n );
+            void WritePostTrigger( uint16_t n );
             uint16_t ReadPostTrigger( Group_t group );
 
             void WriteChannelThreshold( uint8_t ch, uint16_t threshold );
             uint16_t ReadChannelThreshold( uint8_t ch );
 
-            void WriteEnableTrigger( uint8_t ch, bool enable = true );
+            void WriteEnableTrigger( uint8_t ch, bool enable );
             bool ReadEnableTriggerC( uint8_t ch );
             void WriteEnableTrigger( Group_t group, uint8_t mask );
+            void WriteEnableTrigger( uint8_t mask );
             uint8_t ReadEnableTrigger( Group_t group );
 
             void WriteThresholdTR( TR_t tr, uint16_t threshold );
@@ -595,6 +642,7 @@ namespace vmepp
             uint32_t GetBufferAddress() const override { return V1742B_OUTPUT_BUFFER_START; };
 
             void WriteGroupEnable( Group_t g, bool enable = true );
+            void WriteGroupEnable( bool enable );
 
             void WriteChannelOffset( uint8_t ch, uint16_t offset );
             uint16_t ReadChannelOffset( uint8_t ch );
@@ -688,7 +736,7 @@ namespace vmepp
             }
 
         public :
-            typedef std::vector<uint16_t> Waveform; 
+            typedef std::vector<uint16_t> Waveform;
 
             struct Group
             {
@@ -740,7 +788,7 @@ namespace vmepp
             bool GetBoardFail() const       { return fHeader[1] & V1742B_HDR_BOARD_FAIL_MSK; }
             uint16_t GetLVDSPattern() const { return (fHeader[1] & V1742B_HDR_LVDS_MSK) >> V1742B_HDR_LVDS_SHFT; }
             uint8_t GetGroupMask() const    { return (fHeader[1] & V1742B_HDR_GROUP_MSK); }
-            size_t GetEventCounter() const  { return (fHeader[2] & V1742B_HDR_EVENT_CNT_MSK); } 
+            size_t GetEventCounter() const  { return (fHeader[2] & V1742B_HDR_EVENT_CNT_MSK); }
             uint32_t GetEventTTT() const    { return (fHeader[3] & V1742B_HDR_EVENT_TTT_MSK); }
 
             friend void V1742B::ApplyCorrection( UEvent<V1742B>& event ) const;
