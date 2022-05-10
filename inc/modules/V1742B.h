@@ -736,6 +736,9 @@ namespace vmepp
             }
 
         public :
+            /**
+             * Type synonym for the waveform data
+             */
             typedef std::vector<uint16_t> Waveform;
 
             /**
