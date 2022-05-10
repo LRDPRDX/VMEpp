@@ -50,7 +50,7 @@ namespace vmepp
     {
         PrintMessage( Message_t::INFO, "Initialization " + fName + "...\n" );
 
-        LoadCorrectionTable( "./0.x742_corr");
+        LoadCorrectionTable( "./1.x742_corr");
 
         //WriteSWReset();
         WriteSWClear();
