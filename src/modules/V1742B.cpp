@@ -55,7 +55,7 @@ namespace vmepp
         //WriteSWReset();
         WriteSWClear();
         // Misc
-        WriteDummy32( Group_t::All, 0x12345678 );
+        WriteDummy32( 0x12345678 );
         WriteTestModeEnable( false );
 
         // Interrupts
@@ -68,7 +68,7 @@ namespace vmepp
         WriteRegister32( V1742B_BOARD_CFG_CLR, V1742B_BOARD_CFG_MUST_CLR );
 
         // Trigger
-        WritePostTrigger( Group_t::All, 0 );
+        WritePostTrigger( 0 );
 
         for( uint8_t ch = 0; ch < GetChNumber(); ++ch )
         {
@@ -76,7 +76,7 @@ namespace vmepp
             WriteChannelOffset( ch, 0x7FFF );
         }
 
-        WriteEnableTrigger( Group_t::All, 0 );
+        WriteEnableTrigger( 0 );
 
         WriteThresholdTR( TR_t::TR0, 0 );
         WriteThresholdTR( TR_t::TR1, 0 );
@@ -103,7 +103,7 @@ namespace vmepp
         WriteMaxEventBLT( 1024 );
         WriteAcqMode( AcqMode_t::Transparent );
         WriteStartSource( StartSource_t::SW );
-        WriteGroupEnable( Group_t::All, false );
+        WriteGroupEnable( false );
 
         // Front Panel
         WriteLEMOLevel( Level_t::TTL );
@@ -111,7 +111,7 @@ namespace vmepp
         // Print Some Info
         for( uint8_t g = 0; g < GetGroupNumber(); ++g )
         {
-            std::cout << "Temperature of Chip #" << (int)g << " is " << ReadChipTemperature( static_cast<Group_t>( g )) << " C\n"; 
+            std::cout << "Temperature of Chip #" << (int)g << " is " << ReadChipTemperature( static_cast<Group_t>( g )) << " C\n";
             std::cout << "Mezzanine Revision: " << ReadStatus( static_cast<Group_t>( g ), StatusBit::MezzRevision ) << "\n";
         }
 
@@ -126,17 +126,22 @@ namespace vmepp
     //****** MISC + ******
     void V1742B::WriteDummy32( Group_t group, uint32_t word )
     {
-        WriteRegister32( V1742B_DUMMY32(static_cast<uint8_t>(group)), word );
+        WriteRegister32( GroupAddress( V1742B_DUMMY32, group ), word );
+    }
+
+    void V1742B::WriteDummy32( uint32_t word )
+    {
+        WriteRegister32( GroupAddress( V1742B_DUMMY32 ), word );
     }
 
     uint32_t V1742B::ReadDummy32( Group_t group )
     {
-        return ReadRegister32( V1742B_DUMMY32( static_cast<uint8_t>(group) ) );
+        return ReadRegister32( GroupAddress( V1742B_DUMMY32, group ) );
     }
 
     int16_t V1742B::ReadChipTemperature( Group_t group )
     {
-        return ReadRegister32( V1742B_CHIP_TEMP(static_cast<uint8_t>(group)), V1742B_CHIP_TEMP_VAL_MSK );
+        return ReadRegister32( GroupAddress( V1742B_CHIP_TEMP, group ), V1742B_CHIP_TEMP_VAL_MSK );
     }
 
     void V1742B::WriteLVDS( uint16_t mask )
@@ -203,7 +208,7 @@ namespace vmepp
     //****** INFO & ROM + ******
     V1742B::AMCFirmwareRev V1742B::ReadAMCFirmwareRev( Group_t group )
     {
-        uint32_t value = ReadRegister32( V1742B_AMC_FRMW_REV(static_cast<uint8_t>(group)) );
+        uint32_t value = ReadRegister32( GroupAddress( V1742B_AMC_FRMW_REV, group ) );
         uint8_t minor = (value & V1742B_AMC_FRMW_REV_MIN_MSK) >> V1742B_AMC_FRMW_REV_MIN_SHFT;
         uint8_t major = (value & V1742B_AMC_FRMW_REV_MAJ_MSK) >> V1742B_AMC_FRMW_REV_MAJ_SHFT;
         uint16_t date = (value & V1742B_AMC_FRMW_REV_DATE_MSK) >> V1742B_AMC_FRMW_REV_DATE_SHFT;
@@ -228,7 +233,7 @@ namespace vmepp
         uint8_t mem  = (value & V1742B_BOARD_INFO_MEM_MSK) >> V1742B_BOARD_INFO_MEM_SHFT;
         uint8_t group = (value & V1742B_BOARD_INFO_GROUP_MSK) >> V1742B_BOARD_INFO_GROUP_SHFT;
 
-        return BoardInfo( code, mem, group ); 
+        return BoardInfo( code, mem, group );
     }
 
     bool V1742B::ReadPLLFailure()
@@ -250,7 +255,7 @@ namespace vmepp
 
     uint32_t V1742B::ReadStatus( Group_t group )
     {
-        return ReadRegister32( V1742B_STATUS( static_cast<uint8_t>(group) ), StatusBit::All );
+        return ReadRegister32( GroupAddress( V1742B_STATUS, group ), StatusBit::All );
     }
 
     bool V1742B::ReadStatus( Group_t group, StatusBit bit )
@@ -305,71 +310,81 @@ namespace vmepp
     //****** TRIGGER + ******
     void V1742B::WritePostTrigger( Group_t group, uint16_t n )
     {
-        WriteRegister32( V1742B_POST_TRIGGER(static_cast<uint8_t>(group)), n, V1742B_POST_TRIGGER_VAL_MSK );
+        WriteRegister32( GroupAddress( V1742B_POST_TRIGGER, group ), n, V1742B_POST_TRIGGER_VAL_MSK );
+    }
+
+    void V1742B::WritePostTrigger( uint16_t n )
+    {
+        WriteRegister32( GroupAddress( V1742B_POST_TRIGGER ), n, V1742B_POST_TRIGGER_VAL_MSK );
     }
 
     uint16_t V1742B::ReadPostTrigger( Group_t group )
     {
-        return ReadRegister32( V1742B_POST_TRIGGER(static_cast<uint8_t>(group)), V1742B_POST_TRIGGER_VAL_MSK );
+        return ReadRegister32( GroupAddress( V1742B_POST_TRIGGER, group ), V1742B_POST_TRIGGER_VAL_MSK );
     }
 
     void V1742B::WriteChannelThreshold( uint8_t ch, uint16_t threshold )
     {
-        ch = ch / GetChNumber();
-        Group_t group = static_cast<Group_t>( ch / GetGroupNumber() );
-        ch = ch % GetGroupNumber();
+        ch /= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
+        ch %= fGroupNumber;
 
         uint32_t thr = (uint32_t)threshold & V1742B_CHANNEL_THR_VAL_MSK;
         uint32_t index = (ch << V1742B_CHANNEL_THR_IDX_SHFT) & V1742B_CHANNEL_THR_IDX_MSK;
 
-        WriteRegister32( V1742B_CHANNEL_THR(static_cast<uint8_t>(group)), index | thr );
+        WriteRegister32( GroupAddress( V1742B_CHANNEL_THR, group ), index | thr );
     }
 
     uint16_t V1742B::ReadChannelThreshold( uint8_t ch )
     {
-        ch = ch / GetChNumber();
-        Group_t group = static_cast<Group_t>( ch / GetGroupNumber() );
-        ch = ch % GetGroupNumber();
+        ch /= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
+        ch %= fGroupNumber;
         uint32_t value = (uint32_t)ch & V1742B_CHANNEL_SEL_VAL_MSK;
 
-        WriteRegister32( V1742B_CHANNEL_SEL(static_cast<uint8_t>(group)), value );
+        WriteRegister32( GroupAddress( V1742B_CHANNEL_SEL, group ), value );
 
-        return ReadRegister32( V1742B_CHANNEL_THR(static_cast<uint8_t>(group)), V1742B_CHANNEL_THR_VAL_MSK );
+        return ReadRegister32( GroupAddress( V1742B_CHANNEL_THR, group ), V1742B_CHANNEL_THR_VAL_MSK );
     }
 
     void V1742B::WriteEnableTrigger( uint8_t ch, bool enable )
     {
-        ch = ch / GetChNumber();
-        Group_t group = static_cast<Group_t>( ch / GetGroupNumber() );
-        ch = ch % GetGroupNumber();
+        ch /= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
+        ch %= fGroupNumber;
 
-        uint32_t triggerMask = ReadRegister32( V1742B_CHANNEL_TRG_MASK(static_cast<uint8_t>(group)), V1742B_CHANNEL_TRG_MASK_MSK );
+        uint32_t triggerMask = ReadRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK, group ), V1742B_CHANNEL_TRG_MASK_MSK );
 
         if( enable ) triggerMask |= (1U << ch);
         else         triggerMask &= ~(1U << ch);
 
-        WriteRegister32( V1742B_CHANNEL_TRG_MASK(static_cast<uint8_t>(group)), triggerMask, V1742B_CHANNEL_TRG_MASK_MSK );
+        WriteRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK, group ), triggerMask, V1742B_CHANNEL_TRG_MASK_MSK );
     }
 
     void V1742B::WriteEnableTrigger( Group_t group, uint8_t mask )
     {
-        WriteRegister32( V1742B_CHANNEL_TRG_MASK(static_cast<uint8_t>(group)), (uint32_t)mask, V1742B_CHANNEL_TRG_MASK_MSK );
+        WriteRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK, group ), (uint32_t)mask, V1742B_CHANNEL_TRG_MASK_MSK );
+    }
+
+    void V1742B::WriteEnableTrigger( uint8_t mask )
+    {
+        WriteRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK ), (uint32_t)mask, V1742B_CHANNEL_TRG_MASK_MSK );
     }
 
     bool V1742B::ReadEnableTriggerC( uint8_t ch )
     {
-        ch = ch / GetChNumber();
-        Group_t group = static_cast<Group_t>( ch / GetGroupNumber() );
-        ch = ch % GetGroupNumber();
+        ch /= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
+        ch %= fGroupNumber;
 
-        uint32_t triggerMask = ReadRegister32( V1742B_CHANNEL_TRG_MASK(static_cast<uint8_t>(group)), V1742B_CHANNEL_TRG_MASK_MSK );
+        uint32_t triggerMask = ReadRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK, group ), V1742B_CHANNEL_TRG_MASK_MSK );
 
         return triggerMask & (1U << ch);
     }
 
     uint8_t V1742B::ReadEnableTrigger( Group_t group )
     {
-        return ReadRegister32( V1742B_CHANNEL_TRG_MASK(static_cast<uint8_t>(group)), V1742B_CHANNEL_TRG_MASK_MSK );
+        return ReadRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK, group ), V1742B_CHANNEL_TRG_MASK_MSK );
     }
 
     void V1742B::WriteThresholdTR( TR_t tr, uint16_t threshold )
@@ -377,13 +392,13 @@ namespace vmepp
         Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
 
         WaitForSPI( group );
-        WriteRegister32( V1742B_TR_TRG_THR(static_cast<uint8_t>(group)), (uint32_t)threshold, V1742B_TR_TRG_THR_VAL_MSK );
+        WriteRegister32( GroupAddress( V1742B_TR_TRG_THR, group ), (uint32_t)threshold, V1742B_TR_TRG_THR_VAL_MSK );
     }
 
     uint16_t V1742B::ReadThresholdTR( TR_t tr )
     {
         Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
-        return ReadRegister32( V1742B_TR_TRG_THR(static_cast<uint8_t>(group)), V1742B_TR_TRG_THR_VAL_MSK );
+        return ReadRegister32( GroupAddress( V1742B_TR_TRG_THR, group ), V1742B_TR_TRG_THR_VAL_MSK );
     }
 
     void V1742B::WriteOffsetTR( TR_t tr, uint16_t offset )
@@ -391,13 +406,13 @@ namespace vmepp
         Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
 
         WaitForSPI( group );
-        WriteRegister32( V1742B_TR_DC_OFST(static_cast<uint8_t>(group)), (uint32_t)offset, V1742B_TR_DC_OFST_VAL_MSK );
+        WriteRegister32( GroupAddress( V1742B_TR_DC_OFST, group ), (uint32_t)offset, V1742B_TR_DC_OFST_VAL_MSK );
     }
 
     uint16_t V1742B::ReadOffsetTR( TR_t tr )
     {
         Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
-        return ReadRegister32( V1742B_TR_DC_OFST(static_cast<uint8_t>(group)), V1742B_TR_DC_OFST_VAL_MSK );
+        return ReadRegister32( GroupAddress( V1742B_TR_DC_OFST, group ), V1742B_TR_DC_OFST_VAL_MSK );
     }
 
     void V1742B::WriteSWTrigger()
@@ -461,7 +476,7 @@ namespace vmepp
 
     bool V1742B::ReadTRDigitize()
     {
-        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_DG_SHFT) ); 
+        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_DG_SHFT) );
     }
 
     void V1742B::WriteTREnable( bool enable )
@@ -479,7 +494,7 @@ namespace vmepp
 
     bool V1742B::ReadTREnable()
     {
-        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_EN_SHFT) ); 
+        return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_EN_SHFT) );
     }
     //****** TRIGGER - ******
 
@@ -493,34 +508,39 @@ namespace vmepp
     void V1742B::WriteGroupEnable( Group_t g, bool enable )
     {
         uint32_t value = ReadRegister32( V1742B_GROUP_EN_MASK, V1742B_GROUP_EN_MASK_VAL_MSK );
-        uint32_t change = (g == Group_t::All) ? 0xF : (1U << static_cast<uint8_t>( g ));
+        uint32_t change = 1U << static_cast<uint8_t>( g );
         if( enable ) { value |= change; }
         else         { value &= ~(change); }
         WriteRegister32( V1742B_GROUP_EN_MASK, value, V1742B_GROUP_EN_MASK_VAL_MSK );
     }
 
+    void V1742B::WriteGroupEnable( bool enable )
+    {
+        WriteRegister32( V1742B_GROUP_EN_MASK, enable ? 0xF : 0, V1742B_GROUP_EN_MASK_VAL_MSK );
+    }
+
     void V1742B::WriteChannelOffset( uint8_t ch, uint16_t offset )
     {
-        ch = ch / GetChNumber();
-        Group_t group = static_cast<Group_t>( ch / GetGroupNumber() );
-        ch = ch % GetGroupNumber();
+        ch /= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
+        ch %= fGroupNumber;
         uint32_t offs = (uint32_t)offset & V1742B_CHANNEL_DC_OFST_VAL_MSK;
         uint32_t index = (ch << V1742B_CHANNEL_DC_OFST_IDX_SHFT) & V1742B_CHANNEL_DC_OFST_IDX_MSK;
 
         WaitForSPI( group );
-        WriteRegister32( V1742B_CHANNEL_DC_OFST(static_cast<uint8_t>(group)), index | offs );
+        WriteRegister32( GroupAddress( V1742B_CHANNEL_DC_OFST, group ), index | offs );
     }
 
     uint16_t V1742B::ReadChannelOffset( uint8_t ch )
     {
-        ch = ch / GetChNumber();
-        Group_t group = static_cast<Group_t>( ch / GetGroupNumber() );
-        ch = ch % GetGroupNumber();
+        ch /= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
+        ch = ch % fGroupNumber;
         uint32_t value = (uint32_t)ch & V1742B_CHANNEL_SEL_VAL_MSK;
 
-        WriteRegister32( V1742B_CHANNEL_SEL(static_cast<uint8_t>(group)), value );
+        WriteRegister32( GroupAddress( V1742B_CHANNEL_SEL, group ), value );
 
-        return ReadRegister32( V1742B_CHANNEL_DC_OFST(static_cast<uint8_t>(group)) ) & V1742B_CHANNEL_DC_OFST_VAL_MSK;
+        return ReadRegister32( GroupAddress( V1742B_CHANNEL_DC_OFST,group ), V1742B_CHANNEL_DC_OFST_VAL_MSK);
     }
 
     void V1742B::WriteRecordLength( RecordLength_t length )
@@ -540,7 +560,7 @@ namespace vmepp
 
     uint16_t V1742B::ReadInitTestValue( Group_t group )
     {
-        return ReadRegister32( V1742B_TEST_MODE_INIT_READ(static_cast<uint8_t>(group)), V1742B_TEST_MODE_INIT_VAL_MSK ); 
+        return ReadRegister32( GroupAddress( V1742B_TEST_MODE_INIT_READ, group ), V1742B_TEST_MODE_INIT_VAL_MSK );
     }
 
     void V1742B::WriteSamplingRate( SamplingRate_t rate )
@@ -550,7 +570,7 @@ namespace vmepp
 
     V1742B::SamplingRate_t V1742B::ReadSamplingRate( Group_t group )
     {
-        return static_cast<SamplingRate_t>( ReadRegister32( V1742B_DRS4_SAMP_FREQ_READ(static_cast<uint8_t>(group)), V1742B_DRS4_SAMP_FREQ_VAL_MSK ) );
+        return static_cast<SamplingRate_t>( ReadRegister32( GroupAddress( V1742B_DRS4_SAMP_FREQ_READ, group ), V1742B_DRS4_SAMP_FREQ_VAL_MSK ) );
     }
 
     uint32_t V1742B::ReadEventSize()
@@ -736,9 +756,7 @@ namespace vmepp
         if( (buffer[index] & 0xF0000000) != 0xA0000000 ) { return false; }
 
         fStart = index;
-        for( size_t i = 0; i < fHeader.size(); ++i, ++index ) {
-            fHeader[i] = buffer[index];
-        } 
+        for( size_t i = 0; i < fHeader.size(); ++i, ++index ) { fHeader[i] = buffer[index]; }
         index--;
         // Parse Groups
         for( size_t g = 0; g < V1742B::GetGroupNumber(); ++g )
@@ -786,7 +804,6 @@ namespace vmepp
 
     const UEvent<V1742B>::Group& UEvent<V1742B>::GetGroup( V1742B::Group_t g ) const
     {
-        if ( g == V1742B::Group_t::All ) { g = V1742B::Group_t::G1; }
         return fData.at( static_cast<uint8_t>( g ) );
     }
 
@@ -808,10 +825,6 @@ namespace vmepp
         std::cout << std::setw( 20 ) << "TTT: " << GetTTT() << "\n";
         std::cout << "========== GROUP::" << V1742B::GetName() << " ( end )===========\n";
     }
-
-    //const UEvent<V1742B>::Group& UEvent<V1742B>::GetGroup( V1742B::Group_t g ) const
-    //{
-    //}
 
     void UEvent<V1742B>::Print() const
     {
