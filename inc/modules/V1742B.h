@@ -738,6 +738,9 @@ namespace vmepp
         public :
             typedef std::vector<uint16_t> Waveform;
 
+            /**
+             * Group data of an event of the V1742B module
+             */
             struct Group
             {
                 protected :
@@ -793,4 +796,6 @@ namespace vmepp
 
             friend void V1742B::ApplyCorrection( UEvent<V1742B>& event ) const;
     };
+}
+
 #endif
