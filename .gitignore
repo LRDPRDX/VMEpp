@@ -38,6 +38,3 @@ ROOT/
 # recovery files
 *.swo
 *.swp
-
-# Correction tables
-*.x742_corr
