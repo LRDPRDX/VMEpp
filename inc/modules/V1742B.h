@@ -250,7 +250,7 @@ namespace vmepp
 {
     /**
      * This class represents the V1742B module.
-//   * V1742B is a 32+2 channel 12 bit 5 GS/s Digitizer 
+     * V1742B is a 32+2 channel 12 bit 5 GS/s Digitizer 
      */
     class V1742B : public VSlaveInterrupter, public VSlaveAcquisitor, public UConfigurable<V1742B>
     {
@@ -536,7 +536,7 @@ namespace vmepp
                 return (base | (0x0100 * static_cast<uint32_t>(g)));
             };
 
-        public :
+        protected :
             void            WaitForSPI( Group_t group );
 
         public :
@@ -793,6 +793,4 @@ namespace vmepp
 
             friend void V1742B::ApplyCorrection( UEvent<V1742B>& event ) const;
     };
-}
-
 #endif
