@@ -600,7 +600,7 @@ namespace vmepp
             uint16_t ReadChannelThreshold( uint8_t ch );
 
             void WriteEnableTrigger( uint8_t ch, bool enable );
-            bool ReadEnableTriggerC( uint8_t ch );
+            bool ReadEnableTrigger( uint8_t ch );
             void WriteEnableTrigger( Group_t group, uint8_t mask );
             void WriteEnableTrigger( uint8_t mask );
             uint8_t ReadEnableTrigger( Group_t group );

@@ -371,7 +371,7 @@ namespace vmepp
         WriteRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK ), (uint32_t)mask, V1742B_CHANNEL_TRG_MASK_MSK );
     }
 
-    bool V1742B::ReadEnableTriggerC( uint8_t ch )
+    bool V1742B::ReadEnableTrigger( uint8_t ch )
     {
         ch /= fChNumber;
         Group_t group = static_cast<Group_t>( ch / fGroupNumber );
