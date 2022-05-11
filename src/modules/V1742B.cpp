@@ -2,6 +2,7 @@
 #include "modules/V1742B.h"
 
 #include <iomanip>
+#include <sstream>
 
 
 namespace vmepp
@@ -12,7 +13,9 @@ namespace vmepp
     V1742B::V1742B( uint32_t baseAddress, uint32_t range ) :
         VSlave( baseAddress, range ),
         VSlaveInterrupter( baseAddress, range ),
-        VSlaveAcquisitor( baseAddress, range )
+        VSlaveAcquisitor( baseAddress, range ),
+
+        fPathToCorrectionTable( "." )
     {
     }
 
@@ -24,11 +27,19 @@ namespace vmepp
         while( ReadStatus( group, StatusBit::BusySPI ) ) { }
     }
 
-    void V1742B::LoadCorrectionTable( const std::string& fileName )
+    void V1742B::LoadCorrectionTable( const SamplingRate_t rate )
     {
-        PrintMessage( Message_t::INFO, "Loading correction tables from " + fileName + "..." );
-        std::ifstream f( fileName, std::ios_base::in | std::ios_base::binary );
+        std::stringstream ss;
+        ss << fPathToCorrectionTable << "/" << rate << ".x742_corr";
+
+        PrintMessage( Message_t::INFO, "Loading correction tables from " + ss.str() + " ..." );
+        std::ifstream f( ss.str(), std::ios_base::in | std::ios_base::binary );
         f >> fCorrectionTable;
+
+        if( not f.good() )
+        {
+            PrintMessage( Message_t::WARNING, "Loading correction tables failed" );
+        }
     }
 
     const V1742B::CorrectionTable& V1742B::GetCorrectionTable()
@@ -50,7 +61,6 @@ namespace vmepp
     {
         PrintMessage( Message_t::INFO, "Initialization " + fName + "...\n" );
 
-        LoadCorrectionTable( "./1.x742_corr");
 
         //WriteSWReset();
         WriteSWClear();
@@ -566,6 +576,7 @@ namespace vmepp
     void V1742B::WriteSamplingRate( SamplingRate_t rate )
     {
         WriteRegister32( V1742B_DRS4_SAMP_FREQ_WRITE, static_cast<uint32_t>(rate), V1742B_DRS4_SAMP_FREQ_VAL_MSK );
+        LoadCorrectionTable( rate );
     }
 
     V1742B::SamplingRate_t V1742B::ReadSamplingRate( Group_t group )

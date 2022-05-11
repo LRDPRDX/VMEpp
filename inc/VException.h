@@ -168,10 +168,10 @@ namespace vmepp
                      ar.size() * sizeof( T ) );
     }
 
-    template <typename T>
-    inline void WriteValueToStream( const T& value, std::ostream& stream )
+    template<typename T>
+    std::ostream& operator<<( typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream, const T& e)
     {
-        stream.write( reinterpret_cast<char const*>( value ), sizeof( value ) );
+        return stream << std::to_string( static_cast<typename std::underlying_type<T>::type>( e ) );
     }
 }
 #endif//V_PLUS_EXCEPTION_H

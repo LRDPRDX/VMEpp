@@ -388,11 +388,19 @@ namespace vmepp
 
         protected :
             CorrectionTable fCorrectionTable;
+            std::string     fPathToCorrectionTable;
+
+        public :
+            /**
+             * Set path to the directory containing the correction tables.
+             * This path can be either absolute or relative to the executable. 
+             */
+            void SetPathToCorrectionTable( const std::string& path ) { fPathToCorrectionTable = path; }
 
             /**
              * Read correction table from a file.
              */
-            void LoadCorrectionTable( const std::string& fileName );
+            void LoadCorrectionTable( const SamplingRate_t rate );
 
         public :
             /**
