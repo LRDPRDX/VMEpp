@@ -679,8 +679,34 @@ namespace vmepp
 
         public :
             // Trigger
+            /**
+             * Set the post trigger value to a group.
+             * The post trigger corresponds to the delay between the trigger arrival
+             * and the DRS4 chip holding phase.
+             * @param group group of channels to set the post trigger to
+             * @param n post trigger value (1 unit = 8.5 ns)
+             * @see ReadPostTrigger( Group_t group )
+             * @see WritePostTrigger( uint16_t n )
+             */
             void WritePostTrigger( Group_t group, uint16_t n );
+
+            /**
+             * Set the post trigger value to all the channels at once.
+             * The post trigger corresponds to the delay between the trigger arrival
+             * and the DRS4 chip holding phase.
+             * @param n post trigger value (1 unit = 8.5 ns)
+             * @see ReadPostTrigger( Group_t group )
+             * @see WritePostTrigger( Group_t group, uint16_t n )
+             */
             void WritePostTrigger( uint16_t n );
+
+            /**
+             * Get the post trigger value of a group.  
+             * The post trigger corresponds to the delay between the trigger arrival
+             * and the DRS4 chip holding phase.
+             * @param group group of channels to get the post trigger of 
+             * @return post trigger value (1 unit = 8.5 ns)
+             */
             uint16_t ReadPostTrigger( Group_t group );
 
             /**
@@ -703,8 +729,45 @@ namespace vmepp
              */
             uint16_t ReadChannelThreshold( uint8_t ch );
 
+            /**
+             * Enable channels to participate in the trigger generation logic OR. The channel enabled with
+             * this member function triggers when the input pulse crosses the threshold
+             * (see WriteChannelThreshold).
+             * Triggers of group 0 and group 1 enable the acquisition of all channels of group 0 and group 1
+             * simultaneously, while triggers on group 2 and group 3 enable the acquisition of all channels
+             * of group 2 and group 3 simultaneously.
+             * @param ch channel index
+             * @param enable enable flag (true = enable, false = disable)
+             * @see ReadEnableTrigger( uint8_t ch )
+             * @see WriteEnableTrigger( Group_t group, uint8_t mask )
+             * @see ReadEnableTrigger( Group_t group )
+             */
             void WriteEnableTrigger( uint8_t ch, bool enable );
+
+            /**
+             * Get the enable status of a channel. If this member function returns true it means the channel
+             * triggers when the input pulse crosses the threshold (see WriteChannelThreshold).
+             * @param ch channel index
+             * @return enable flag (true = enabled, false = disabled)
+             * @see WriteEnableTrigger( Group_t group, uint8_t mask )
+             * @see WriteEnableTrigger( uint8_t ch, bool enable )
+             * @see ReadEnableTrigger( Group_t group )
+             */
             bool ReadEnableTrigger( uint8_t ch );
+
+            /**
+             * Enable channels to participate in the trigger generation logic OR. The channel enabled with
+             * this member function triggers when the input pulse crosses the threshold
+             * (see WriteChannelThreshold).
+             * Triggers of group 0 and group 1 enable the acquisition of all channels of group 0 and group 1
+             * simultaneously, while triggers on group 2 and group 3 enable the acquisition of all channels
+             * of group 2 and group 3 simultaneously.
+             * @param group channel group 
+             * @param mask enable mask (i-th bit corresponds to the enable flag of the i-th channel of the group)
+             * @see ReadEnableTrigger( uint8_t ch )
+             * @see WriteEnableTrigger( uint8_t ch, bool enable );
+             * @see ReadEnableTrigger( Group_t group )
+             */
             void WriteEnableTrigger( Group_t group, uint8_t mask );
             void WriteEnableTrigger( uint8_t mask );
             uint8_t ReadEnableTrigger( Group_t group );
@@ -748,7 +811,35 @@ namespace vmepp
             void WriteGroupEnable( Group_t g, bool enable = true );
             void WriteGroupEnable( bool enable );
 
+            /**
+             * Adjust the baseline position (i.e. 0 Volt) of the input signal on the ADC scale of a channel.
+             * The ADC scale ranges from 0 to 2^{NBit} - 1. The DAC controlling the DC Offset
+             * has 16 bits, i.e. it goes from 0 to 65535 independently from the NBit value and the board type.
+             * Typically a DC Offset value of 32K (DAC mid‐scale) corresponds to about the ADC mid‐scale.
+             * Increasing values of DC
+             * Offset make the baseline decrease. The range of the DAC is about 5% (typ.) larger than
+             * the ADC range, hence DAC settings close to 0 and 64K correspond to ADC respectively
+             * over and under range
+             * @param ch channel index
+             * @param offset DC offset value in DAC LSB counts
+             * @see ReadChannelOffset( uint8_t )
+             */
             void WriteChannelOffset( uint8_t ch, uint16_t offset );
+
+
+            /**
+             * Get the baseline position (i.e. 0 Volt) of the input signal on the ADC scale of a channel.
+             * The ADC scale ranges from 0 to 2^{NBit} - 1. The DAC controlling the DC Offset
+             * has 16 bits, i.e. it goes from 0 to 65535 independently from the NBit value and the board type.
+             * Typically a DC Offset value of 32K (DAC mid‐scale) corresponds to about the ADC mid‐scale.
+             * Increasing values of DC
+             * Offset make the baseline decrease. The range of the DAC is about 5% (typ.) larger than
+             * the ADC range, hence DAC settings close to 0 and 64K correspond to ADC respectively
+             * over and under range
+             * @param ch channel index
+             * @return offset DC offset value in DAC LSB counts
+             * @see WriteChannelOffset( uint8_t ch, uint16_t offset )
+             */
             uint16_t ReadChannelOffset( uint8_t ch );
 
             void WriteRecordLength( RecordLength_t length );
