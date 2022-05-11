@@ -284,6 +284,10 @@ namespace vmepp
             static size_t  constexpr GetNSamples()      { return fNSamples; }
 
         public :
+
+            /**
+             * Sampling rate
+             */
             enum class SamplingRate_t : uint8_t
             {
                 M5000 = CAEN_DGTZ_DRS4_5GHz,    /*!< 5   GS/sec, sample = 200 ps */
@@ -297,6 +301,9 @@ namespace vmepp
             //****** CORRECTION + ******
             //**************************
         public :
+            /**
+             * Channel specific data correction
+             */
             struct ChannelCorrection
             {
                 std::array<int16_t, fNSamples> cell;
@@ -317,6 +324,9 @@ namespace vmepp
                 }
             };
 
+            /**
+             * Group specific data correction
+             */
             struct GroupCorrection
             {
                 std::array<ChannelCorrection, fChInGroup>       channels;
@@ -342,10 +352,13 @@ namespace vmepp
                 }
             };
 
+            /**
+             * Correction table
+             */
             struct CorrectionTable
             {
-                SamplingRate_t                                  freq;
-                std::array<GroupCorrection, fGroupNumber>       table;
+                SamplingRate_t                                  freq;   /*< Sampling frequency */
+                std::array<GroupCorrection, fGroupNumber>       table;  /*< Correction table */
 
                 friend std::ostream& operator<<( std::ostream& lhs, const CorrectionTable& rhs )
                 {
@@ -362,12 +375,15 @@ namespace vmepp
                 }
             };
 
+            /**
+             * Channel group
+             */
             enum class Group_t : uint8_t
             {
-                G1 = 0,
-                G2,
-                G3,
-                G4
+                G0 = 0, /*!< Group 0, channels 0:7 */
+                G1,     /*!< Group 1, channels 8:15 */
+                G2,     /*!< Group 2, channels 16:23 */
+                G3      /*!< Group 3, channels 24:31 */
             };
 
         protected :
@@ -380,7 +396,7 @@ namespace vmepp
 
         public :
             /**
-             * Get current correction table
+             * Get current correction table. I.e. the last one loaded
              */
             const CorrectionTable& GetCorrectionTable();
             //**************************
@@ -388,6 +404,9 @@ namespace vmepp
             //**************************
 
         public :
+            /**
+             * Custom record length
+             */
             enum class RecordLength_t : uint8_t
             {
                 s1024 = 0x00, /*!< Record length is 1024 samples */
@@ -396,31 +415,42 @@ namespace vmepp
                 s136  = 0x03, /*!< Record length is 136 samples */
             };
 
+            /**
+             * Fan speed. NOT USED in this module
+             */
             enum class FanSpeed_t : uint8_t
             {
                 LowAuto = 0x00, /*<! NOT USED in this module */
                 High    = 0x01, /*<! NOT USED in this module */
             };
 
-
+            /**
+             * TRn channel
+             */
             enum class TR_t : uint8_t
             {
                 TR0 = 0, /*!< TR0 input connector on the front panel */
                 TR1 = 1, /*!< TR0 input connector on the front panel */
             };
 
+            /**
+             * Bits of the `status` register
+             */
             enum StatusBit : uint32_t
             {
-                MemoryFull      = 0x0001,
-                MemoryEmpty     = 0x0002,
-                BusySPI         = 0x0004,
-                LockedPLLEven   = 0x0040,
-                LockedPLLOdd    = 0x0080,
-                BusyDRS4        = 0x0100,
-                MezzRevision    = 0x0200,
-                All             = 0x03C7,
+                MemoryFull      = 0x0001, /*!< Memory full */
+                MemoryEmpty     = 0x0002, /*!< Memory empty */
+                BusySPI         = 0x0004, /*!< SPI bus is busy */
+                LockedPLLEven   = 0x0040, /*!< The DRS4 PLL of the even group is locked */
+                LockedPLLOdd    = 0x0080, /*!< The DRS4 PLL of the odd group is locked */
+                BusyDRS4        = 0x0100, /*!< The DRS4 chip is busy */
+                MezzRevision    = 0x0200, /*!< Mezzanine revision, (if set than revision is higher than or equal to 1) */
+                All             = 0x03C7, /*!< All the above as a mask */
             };
 
+            /**
+             * Global trigger types
+             */
             enum class GlobalTrigger_t : uint8_t
             {
                 None            = 0x00, /*!< Global trigger disabled */
@@ -429,11 +459,14 @@ namespace vmepp
                 All             = 0x03, /*!< Both: TRG-IN and software trigger are enabled */
             };
 
+            /**
+             * Board information
+             */
             struct BoardInfo
             {
-                uint8_t FAMILY_CODE;
-                uint8_t CHANNEL_MEM_SIZE;
-                uint8_t GROUP_NUMBER;
+                uint8_t FAMILY_CODE;        /*!< Family code */
+                uint8_t CHANNEL_MEM_SIZE;   /*!< Number of samples per channel */
+                uint8_t GROUP_NUMBER;       /*!< Number of groups */
 
                 BoardInfo( uint8_t code, uint8_t memSize, uint8_t groupN ) :
                     FAMILY_CODE( code ),
@@ -442,11 +475,14 @@ namespace vmepp
                 { }
             };
 
+            /**
+             * Channel FPGA (AMC) firmware revision information
+             */
             struct AMCFirmwareRev
             {
-                uint8_t     MINOR;
-                uint8_t     MAJOR;
-                uint16_t    DATE;
+                uint8_t     MINOR;  /*!< AMC firmware minor revision number */
+                uint8_t     MAJOR;  /*!< AMC firmware major revision number */
+                uint16_t    DATE;   /*!< AMC firmware revision date (Y/M/DD) */
 
                 AMCFirmwareRev( uint8_t min, uint8_t maj, uint16_t date ) :
                     MINOR( min ),
@@ -455,11 +491,14 @@ namespace vmepp
                 { }
             };
 
+            /**
+             * Motherboard FPGA (ROC) firmware revision
+             */
             struct ROCFirmwareRev
             {
-                uint8_t     MINOR;
-                uint8_t     MAJOR;
-                uint16_t    DATE;
+                uint8_t     MINOR;  /*!< ROC firmware minor revision number */
+                uint8_t     MAJOR;  /*!< ROC firmware major revision number */
+                uint16_t    DATE;   /*!< ROC firmware revision date (Y/M/DD) */
 
                 ROCFirmwareRev( uint8_t min, uint8_t maj, uint16_t date ) :
                     MINOR( min ),
@@ -468,16 +507,22 @@ namespace vmepp
                 { }
             };
 
+            /**
+             * TRn trigger polarity
+             */
             enum class TriggerPolarity_t : uint8_t
             {
                 RisingEdge = 0x00,  /*!< Trigger on a rising edge */
                 FallingEdge = 0x01, /*!< Trigger on a falling edge */
             };
 
+            /**
+             * Signal on TRG-IN connector is used either to gate or veto the acquisition
+             */
             enum class TriggerIn_t : uint8_t
             {
-                Gate = 0x00,
-                Veto = 0x01,
+                Gate = 0x00, /*!< Gate the acquisition */
+                Veto = 0x01, /*!< Veto the acquisition */
             };
 
             enum class TriggerOut_t : uint8_t
@@ -488,18 +533,27 @@ namespace vmepp
                 BusyGroups  = 0x03,
             };
 
+            /**
+             * Logic level of the front panel LEMO connectors
+             */
             enum class Level_t : uint8_t
             {
                 NIM = 0x00, /*!< NIM Logic */
                 TTL = 0x01, /*!< TTL Logic */
             };
 
+            /**
+             * Acquisition modes
+             */
             enum class AcqMode_t : uint8_t
             {
-                Output      = 0x00,
-                Transparent = 0x01,
+                Output      = 0x00, /*!< Output mode */
+                Transparent = 0x01, /*!< Transparent mode */
             };
 
+            /**
+             * Start source
+             */
             enum class StartSource_t : uint8_t
             {
                 SW          = 0x00, /*!< Start/Stop of a run is SW controlled */
@@ -508,17 +562,20 @@ namespace vmepp
                 LVDS        = 0x03, /*!< LVDS controlled */
             };
 
+            /**
+             * Bits of the `Acquisition Status` register
+             */
             enum class AcqStatusBit : uint32_t
             {
-                AcqRun      = 0x00000004,
-                EventReady  = 0x00000008,
-                EventFull   = 0x00000010,
-                PLLClockExt = 0x00000020,
-                PLLGood     = 0x00000080,
-                BoardReady  = 0x00000100,
-                StatusSIN   = 0x00008000,
-                StatusTRGIN = 0x00010000,
-                All         = 0x000181BC,
+                AcqRun      = 0x00000004,   /*!< Acquisition is running */
+                EventReady  = 0x00000008,   /*!< At least one event is available */
+                EventFull   = 0x00000010,   /*!< Maximum number of storable events has been reached */
+                PLLClockExt = 0x00000020,   /*!< External clock source is used by PLL */
+                PLLGood     = 0x00000080,   /*!< PLL is locked */
+                BoardReady  = 0x00000100,   /*!< Board ready for acquisition */
+                StatusSIN   = 0x00008000,   /*!< The current logical level on the `S-IN` front panel connector*/
+                StatusTRGIN = 0x00010000,   /*!< The current logical level on the `TRG-IN` front panel connector*/
+                All         = 0x000181BC,   /*!< All the above as a mask */
             };
 
         protected :
@@ -547,10 +604,40 @@ namespace vmepp
             // Misc
             virtual void    Reset() override;
 
+            /**
+             * Write a 32-bit word to a board register. Can be used for debug purposes to test
+             * the local bus. NOTE: a write for group 0 and group 1 leads to the same settings,
+             * as for group 2 and group 3.
+             * @param group a group to write to
+             * @param word a word to write
+             * @see WriteDummy32( uint32_t word )
+             * @see ReadDummy32( Group_t group )
+             */
             void            WriteDummy32( Group_t group, uint32_t word );
+
+            /**
+             * Write a 32-bit word to a board register. Can be used for debug purposes to test
+             * the local bus.
+             * @param word a word to write to all the groups at once
+             * @see WriteDummy32( Group_t group, uint32_t word )
+             * @see ReadDummy32( Group_t group )
+             */
             void            WriteDummy32( uint32_t word );
+
+            /**
+             * Read a 32-bit word from a board register. Can be used for debug purposes to test
+             * the local bus.
+             * @param group group to read from 
+             * @see WriteDummy32( Group_t group, uint32_t word )
+             * @see WriteDummy32( uint32_t word )
+             */
             uint32_t        ReadDummy32( Group_t group );
 
+            /**
+             * Read DRS4 chip temperature
+             * @param group chip number which temperature is to be read 
+             * @return the temperature of the chip specified with the `group` parameter : from -64C to 127C
+             */
             int16_t         ReadChipTemperature( Group_t group );
 
             void WriteLVDS( uint16_t mask );
@@ -596,7 +683,24 @@ namespace vmepp
             void WritePostTrigger( uint16_t n );
             uint16_t ReadPostTrigger( Group_t group );
 
+            /**
+             * Set the trigger threshold of a channel.
+             * NOTE : threshold value must be set in units of absolute scale
+             * (NOT relative to the baseline).
+             * @param ch channel index
+             * @param threshold threshold value in LSB counts
+             * @see GetChNumber()
+             * @see ReadChannelThreshold( uint8_t ch )
+             */
             void WriteChannelThreshold( uint8_t ch, uint16_t threshold );
+
+            /**
+             * Get the trigger threshold of a channel
+             * @param ch channel index
+             * @return threshold value in LSB counts
+             * @see GetChNumber()
+             * @see WriteChannelThreshold( uint8_t ch, uint16_t threshold )
+             */
             uint16_t ReadChannelThreshold( uint8_t ch );
 
             void WriteEnableTrigger( uint8_t ch, bool enable );
@@ -651,10 +755,10 @@ namespace vmepp
             RecordLength_t ReadRecordLength();
 
             void WriteInitTestValue( uint16_t value );
-            uint16_t ReadInitTestValue( Group_t group = Group_t::G1 );
+            uint16_t ReadInitTestValue( Group_t group );
 
             void WriteSamplingRate( SamplingRate_t rate );
-            SamplingRate_t ReadSamplingRate( Group_t group = Group_t::G1 );
+            SamplingRate_t ReadSamplingRate( Group_t group );
 
             void WriteSWTrigger();
 
