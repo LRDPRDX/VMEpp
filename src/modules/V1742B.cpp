@@ -389,7 +389,7 @@ namespace vmepp
 
     void V1742B::WriteThresholdTR( TR_t tr, uint16_t threshold )
     {
-        Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
+        Group_t group = (tr == TR_t::TR0) ? Group_t::G0 : Group_t::G2;
 
         WaitForSPI( group );
         WriteRegister32( GroupAddress( V1742B_TR_TRG_THR, group ), (uint32_t)threshold, V1742B_TR_TRG_THR_VAL_MSK );
@@ -397,13 +397,13 @@ namespace vmepp
 
     uint16_t V1742B::ReadThresholdTR( TR_t tr )
     {
-        Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
+        Group_t group = (tr == TR_t::TR0) ? Group_t::G0 : Group_t::G2;
         return ReadRegister32( GroupAddress( V1742B_TR_TRG_THR, group ), V1742B_TR_TRG_THR_VAL_MSK );
     }
 
     void V1742B::WriteOffsetTR( TR_t tr, uint16_t offset )
     {
-        Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
+        Group_t group = (tr == TR_t::TR0) ? Group_t::G0 : Group_t::G2;
 
         WaitForSPI( group );
         WriteRegister32( GroupAddress( V1742B_TR_DC_OFST, group ), (uint32_t)offset, V1742B_TR_DC_OFST_VAL_MSK );
@@ -411,7 +411,7 @@ namespace vmepp
 
     uint16_t V1742B::ReadOffsetTR( TR_t tr )
     {
-        Group_t group = (tr == TR_t::TR0) ? Group_t::G1 : Group_t::G3;
+        Group_t group = (tr == TR_t::TR0) ? Group_t::G0 : Group_t::G2;
         return ReadRegister32( GroupAddress( V1742B_TR_DC_OFST, group ), V1742B_TR_DC_OFST_VAL_MSK );
     }
 
