@@ -277,9 +277,9 @@ namespace vmepp
             static uint8_t constexpr GetChInGroup()     { return fChInGroup; }
 
             /**
-             * Get number of samples per channel.
-             * NOTE: it always returns the maximum number of samples
-             * despite the value set via the WriteRecordLength member function 
+             * Get the number of samples per channel.
+             * _NOTE:_ it always returns the maximum number of samples
+             * despite the value set via the WriteRecordLength(RecordLength_t length) member function 
              */
             static size_t  constexpr GetNSamples()      { return fNSamples; }
 
@@ -376,7 +376,7 @@ namespace vmepp
             };
 
             /**
-             * Channel group
+             * Channel group, DRS4 chip index
              */
             enum class Group_t : uint8_t
             {
@@ -392,8 +392,8 @@ namespace vmepp
 
         public :
             /**
-             * Set path to the directory containing the correction tables.
-             * This path can be either absolute or relative to the executable. 
+             * Set path to a directory containing the correction tables.
+             * This path may be either absolute or relative to the executable. 
              */
             void SetPathToCorrectionTable( const std::string& path ) { fPathToCorrectionTable = path; }
 
@@ -552,6 +552,8 @@ namespace vmepp
 
             /**
              * Acquisition modes
+             * @see WriteAcqMode( AcqMode_t mode )
+             * @see ReadAcqMode()
              */
             enum class AcqMode_t : uint8_t
             {
@@ -614,7 +616,7 @@ namespace vmepp
 
             /**
              * Write a 32-bit word to a board register. Can be used for debug purposes to test
-             * the local bus. NOTE: a write for group 0 and group 1 leads to the same settings,
+             * the local bus. _NOTE:_ a write for group 0 and group 1 leads to the same settings,
              * as for group 2 and group 3.
              * @param group a group to write to
              * @param word a word to write
@@ -651,9 +653,29 @@ namespace vmepp
             void WriteLVDS( uint16_t mask );
             uint16_t ReadLVDS();
 
+            /**
+             * Enable/disable the test mode. When the test mode is enabled, the input
+             * samples are replaced by a sawtooth test signal.
+             * @param enable enable status (true = enable, false = disable)
+             * @see ReadTestModeEnable()
+             */
             void WriteTestModeEnable( bool enable = true );
+
+            /**
+             * Get the enable status of the test mode. When the test mode is enabled, the input
+             * samples are replaced by a sawtooth test signal.
+             * @return enable status (true = enabled, false = disabled)
+             * @see WriteTestModeEnable( bool enable )
+             */
             bool ReadTestModeEnable();
 
+            /**
+             * The DRS4 chip needs data corrections due to the unavoidable differences
+             * in the chip constuction process. This function applies the default corrections
+             * which are provided by CAEN in the memory flash of the board.
+             * @param event event to apply the corrections to
+             * @see SetPathToCorrectionTable( const std::string& path )
+             */
             void ApplyCorrection( UEvent<V1742B>& event ) const;
 
         public :
@@ -719,7 +741,7 @@ namespace vmepp
 
             /**
              * Set the trigger threshold of a channel.
-             * NOTE : threshold value must be set in units of absolute scale
+             * _NOTE:_ threshold value must be set in units of absolute scale
              * (NOT relative to the baseline).
              * @param ch channel index
              * @param threshold threshold value in LSB counts
@@ -825,7 +847,7 @@ namespace vmepp
             uint16_t ReadThresholdTR( TR_t tr );
 
             /**
-             * Set the DC offset for a TRn channel.
+             * Set the DC offset for a TR channel.
              * @param tr TR index 
              * @param DC offset in the DAC LSB counts
              * @see ReadOffsetTR( TR_t tr )
@@ -833,7 +855,7 @@ namespace vmepp
             void WriteOffsetTR( TR_t tr, uint16_t offset );
 
             /**
-             * Get the DC offset for a TRn channel.
+             * Get the DC offset for a TR channel.
              * @param tr TR index 
              * @return DC offset in the DAC LSB counts
              * @see WriteOffsetTR( TR_t tr, uint16_t offset )
@@ -843,25 +865,113 @@ namespace vmepp
             void WriteVetoDelay( uint16_t value );
             uint16_t ReadVetoDelay();
 
+            /**
+             * Set the TRn trigger polarity.
+             * @param pol trigger polarity
+             * @see ReadTRPolarity()
+             * @see TriggerPolarity_t
+             */
             void WriteTRPolarity( TriggerPolarity_t pol );
+
+            /**
+             * Set the TRn trigger polarity.
+             * @return trigger polarity
+             * @see WriteTRPolarity( TriggerPolarity_t pol )
+             * @see TriggerPolarity_t
+             */
             TriggerPolarity_t ReadTRPolarity();
 
+            /**
+             * Enable/disable the readout of a TRn: when enabled, the signal TRn is digitized
+             * and it is present in the data readout.
+             * @param enable enable status (true = enable, false = disable)
+             * @see ReadTRDigitize()
+             */
             void WriteTRDigitize( bool enable = true );
+
+            /**
+             * Get the readout status of a TRn: when enabled, the signal TRn is digitized
+             * and it is present in the data readout.
+             * @return enable status (true = enabled, false = disabled)
+             * @see WriteTRDigitize( bool enable )
+             */
             bool ReadTRDigitize();
 
+            /**
+             * Enable/disable the TRn trigger. If enabled, the TRn signal is used as fast
+             * trigger.
+             * @param enable enable status (true = enable, false = disable)
+             * @see ReadTREnable()
+             */
             void WriteTREnable( bool enable = true );
+
+            /**
+             * Get the trigger status of a TRn. If enabled, the TRn signal is used as fast
+             * trigger.
+             * @return enable status (true = enabled, false = disabled)
+             * @see WriteTREnable( bool enable )
+             */
             bool ReadTREnable();
 
+            /**
+             * Enable/disable the signal on the TRG-IN to gate/veto the acquisition
+             * @param enable enable status (true = enable, false = disable)
+             * @see ReadTRGINEnable()
+             * @see WriteTRGINSignal( TriggerIn_t trigger )
+             * @see ReadTRGINSignal()
+             */
             void WriteTRGINEnable( bool enable = true );
+
+            /**
+             * Check if the signal on the TRG-IN is enabled to gate/veto the acquisition
+             * @return enable status (true = enabled, false = disabled)
+             * @see WriteTRGINEnable( bool enable )
+             * @see WriteTRGINSignal( TriggerIn_t trigger )
+             * @see ReadTRGINSignal()
+             */
             bool ReadTRGINEnable();
 
-            void WriteTRGINSignal( TriggerIn_t trigger );
+            /**
+             * Choose the purpose of the signal on the TRG-IN :
+             * - Veto the acquisition
+             * - Gain the acquisition
+             * @param signal signal intention 
+             * @see WriteTRGINEnable( bool enable = true )
+             * @see ReadTRGINEnable()
+             * @see ReadTRGINSignal()
+             * @see TriggerIn_t
+             */
+            void WriteTRGINSignal( TriggerIn_t signal );
+
+            /**
+             * Get the purpose of the signal on the TRG-IN :
+             * - Veto the acquisition
+             * - Gain the acquisition
+             * @return signal intention 
+             * @see WriteTRGINEnable( bool enable = true )
+             * @see ReadTRGINEnable()
+             * @see WriteTRGINSignal( TriggerIn_t signal )
+             * @see TriggerIn_t
+             */
             TriggerIn_t ReadTRGINSignal();
 
             void WriteTRGOUTSignal( TriggerOut_t trigger );
             TriggerOut_t ReadTRGOUTSignal();
 
+            /**
+             * Choose which signal can contribute to the gloabal trigger generation.
+             * @param trigger trigger signal
+             * @see ReadGlobalTrigger()
+             * @see GlobalTrigger_t
+             */
             void WriteGlobalTrigger( GlobalTrigger_t trigger );
+
+            /**
+             * Get information about the gloabal trigger generation.
+             * @return trigger signal
+             * @see WriteGlobalTrigger( GlobalTrigger_t trigger )
+             * @see GlobalTrigger_t
+             */
             GlobalTrigger_t ReadGlobalTrigger();
 
         public :
@@ -870,7 +980,21 @@ namespace vmepp
 
             uint32_t GetBufferAddress() const override { return V1742B_OUTPUT_BUFFER_START; };
 
+            /**
+             * Enable/disable selected group to participate in the event readout.
+             * **WARNING:** This function **MUST NOT** be called while the acquisition is running
+             * @param g group index
+             * @param enable enable status (true = enable, false = disable)
+             * @see WriteGroupEnable( bool enable )
+             */
             void WriteGroupEnable( Group_t g, bool enable = true );
+
+            /**
+             * Enable/disable all the groups to participate in the event readout.
+             * **WARNING:** This function **MUST NOT** be called while the acquisition is running
+             * @param enable enable status (true = enable, false = disable)
+             * @see WriteGroupEnable( Group_t g, bool enable )
+             */
             void WriteGroupEnable( bool enable );
 
             /**
@@ -904,26 +1028,129 @@ namespace vmepp
              */
             uint16_t ReadChannelOffset( uint8_t ch );
 
+            /**
+             * Set the record length, which is the number of samples of the digitized waveform
+             * in the acquisition window.
+             * _NOTE:_ modifying the record length does NOT reduce the dead time.
+             * **WARNING:** this function **MUST NOT** be called thile the acquisition is running !
+             * @param length record length
+             * @see ReadRecordLength()
+             * @see RecordLength_t
+             */
             void WriteRecordLength( RecordLength_t length );
+
+            /**
+             * Get the record length, which is the number of samples of the digitized waveform
+             * in the acquisition window.
+             * _NOTE:_ modifying the record length does NOT reduce the dead time.
+             * @return record length
+             * @see WriteRecordLength( RecordLength_t length )
+             * @see RecordLength_t
+             */
             RecordLength_t ReadRecordLength();
 
+            /**
+             * Set the initial value for the test mode.
+             * @param value initial value
+             * @see ReadInitTestValue( Group_t group )
+             * @see WriteTestModeEnable( bool enable )
+             * @see ReadTestModeEnable()
+             */
             void WriteInitTestValue( uint16_t value );
+
+            /**
+             * Get the initial value for the test mode.
+             * @param group group index 
+             * @return initial value
+             * @see WriteInitTestValue( uint16_t value )
+             * @see WriteTestModeEnable( bool enable )
+             * @see ReadTestModeEnable()
+             */
             uint16_t ReadInitTestValue( Group_t group );
 
+            /**
+             * Set the sampling frequency of each DRS4 chip.
+             * **WARNING:** this function **MUST NOT** be called while the acquisition is running.
+             * @param rate sampling rate
+             * @see ReadSamplingRate( Group_t group )
+             * @see SamplingRate_t
+             */
             void WriteSamplingRate( SamplingRate_t rate );
+
+            /**
+             * Set the sampling frequency of a DRS4 chip.
+             * @param group group index
+             * @return rate sampling rate
+             * @see WriteSamplingRate( SamplingRate_t rate )
+             * @see SamplingRate_t
+             */
             SamplingRate_t ReadSamplingRate( Group_t group );
 
+            /**
+             * Force a software trigger generation which is propagated to all the enabled
+             * channels of the board.
+             * @see WriteGlobalTrigger( GlobalTrigger_t trigger )
+             * @see ReadGlobalTrigger()
+             */
             void WriteSWTrigger();
 
+            /**
+             * Get the curretn available event size in 32-bit words. The value is updated
+             * after a complete readout of each event.
+             * @return current event size
+             */
             uint32_t ReadEventSize();
 
+            /**
+             * Write a 32-bit word to the board for test purposes.
+             * @param value value to write
+             * @see ReadScratch()
+             */
             void WriteScratch( uint32_t value );
+
+            /**
+             * Read a 32-bit word (written via the WriteScratch( uint32_t value ) function)
+             * from the board.
+             * @return written word
+             * @see WriteScratch( uint32_t value )
+             */
             uint32_t ReadScratch();
 
             void WriteMaxEventBLT( uint16_t n );
             uint16_t ReadMaxEventBLT();
 
+            /**
+             * Choose the acquisition mode :
+             * - Transparent: the input pulse is both sampled by the DRS4 capacitors at high
+             *   frequency, and made available at the output for the ADC digital sampling at a
+             *   smaller rate, about 30 MHz. Transparetn mode is the standard operating mode
+             *   of the DRS4 chip, which continuously samples the input.
+             * - Output: the input is no longer sampled and the capacitors hold the acquired
+             *   samples and send them one at a time to the ADC at a frequency controlled by
+             *   the FPGA (readout frequency). The Output mode starts when a trigger
+             *   condition is met. Samples in the Output mode are those available in the readout
+             *   for the user and they are correctly shaped.
+             * @param mode acquisition mode
+             * @see ReadAcqMode()
+             * @see AcqMode_t
+             */
             void WriteAcqMode( AcqMode_t mode );
+
+            /**
+             * Get the acquisition mode :
+             * - Transparent: the input pulse is both sampled by the DRS4 capacitors at high
+             *   frequency, and made available at the output for the ADC digital sampling at a
+             *   smaller rate, about 30 MHz. Transparetn mode is the standard operating mode
+             *   of the DRS4 chip, which continuously samples the input.
+             * - Output: the input is no longer sampled and the capacitors hold the acquired
+             *   samples and send them one at a time to the ADC at a frequency controlled by
+             *   the FPGA (readout frequency). The Output mode starts when a trigger
+             *   condition is met. Samples in the Output mode are those available in the readout
+             *   for the user and they are correctly shaped.
+             * @return acquisition mode
+             * @see WriteAcqMode( AcqMode_t mode )
+             * @see AcqMode_t
+             */
             AcqMode_t ReadAcqMode();
 
             void WriteStartSource( StartSource_t source );
