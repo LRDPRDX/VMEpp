@@ -746,9 +746,10 @@ namespace vmepp
              * of group 2 and group 3 simultaneously.
              * @param ch channel index
              * @param enable enable flag (true = enable, false = disable)
-             * @see ReadEnableTrigger( uint8_t ch )
              * @see WriteEnableTrigger( Group_t group, uint8_t mask )
+             * @see WriteEnableTrigger( uint8_t mask )
              * @see ReadEnableTrigger( Group_t group )
+             * @see ReadEnableTrigger( uint8_t ch )
              */
             void WriteEnableTrigger( uint8_t ch, bool enable );
 
@@ -757,8 +758,9 @@ namespace vmepp
              * triggers when the input pulse crosses the threshold (see WriteChannelThreshold).
              * @param ch channel index
              * @return enable flag (true = enabled, false = disabled)
-             * @see WriteEnableTrigger( Group_t group, uint8_t mask )
              * @see WriteEnableTrigger( uint8_t ch, bool enable )
+             * @see WriteEnableTrigger( Group_t group, uint8_t mask )
+             * @see WriteEnableTrigger( uint8_t mask )
              * @see ReadEnableTrigger( Group_t group )
              */
             bool ReadEnableTrigger( uint8_t ch );
@@ -771,19 +773,71 @@ namespace vmepp
              * simultaneously, while triggers on group 2 and group 3 enable the acquisition of all channels
              * of group 2 and group 3 simultaneously.
              * @param group channel group 
-             * @param mask enable mask (i-th bit corresponds to the enable flag of the i-th channel of the group)
-             * @see ReadEnableTrigger( uint8_t ch )
+             * @param mask enable mask (i-th bit corresponds to the enable flag of the i-th channel of the group specified with the `group` argument)
              * @see WriteEnableTrigger( uint8_t ch, bool enable );
+             * @see ReadEnableTrigger( uint8_t ch )
+             * @see WriteEnableTrigger( uint8_t mask )
              * @see ReadEnableTrigger( Group_t group )
              */
             void WriteEnableTrigger( Group_t group, uint8_t mask );
+
+            /**
+             * Enable channels to participate in the trigger generation logic OR. The channel enabled with
+             * this member function triggers when the input pulse crosses the threshold
+             * (see WriteChannelThreshold).
+             * Triggers of group 0 and group 1 enable the acquisition of all channels of group 0 and group 1
+             * simultaneously, while triggers on group 2 and group 3 enable the acquisition of all channels
+             * of group 2 and group 3 simultaneously.
+             * @param mask enable mask (i-th bit corresponds to the enable flag of the i-th channel of each group)
+             * @see WriteEnableTrigger( uint8_t ch, bool enable );
+             * @see ReadEnableTrigger( uint8_t ch )
+             * @see WriteEnableTrigger( Group_t group, uint8_t mask );
+             * @see ReadEnableTrigger( Group_t group )
+             */
             void WriteEnableTrigger( uint8_t mask );
+
+            /**
+             * Get the enable mask of a group.
+             * triggers when the input pulse crosses the threshold (see WriteChannelThreshold).
+             * @param group group index
+             * @return enable mask (i-th bit corresponds to the enable flag of the i-th channel of the group specified with the `group` argument)
+             * @see ReadEnableTrigger( uint8_t ch )
+             * @see WriteEnableTrigger( uint8_t ch, bool enable )
+             * @see WriteEnableTrigger( Group_t group, uint8_t mask )
+             * @see WriteEnableTrigger( uint8_t mask )
+             */
             uint8_t ReadEnableTrigger( Group_t group );
 
+            /**
+             * Set the trigger treshold of the TRn channel.
+             * @param tr TR index
+             * @param threshold threshold value in the DAC LSB counts
+             * @see ReadThresholdTR( TR_t tr )
+             */
             void WriteThresholdTR( TR_t tr, uint16_t threshold );
+
+            /**
+             * Get the trigger treshold of the TRn channel.
+             * @param tr TR index
+             * @return threshold threshold value in the DAC LSB counts
+             * @see WriteThresholdTR( TR_t tr, uint16_t threshold )
+             */
             uint16_t ReadThresholdTR( TR_t tr );
 
+            /**
+             * Set the DC offset for a TRn channel.
+             * @param tr TR index 
+             * @param DC offset in the DAC LSB counts
+             * @see ReadOffsetTR( TR_t tr )
+             */
             void WriteOffsetTR( TR_t tr, uint16_t offset );
+
+            /**
+             * Get the DC offset for a TRn channel.
+             * @param tr TR index 
+             * @return DC offset in the DAC LSB counts
+             * @see WriteOffsetTR( TR_t tr, uint16_t offset )
+             */
             uint16_t ReadOffsetTR( TR_t tr );
 
             void WriteVetoDelay( uint16_t value );

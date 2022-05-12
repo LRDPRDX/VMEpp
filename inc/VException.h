@@ -167,11 +167,5 @@ namespace vmepp
         stream.read( reinterpret_cast<char*>( ar.data() ),
                      ar.size() * sizeof( T ) );
     }
-
-    template<typename T>
-    std::ostream& operator<<( typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream, const T& e)
-    {
-        return stream << std::to_string( static_cast<typename std::underlying_type<T>::type>( e ) );
-    }
 }
 #endif//V_PLUS_EXCEPTION_H
