@@ -1153,7 +1153,20 @@ namespace vmepp
              */
             AcqMode_t ReadAcqMode();
 
+            /**
+             * Select Start/Stop acquisition source.
+             * @param source acquisition start/stop source.
+             * @see ReadStartSource()
+             * @see Source_t
+             */
             void WriteStartSource( StartSource_t source );
+
+            /**
+             * Get Start/Stop acquisition source.
+             * @param source acquisition start/stop source.
+             * @see ReadStartSource()
+             * @see Source_t
+             */
             StartSource_t ReadStartSource();
 
             void WriteStartStop( bool start );
@@ -1163,7 +1176,26 @@ namespace vmepp
 
         public :
             // Front Panel
+            /**
+             * Set the electrical of the front panel LEMO connectors:
+             * - TRG-IN
+             * - TRG-OUT
+             * - S-IN
+             * @param level logic family
+             * @see ReadLEMOLevel()
+             * @see Level_t
+             */
             void WriteLEMOLevel( Level_t level );
+
+            /**
+             * Get the electrical of the front panel LEMO connectors:
+             * - TRG-IN
+             * - TRG-OUT
+             * - S-IN
+             * @param level logic family
+             * @see WriteLEMOLevel()
+             * @see Level_t
+             */
             Level_t ReadLEMOLevel();
 
         public :
