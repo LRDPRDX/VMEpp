@@ -28,13 +28,13 @@ namespace vmepp
             }
             ~VSlaveAcquisitor() override = default;
 
-        public :
+        protected :
+            virtual size_t      HelperReadCycles();
             virtual uint32_t    GetBufferAddress() const = 0;
 
         public :
-            virtual size_t      HelperReadCycles();
             void                ReadBuffer( VBuffer& buffer );
-            
+
             void                SetReadCycles( uint32_t n ) { fReadCycles = (n ? (n <= gMaxNBLT ? n : gMaxNBLT) : 1); }
             size_t              GetReadCycles() { return fReadCycles; }
             void                SetNEventRequest( size_t n ) { fNEventRequest = ((n > 0 ) ? n : 1); }
