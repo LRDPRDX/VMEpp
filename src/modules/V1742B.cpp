@@ -3,6 +3,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <type_traits>
 
 
 namespace vmepp
@@ -30,7 +31,7 @@ namespace vmepp
     void V1742B::LoadCorrectionTable( const SamplingRate_t rate )
     {
         std::stringstream ss;
-        ss << fPathToCorrectionTable << "/" << rate << ".x742_corr";
+        ss << fPathToCorrectionTable << "/" << std::to_string( (uint8_t)rate ) << ".x742_corr";
 
         PrintMessage( Message_t::INFO, "Loading correction tables from " + ss.str() + " ..." );
         std::ifstream f( ss.str(), std::ios_base::in | std::ios_base::binary );
@@ -40,11 +41,6 @@ namespace vmepp
         {
             PrintMessage( Message_t::WARNING, "Loading correction tables failed" );
         }
-    }
-
-    const V1742B::CorrectionTable& V1742B::GetCorrectionTable()
-    {
-        return fCorrectionTable;
     }
 
     void V1742B::WriteSWReset()
@@ -61,6 +57,13 @@ namespace vmepp
     {
         PrintMessage( Message_t::INFO, "Initialization " + fName + "...\n" );
 
+        //Static info
+        for( uint8_t g = 0; g < fGroupNumber; ++g )
+        {
+            fAMCFirmware[g] = ReadAMCFirmwareRev( static_cast<Group_t>( g ) );
+        }
+        fROCFirmware = ReadROCFirmwareRev();
+        fBoardInfo = ReadBoardInfo();
 
         //WriteSWReset();
         WriteSWClear();
@@ -246,7 +249,7 @@ namespace vmepp
         return BoardInfo( code, mem, group );
     }
 
-    bool V1742B::ReadPLLFailure()
+    uint32_t V1742B::ReadBoardFailure()
     {
         return ReadRegister32( V1742B_BOARD_FAIL, V1742B_BOARD_FAIL_VAL_MSK );
     }
@@ -688,17 +691,16 @@ namespace vmepp
         return static_cast<StartSource_t>( ReadRegister32( V1742B_ACQ_CTRL, V1742B_ACQ_CTRL_SRC_MSK ) );
     }
 
-    void V1742B::WriteStartStop( bool start )
+    void V1742B::Start()
     {
         uint32_t value = ReadRegister32( V1742B_ACQ_CTRL );
-        if( start )
-        {
-            WriteRegister32( V1742B_ACQ_CTRL, value | (1U << V1742B_ACQ_CTRL_START_SHFT) );
-        }
-        else
-        {
-            WriteRegister32( V1742B_ACQ_CTRL, value & ~(1U << V1742B_ACQ_CTRL_START_SHFT) );
-        }
+        WriteRegister32( V1742B_ACQ_CTRL, value | (1U << V1742B_ACQ_CTRL_START_SHFT) );
+    }
+
+    void V1742B::Stop()
+    {
+        uint32_t value = ReadRegister32( V1742B_ACQ_CTRL );
+        WriteRegister32( V1742B_ACQ_CTRL, value & ~(1U << V1742B_ACQ_CTRL_START_SHFT) );
     }
 
     uint32_t V1742B::ReadAcqStatus()

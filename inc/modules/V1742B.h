@@ -386,30 +386,6 @@ namespace vmepp
                 G3      /*!< Group 3, channels 24:31 */
             };
 
-        protected :
-            CorrectionTable fCorrectionTable;
-            std::string     fPathToCorrectionTable;
-
-        public :
-            /**
-             * Set path to a directory containing the correction tables.
-             * This path may be either absolute or relative to the executable. 
-             */
-            void SetPathToCorrectionTable( const std::string& path ) { fPathToCorrectionTable = path; }
-
-            /**
-             * Read correction table from a file.
-             */
-            void LoadCorrectionTable( const SamplingRate_t rate );
-
-        public :
-            /**
-             * Get current correction table. I.e. the last one loaded
-             */
-            const CorrectionTable& GetCorrectionTable();
-            //**************************
-            //****** CORRECTION - ******
-            //**************************
 
         public :
             /**
@@ -442,7 +418,7 @@ namespace vmepp
             };
 
             /**
-             * Bits of the `status` register
+             * Bits of the `status` register.
              */
             enum StatusBit : uint32_t
             {
@@ -454,6 +430,14 @@ namespace vmepp
                 BusyDRS4        = 0x0100, /*!< The DRS4 chip is busy */
                 MezzRevision    = 0x0200, /*!< Mezzanine revision, (if set than revision is higher than or equal to 1) */
                 All             = 0x03C7, /*!< All the above as a mask */
+            };
+
+            /**
+             * Bits of the `error` register.
+             */
+            enum ErrorBit : uint32_t
+            {
+                LossLockPLL = 0x0010, /*!< PLL Lock Loss occurred */
             };
 
             /**
@@ -476,7 +460,7 @@ namespace vmepp
                 uint8_t CHANNEL_MEM_SIZE;   /*!< Number of samples per channel */
                 uint8_t GROUP_NUMBER;       /*!< Number of groups */
 
-                BoardInfo( uint8_t code, uint8_t memSize, uint8_t groupN ) :
+                BoardInfo( uint8_t code = 0, uint8_t memSize = 0, uint8_t groupN = 0 ) :
                     FAMILY_CODE( code ),
                     CHANNEL_MEM_SIZE( memSize ),
                     GROUP_NUMBER( groupN )
@@ -492,7 +476,7 @@ namespace vmepp
                 uint8_t     MAJOR;  /*!< AMC firmware major revision number */
                 uint16_t    DATE;   /*!< AMC firmware revision date (Y/M/DD) */
 
-                AMCFirmwareRev( uint8_t min, uint8_t maj, uint16_t date ) :
+                AMCFirmwareRev( uint8_t min = 0, uint8_t maj = 0, uint16_t date = 0 ) :
                     MINOR( min ),
                     MAJOR( maj ),
                     DATE( date )
@@ -508,7 +492,7 @@ namespace vmepp
                 uint8_t     MAJOR;  /*!< ROC firmware major revision number */
                 uint16_t    DATE;   /*!< ROC firmware revision date (Y/M/DD) */
 
-                ROCFirmwareRev( uint8_t min, uint8_t maj, uint16_t date ) :
+                ROCFirmwareRev( uint8_t min = 0, uint8_t maj = 0, uint16_t date = 0 ) :
                     MINOR( min ),
                     MAJOR( maj ),
                     DATE( date )
@@ -589,6 +573,13 @@ namespace vmepp
             };
 
         protected :
+            std::string                                 fPathToCorrectionTable;
+            CorrectionTable                             fCorrectionTable;
+            std::array<AMCFirmwareRev, fGroupNumber>    fAMCFirmware;
+            ROCFirmwareRev                              fROCFirmware;
+            BoardInfo                                   fBoardInfo;
+
+        protected :
             virtual void    Initialize() override;
             void            WriteSWReset();
             void            WriteSWClear();
@@ -605,13 +596,34 @@ namespace vmepp
 
         protected :
             void            WaitForSPI( Group_t group );
+            AMCFirmwareRev  ReadAMCFirmwareRev( Group_t group );
+            ROCFirmwareRev  ReadROCFirmwareRev();
+
+            /**
+             * Read the specific information of the board, such as digitizer family, the
+             * channel memory size and the channel density.
+             * @return board info
+             * @see BoardInfo
+             */
+            BoardInfo ReadBoardInfo();
+
+
 
         public :
+            /**
+             * A constructor.
+             * @param baseAddress VME base address of the board. MUST match the one set
+             * with the address rotary switches (see the manual to the board). 
+             * @param range occupied size of the VME address space by the board.
+             */
             V1742B( uint32_t baseAddress, uint32_t range = V1742B_LUB );
             ~V1742B() override = default;
 
         public :
-            // Misc
+            /** @name Misc
+             * Miscellaneous member functions
+             * @{
+             */
             virtual void    Reset() override;
 
             /**
@@ -650,9 +662,6 @@ namespace vmepp
              */
             int16_t         ReadChipTemperature( Group_t group );
 
-            void WriteLVDS( uint16_t mask );
-            uint16_t ReadLVDS();
-
             /**
              * Enable/disable the test mode. When the test mode is enabled, the input
              * samples are replaced by a sawtooth test signal.
@@ -668,47 +677,117 @@ namespace vmepp
              * @see WriteTestModeEnable( bool enable )
              */
             bool ReadTestModeEnable();
+             /** @} */
+
+        public :
+            /** @name Interrupts
+             * The part of the interface with the device as with an _INTERRUPTER_ functional module.
+             * @{
+             */
+
+            /** Set the number of events that causes an interrupt request.
+             * If interrupts are enabled, the module generates a request
+             * whenever it has stored in memory a number of events > `N`.
+             * @param N interrupt event number
+             * @see ReadIRQEvents()
+             * @see WriteIRQLevel( uint16_t level )
+             */
+            void            WriteIRQEvents( uint16_t N );
+
+            /** Get the number of events that causes an interrupt request.
+             * If interrupts are enabled, the module generates a request
+             * whenever it has stored in memory a number of events > `N`.
+             * @return interrupt event number
+             * @see WriteIRQEvents( uint16_t N )
+             * @see WriteIRQLevel( uint16_t level )
+             */
+            uint16_t        ReadIRQEvents();
 
             /**
-             * The DRS4 chip needs data corrections due to the unavoidable differences
-             * in the chip constuction process. This function applies the default corrections
-             * which are provided by CAEN in the memory flash of the board.
-             * @param event event to apply the corrections to
-             * @see SetPathToCorrectionTable( const std::string& path )
+             * Set the VME interrupt level.
+             * @param level interrupt level. _NOTE_: only the 3 least significant bits are used,
+             * i.e. meaningful values are:
+             * - 0 - VME interrupts are disabled
+             * - 1, ..., 7 - VME interrupts are enabled
+             * @see ReadIRQLevel()
+             * @see WriteIRQVector( uint16_t vector )
+             * @see ReadIRQVector()
              */
-            void ApplyCorrection( UEvent<V1742B>& event ) const;
-
-        public :
-            // Info & ROM
-            BoardInfo ReadBoardInfo();
-
-            bool ReadPLLFailure();
-
-            AMCFirmwareRev ReadAMCFirmwareRev( Group_t group );
-            ROCFirmwareRev ReadROCFirmwareRev();
-
-        public :
-            // Interrupts
-            void            WriteIRQEvents( uint16_t n );
-            uint16_t        ReadIRQEvents();
             void            WriteIRQLevel( uint16_t level ) override;
+
+            /**
+             * Get the VME interrupt level.
+             * @return interrupt level. _NOTE_: only the 3 least significant bits are used
+             * for the interrupt level,
+             * i.e. meaningful values are:
+             * - 0 - VME interrupts are disabled
+             * - 1, ..., 7 - VME interrupts are enabled
+             * @see WriteIRQLevel( uint16_t level )
+             * @see WriteIRQVector( uint16_t vector )
+             * @see ReadIRQVector()
+             */
             uint16_t        ReadIRQLevel() override;
-            void            WriteIRQVector( uint16_t level ) override;
+
+            /**
+             * Set the VME interrupt status/ID (vector) that the module places on the VME
+             * data bus during the interrupt acknowledge cycle.
+             * @param vector interrupt vector.
+             * @see WriteIRQLevel( uint16_t level )
+             * @see ReadIRQLevel()
+             * @see ReadIRQVector()
+             */
+            void            WriteIRQVector( uint16_t vector ) override;
+
+            /**
+             * Get the VME interrupt status/ID (vector) that the module places on the VME
+             * data bus during the interrupt acknowledge cycle.
+             * @return interrupt vector.
+             * @see WriteIRQLevel( uint16_t level )
+             * @see ReadIRQLevel()
+             * @see WriteIRQVector( uint16_t vector )
+             */
             uint16_t        ReadIRQVector() override;
+
+            /**
+             * _NOT YET IMPLEMENTED_
+             */
             void            ISR( uint16_t vector ) override;
+             /** @} */
 
         public :
             // Control & Status
             void            WriteReadoutCtrl( uint32_t value );
             uint32_t        ReadReadoutCtrl();
 
+            /**
+             * Read the status information common to all the channels of a group as a 32-bit word.
+             * See the V1742B::StatusBit enumeration to interpretate each bit of that word.
+             * @param group group index
+             * @return status word
+             * @see StatusBit
+             * @see ReadStatus( Group_t group, StatusBit bit )
+             */
             uint32_t        ReadStatus( Group_t group );
+
+            /**
+             * Read a given bit of the status information word common to all the channels of a
+             * given group.
+             * @param group group index
+             * @param bit bit of interest in the status word
+             * @return bit status (true = bit set, false = bit cleared) 
+             * @see StatusBit
+             * @see ReadStatus( Group_t group )
+             */
             bool            ReadStatus( Group_t, StatusBit bit );
 
             uint32_t        ReadBoardConfiguration();
 
         public :
-            // Trigger
+            /** @name Trigger
+             * Trigger management
+             * @{
+             */
+
             /**
              * Set the post trigger value to a group.
              * The post trigger corresponds to the delay between the trigger arrival
@@ -974,11 +1053,24 @@ namespace vmepp
              */
             GlobalTrigger_t ReadGlobalTrigger();
 
-        public :
-            // Acquisition
-            virtual size_t HelperReadCycles() override;
+            /**
+             * Force a software trigger generation which is propagated to all the enabled
+             * channels of the board.
+             * @see WriteGlobalTrigger( GlobalTrigger_t trigger )
+             * @see ReadGlobalTrigger()
+             */
+            void WriteSWTrigger();
+            /** @} */
 
+        protected :
+            virtual size_t HelperReadCycles() override;
             uint32_t GetBufferAddress() const override { return V1742B_OUTPUT_BUFFER_START; };
+
+        public :
+            /** @name Acquisition
+             * Acquisition management
+             * @{
+             */
 
             /**
              * Enable/disable selected group to participate in the event readout.
@@ -1086,13 +1178,6 @@ namespace vmepp
              */
             SamplingRate_t ReadSamplingRate( Group_t group );
 
-            /**
-             * Force a software trigger generation which is propagated to all the enabled
-             * channels of the board.
-             * @see WriteGlobalTrigger( GlobalTrigger_t trigger )
-             * @see ReadGlobalTrigger()
-             */
-            void WriteSWTrigger();
 
             /**
              * Get the curretn available event size in 32-bit words. The value is updated
@@ -1109,14 +1194,25 @@ namespace vmepp
             void WriteScratch( uint32_t value );
 
             /**
-             * Read a 32-bit word (written via the WriteScratch( uint32_t value ) function)
+             * Read a 32-bit word (written via the WriteScratch( uint32_t value ) member function)
              * from the board.
              * @return written word
              * @see WriteScratch( uint32_t value )
              */
             uint32_t ReadScratch();
 
+            /**
+             * Set the maximum number of complete events which has to be transferred
+             * for each block transfer (via VME BLT/CBLT cycles or Optical Link).
+             * @param n number of events per BLT (1023 max)
+             */
             void WriteMaxEventBLT( uint16_t n );
+
+            /**
+             * Get the maximum number of complete events which has to be transferred
+             * for each block transfer (via VME BLT/CBLT cycles or Optical Link).
+             * @return number of events per BLT (1023 max)
+             */
             uint16_t ReadMaxEventBLT();
 
             /**
@@ -1157,7 +1253,7 @@ namespace vmepp
              * Select Start/Stop acquisition source.
              * @param source acquisition start/stop source.
              * @see ReadStartSource()
-             * @see Source_t
+             * @see StartSource_t
              */
             void WriteStartSource( StartSource_t source );
 
@@ -1169,15 +1265,72 @@ namespace vmepp
              */
             StartSource_t ReadStartSource();
 
-            void WriteStartStop( bool start );
+            /**
+             * Depending on the mode selected with the
+             * WriteStartSource( StartSource_t source ) member function either Start or Arm the
+             * acquisition :
+             * - StartSource_t::SW - starts the acquisition
+             * - StartSource_t::S_IN - arms the acquisition
+             * - StartSource_t::FirstTrg - arms the acquisition
+             * - StartSource_t::LVDS - arms the acquisition
+             * @see Stop()
+             * @see WriteStartSource( StartSource_t source )
+             * @see ReadStartSource()
+             * @see StartSource_t
+             */
+            void Start();
 
+            /**
+             * Depending on the mode selected with the
+             * WriteStartSource( StartSource_t source ) member function either Stop or Disarm the
+             * acquisition :
+             * - StartSource_t::SW - stops the acquisition
+             * - StartSource_t::S_IN - disarms the acquisition
+             * - StartSource_t::FirstTrg - disarms the acquisition
+             * - StartSource_t::LVDS - disarms the acquisition
+             * @see Start()
+             * @see WriteStartSource( StartSource_t source )
+             * @see ReadStartSource()
+             * @see StartSource_t
+             */
+            void Stop();
+
+            /**
+             * Read the acquisition status information as a 32-bit word. See the V1742B::AcqStatusBit
+             * enumeration to interpretate each bit of that word.
+             * @return acquisition status
+             * @see AcqStatusBit
+             * @see ReadAcqStatus( AcqStatusBit bit )
+             */
             uint32_t ReadAcqStatus();
+
+            /**
+             * Read a given bit of the acquisition status word.
+             * @return bit status (true = bit set, false = bit cleared)
+             * @see AcqStatusBit
+             * @see ReadAcqStatus()
+             */
             bool ReadAcqStatus( AcqStatusBit bit );
 
-        public :
-            // Front Panel
             /**
-             * Set the electrical of the front panel LEMO connectors:
+             * Monitor a set of board errors. In case of a failure,
+             * the UEvent<V1742B>::GetBoardFail() function returns true. This function
+             * allows to get the exact kind of error occurred. See the V1742B::ErrorBit
+             * to interpretate each bit of the returned 32-bit word.
+             * @return error word
+             * @see ErrorBit
+             */
+            uint32_t ReadBoardFailure();
+            /** @} */
+
+        public :
+            /** @name Front Panel
+             * Interaction with the front panel connectors.
+             * @{
+             */
+
+            /**
+             * Set the electrical level of the front panel LEMO connectors:
              * - TRG-IN
              * - TRG-OUT
              * - S-IN
@@ -1188,7 +1341,7 @@ namespace vmepp
             void WriteLEMOLevel( Level_t level );
 
             /**
-             * Get the electrical of the front panel LEMO connectors:
+             * Get the electrical level of the front panel LEMO connectors:
              * - TRG-IN
              * - TRG-OUT
              * - S-IN
@@ -1198,9 +1351,57 @@ namespace vmepp
              */
             Level_t ReadLEMOLevel();
 
+            void WriteLVDS( uint16_t mask );
+            uint16_t ReadLVDS();
+            /** @} */
+
+        protected :
+            /**
+             * Read correction table from a file.
+             */
+            void LoadCorrectionTable( const SamplingRate_t rate );
+
+        public :
+            /** @name Data Correction
+             * Data correction
+             * @{
+             */
+
+            /**
+             * The DRS4 chip needs data corrections due to the unavoidable differences
+             * in the chip constuction process. This function applies the default corrections
+             * which are provided by CAEN in the memory flash of the board.
+             * @param event event to apply the corrections to
+             * @see SetPathToCorrectionTable( const std::string& path )
+             */
+            void ApplyCorrection( UEvent<V1742B>& event ) const;
+
+            /**
+             * Set path to a directory containing the correction tables.
+             * This path may be either absolute or relative to the executable. 
+             */
+            void SetPathToCorrectionTable( const std::string& path ) { fPathToCorrectionTable = path; }
+
+            /**
+             * Get current correction table. I.e. the last one loaded
+             */
+            const CorrectionTable& GetCorrectionTable() const { return fCorrectionTable; }
+            /** @} */
+
         public :
             // Config
+            /**
+             * Fill a given configuration instance with the current state of the board.
+             * @param config configuration to fill
+             * @see WriteConfig( const UConfig<V1742B>& config )
+             */
             void    ReadConfig( UConfig<V1742B>& config ) override;
+
+            /**
+             * Program the board with a given configuration instance.
+             * @param config configuration to write to the board 
+             * @see ReadConfig( UConfig<V1742B>& config )
+             */
             void    WriteConfig( const UConfig<V1742B>& config ) override;
     };
 
@@ -1220,7 +1421,7 @@ namespace vmepp
     class UEvent<V1742B> : public VEvent
     {
         private :
-            struct Helper12Bit 
+            struct Helper12Bit
             {
                 bool        overlap;
                 uint8_t     s1;
@@ -1228,7 +1429,7 @@ namespace vmepp
                 uint32_t    m1;
                 uint32_t    m2;
                 size_t      n;
-            
+
                 constexpr
                 Helper12Bit( bool overlap,
                              uint8_t s1, uint8_t s2,
@@ -1307,7 +1508,14 @@ namespace vmepp
         public :
             size_t GetEventSize() const     { return fHeader[0] & V1742B_HDR_EVENT_SIZE_MSK; }
             uint8_t GetBoardID() const      { return (fHeader[1] & V1742B_HDR_BOARD_ID_MSK) >> V1742B_HDR_BOARD_ID_SHFT; }
+
+            /**
+             * Read if an error has occurred during the data readout.
+             * @return error status (true = error, false = no error)
+             * @see V1742B::ReadBoardFailure()
+             */
             bool GetBoardFail() const       { return fHeader[1] & V1742B_HDR_BOARD_FAIL_MSK; }
+
             uint16_t GetLVDSPattern() const { return (fHeader[1] & V1742B_HDR_LVDS_MSK) >> V1742B_HDR_LVDS_SHFT; }
             uint8_t GetGroupMask() const    { return (fHeader[1] & V1742B_HDR_GROUP_MSK); }
             size_t GetEventCounter() const  { return (fHeader[2] & V1742B_HDR_EVENT_CNT_MSK); }
