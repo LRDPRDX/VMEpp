@@ -86,6 +86,7 @@ namespace vmepp
         for( uint8_t ch = 0; ch < GetChNumber(); ++ch )
         {
             WriteChannelThreshold( ch, 0 );
+            std::cout << (int)ch << "\n";
             WriteChannelOffset( ch, 0x7FFF );
         }
 
@@ -338,9 +339,9 @@ namespace vmepp
 
     void V1742B::WriteChannelThreshold( uint8_t ch, uint16_t threshold )
     {
-        ch /= fChNumber;
-        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
-        ch %= fGroupNumber;
+        ch %= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fChInGroup );
+        ch %= fChInGroup;
 
         uint32_t thr = (uint32_t)threshold & V1742B_CHANNEL_THR_VAL_MSK;
         uint32_t index = (ch << V1742B_CHANNEL_THR_IDX_SHFT) & V1742B_CHANNEL_THR_IDX_MSK;
@@ -350,9 +351,9 @@ namespace vmepp
 
     uint16_t V1742B::ReadChannelThreshold( uint8_t ch )
     {
-        ch /= fChNumber;
-        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
-        ch %= fGroupNumber;
+        ch %= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fChInGroup );
+        ch %= fChInGroup;
         uint32_t value = (uint32_t)ch & V1742B_CHANNEL_SEL_VAL_MSK;
 
         WriteRegister32( GroupAddress( V1742B_CHANNEL_SEL, group ), value );
@@ -362,9 +363,9 @@ namespace vmepp
 
     void V1742B::WriteEnableTrigger( uint8_t ch, bool enable )
     {
-        ch /= fChNumber;
-        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
-        ch %= fGroupNumber;
+        ch %= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fChInGroup );
+        ch %= fChInGroup;
 
         uint32_t triggerMask = ReadRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK, group ), V1742B_CHANNEL_TRG_MASK_MSK );
 
@@ -386,9 +387,9 @@ namespace vmepp
 
     bool V1742B::ReadEnableTrigger( uint8_t ch )
     {
-        ch /= fChNumber;
-        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
-        ch %= fGroupNumber;
+        ch %= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fChInGroup );
+        ch %= fChInGroup;
 
         uint32_t triggerMask = ReadRegister32( GroupAddress( V1742B_CHANNEL_TRG_MASK, group ), V1742B_CHANNEL_TRG_MASK_MSK );
 
@@ -534,9 +535,9 @@ namespace vmepp
 
     void V1742B::WriteChannelOffset( uint8_t ch, uint16_t offset )
     {
-        ch /= fChNumber;
-        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
-        ch %= fGroupNumber;
+        ch %= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fChInGroup );
+        ch %= fChInGroup;
         uint32_t offs = (uint32_t)offset & V1742B_CHANNEL_DC_OFST_VAL_MSK;
         uint32_t index = (ch << V1742B_CHANNEL_DC_OFST_IDX_SHFT) & V1742B_CHANNEL_DC_OFST_IDX_MSK;
 
@@ -546,9 +547,9 @@ namespace vmepp
 
     uint16_t V1742B::ReadChannelOffset( uint8_t ch )
     {
-        ch /= fChNumber;
-        Group_t group = static_cast<Group_t>( ch / fGroupNumber );
-        ch = ch % fGroupNumber;
+        ch %= fChNumber;
+        Group_t group = static_cast<Group_t>( ch / fChInGroup );
+        ch = ch % fChInGroup;
         uint32_t value = (uint32_t)ch & V1742B_CHANNEL_SEL_VAL_MSK;
 
         WriteRegister32( GroupAddress( V1742B_CHANNEL_SEL, group ), value );

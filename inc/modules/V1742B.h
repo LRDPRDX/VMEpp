@@ -386,6 +386,8 @@ namespace vmepp
                 G3      /*!< Group 3, channels 24:31 */
             };
 
+            typedef EnumIterator<Group_t, Group_t::G0, Group_t::G3> GroupIterator;
+
 
         public :
             /**
