@@ -1,6 +1,7 @@
 #ifndef V_PLUS_EXCEPTION_H
 #define V_PLUS_EXCEPTION_H
 
+#include <type_traits>
 #include <iostream>
 #include <exception>
 #include <string>
@@ -167,5 +168,37 @@ namespace vmepp
         stream.read( reinterpret_cast<char*>( ar.data() ),
                      ar.size() * sizeof( T ) );
     }
+
+    template <typename ENUM_TYPE, ENUM_TYPE First, ENUM_TYPE Last>
+    class EnumIterator
+    {
+        typedef typename std::underlying_type<ENUM_TYPE>::type val_t;
+        int val;
+
+        public:
+            EnumIterator( const ENUM_TYPE& v ) :
+                val( static_cast<val_t>( v ) )
+            { }
+            EnumIterator() :
+                val( static_cast<val_t>( First ) )
+            { }
+
+        EnumIterator operator++()
+        {
+            ++val;
+            return *this;
+        }
+
+        ENUM_TYPE operator*() { return static_cast<ENUM_TYPE>( val ); }
+
+        EnumIterator begin() { return *this; }
+        EnumIterator end()
+        {
+            static const EnumIterator endIter = ++EnumIterator( Last );
+            return endIter;
+        }
+
+        bool operator!=( const EnumIterator& i ) { return val != i.val; }
+    };
 }
 #endif//V_PLUS_EXCEPTION_H
