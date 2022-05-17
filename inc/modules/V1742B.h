@@ -296,13 +296,12 @@ namespace vmepp
                 M750,                           /*!< 750 MS/sec, sample = 1.33 ns */
             };
 
-
             //**************************
             //****** CORRECTION + ******
             //**************************
         public :
             /**
-             * Channel specific data correction
+             * Channel-specific data correction
              */
             struct ChannelCorrection
             {
@@ -311,15 +310,15 @@ namespace vmepp
 
                 friend std::ostream& operator<<( std::ostream& lhs, const ChannelCorrection& rhs )
                 {
-                    WriteStdArrayToStream( rhs.cell, lhs );
-                    WriteStdArrayToStream( rhs.sample, lhs );
+                    WriteStdArrayToBinaryStream( rhs.cell, lhs );
+                    WriteStdArrayToBinaryStream( rhs.sample, lhs );
                     return lhs;
                 }
 
                 friend std::istream& operator>>( std::istream& lhs, ChannelCorrection& rhs )
                 {
-                    ReadStdArrayFromStream( rhs.cell, lhs );
-                    ReadStdArrayFromStream( rhs.sample, lhs );
+                    ReadStdArrayFromBinaryStream( rhs.cell, lhs );
+                    ReadStdArrayFromBinaryStream( rhs.sample, lhs );
                     return lhs;
                 }
             };
@@ -337,8 +336,7 @@ namespace vmepp
                 {
                     for( auto& c : rhs.channels ) { lhs << c; }
                     lhs << rhs.trN;
-                    WriteStdArrayToStream( rhs.time, lhs );
-
+                    WriteStdArrayToBinaryStream( rhs.time, lhs );
                     return lhs;
                 }
 
@@ -346,8 +344,7 @@ namespace vmepp
                 {
                     for( auto& c : rhs.channels ) { lhs >> c; }
                     lhs >> rhs.trN;
-                    ReadStdArrayFromStream( rhs.time, lhs );
-
+                    ReadStdArrayFromBinaryStream( rhs.time, lhs );
                     return lhs;
                 }
             };
@@ -360,6 +357,7 @@ namespace vmepp
                 SamplingRate_t                                  freq;   /*< Sampling frequency */
                 std::array<GroupCorrection, fGroupNumber>       table;  /*< Correction table */
 
+                
                 friend std::ostream& operator<<( std::ostream& lhs, const CorrectionTable& rhs )
                 {
                     lhs.write( reinterpret_cast<char const*>( &(rhs.freq) ), sizeof( rhs.freq ) );
