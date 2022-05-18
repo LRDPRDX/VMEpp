@@ -296,6 +296,19 @@ namespace vmepp
                 M750,                           /*!< 750 MS/sec, sample = 1.33 ns */
             };
 
+            friend std::ostream& operator<<( std::ostream& lhs, const SamplingRate_t rhs )
+            {
+                std::string s;
+                switch( rhs )
+                {
+                    case( SamplingRate_t::M5000 ) : s = "5GHz"; break;
+                    case( SamplingRate_t::M2500 ) : s = "2_5GHz"; break;
+                    case( SamplingRate_t::M1000 ) : s = "1GHz"; break;
+                    case( SamplingRate_t::M750 )  : s = "750MHz"; break;
+                }
+                return lhs << s;
+            }
+
             //**************************
             //****** CORRECTION + ******
             //**************************
@@ -324,7 +337,7 @@ namespace vmepp
             };
 
             /**
-             * Group specific data correction
+             * Group-specific data correction
              */
             struct GroupCorrection
             {
@@ -350,22 +363,22 @@ namespace vmepp
             };
 
             /**
-             * Correction table
+             * Frequency-specific correction
              */
-            struct CorrectionTable
+            struct FreqCorrection
             {
                 SamplingRate_t                                  freq;   /*< Sampling frequency */
                 std::array<GroupCorrection, fGroupNumber>       table;  /*< Correction table */
 
-                
-                friend std::ostream& operator<<( std::ostream& lhs, const CorrectionTable& rhs )
+
+                friend std::ostream& operator<<( std::ostream& lhs, const FreqCorrection& rhs )
                 {
                     lhs.write( reinterpret_cast<char const*>( &(rhs.freq) ), sizeof( rhs.freq ) );
                     for( auto& g : rhs.table ) { lhs << g; }
                     return lhs;
                 }
 
-                friend std::istream& operator>>( std::istream& lhs, CorrectionTable& rhs )
+                friend std::istream& operator>>( std::istream& lhs, FreqCorrection& rhs )
                 {
                     lhs.read( reinterpret_cast<char*>( &(rhs.freq) ), sizeof( rhs.freq ) );
                     for( auto& g : rhs.table ) { lhs >> g; }
@@ -574,7 +587,8 @@ namespace vmepp
 
         protected :
             std::string                                 fPathToCorrectionTable;
-            CorrectionTable                             fCorrectionTable;
+            FreqCorrection                              fCorrectionTable;
+
             std::array<AMCFirmwareRev, fGroupNumber>    fAMCFirmware;
             ROCFirmwareRev                              fROCFirmware;
             BoardInfo                                   fBoardInfo;
@@ -1385,7 +1399,7 @@ namespace vmepp
             /**
              * Get current correction table. I.e. the last one loaded
              */
-            const CorrectionTable& GetCorrectionTable() const { return fCorrectionTable; }
+            const FreqCorrection& GetCorrectionTable() const { return fCorrectionTable; }
             /** @} */
 
         public :

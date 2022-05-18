@@ -31,7 +31,7 @@ namespace vmepp
     void V1742B::LoadCorrectionTable( const SamplingRate_t rate )
     {
         std::stringstream ss;
-        ss << fPathToCorrectionTable << "/" << std::to_string( (uint8_t)rate ) << ".x742_corr";
+        ss << fPathToCorrectionTable << "/" << rate << ".x742_corr";
 
         PrintMessage( Message_t::INFO, "Loading correction tables from " + ss.str() + " ..." );
         std::ifstream f( ss.str(), std::ios_base::in | std::ios_base::binary );
