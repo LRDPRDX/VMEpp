@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <array>
 #include <string>
+#include <iostream>
 
 
 namespace vmepp
