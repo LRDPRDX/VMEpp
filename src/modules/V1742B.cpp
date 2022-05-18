@@ -28,18 +28,25 @@ namespace vmepp
         while( ReadStatus( group, StatusBit::BusySPI ) ) { }
     }
 
-    void V1742B::LoadCorrectionTable( const SamplingRate_t rate )
+    void V1742B::LoadCorrectionTable()
     {
-        std::stringstream ss;
-        ss << fPathToCorrectionTable << "/" << rate << ".x742_corr";
+        PrintMessage( Message_t::INFO, "Loading correction tables from " + fPathToCorrectionTable + " ..." );
+        std::ifstream f( fPathToCorrectionTable, std::ios_base::in | std::ios_base::binary );
 
-        PrintMessage( Message_t::INFO, "Loading correction tables from " + ss.str() + " ..." );
-        std::ifstream f( ss.str(), std::ios_base::in | std::ios_base::binary );
-        f >> fCorrectionTable;
-
-        if( not f.good() )
+        while( f.good() )
         {
-            PrintMessage( Message_t::WARNING, "Loading correction tables failed" );
+            FreqCorrection fCorr;
+            f >> fCorr;
+            fCorrectionTable[fCorr.freq] = fCorr;
+        }
+        for( auto rate : RateIterator() )
+        {
+            if( fCorrectionTable.find( rate ) == fCorrectionTable.end() )
+            {
+                std::stringstream ss;
+                ss << rate;
+                PrintMessage( Message_t::WARNING, "Correction table for the rate " + ss.str() + " has NOT been loaded." );
+            }
         }
     }
 
@@ -192,9 +199,11 @@ namespace vmepp
         {
             if( event.GetGroupMask() & (1U << ng) )
             {
-                if( event.fData[ng].GetSamplingRate() != fCorrectionTable.freq )
+                SamplingRate_t rate = event.fData[ng].GetSamplingRate();
+                const auto tbIt = fCorrectionTable.find( rate );
+                if( tbIt == fCorrectionTable.end() )
                 {
-                    PrintMessage( Message_t::WARNING, "Correction process for group #" + std::to_string(ng) + " stopped: " + "sampling frequencies don't match" );
+                    PrintMessage( Message_t::WARNING, "Correction process for the group #" + std::to_string(ng) + " stopped: " + "sampling frequencies don't match" );
                     continue;
                 }
                 auto start = event.fData[ng].GetStartIndex();
@@ -202,16 +211,16 @@ namespace vmepp
                 {
                     for( size_t i = 0; i < fNSamples; ++i )
                     {
-                        event.fData[ng].fData[ch][i] -= fCorrectionTable.table[ng].channels[ch].cell[(i+start) % fNSamples];
-                        event.fData[ng].fData[ch][i] -= fCorrectionTable.table[ng].channels[ch].sample[i];
+                        event.fData[ng].fData[ch][i] -= tbIt->second.table[ng].channels[ch].cell[(i+start) % fNSamples];
+                        event.fData[ng].fData[ch][i] -= tbIt->second.table[ng].channels[ch].sample[i];
                     }
                 }
                 if( event.fData[ng].GetTRPresent() )
                 {
                     for( size_t i = 0; i < fNSamples; ++i )
                     {
-                        event.fData[ng].fTR[i] -= fCorrectionTable.table[ng].trN.cell[(i + start) % fNSamples];
-                        event.fData[ng].fTR[i] -= fCorrectionTable.table[ng].trN.sample[i];
+                        event.fData[ng].fTR[i] -= tbIt->second.table[ng].trN.cell[(i + start) % fNSamples];
+                        event.fData[ng].fTR[i] -= tbIt->second.table[ng].trN.sample[i];
                     }
                 }
             }
@@ -580,7 +589,6 @@ namespace vmepp
     void V1742B::WriteSamplingRate( SamplingRate_t rate )
     {
         WriteRegister32( V1742B_DRS4_SAMP_FREQ_WRITE, static_cast<uint32_t>(rate), V1742B_DRS4_SAMP_FREQ_VAL_MSK );
-        LoadCorrectionTable( rate );
     }
 
     V1742B::SamplingRate_t V1742B::ReadSamplingRate( Group_t group )

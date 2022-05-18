@@ -244,6 +244,7 @@
 
 #include <vector>
 #include <array>
+#include <map>
 
 
 namespace vmepp
@@ -295,6 +296,8 @@ namespace vmepp
                 M1000 = CAEN_DGTZ_DRS4_1GHz,    /*!< 1   GS/sec, sample = 1 ns */
                 M750,                           /*!< 750 MS/sec, sample = 1.33 ns */
             };
+
+            typedef EnumIterator<SamplingRate_t, SamplingRate_t::M5000, SamplingRate_t::M750> RateIterator;
 
             friend std::ostream& operator<<( std::ostream& lhs, const SamplingRate_t rhs )
             {
@@ -387,11 +390,16 @@ namespace vmepp
             };
 
             /**
+             * Type synonym for the digitizer's correction tables
+             */
+            typedef std::map<SamplingRate_t, FreqCorrection> CorrectionTable;
+
+            /**
              * Channel group, DRS4 chip index
              */
             enum class Group_t : uint8_t
             {
-                G0 = 0, /*!< Group 0, channels 0:7 */
+                G0,     /*!< Group 0, channels 0:7 */
                 G1,     /*!< Group 1, channels 8:15 */
                 G2,     /*!< Group 2, channels 16:23 */
                 G3      /*!< Group 3, channels 24:31 */
@@ -587,7 +595,7 @@ namespace vmepp
 
         protected :
             std::string                                 fPathToCorrectionTable;
-            FreqCorrection                              fCorrectionTable;
+            CorrectionTable                             fCorrectionTable;
 
             std::array<AMCFirmwareRev, fGroupNumber>    fAMCFirmware;
             ROCFirmwareRev                              fROCFirmware;
@@ -1373,7 +1381,7 @@ namespace vmepp
             /**
              * Read correction table from a file.
              */
-            void LoadCorrectionTable( const SamplingRate_t rate );
+            void LoadCorrectionTable();
 
         public :
             /** @name Data Correction
@@ -1399,7 +1407,7 @@ namespace vmepp
             /**
              * Get current correction table. I.e. the last one loaded
              */
-            const FreqCorrection& GetCorrectionTable() const { return fCorrectionTable; }
+            CorrectionTable GetCorrectionTable() const { return fCorrectionTable; }
             /** @} */
 
         public :
