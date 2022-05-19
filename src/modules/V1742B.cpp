@@ -64,6 +64,8 @@ namespace vmepp
     {
         PrintMessage( Message_t::INFO, "Initialization " + fName + "...\n" );
 
+        //Correction tables
+        LoadCorrectionTable();
         //Static info
         for( uint8_t g = 0; g < fGroupNumber; ++g )
         {
@@ -93,7 +95,6 @@ namespace vmepp
         for( uint8_t ch = 0; ch < GetChNumber(); ++ch )
         {
             WriteChannelThreshold( ch, 0 );
-            std::cout << (int)ch << "\n";
             WriteChannelOffset( ch, 0x7FFF );
         }
 
@@ -746,6 +747,17 @@ namespace vmepp
 
     void V1742B::ReadConfig( UConfig<V1742B>& config )
     {
+        config.INTERRUPTS.IRQ_EVENTS = ReadIRQEvents();
+        config.INTERRUPTS.IRQ_LEVEL  = ReadIRQLevel();
+        config.INTERRUPTS.IRQ_VECTOR = ReadIRQVector();
+
+        config.TRIGGER.POST_TRIGGER = ReadPostTrigger( Group_t::G0 );
+        for( uint8_t ch = 0; ch < fChNumber; ++ch )
+        {
+            config.TRIGGER.CHANNELS[ch].THRESHOLD = ReadChannelThreshold( ch );
+            config.TRIGGER.CHANNELS[ch].OFFSET = ReadChannelOffset( ch );
+            config.TRIGGER.CHANNELS[ch].ENABLE_TRG = ReadEnableTrigger( ch );
+        }
     }
 
     void V1742B::WriteConfig( const UConfig<V1742B>& config )

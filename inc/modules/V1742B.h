@@ -1431,8 +1431,104 @@ namespace vmepp
     const std::string UConfigurable<V1742B>::fName;
 
     template <>
-    class UConfig<V1742B>
+    struct UConfig<V1742B>
     {
+        struct Interrupts
+        {
+            uint16_t    IRQ_EVENTS;
+            uint16_t    IRQ_LEVEL;
+            uint16_t    IRQ_VECTOR;
+
+            template <class TArchive>
+            void serialize( TArchive& ar )
+            {
+                ar( cereal::make_nvp( "irq_events", IRQ_EVENTS ),
+                    cereal::make_nvp( "irq_level", IRQ_LEVEL ),
+                    cereal::make_nvp( "irq_vector", IRQ_VECTOR ) );
+            }
+        };
+
+        struct Trigger
+        {
+            struct Channel
+            {
+                uint16_t    THRESHOLD;
+                uint16_t    OFFSET;
+                bool        ENABLE_TRG;
+
+                template <class TArchive>
+                void serialize( TArchive& ar )
+                {
+                    ar( cereal::make_nvp( "threshold", THRESHOLD ),
+                        cereal::make_nvp( "offset", OFFSET ),
+                        cereal::make_nvp( "enable_trigger", ENABLE_TRG ) );
+                }
+            };
+
+            uint16_t                                    POST_TRIGGER;
+            std::array<Channel, V1742B::GetChNumber()>  CHANNELS;
+            Channel                                     TR_0;
+            Channel                                     TR_1;
+            V1742B::GlobalTrigger_t                     GLB_TRG;
+            V1742B::TriggerPolarity_t                   TRG_POL;
+
+            template <class TArchive>
+            void serialize( TArchive& ar )
+            {
+                ar( cereal::make_nvp( "post_trigger", POST_TRIGGER ),
+                    cereal::make_nvp( "channels", CHANNELS ),
+                    cereal::make_nvp( "tr_0", TR_0 ),
+                    cereal::make_nvp( "tr_1", TR_1 ),
+                    cereal::make_nvp( "global_trigger", GLB_TRG ),
+                    cereal::make_nvp( "trigger_polarity", TRG_POL ) );
+            }
+        };
+
+        struct Acquisition
+        {
+            std::array<bool, V1742B::GetGroupNumber()>  GR_ENABLE;
+            V1742B::RecordLength_t                      REQ_LENGTH;
+            V1742B::SamplingRate_t                      SAMP_RATE;
+            uint16_t                                    MAX_EVENTS_BLT;
+            V1742B::AcqMode_t                           ACQ_MODE;
+            V1742B::StartSource_t                       START_SOURCE;
+
+            template <class TArchive>
+            void serialize( TArchive& ar )
+            {
+                ar( cereal::make_nvp( "group_readout", GR_ENABLE ),
+                    cereal::make_nvp( "record_length", REQ_LENGTH ),
+                    cereal::make_nvp( "sampling_rate", SAMP_RATE ),
+                    cereal::make_nvp( "max_events_per_blt", MAX_EVENTS_BLT ),
+                    cereal::make_nvp( "acquisition_mode", ACQ_MODE ),
+                    cereal::make_nvp( "start_source", START_SOURCE ) );
+            }
+        };
+
+        struct FrontPanel
+        {
+            V1742B::Level_t         LEMO_LVL;
+
+            template <class TArchive>
+            void serialize( TArchive& ar )
+            {
+                ar( cereal::make_nvp( "lemo_level", LEMO_LVL ) );
+            }
+        };
+
+        Trigger     TRIGGER;
+        Interrupts  INTERRUPTS;
+        Acquisition ACQUISITION;
+        FrontPanel  FRONT_PANEL;
+
+        template <class TArchive>
+        void serialize( TArchive& ar )
+        {
+            ar( cereal::make_nvp( "trigger", TRIGGER ),
+                cereal::make_nvp( "interrupts", INTERRUPTS ),
+                cereal::make_nvp( "acquisition", ACQUISITION ),
+                cereal::make_nvp( "front_panel", FRONT_PANEL ) );
+        }
     };
 
 

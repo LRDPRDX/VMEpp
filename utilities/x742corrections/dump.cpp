@@ -34,7 +34,7 @@ void DumpTable( int handle, std::string fileName )
         }
 
         V1742B::FreqCorrection table;
-        table.freq = static_cast<V1742B::SamplingRate_t>( freq );
+        table.freq = freq;
         for( uint8_t g = 0; g < V1742B::GetGroupNumber(); ++g )
         {
             uint8_t ch;
