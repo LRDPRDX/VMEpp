@@ -31,6 +31,7 @@ ROOT/
 
 # Correction tables
 *.x742_corr
+/utilities/x742corrections/dump
 
 # rsync script
 /backup.sh
