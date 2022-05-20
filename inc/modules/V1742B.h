@@ -969,7 +969,7 @@ namespace vmepp
             /**
              * Set the TRn trigger polarity.
              * @param pol trigger polarity
-             * @see ReadTRPolarity()
+             * @see ReadTriggerPolarity()
              * @see TriggerPolarity_t
              */
             void WriteTRPolarity( TriggerPolarity_t pol );
@@ -980,7 +980,7 @@ namespace vmepp
              * @see WriteTRPolarity( TriggerPolarity_t pol )
              * @see TriggerPolarity_t
              */
-            TriggerPolarity_t ReadTRPolarity();
+            TriggerPolarity_t ReadTriggerPolarity();
 
             /**
              * Enable/disable the readout of a TRn: when enabled, the signal TRn is digitized
@@ -1100,6 +1100,7 @@ namespace vmepp
              * @param g group index
              * @param enable enable status (true = enable, false = disable)
              * @see WriteGroupEnable( bool enable )
+             * @see ReadGroupEnable( Group_t group )
              */
             void WriteGroupEnable( Group_t g, bool enable = true );
 
@@ -1108,8 +1109,18 @@ namespace vmepp
              * **WARNING:** This function **MUST NOT** be called while the acquisition is running
              * @param enable enable status (true = enable, false = disable)
              * @see WriteGroupEnable( Group_t g, bool enable )
+             * @see ReadGroupEnable( Group_t group )
              */
             void WriteGroupEnable( bool enable );
+
+            /**
+             * Check if the selected group participates in the event readout.
+             * @param group group index
+             * @return readout status (true = enabled for readout, false = disabled)
+             * @see WriteGroupEnable( Group_t g, bool enable )
+             * @see WriteGroupEnable( bool enable )
+             */
+            bool ReadGroupEnable( Group_t group );
 
             /**
              * Adjust the baseline position (i.e. 0 Volt) of the input signal on the ADC scale of a channel.
@@ -1487,7 +1498,7 @@ namespace vmepp
         struct Acquisition
         {
             std::array<bool, V1742B::GetGroupNumber()>  GR_ENABLE;
-            V1742B::RecordLength_t                      REQ_LENGTH;
+            V1742B::RecordLength_t                      REC_LENGTH;
             V1742B::SamplingRate_t                      SAMP_RATE;
             uint16_t                                    MAX_EVENTS_BLT;
             V1742B::AcqMode_t                           ACQ_MODE;
@@ -1497,7 +1508,7 @@ namespace vmepp
             void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "group_readout", GR_ENABLE ),
-                    cereal::make_nvp( "record_length", REQ_LENGTH ),
+                    cereal::make_nvp( "record_length", REC_LENGTH ),
                     cereal::make_nvp( "sampling_rate", SAMP_RATE ),
                     cereal::make_nvp( "max_events_per_blt", MAX_EVENTS_BLT ),
                     cereal::make_nvp( "acquisition_mode", ACQ_MODE ),

@@ -479,7 +479,7 @@ namespace vmepp
         }
     }
 
-    V1742B::TriggerPolarity_t V1742B::ReadTRPolarity()
+    V1742B::TriggerPolarity_t V1742B::ReadTriggerPolarity()
     {
         bool value = ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_POL_SHFT) );
         return (value ? TriggerPolarity_t::FallingEdge : TriggerPolarity_t::RisingEdge);
@@ -541,6 +541,11 @@ namespace vmepp
     void V1742B::WriteGroupEnable( bool enable )
     {
         WriteRegister32( V1742B_GROUP_EN_MASK, enable ? 0xF : 0, V1742B_GROUP_EN_MASK_VAL_MSK );
+    }
+
+    bool V1742B::ReadGroupEnable( Group_t g )
+    {
+        return ReadRegister32( V1742B_GROUP_EN_MASK, (1U << static_cast<uint8_t>( g )) );
     }
 
     void V1742B::WriteChannelOffset( uint8_t ch, uint16_t offset )
@@ -747,10 +752,12 @@ namespace vmepp
 
     void V1742B::ReadConfig( UConfig<V1742B>& config )
     {
+        //Interrupts
         config.INTERRUPTS.IRQ_EVENTS = ReadIRQEvents();
         config.INTERRUPTS.IRQ_LEVEL  = ReadIRQLevel();
         config.INTERRUPTS.IRQ_VECTOR = ReadIRQVector();
 
+        //Trigger
         config.TRIGGER.POST_TRIGGER = ReadPostTrigger( Group_t::G0 );
         for( uint8_t ch = 0; ch < fChNumber; ++ch )
         {
@@ -758,10 +765,42 @@ namespace vmepp
             config.TRIGGER.CHANNELS[ch].OFFSET = ReadChannelOffset( ch );
             config.TRIGGER.CHANNELS[ch].ENABLE_TRG = ReadEnableTrigger( ch );
         }
+
+        config.TRIGGER.TR_0.THRESHOLD = ReadThresholdTR( TR_t::TR0 );
+        config.TRIGGER.TR_0.OFFSET = ReadOffsetTR( TR_t::TR0 );
+        config.TRIGGER.TR_0.ENABLE_TRG = ReadTREnable();
+
+        config.TRIGGER.TR_1.THRESHOLD = ReadThresholdTR( TR_t::TR1 );
+        config.TRIGGER.TR_1.OFFSET = ReadOffsetTR( TR_t::TR1 );
+        config.TRIGGER.TR_1.ENABLE_TRG = ReadTREnable();
+
+        config.TRIGGER.GLB_TRG = ReadGlobalTrigger();
+        config.TRIGGER.TRG_POL = ReadTriggerPolarity();
+
+        //Acquisition
+        for( size_t g = 0; g < fGroupNumber; ++g )
+        {
+            config.ACQUISITION.GR_ENABLE[g] = ReadGroupEnable( static_cast<Group_t>( g ) );
+        }
+        config.ACQUISITION.REC_LENGTH = ReadRecordLength();
+        config.ACQUISITION.SAMP_RATE = ReadSamplingRate( Group_t::G0 );
+        config.ACQUISITION.MAX_EVENTS_BLT = ReadMaxEventBLT();
+        config.ACQUISITION.ACQ_MODE = ReadAcqMode();
+        config.ACQUISITION.START_SOURCE = ReadStartSource();
+
+        //Front panel
+        config.FRONT_PANEL.LEMO_LVL = ReadLEMOLevel();
     }
 
     void V1742B::WriteConfig( const UConfig<V1742B>& config )
     {
+        //Interrupts
+        WriteIRQEvents( config.INTERRUPTS.IRQ_EVENTS );
+        WriteIRQLevel( config.INTERRUPTS.IRQ_LEVEL );
+        WriteIRQVector( config.INTERRUPTS.IRQ_VECTOR );
+
+        //Trigger
+         
     }
 
     //****************************
