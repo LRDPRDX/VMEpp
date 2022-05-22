@@ -36,6 +36,12 @@ namespace vmepp
     template<typename TModuleName>
     const std::string UConfigurable<TModuleName>::fName = "Unknown";
 
+    /**
+     * Dump a configuration instance to a file
+     * @param cfg configuration instance
+     * @param path to the file
+     * @see ReadConfigFromFile( UConfig<TModuleName>& cfg, const std::string& path )
+     */
     template <typename TModuleName, typename TArchive = typename cereal::JSONOutputArchive>
     void WriteConfigToFile( const UConfig<TModuleName>& cfg, const std::string& path )
     {
@@ -51,6 +57,12 @@ namespace vmepp
         }
     }
 
+    /**
+     * Fill a configuration instance from a file
+     * @param cfg configuration instance
+     * @param path to the file
+     * @see WriteConfigFromFile( const UConfig<TModuleName>& cfg, const std::string& path )
+     */
     template <typename TModuleName, typename TArchive = typename cereal::JSONInputArchive>
     void ReadConfigFromFile( UConfig<TModuleName>& cfg, const std::string& path )
     {
