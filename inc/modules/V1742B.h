@@ -972,31 +972,15 @@ namespace vmepp
              * @see ReadTriggerPolarity()
              * @see TriggerPolarity_t
              */
-            void WriteTRPolarity( TriggerPolarity_t pol );
+            void WriteTriggerPolarity( TriggerPolarity_t pol );
 
             /**
              * Set the TRn trigger polarity.
              * @return trigger polarity
-             * @see WriteTRPolarity( TriggerPolarity_t pol )
+             * @see WriteTriggerPolarity( TriggerPolarity_t pol )
              * @see TriggerPolarity_t
              */
             TriggerPolarity_t ReadTriggerPolarity();
-
-            /**
-             * Enable/disable the readout of a TRn: when enabled, the signal TRn is digitized
-             * and it is present in the data readout.
-             * @param enable enable status (true = enable, false = disable)
-             * @see ReadTRDigitize()
-             */
-            void WriteTRDigitize( bool enable = true );
-
-            /**
-             * Get the readout status of a TRn: when enabled, the signal TRn is digitized
-             * and it is present in the data readout.
-             * @return enable status (true = enabled, false = disabled)
-             * @see WriteTRDigitize( bool enable )
-             */
-            bool ReadTRDigitize();
 
             /**
              * Enable/disable the TRn trigger. If enabled, the TRn signal is used as fast
@@ -1112,6 +1096,22 @@ namespace vmepp
              * @see ReadGroupEnable( Group_t group )
              */
             void WriteGroupEnable( bool enable );
+
+            /**
+             * Enable/disable the readout of a TRn: when enabled, the signal TRn is digitized
+             * and it is present in the data readout.
+             * @param enable enable status (true = enable, false = disable)
+             * @see ReadTRDigitize()
+             */
+            void WriteTRDigitize( bool enable = true );
+
+            /**
+             * Get the readout status of a TRn: when enabled, the signal TRn is digitized
+             * and it is present in the data readout.
+             * @return enable status (true = enabled, false = disabled)
+             * @see WriteTRDigitize( bool enable )
+             */
+            bool ReadTRDigitize();
 
             /**
              * Check if the selected group participates in the event readout.
@@ -1498,6 +1498,7 @@ namespace vmepp
         struct Acquisition
         {
             std::array<bool, V1742B::GetGroupNumber()>  GR_ENABLE;
+            bool                                        TR_ENABLE;
             V1742B::RecordLength_t                      REC_LENGTH;
             V1742B::SamplingRate_t                      SAMP_RATE;
             uint16_t                                    MAX_EVENTS_BLT;
@@ -1508,6 +1509,7 @@ namespace vmepp
             void serialize( TArchive& ar )
             {
                 ar( cereal::make_nvp( "group_readout", GR_ENABLE ),
+                    cereal::make_nvp( "TRn_readout", TR_ENABLE ),
                     cereal::make_nvp( "record_length", REC_LENGTH ),
                     cereal::make_nvp( "sampling_rate", SAMP_RATE ),
                     cereal::make_nvp( "max_events_per_blt", MAX_EVENTS_BLT ),
@@ -1652,6 +1654,9 @@ namespace vmepp
 
             friend void V1742B::ApplyCorrection( UEvent<V1742B>& event ) const;
     };
+
 }
+
+#include "V1742B_SRLZ.h"
 
 #endif

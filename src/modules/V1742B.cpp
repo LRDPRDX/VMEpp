@@ -16,7 +16,7 @@ namespace vmepp
         VSlaveInterrupter( baseAddress, range ),
         VSlaveAcquisitor( baseAddress, range ),
 
-        fPathToCorrectionTable( "." )
+        fPathToCorrectionTable( "./correction.x742_corr" )
     {
     }
 
@@ -104,7 +104,7 @@ namespace vmepp
         WriteThresholdTR( TR_t::TR1, 0 );
         WriteOffsetTR( TR_t::TR0, 0x7FFF );
         WriteOffsetTR( TR_t::TR1, 0x7FFF );
-        WriteTRPolarity( TriggerPolarity_t::RisingEdge );
+        WriteTriggerPolarity( TriggerPolarity_t::RisingEdge );
         WriteTRDigitize( false );
         WriteTREnable( false );
 
@@ -466,7 +466,7 @@ namespace vmepp
         return ReadRegister32( V1742B_EXTD_VETO_DELAY, V1742B_EXTD_VETO_DELAY_VAL_MSK );
     }
 
-    void V1742B::WriteTRPolarity( TriggerPolarity_t pol )
+    void V1742B::WriteTriggerPolarity( TriggerPolarity_t pol )
     {
         uint32_t value = (1U << V1742B_BOARD_CFG_TRG_POL_SHFT);
         if( pol == TriggerPolarity_t::FallingEdge )
@@ -782,6 +782,7 @@ namespace vmepp
         {
             config.ACQUISITION.GR_ENABLE[g] = ReadGroupEnable( static_cast<Group_t>( g ) );
         }
+        config.ACQUISITION.TR_ENABLE = ReadTRDigitize();
         config.ACQUISITION.REC_LENGTH = ReadRecordLength();
         config.ACQUISITION.SAMP_RATE = ReadSamplingRate( Group_t::G0 );
         config.ACQUISITION.MAX_EVENTS_BLT = ReadMaxEventBLT();
@@ -800,7 +801,39 @@ namespace vmepp
         WriteIRQVector( config.INTERRUPTS.IRQ_VECTOR );
 
         //Trigger
+        WritePostTrigger( config.TRIGGER.POST_TRIGGER );
+        for( uint8_t ch = 0; ch < fChNumber; ++ch )
+        {
+            WriteChannelThreshold( ch, config.TRIGGER.CHANNELS[ch].THRESHOLD );
+            WriteChannelOffset( ch, config.TRIGGER.CHANNELS[ch].OFFSET );
+            WriteEnableTrigger( ch, config.TRIGGER.CHANNELS[ch].ENABLE_TRG );
+        }
+
+        WriteThresholdTR( TR_t::TR0, config.TRIGGER.TR_0.THRESHOLD );
+        WriteOffsetTR( TR_t::TR0, config.TRIGGER.TR_0.OFFSET );
+        WriteTREnable( config.TRIGGER.TR_0.ENABLE_TRG );
          
+        WriteThresholdTR( TR_t::TR1, config.TRIGGER.TR_1.THRESHOLD );
+        WriteOffsetTR( TR_t::TR1, config.TRIGGER.TR_1.OFFSET );
+        WriteTREnable( config.TRIGGER.TR_1.ENABLE_TRG );
+
+        WriteGlobalTrigger( config.TRIGGER.GLB_TRG );
+        WriteTriggerPolarity( config.TRIGGER.TRG_POL );
+
+        //Acquisition
+        for( size_t g = 0; g < fGroupNumber; ++g )
+        {
+            WriteGroupEnable( static_cast<Group_t>( g ), config.ACQUISITION.GR_ENABLE[g] );
+        }
+        WriteTRDigitize( config.ACQUISITION.TR_ENABLE );
+        WriteRecordLength( config.ACQUISITION.REC_LENGTH );
+        WriteSamplingRate( config.ACQUISITION.SAMP_RATE );
+        WriteMaxEventBLT( config.ACQUISITION.MAX_EVENTS_BLT );
+        WriteAcqMode( config.ACQUISITION.ACQ_MODE );
+        WriteStartSource( config.ACQUISITION.START_SOURCE );
+        
+        //Front Panel
+        WriteLEMOLevel( config.FRONT_PANEL.LEMO_LVL );
     }
 
     //****************************
