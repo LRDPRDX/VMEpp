@@ -531,6 +531,11 @@ namespace vmepp
 
     void V1742B::WriteGroupEnable( Group_t g, bool enable )
     {
+        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        {
+            PrintMessage( Message_t::WARNING, "Group enable mask MAY NOT be changed while the acquisition is running" );
+            return;
+        }
         uint32_t value = ReadRegister32( V1742B_GROUP_EN_MASK, V1742B_GROUP_EN_MASK_VAL_MSK );
         uint32_t change = 1U << static_cast<uint8_t>( g );
         if( enable ) { value |= change; }
@@ -540,6 +545,11 @@ namespace vmepp
 
     void V1742B::WriteGroupEnable( bool enable )
     {
+        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        {
+            PrintMessage( Message_t::WARNING, "Group enable mask MAY NOT be changed while the acquisition is running" );
+            return;
+        }
         WriteRegister32( V1742B_GROUP_EN_MASK, enable ? 0xF : 0, V1742B_GROUP_EN_MASK_VAL_MSK );
     }
 
@@ -574,6 +584,11 @@ namespace vmepp
 
     void V1742B::WriteRecordLength( RecordLength_t length )
     {
+        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        {
+            PrintMessage( Message_t::WARNING, "Record length MAY NOT be changed while the acquisition is running" );
+            return;
+        }
         WriteRegister32( V1742B_CUSTOM_SIZE, static_cast<uint32_t>(length), V1742B_CUSTOM_SIZE_VAL_MSK );
     }
 
@@ -594,6 +609,11 @@ namespace vmepp
 
     void V1742B::WriteSamplingRate( SamplingRate_t rate )
     {
+        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        {
+            PrintMessage( Message_t::WARNING, "Sampling rate MAY NOT be changed while the acquisition is running" );
+            return;
+        }
         WriteRegister32( V1742B_DRS4_SAMP_FREQ_WRITE, static_cast<uint32_t>(rate), V1742B_DRS4_SAMP_FREQ_VAL_MSK );
     }
 
