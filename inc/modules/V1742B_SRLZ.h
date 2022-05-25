@@ -148,6 +148,76 @@ namespace vmepp
     }
 
     //***************************
+    //****** TRG_IN_SIGNAL ******
+    //***************************
+    template <class TArchive>
+    std::string save_minimal( TArchive const&, V1742B::TrgInSignal_t const& value )
+    {
+        switch( value )
+        {
+            case( V1742B::TrgInSignal_t::Gate )  : return "gate"; break;
+            case( V1742B::TrgInSignal_t::Veto )  : return "veto"; break;
+        }
+        return "gate";
+    }
+
+    template <class TArchive>
+    void load_minimal( TArchive const&, V1742B::TrgInSignal_t& value, std::string const& str )
+    {
+        if     ( str == "gate" )    { value = V1742B::TrgInSignal_t::Gate; }
+        else if( str == "veto" )    { value = V1742B::TrgInSignal_t::Veto; }
+        else                        { value = V1742B::TrgInSignal_t::Gate; }
+    }
+
+    //******************************
+    //****** TRG_IN_SYNC_TYPE ******
+    //******************************
+    template <class TArchive>
+    std::string save_minimal( TArchive const&, V1742B::TrgInSync_t const& value )
+    {
+        switch( value )
+        {
+            case( V1742B::TrgInSync_t::Edge )       : return "edge"; break;
+            case( V1742B::TrgInSync_t::Duration )   : return "duration"; break;
+        }
+        return "edge";
+    }
+
+    template <class TArchive>
+    void load_minimal( TArchive const&, V1742B::TrgInSync_t& value, std::string const& str )
+    {
+        if     ( str == "edge" )        { value = V1742B::TrgInSync_t::Edge; }
+        else if( str == "duration" )    { value = V1742B::TrgInSync_t::Duration; }
+        else                            { value = V1742B::TrgInSync_t::Edge; }
+    }
+
+    //****************************
+    //****** TRG-OUT_SIGNAL ******
+    //****************************
+    template <class TArchive>
+    std::string save_minimal( TArchive const&, V1742B::TrgOutSignal_t const& value )
+    {
+        switch( value )
+        {
+            case( V1742B::TrgOutSignal_t::NoSignal )    : return "none"; break;
+            case( V1742B::TrgOutSignal_t::AllTRn )      : return "all_TRn"; break;
+            case( V1742B::TrgOutSignal_t::AcceptedTRn ) : return "accepted_TRn"; break;
+            case( V1742B::TrgOutSignal_t::BusyGroups )  : return "busy_groups"; break;
+        }
+        return "none";//Default value
+    }
+
+    template <class TArchive>
+    void load_minimal( TArchive const&, V1742B::TrgOutSignal_t& value, std::string const& str )
+    {
+        if     ( str == "none" )            { value = V1742B::TrgOutSignal_t::NoSignal; }
+        else if( str == "all_TRn" )         { value = V1742B::TrgOutSignal_t::AllTRn; }
+        else if( str == "accepted_TRn" )    { value = V1742B::TrgOutSignal_t::AcceptedTRn; }
+        else if( str == "busy_groups" )     { value = V1742B::TrgOutSignal_t::BusyGroups;  }
+        else                                { value = V1742B::TrgOutSignal_t::BusyGroups; }//Default value
+    }
+
+    //***************************
     //****** STARTSOURCE_T ******
     //***************************
     template <class TArchive>

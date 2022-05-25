@@ -105,13 +105,13 @@ namespace vmepp
         WriteOffsetTR( TR_t::TR0, 0x7FFF );
         WriteOffsetTR( TR_t::TR1, 0x7FFF );
         WriteTriggerPolarity( TriggerPolarity_t::RisingEdge );
-        WriteTRDigitize( false );
-        WriteTREnable( false );
+        WriteReadoutEnableTR( false );
+        WriteEnableTriggerTR( false );
 
         WriteTRGINEnable( false );
-        WriteTRGINSignal( TriggerIn_t::Gate );
+        WriteTRGINSignal( TrgInSignal_t::Gate );
 
-        WriteTRGOUTSignal( TriggerOut_t::NoSignal );
+        WriteTRGOUTSignal( TrgOutSignal_t::NoSignal );
 
         //WriteVetoDelay( 0 );
 
@@ -125,10 +125,18 @@ namespace vmepp
         WriteMaxEventBLT( 1024 );
         WriteAcqMode( AcqMode_t::Transparent );
         WriteStartSource( StartSource_t::SW );
-        WriteGroupEnable( false );
+        WriteReadoutEnableGroup( false );
 
         // Front Panel
         WriteLEMOLevel( Level_t::TTL );
+
+        WriteTRGINSignal( TrgInSignal_t::Gate );
+        WriteTRGINEnable( false );
+        WriteTRGINToMezz( false );
+        WriteTRGINSync( TrgInSync_t::Edge );
+
+        WriteTRGOUTSignal( TrgOutSignal_t::NoSignal );
+        WriteTRGOUTGeneration( TrgOutSource_t::None );
 
         // Print Some Info
         for( uint8_t g = 0; g < GetGroupNumber(); ++g )
@@ -285,11 +293,6 @@ namespace vmepp
     bool V1742B::ReadStatus( Group_t group, StatusBit bit )
     {
         return (ReadStatus( group ) & bit);
-    }
-
-    uint32_t V1742B::ReadBoardConfiguration()
-    {
-        return ReadRegister32( V1742B_BOARD_CFG );
     }
     //****** CONTROL & STATUS - ******
 
@@ -485,7 +488,7 @@ namespace vmepp
         return (value ? TriggerPolarity_t::FallingEdge : TriggerPolarity_t::RisingEdge);
     }
 
-    void V1742B::WriteTRDigitize( bool enable )
+    void V1742B::WriteReadoutEnableTR( bool enable )
     {
         uint32_t value = (1U << V1742B_BOARD_CFG_TRG_DG_SHFT);
         if( enable )
@@ -498,12 +501,12 @@ namespace vmepp
         }
     }
 
-    bool V1742B::ReadTRDigitize()
+    bool V1742B::ReadReadoutEnableTR()
     {
         return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_DG_SHFT) );
     }
 
-    void V1742B::WriteTREnable( bool enable )
+    void V1742B::WriteEnableTriggerTR( bool enable )
     {
         uint32_t value = (1U << V1742B_BOARD_CFG_TRG_EN_SHFT);
         if( enable )
@@ -516,7 +519,7 @@ namespace vmepp
         }
     }
 
-    bool V1742B::ReadTREnable()
+    bool V1742B::ReadEnableTriggerTR()
     {
         return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TRG_EN_SHFT) );
     }
@@ -529,9 +532,9 @@ namespace vmepp
         return ((nWords % gMaxBLT == 0) ? (nWords / gMaxBLT) : (nWords / gMaxBLT + 1));
     }
 
-    void V1742B::WriteGroupEnable( Group_t g, bool enable )
+    void V1742B::WriteReadoutEnableGroup( Group_t g, bool enable )
     {
-        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        if( ReadAcqStatus( AcqStatusBit::AcqRun ) )
         {
             PrintMessage( Message_t::WARNING, "Group enable mask MAY NOT be changed while the acquisition is running" );
             return;
@@ -543,9 +546,9 @@ namespace vmepp
         WriteRegister32( V1742B_GROUP_EN_MASK, value, V1742B_GROUP_EN_MASK_VAL_MSK );
     }
 
-    void V1742B::WriteGroupEnable( bool enable )
+    void V1742B::WriteReadoutEnableGroup( bool enable )
     {
-        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        if( ReadAcqStatus( AcqStatusBit::AcqRun ) )
         {
             PrintMessage( Message_t::WARNING, "Group enable mask MAY NOT be changed while the acquisition is running" );
             return;
@@ -553,7 +556,7 @@ namespace vmepp
         WriteRegister32( V1742B_GROUP_EN_MASK, enable ? 0xF : 0, V1742B_GROUP_EN_MASK_VAL_MSK );
     }
 
-    bool V1742B::ReadGroupEnable( Group_t g )
+    bool V1742B::ReadReadoutEnableGroup( Group_t g )
     {
         return ReadRegister32( V1742B_GROUP_EN_MASK, (1U << static_cast<uint8_t>( g )) );
     }
@@ -584,7 +587,7 @@ namespace vmepp
 
     void V1742B::WriteRecordLength( RecordLength_t length )
     {
-        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        if( ReadAcqStatus( AcqStatusBit::AcqRun ) )
         {
             PrintMessage( Message_t::WARNING, "Record length MAY NOT be changed while the acquisition is running" );
             return;
@@ -609,7 +612,7 @@ namespace vmepp
 
     void V1742B::WriteSamplingRate( SamplingRate_t rate )
     {
-        if( ReadAcqStatus( AcqStatus_t::AcqRun ) )
+        if( ReadAcqStatus( AcqStatusBit::AcqRun ) )
         {
             PrintMessage( Message_t::WARNING, "Sampling rate MAY NOT be changed while the acquisition is running" );
             return;
@@ -684,10 +687,10 @@ namespace vmepp
         return ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TGIN_EN_SHFT) );
     }
 
-    void V1742B::WriteTRGINSignal( TriggerIn_t trigger )
+    void V1742B::WriteTRGINSignal( TrgInSignal_t trigger )
     {
         uint32_t value = (1U << V1742B_BOARD_CFG_TGIN_SIG_SHFT);
-        if( trigger == TriggerIn_t::Veto )
+        if( trigger == TrgInSignal_t::Veto )
         {
             WriteRegister32( V1742B_BOARD_CFG_SET, value );
         }
@@ -697,23 +700,33 @@ namespace vmepp
         }
     }
 
-    V1742B::TriggerIn_t V1742B::ReadTRGINSignal()
+    V1742B::TrgInSignal_t V1742B::ReadTRGINSignal()
     {
         bool value = ReadRegister32( V1742B_BOARD_CFG, (1U << V1742B_BOARD_CFG_TGIN_SIG_SHFT) );
-        return value ? TriggerIn_t::Veto : TriggerIn_t::Gate;
+        return value ? TrgInSignal_t::Veto : TrgInSignal_t::Gate;
     }
 
-    void V1742B::WriteTRGOUTSignal( TriggerOut_t trigger )
+    void V1742B::WriteTRGOUTSignal( TrgOutSignal_t trigger )
     {
         uint32_t value = static_cast<uint32_t>(trigger) << V1742B_BOARD_CFG_TGOUT_SIG_SHFT;
         WriteRegister32( V1742B_BOARD_CFG_SET, value & V1742B_BOARD_CFG_TGOUT_SIG_MSK );
         WriteRegister32( V1742B_BOARD_CFG_CLR, value ^ V1742B_BOARD_CFG_TGOUT_SIG_MSK );
     }
 
-    V1742B::TriggerOut_t V1742B::ReadTRGOUTSignal()
+    void V1742B::WriteTRGOUTGeneration( TrgOutSource_t mask )
+    {
+        WriteRegister32( V1742B_FRNT_PANEL_TRG_OUT, static_cast<uint32_t>( mask ) );
+    }
+
+    V1742B::TrgOutSource_t V1742B::ReadTRGOUTGeneration()
+    {
+        return static_cast<TrgOutSource_t>( ReadRegister32( V1742B_FRNT_PANEL_TRG_OUT ) );
+    }
+
+    V1742B::TrgOutSignal_t V1742B::ReadTRGOUTSignal()
     {
         uint32_t value = ReadRegister32( V1742B_BOARD_CFG, V1742B_BOARD_CFG_TGOUT_SIG_MSK );
-        return static_cast<TriggerOut_t>( value >> V1742B_BOARD_CFG_TGOUT_SIG_SHFT );
+        return static_cast<TrgOutSignal_t>( value >> V1742B_BOARD_CFG_TGOUT_SIG_SHFT );
     }
 
     void V1742B::WriteStartSource( StartSource_t source )
@@ -753,20 +766,51 @@ namespace vmepp
     void V1742B::WriteLEMOLevel( Level_t level )
     {
         uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL );
-        if( level == Level_t::NIM )
+        switch( level )
         {
-            WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value & ~(1U << V1742B_FRNT_PNL_IO_LEMO_SHFT) );
+            case( Level_t::NIM ) : value &= ~(1U << V1742B_FRNT_PNL_IO_LEMO_SHFT); break;
+            case( Level_t::TTL ) : value |=  (1U << V1742B_FRNT_PNL_IO_LEMO_SHFT); break;
         }
-        else
-        {
-            WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value | (1U << V1742B_FRNT_PNL_IO_LEMO_SHFT) );
-        }
+        WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value );
     }
 
     V1742B::Level_t V1742B::ReadLEMOLevel()
     {
         uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL, (1U << V1742B_FRNT_PNL_IO_LEMO_SHFT) );
         return static_cast<Level_t>( value );
+    }
+
+    void V1742B::WriteTRGINSync( TrgInSync_t type )
+    {
+        uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL );
+        switch( type )
+        {
+            case( TrgInSync_t::Edge )     : value &= ~(1U << V1742B_FRNT_PNL_IO_TGIN_CTRL_SHFT); break;
+            case( TrgInSync_t::Duration ) : value |=  (1U << V1742B_FRNT_PNL_IO_TGIN_CTRL_SHFT); break;
+        }
+        WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value );
+    }
+
+    V1742B::TrgInSync_t V1742B::ReadTRGINSync()
+    {
+        uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL, (1U << V1742B_FRNT_PNL_IO_TGIN_CTRL_SHFT) );
+        return static_cast<TrgInSync_t>( value >> V1742B_FRNT_PNL_IO_TGIN_CTRL_SHFT );
+    }
+
+    void V1742B::WriteTRGINToMezz( bool enable )
+    {
+        uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL );
+        switch( enable )
+        {
+            case( false )   : value &= ~(1U << V1742B_FRNT_PNL_IO_TGIN_MEZZ_SHFT); break;
+            case( true )    : value |=  (1U << V1742B_FRNT_PNL_IO_TGIN_MEZZ_SHFT); break;
+        }
+        WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value );
+    }
+
+    bool V1742B::ReadTRGINToMezz()
+    {
+        return ReadRegister32( V1742B_FRNT_PNL_IO_CTRL, (1U << V1742B_FRNT_PNL_IO_TGIN_MEZZ_SHFT) );
     }
     //****** FRONT PANEL - ******
 
@@ -788,11 +832,11 @@ namespace vmepp
 
         config.TRIGGER.TR_0.THRESHOLD = ReadThresholdTR( TR_t::TR0 );
         config.TRIGGER.TR_0.OFFSET = ReadOffsetTR( TR_t::TR0 );
-        config.TRIGGER.TR_0.ENABLE_TRG = ReadTREnable();
+        config.TRIGGER.TR_0.ENABLE_TRG = ReadEnableTriggerTR();
 
         config.TRIGGER.TR_1.THRESHOLD = ReadThresholdTR( TR_t::TR1 );
         config.TRIGGER.TR_1.OFFSET = ReadOffsetTR( TR_t::TR1 );
-        config.TRIGGER.TR_1.ENABLE_TRG = ReadTREnable();
+        config.TRIGGER.TR_1.ENABLE_TRG = ReadEnableTriggerTR();
 
         config.TRIGGER.GLB_TRG = ReadGlobalTrigger();
         config.TRIGGER.TRG_POL = ReadTriggerPolarity();
@@ -800,9 +844,9 @@ namespace vmepp
         //Acquisition
         for( size_t g = 0; g < fGroupNumber; ++g )
         {
-            config.ACQUISITION.GR_ENABLE[g] = ReadGroupEnable( static_cast<Group_t>( g ) );
+            config.ACQUISITION.GR_ENABLE[g] = ReadReadoutEnableGroup( static_cast<Group_t>( g ) );
         }
-        config.ACQUISITION.TR_ENABLE = ReadTRDigitize();
+        config.ACQUISITION.TR_ENABLE = ReadReadoutEnableTR();
         config.ACQUISITION.REC_LENGTH = ReadRecordLength();
         config.ACQUISITION.SAMP_RATE = ReadSamplingRate( Group_t::G0 );
         config.ACQUISITION.MAX_EVENTS_BLT = ReadMaxEventBLT();
@@ -811,6 +855,14 @@ namespace vmepp
 
         //Front panel
         config.FRONT_PANEL.LEMO_LVL = ReadLEMOLevel();
+
+        config.FRONT_PANEL.TRG_IN.GATE_VETO_ENABLE = ReadTRGINEnable();
+        config.FRONT_PANEL.TRG_IN.SIGNAL_TYPE = ReadTRGINSignal();
+        config.FRONT_PANEL.TRG_IN.DIRECT_TO_MEZZ = ReadTRGINToMezz();
+        config.FRONT_PANEL.TRG_IN.SYNC_TYPE = ReadTRGINSync();
+
+        config.FRONT_PANEL.TRG_OUT.SIGNAL_TYPE = ReadTRGOUTSignal();
+        config.FRONT_PANEL.TRG_OUT.SIGNAL_SOURCE = ReadTRGOUTGeneration();
     }
 
     void V1742B::WriteConfig( const UConfig<V1742B>& config )
@@ -831,11 +883,11 @@ namespace vmepp
 
         WriteThresholdTR( TR_t::TR0, config.TRIGGER.TR_0.THRESHOLD );
         WriteOffsetTR( TR_t::TR0, config.TRIGGER.TR_0.OFFSET );
-        WriteTREnable( config.TRIGGER.TR_0.ENABLE_TRG );
+        WriteEnableTriggerTR( config.TRIGGER.TR_0.ENABLE_TRG );
          
         WriteThresholdTR( TR_t::TR1, config.TRIGGER.TR_1.THRESHOLD );
         WriteOffsetTR( TR_t::TR1, config.TRIGGER.TR_1.OFFSET );
-        WriteTREnable( config.TRIGGER.TR_1.ENABLE_TRG );
+        WriteEnableTriggerTR( config.TRIGGER.TR_1.ENABLE_TRG );
 
         WriteGlobalTrigger( config.TRIGGER.GLB_TRG );
         WriteTriggerPolarity( config.TRIGGER.TRG_POL );
@@ -843,9 +895,9 @@ namespace vmepp
         //Acquisition
         for( size_t g = 0; g < fGroupNumber; ++g )
         {
-            WriteGroupEnable( static_cast<Group_t>( g ), config.ACQUISITION.GR_ENABLE[g] );
+            WriteReadoutEnableGroup( static_cast<Group_t>( g ), config.ACQUISITION.GR_ENABLE[g] );
         }
-        WriteTRDigitize( config.ACQUISITION.TR_ENABLE );
+        WriteReadoutEnableTR( config.ACQUISITION.TR_ENABLE );
         WriteRecordLength( config.ACQUISITION.REC_LENGTH );
         WriteSamplingRate( config.ACQUISITION.SAMP_RATE );
         WriteMaxEventBLT( config.ACQUISITION.MAX_EVENTS_BLT );
@@ -854,6 +906,14 @@ namespace vmepp
         
         //Front Panel
         WriteLEMOLevel( config.FRONT_PANEL.LEMO_LVL );
+
+        WriteTRGINEnable( config.FRONT_PANEL.TRG_IN.GATE_VETO_ENABLE );
+        WriteTRGINSignal( config.FRONT_PANEL.TRG_IN.SIGNAL_TYPE );
+        WriteTRGINToMezz( config.FRONT_PANEL.TRG_IN.DIRECT_TO_MEZZ );
+        WriteTRGINSync( config.FRONT_PANEL.TRG_IN.SYNC_TYPE );
+
+        WriteTRGOUTSignal( config.FRONT_PANEL.TRG_OUT.SIGNAL_TYPE );
+        WriteTRGOUTGeneration( config.FRONT_PANEL.TRG_OUT.SIGNAL_SOURCE );
     }
 
     //****************************

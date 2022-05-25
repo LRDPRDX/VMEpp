@@ -122,9 +122,7 @@
 #define     V1742B_GLB_TRG_MASK_VAL_MSK         0xC0000000UL//Aux
 #define     V1742B_GLB_TRG_MASK_VAL_SHFT        0x1EU//Aux 
 
-#define     V1742B_FRNT_PANEL_TRG               0x8110UL//A32/D32 RW C
-#define     V1742B_FRNT_PANEL_TRG_INDX_MSK      0x000FUL//Aux
-#define     V1742B_FRNT_PANEL_TRG_LOGIC_MSK     0x0300UL//Aux
+#define     V1742B_FRNT_PANEL_TRG_OUT           0x8110UL//A32/D32 RW C
 
 #define     V1742B_LVDS_IO_DATA                 0x8118UL//A32/D32 RW C
 #define     V1742B_LVDS_IO_DATA_VAL_MSK         0xFFFFUL//Aux
@@ -530,21 +528,64 @@ namespace vmepp
             };
 
             /**
-             * Signal on TRG-IN connector is used either to gate or veto the acquisition
+             * Signal on the TRG-IN connector is used either to gate or veto the acquisition
              */
-            enum class TriggerIn_t : uint8_t
+            enum class TrgInSignal_t : uint8_t
             {
                 Gate = 0x00, /*!< Gate the acquisition */
                 Veto = 0x01, /*!< Veto the acquisition */
             };
-
-            enum class TriggerOut_t : uint8_t
+            
+            /**
+             * The board trigger logic can be synchronized either with the edge of the TRG-IN signal, or with
+             * its whole duration.
+             */
+            enum class TrgInSync_t : uint8_t
             {
-                NoSignal    = 0x00,
-                AllTRn      = 0x01,
-                AcceptedTRn = 0x02,
-                BusyGroups  = 0x03,
+                Edge = 0x00,        /*!< Trigger is synchronized with the edge of the TRG-IN signal */
+                Duration = 0x01,    /*!< Trigger is synchronized with the whole duration of the TRG-IN signal */
             };
+
+            /**
+             * Monitor signal from the daughter board to the TRG-OUT connector
+             */
+            enum class TrgOutSignal_t : uint8_t
+            {
+                NoSignal    = 0x00, /*!< No signal */
+                AllTRn      = 0x01, /*!< All fast trigger TRn */
+                AcceptedTRn = 0x02, /*!< Accepted fast trigger TRn */
+                BusyGroups  = 0x03, /*!< Busy of all groups in logic OR */
+            };
+
+            /**
+             * Signals which can contribute to the TRG-OUT signal generation
+             */
+            enum class TrgOutSource_t : uint32_t
+            {
+                None    = 0x00000000, /*!< None of the below signals contribute to the TRG-OUT signal generation */
+                G0      = 0x00000001, /*!< Signal from group 0 (see WriteTRGOUTSignal( TrgOutSignal_t )) */
+                G1      = 0x00000002, /*!< Signal from group 1 (see WriteTRGOUTSignal( TrgOutSignal_t )) */
+                G2      = 0x00000004, /*!< Signal from group 2 (see WriteTRGOUTSignal( TrgOutSignal_t )) */
+                G3      = 0x00000008, /*!< Signal from group 3 (see WriteTRGOUTSignal( TrgOutSignal_t )) */
+                AND     = 0x00000100, /*!< Not a signal. The logic under which the G0, G1, G2, and G3 are combined to generate the TRG-OUT signal (default OR) */
+                LVDS    = 0x20000000, /*!< If LVDS I/Os (if porgrammed as inputs) */
+                TRGIN   = 0x40000000, /*!< External trigger (the TRG-IN input) */
+                SW      = 0x80000000, /*!< Software trigger */
+            };
+
+            friend TrgOutSignal_t operator|( TrgOutSignal_t a, TrgOutSignal_t b )
+            {
+                return static_cast<TrgOutSignal_t>(
+                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( a ) |
+                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( b ) );
+            }
+
+            friend TrgOutSignal_t operator&( TrgOutSignal_t a, TrgOutSignal_t b )
+            {
+                return static_cast<TrgOutSignal_t>(
+                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( a ) &
+                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( b ) );
+            }
 
             /**
              * Logic level of the front panel LEMO connectors
@@ -802,8 +843,6 @@ namespace vmepp
              */
             bool            ReadStatus( Group_t, StatusBit bit );
 
-            uint32_t        ReadBoardConfiguration();
-
         public :
             /** @name Trigger
              * Trigger management
@@ -814,6 +853,9 @@ namespace vmepp
              * Set the post trigger value to a group.
              * The post trigger corresponds to the delay between the trigger arrival
              * and the DRS4 chip holding phase.
+             * _NOTE_: This function **DOESN'T** actually set the post trigger value
+             * and provided only to follow the board specification. 
+             * Use the WritePostTrigger( uint16_t n ) function instead.
              * @param group group of channels to set the post trigger to
              * @param n post trigger value (1 unit = 8.5 ns)
              * @see ReadPostTrigger( Group_t group )
@@ -986,62 +1028,17 @@ namespace vmepp
              * Enable/disable the TRn trigger. If enabled, the TRn signal is used as fast
              * trigger.
              * @param enable enable status (true = enable, false = disable)
-             * @see ReadTREnable()
+             * @see ReadEnableTriggerTR()
              */
-            void WriteTREnable( bool enable = true );
+            void WriteEnableTriggerTR( bool enable = true );
 
             /**
              * Get the trigger status of a TRn. If enabled, the TRn signal is used as fast
              * trigger.
              * @return enable status (true = enabled, false = disabled)
-             * @see WriteTREnable( bool enable )
+             * @see WriteEnableTriggerTR( bool enable )
              */
-            bool ReadTREnable();
-
-            /**
-             * Enable/disable the signal on the TRG-IN to gate/veto the acquisition
-             * @param enable enable status (true = enable, false = disable)
-             * @see ReadTRGINEnable()
-             * @see WriteTRGINSignal( TriggerIn_t trigger )
-             * @see ReadTRGINSignal()
-             */
-            void WriteTRGINEnable( bool enable = true );
-
-            /**
-             * Check if the signal on the TRG-IN is enabled to gate/veto the acquisition
-             * @return enable status (true = enabled, false = disabled)
-             * @see WriteTRGINEnable( bool enable )
-             * @see WriteTRGINSignal( TriggerIn_t trigger )
-             * @see ReadTRGINSignal()
-             */
-            bool ReadTRGINEnable();
-
-            /**
-             * Choose the purpose of the signal on the TRG-IN :
-             * - Veto the acquisition
-             * - Gain the acquisition
-             * @param signal signal intention 
-             * @see WriteTRGINEnable( bool enable = true )
-             * @see ReadTRGINEnable()
-             * @see ReadTRGINSignal()
-             * @see TriggerIn_t
-             */
-            void WriteTRGINSignal( TriggerIn_t signal );
-
-            /**
-             * Get the purpose of the signal on the TRG-IN :
-             * - Veto the acquisition
-             * - Gain the acquisition
-             * @return signal intention 
-             * @see WriteTRGINEnable( bool enable = true )
-             * @see ReadTRGINEnable()
-             * @see WriteTRGINSignal( TriggerIn_t signal )
-             * @see TriggerIn_t
-             */
-            TriggerIn_t ReadTRGINSignal();
-
-            void WriteTRGOUTSignal( TriggerOut_t trigger );
-            TriggerOut_t ReadTRGOUTSignal();
+            bool ReadEnableTriggerTR();
 
             /**
              * Choose which signal can contribute to the gloabal trigger generation.
@@ -1083,44 +1080,44 @@ namespace vmepp
              * **WARNING:** This function **MUST NOT** be called while the acquisition is running
              * @param g group index
              * @param enable enable status (true = enable, false = disable)
-             * @see WriteGroupEnable( bool enable )
-             * @see ReadGroupEnable( Group_t group )
+             * @see WriteReadoutEnableGroup( bool enable )
+             * @see ReadReadoutEnableGroup( Group_t group )
              */
-            void WriteGroupEnable( Group_t g, bool enable = true );
+            void WriteReadoutEnableGroup( Group_t g, bool enable = true );
 
             /**
              * Enable/disable all the groups to participate in the event readout.
              * **WARNING:** This function **MUST NOT** be called while the acquisition is running
              * @param enable enable status (true = enable, false = disable)
-             * @see WriteGroupEnable( Group_t g, bool enable )
-             * @see ReadGroupEnable( Group_t group )
+             * @see WriteReadoutEnableGroup( Group_t g, bool enable )
+             * @see ReadReadoutEnableGroup( Group_t group )
              */
-            void WriteGroupEnable( bool enable );
+            void WriteReadoutEnableGroup( bool enable );
 
             /**
              * Enable/disable the readout of a TRn: when enabled, the signal TRn is digitized
              * and it is present in the data readout.
              * @param enable enable status (true = enable, false = disable)
-             * @see ReadTRDigitize()
+             * @see ReadReadoutEnableTR()
              */
-            void WriteTRDigitize( bool enable = true );
+            void WriteReadoutEnableTR( bool enable = true );
 
             /**
              * Get the readout status of a TRn: when enabled, the signal TRn is digitized
              * and it is present in the data readout.
              * @return enable status (true = enabled, false = disabled)
-             * @see WriteTRDigitize( bool enable )
+             * @see WriteReadoutEnableTR( bool enable )
              */
-            bool ReadTRDigitize();
+            bool ReadReadoutEnableTR();
 
             /**
              * Check if the selected group participates in the event readout.
              * @param group group index
              * @return readout status (true = enabled for readout, false = disabled)
-             * @see WriteGroupEnable( Group_t g, bool enable )
-             * @see WriteGroupEnable( bool enable )
+             * @see WriteReadoutEnableGroup( Group_t g, bool enable )
+             * @see WriteReadoutEnableGroup( bool enable )
              */
-            bool ReadGroupEnable( Group_t group );
+            bool ReadReadoutEnableGroup( Group_t group );
 
             /**
              * Adjust the baseline position (i.e. 0 Volt) of the input signal on the ADC scale of a channel.
@@ -1157,7 +1154,7 @@ namespace vmepp
              * Set the record length, which is the number of samples of the digitized waveform
              * in the acquisition window.
              * _NOTE:_ modifying the record length does NOT reduce the dead time.
-             * **WARNING:** this function **MUST NOT** be called thile the acquisition is running !
+             * **WARNING:** this function **MUST NOT** be called while the acquisition is running !
              * @param length record length
              * @see ReadRecordLength()
              * @see RecordLength_t
@@ -1384,6 +1381,136 @@ namespace vmepp
              */
             Level_t ReadLEMOLevel();
 
+            /**
+             * Choose the purpose of the signal on the TRG-IN :
+             * - Veto the acquisition
+             * - Gain the acquisition
+             * @param signal signal intention 
+             * @see WriteTRGINEnable( bool enable = true )
+             * @see ReadTRGINEnable()
+             * @see ReadTRGINSignal()
+             * @see TrgInSignal_t
+             */
+            void WriteTRGINSignal( TrgInSignal_t signal );
+
+            /**
+             * Get the purpose of the signal on the TRG-IN :
+             * - Veto the acquisition
+             * - Gain the acquisition
+             * @return signal intention 
+             * @see WriteTRGINEnable( bool enable = true )
+             * @see ReadTRGINEnable()
+             * @see WriteTRGINSignal( TrgInSignal_t signal )
+             * @see TrgInSignal_t
+             */
+            TrgInSignal_t ReadTRGINSignal();
+
+            /**
+             * Set the TRG-IN synchronization type. The board trigger logic can be synchronized either with
+             * the edge of the TRG-IN signal, or with its whole duration. This setting must be used 
+             * @param type sync type
+             * @see TrgInSync_t
+             * @see ReadTRGINSync()
+             */
+            void WriteTRGINSync( TrgInSync_t type );
+
+            /**
+             * Get the TRG-IN synchronization type. The board trigger logic can be synchronized either with
+             * the edge of the TRG-IN signal, or with its whole duration.
+             * @return sync type
+             * @see TrgInSync_t
+             * @see WriteTRGINSync( TrgInSync_t )
+             */
+            TrgInSync_t ReadTRGINSync();
+
+            /**
+             * TRG-IN to Mezzanines (channels). Options are:
+             * 1. TRG-IN signal is processed by the motherboard and sent to the mezzanines. The trigger logic
+             * is then synchronized with TRG-IN.
+             * 2. TRG-IN is directly sent to the mezzanines with no motherboard processing, nor delay. This
+             * option can be useful when TRG-IN is used to veto the acquisition.
+             * @param enable status (true = option 2, false = option 1)
+             * @see ReadTRGINToMezz()
+             * @see ReadTRGINSync()
+             * @see WriteTRGINSync( TrgInSync_t )
+             */
+            void WriteTRGINToMezz( bool enable );
+
+            /**
+             * TRG-IN to Mezzanines (channels). Options are:
+             * 1. TRG-IN signal is processed by the motherboard and sent to the mezzanines. The trigger logic
+             * is then synchronized with TRG-IN.
+             * 2. TRG-IN is directly sent to the mezzanines with no motherboard processing, nor delay. This
+             * option can be useful when TRG-IN is used to veto the acquisition.
+             * @param enable status (true = option 2, false = option 1)
+             * @see WriteTRGINToMezz( bool enable )
+             * @see ReadTRGINSync()
+             * @see WriteTRGINSync( TrgInSync_t )
+             */
+            bool ReadTRGINToMezz();
+
+            /**
+             * Select monitor signal from the daughter board to the TRG-OUT
+             * @param signal monitor signal
+             * @see TrgOutSignal_t
+             * @see ReadTRGOUTSignal()
+             */
+            void WriteTRGOUTSignal( TrgOutSignal_t signal );
+
+            /**
+             * Get monitor signal from the daughter board to the TRG-OUT
+             * @return signal monitor signal
+             * @see TrgOutSignal_t
+             * @see WriteTRGOUTSignal( TrgOutSignal_t signal )
+             */
+            TrgOutSignal_t ReadTRGOUTSignal();
+
+            /**
+             * Set signals which can contribute to the TRG-OUT signal generation.
+             * @param mask signal mask which can be constructed by using the bitwise `|` operator. For example,
+             * to generate the TRG-OUT signal from the signal of Group 0 _and_ Group 1 (coincidence), the
+             * following mask should be used:
+             *
+             * @code
+             * TrgOutSource_t mask = TrgOutSource_t::G0 | TrgOutSource_t::G1 | TrgOutSource_t::AND;
+             * @endcode
+             * @see TrgOutSource_t
+             * @see ReadTRGOUTGeneration()  
+             */
+            void WriteTRGOUTGeneration( TrgOutSource_t mask );
+
+            /**
+             * Get signals which can contribute to the TRG-OUT signal generation.
+             * @return signal mask which can be interpreted by using the bitwise `&` operator. For example:
+             * to check if the signal form Group 1 contributes to the TRG-OUT signal generation, the following
+             * code can be used :
+             *
+             * @code
+             * if( TrgOutSource_t::G1 & mask )
+             * @endcode
+             * @see TrgOutSource_t
+             * @see WriteRGOUTGeneration( TrgOutSource_t )
+             */
+            TrgOutSource_t ReadTRGOUTGeneration();
+
+            /**
+             * Enable/disable the signal on the TRG-IN to gate/veto the acquisition
+             * @param enable enable status (true = enable, false = disable)
+             * @see ReadTRGINEnable()
+             * @see WriteTRGINSignal( TrgInSignal_t trigger )
+             * @see ReadTRGINSignal()
+             */
+            void WriteTRGINEnable( bool enable = true );
+
+            /**
+             * Check if the signal on the TRG-IN is enabled to gate/veto the acquisition
+             * @return enable status (true = enabled, false = disabled)
+             * @see WriteTRGINEnable( bool enable )
+             * @see WriteTRGINSignal( TrgInSignal_t trigger )
+             * @see ReadTRGINSignal()
+             */
+            bool ReadTRGINEnable();
+
             void WriteLVDS( uint16_t mask );
             uint16_t ReadLVDS();
             /** @} */
@@ -1520,12 +1647,46 @@ namespace vmepp
 
         struct FrontPanel
         {
+            struct TrgIn
+            {
+                bool                    GATE_VETO_ENABLE;
+                V1742B::TrgInSignal_t   SIGNAL_TYPE; 
+                bool                    DIRECT_TO_MEZZ;
+                V1742B::TrgInSync_t     SYNC_TYPE;
+
+                template <class TArchive>
+                void serialize( TArchive& ar )
+                {
+                    ar( cereal::make_nvp( "gate_veto_enable", GATE_VETO_ENABLE ),
+                        cereal::make_nvp( "signal", SIGNAL_TYPE ),
+                        cereal::make_nvp( "directly_to_mezz", DIRECT_TO_MEZZ ),
+                        cereal::make_nvp( "sync_type", SYNC_TYPE ) );
+                }
+            };
+
+            struct TrgOut
+            {
+                V1742B::TrgOutSignal_t  SIGNAL_TYPE;
+                V1742B::TrgOutSource_t  SIGNAL_SOURCE;
+
+                template <class TArchive>
+                void serialize( TArchive& ar )
+                {
+                    ar( cereal::make_nvp( "signal_type", SIGNAL_TYPE ),
+                        cereal::make_nvp( "signal_source", SIGNAL_SOURCE ) );
+                }
+            };
+
             V1742B::Level_t         LEMO_LVL;
+            TrgIn                   TRG_IN;
+            TrgOut                  TRG_OUT;
 
             template <class TArchive>
             void serialize( TArchive& ar )
             {
-                ar( cereal::make_nvp( "lemo_level", LEMO_LVL ) );
+                ar( cereal::make_nvp( "lemo_level", LEMO_LVL ),
+                    cereal::make_nvp( "TRG-IN", TRG_IN ),
+                    cereal::make_nvp( "TRG-OUT", TRG_OUT ) );
             }
         };
 
