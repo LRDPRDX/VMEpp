@@ -1,6 +1,11 @@
 #ifndef V_PLUS_V1742B_SRLZ_H
 #define V_PLUS_V1742B_SRLZ_H
 
+#include <sstream>
+#include <string>
+#include <iomanip>
+
+
 namespace vmepp
 {
     //****************************
@@ -9,14 +14,16 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::SamplingRate_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::SamplingRate_t::M5000 ) : return "5GHz"; break;
-            case( V1742B::SamplingRate_t::M2500 ) : return "2_5GHz"; break;
-            case( V1742B::SamplingRate_t::M1000 ) : return "1GHz"; break;
-            case( V1742B::SamplingRate_t::M750 )  : return "750MHz"; break;
+            case( V1742B::SamplingRate_t::M5000 ) : s = "5GHz"; break;
+            case( V1742B::SamplingRate_t::M2500 ) : s = "2_5GHz"; break;
+            case( V1742B::SamplingRate_t::M1000 ) : s = "1GHz"; break;
+            case( V1742B::SamplingRate_t::M750 )  : s = "750MHz"; break;
+            default                               : s = "5GHz";                                       
         }
-        return "5GHz";//Default value
+        return s;
     }
 
     template <class TArchive>
@@ -35,14 +42,16 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::RecordLength_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::RecordLength_t::s1024 ) : return "1024"; break;
-            case( V1742B::RecordLength_t::s520 )  : return "520"; break;
-            case( V1742B::RecordLength_t::s256 )  : return "256"; break;
-            case( V1742B::RecordLength_t::s136 )  : return "136"; break;
+            case( V1742B::RecordLength_t::s1024 ) : s = "1024"; break;
+            case( V1742B::RecordLength_t::s520 )  : s = "520"; break;
+            case( V1742B::RecordLength_t::s256 )  : s = "256"; break;
+            case( V1742B::RecordLength_t::s136 )  : s = "136"; break;
+            default                               : s = "1024";
         }
-        return "1024";//Default value
+        return s;
     }
 
     template <class TArchive>
@@ -61,14 +70,16 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::GlobalTrigger_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::GlobalTrigger_t::None )           : return "none"; break;
-            case( V1742B::GlobalTrigger_t::ExternalOnly )   : return "external_only"; break;
-            case( V1742B::GlobalTrigger_t::SWOnly )         : return "sw_only"; break;
-            case( V1742B::GlobalTrigger_t::All )            : return "all"; break;
+            case( V1742B::GlobalTrigger_t::None )           : s = "none"; break;
+            case( V1742B::GlobalTrigger_t::ExternalOnly )   : s = "external_only"; break;
+            case( V1742B::GlobalTrigger_t::SWOnly )         : s = "sw_only"; break;
+            case( V1742B::GlobalTrigger_t::All )            : s = "all"; break;
+            default                                         : s = "none";
         }
-        return "none";//Default value
+        return s; 
     }
 
     template <class TArchive>
@@ -87,12 +98,14 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::TriggerPolarity_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::TriggerPolarity_t::RisingEdge )   : return "rising_edge"; break;
-            case( V1742B::TriggerPolarity_t::FallingEdge )  : return "falling_edge"; break;
+            case( V1742B::TriggerPolarity_t::RisingEdge )   : s = "rising_edge"; break;
+            case( V1742B::TriggerPolarity_t::FallingEdge )  : s = "falling_edge"; break;
+            default                                         : s = "rising_edge";
         }
-        return "falling_edge";
+        return s; 
     }
 
     template <class TArchive>
@@ -100,7 +113,7 @@ namespace vmepp
     {
         if     ( str == "rising_edge" )     { value = V1742B::TriggerPolarity_t::RisingEdge; }
         else if( str == "falling_edge" )    { value = V1742B::TriggerPolarity_t::FallingEdge; }
-        else                                { value = V1742B::TriggerPolarity_t::FallingEdge; }
+        else                                { value = V1742B::TriggerPolarity_t::RisingEdge; }
     }
 
     //************************
@@ -109,12 +122,14 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::Level_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::Level_t::NIM )    : return "NIM"; break;
-            case( V1742B::Level_t::TTL )    : return "TTL"; break;
+            case( V1742B::Level_t::NIM )    : s = "NIM"; break;
+            case( V1742B::Level_t::TTL )    : s = "TTL"; break;
+            default                         : s = "NIM";
         }
-        return "TTL";
+        return s;
     }
 
     template <class TArchive>
@@ -122,7 +137,7 @@ namespace vmepp
     {
         if     ( str == "NIM" ) { value = V1742B::Level_t::NIM; }
         else if( str == "TTL" ) { value = V1742B::Level_t::TTL; }
-        else                    { value = V1742B::Level_t::TTL; }
+        else                    { value = V1742B::Level_t::NIM; }
     }
 
     //**********************
@@ -131,12 +146,14 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::AcqMode_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::AcqMode_t::Transparent )  : return "transparent"; break;
-            case( V1742B::AcqMode_t::Output )       : return "output"; break;
+            case( V1742B::AcqMode_t::Transparent )  : s = "transparent"; break;
+            case( V1742B::AcqMode_t::Output )       : s = "output"; break;
+            default                                 : s = "transparent";
         }
-        return "transparent";
+        return s;
     }
 
     template <class TArchive>
@@ -153,12 +170,14 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::TrgInSignal_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::TrgInSignal_t::Gate )  : return "gate"; break;
-            case( V1742B::TrgInSignal_t::Veto )  : return "veto"; break;
+            case( V1742B::TrgInSignal_t::Gate )  : s = "gate"; break;
+            case( V1742B::TrgInSignal_t::Veto )  : s = "veto"; break;
+            default                              : s = "gate";                                                   
         }
-        return "gate";
+        return s;
     }
 
     template <class TArchive>
@@ -175,12 +194,14 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::TrgInSync_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::TrgInSync_t::Edge )       : return "edge"; break;
-            case( V1742B::TrgInSync_t::Duration )   : return "duration"; break;
+            case( V1742B::TrgInSync_t::Edge )       : s = "edge"; break;
+            case( V1742B::TrgInSync_t::Duration )   : s = "duration"; break;
+            default                                 : s = "edge";
         }
-        return "edge";
+        return s;
     }
 
     template <class TArchive>
@@ -197,14 +218,16 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::TrgOutSignal_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::TrgOutSignal_t::NoSignal )    : return "none"; break;
-            case( V1742B::TrgOutSignal_t::AllTRn )      : return "all_TRn"; break;
-            case( V1742B::TrgOutSignal_t::AcceptedTRn ) : return "accepted_TRn"; break;
-            case( V1742B::TrgOutSignal_t::BusyGroups )  : return "busy_groups"; break;
+            case( V1742B::TrgOutSignal_t::NoSignal )    : s = "none"; break;
+            case( V1742B::TrgOutSignal_t::AllTRn )      : s = "all_TRn"; break;
+            case( V1742B::TrgOutSignal_t::AcceptedTRn ) : s = "accepted_TRn"; break;
+            case( V1742B::TrgOutSignal_t::BusyGroups )  : s = "busy_groups"; break;
+            default                                     : s = "none";
         }
-        return "none";//Default value
+        return s;
     }
 
     template <class TArchive>
@@ -214,7 +237,7 @@ namespace vmepp
         else if( str == "all_TRn" )         { value = V1742B::TrgOutSignal_t::AllTRn; }
         else if( str == "accepted_TRn" )    { value = V1742B::TrgOutSignal_t::AcceptedTRn; }
         else if( str == "busy_groups" )     { value = V1742B::TrgOutSignal_t::BusyGroups;  }
-        else                                { value = V1742B::TrgOutSignal_t::BusyGroups; }//Default value
+        else                                { value = V1742B::TrgOutSignal_t::NoSignal; }//Default value
     }
 
     //***************************
@@ -223,14 +246,16 @@ namespace vmepp
     template <class TArchive>
     std::string save_minimal( TArchive const&, V1742B::StartSource_t const& value )
     {
+        std::string s;
         switch( value )
         {
-            case( V1742B::StartSource_t::SW )       : return "sw"; break;
-            case( V1742B::StartSource_t::S_IN )     : return "s_in"; break;
-            case( V1742B::StartSource_t::FirstTrg ) : return "first_trg"; break;
-            case( V1742B::StartSource_t::LVDS )     : return "LVDS"; break;
+            case( V1742B::StartSource_t::SW )       : s = "sw"; break;
+            case( V1742B::StartSource_t::S_IN )     : s = "s_in"; break;
+            case( V1742B::StartSource_t::FirstTrg ) : s = "first_trg"; break;
+            case( V1742B::StartSource_t::LVDS )     : s = "LVDS"; break;
+            default                                 : s = "sw";
         }
-        return "sw";//Default value
+        return s;
     }
 
     template <class TArchive>
@@ -241,6 +266,34 @@ namespace vmepp
         else if( str == "first_trg" )   { value = V1742B::StartSource_t::FirstTrg; }
         else if( str == "LVDS" )        { value = V1742B::StartSource_t::LVDS;  }
         else                            { value = V1742B::StartSource_t::SW; }//Default value
+    }
+
+    //****************************
+    //****** TRG-OUT-SOURCE ******
+    //****************************
+    template <class TArchive>
+    std::string save_minimal( TArchive const&, V1742B::TrgOutSource_t const& value )
+    {
+        std::stringstream ss;
+        ss << "0x"
+           << std::setfill( '0' )
+           << std::setw( 2 * sizeof( std::underlying_type<V1742B::TrgOutSource_t>::type ) )
+           << std::hex
+           << static_cast<std::underlying_type<V1742B::TrgOutSource_t>::type>( value );
+        return ss.str();  
+    }
+
+    template <class TArchive>
+    void load_minimal( TArchive const&, V1742B::TrgOutSource_t& value, std::string const& str )
+    {
+        try
+        {
+            value = static_cast<V1742B::TrgOutSource_t>( std::stol( str, nullptr, 16 ) );
+        }
+        catch( const std::exception& e )
+        {
+            value = V1742B::TrgOutSource_t::None;
+        }
     }
 }
 #endif

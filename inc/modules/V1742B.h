@@ -571,6 +571,7 @@ namespace vmepp
                 LVDS    = 0x20000000, /*!< If LVDS I/Os (if porgrammed as inputs) */
                 TRGIN   = 0x40000000, /*!< External trigger (the TRG-IN input) */
                 SW      = 0x80000000, /*!< Software trigger */
+                All     = 0xe000010f, /*!< All of the above (including AND) */
             };
 
             friend TrgOutSignal_t operator|( TrgOutSignal_t a, TrgOutSignal_t b )

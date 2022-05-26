@@ -715,12 +715,14 @@ namespace vmepp
 
     void V1742B::WriteTRGOUTGeneration( TrgOutSource_t mask )
     {
-        WriteRegister32( V1742B_FRNT_PANEL_TRG_OUT, static_cast<uint32_t>( mask ) );
+        WriteRegister32( V1742B_FRNT_PANEL_TRG_OUT, static_cast<uint32_t>( mask ),
+                         static_cast<uint32_t>( TrgOutSource_t::All ) );
     }
 
     V1742B::TrgOutSource_t V1742B::ReadTRGOUTGeneration()
     {
-        return static_cast<TrgOutSource_t>( ReadRegister32( V1742B_FRNT_PANEL_TRG_OUT ) );
+        return static_cast<TrgOutSource_t>( ReadRegister32( V1742B_FRNT_PANEL_TRG_OUT ),
+                                            static_cast<uint32_t>( TrgOutSource_t::All ) );
     }
 
     V1742B::TrgOutSignal_t V1742B::ReadTRGOUTSignal()
@@ -800,11 +802,8 @@ namespace vmepp
     void V1742B::WriteTRGINToMezz( bool enable )
     {
         uint32_t value = ReadRegister32( V1742B_FRNT_PNL_IO_CTRL );
-        switch( enable )
-        {
-            case( false )   : value &= ~(1U << V1742B_FRNT_PNL_IO_TGIN_MEZZ_SHFT); break;
-            case( true )    : value |=  (1U << V1742B_FRNT_PNL_IO_TGIN_MEZZ_SHFT); break;
-        }
+        if( not enable )    { value &= ~(1U << V1742B_FRNT_PNL_IO_TGIN_MEZZ_SHFT); }
+        else                { value |=  (1U << V1742B_FRNT_PNL_IO_TGIN_MEZZ_SHFT); }
         WriteRegister32( V1742B_FRNT_PNL_IO_CTRL, value );
     }
 
