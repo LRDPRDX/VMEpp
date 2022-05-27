@@ -17,6 +17,7 @@ Main
 !/test/V6533N/
 !/test/V2718/
 !/test/V1785N/
+!/test/V1742B/
 
 # Data
 *.dat

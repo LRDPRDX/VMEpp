@@ -1,0 +1,213 @@
+{
+    "V1742B": {
+        "trigger": {
+            "post_trigger": 0,
+            "channels": {
+                "value0": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value1": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value2": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value3": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value4": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value5": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value6": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value7": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value8": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value9": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value10": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value11": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value12": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value13": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value14": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value15": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value16": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value17": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value18": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value19": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value20": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value21": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value22": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value23": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value24": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value25": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value26": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value27": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value28": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value29": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value30": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                },
+                "value31": {
+                    "threshold": 0,
+                    "offset": 32767,
+                    "enable_trigger": false
+                }
+            },
+            "tr_0": {
+                "threshold": 0,
+                "offset": 32767,
+                "enable_trigger": false
+            },
+            "tr_1": {
+                "threshold": 0,
+                "offset": 32767,
+                "enable_trigger": false
+            },
+            "global_trigger": "sw_only",
+            "trigger_polarity": "rising_edge"
+        },
+        "interrupts": {
+            "irq_events": 0,
+            "irq_level": 0,
+            "irq_vector": 0
+        },
+        "acquisition": {
+            "group_readout": {
+                "value0": false,
+                "value1": false,
+                "value2": false,
+                "value3": false
+            },
+            "TRn_readout": false,
+            "record_length": "1024",
+            "sampling_rate": "5GHz",
+            "max_events_per_blt": 0,
+            "acquisition_mode": "transparent",
+            "start_source": "sw"
+        },
+        "front_panel": {
+            "lemo_level": "TTL",
+            "TRG-IN": {
+                "gate_veto_enable": false,
+                "signal": "gate",
+                "directly_to_mezz": false,
+                "sync_type": "edge"
+            },
+            "TRG-OUT": {
+                "signal_type": "none",
+                "signal_source": "0x00000000"
+            }
+        }
+    }
+}
