@@ -721,8 +721,8 @@ namespace vmepp
 
     V1742B::TrgOutSource_t V1742B::ReadTRGOUTGeneration()
     {
-        return static_cast<TrgOutSource_t>( ReadRegister32( V1742B_FRNT_PANEL_TRG_OUT ),
-                                            static_cast<uint32_t>( TrgOutSource_t::All ) );
+        return static_cast<TrgOutSource_t>( ReadRegister32( V1742B_FRNT_PANEL_TRG_OUT,
+                                            static_cast<uint32_t>( TrgOutSource_t::All ) ) );
     }
 
     V1742B::TrgOutSignal_t V1742B::ReadTRGOUTSignal()

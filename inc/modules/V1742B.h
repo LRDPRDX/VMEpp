@@ -574,18 +574,18 @@ namespace vmepp
                 All     = 0xe000010f, /*!< All of the above (including AND) */
             };
 
-            friend TrgOutSignal_t operator|( TrgOutSignal_t a, TrgOutSignal_t b )
+            friend TrgOutSource_t operator|( TrgOutSource_t a, TrgOutSource_t b )
             {
-                return static_cast<TrgOutSignal_t>(
-                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( a ) |
-                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( b ) );
+                return static_cast<TrgOutSource_t>(
+                        static_cast<std::underlying_type<TrgOutSource_t>::type>( a ) |
+                        static_cast<std::underlying_type<TrgOutSource_t>::type>( b ) );
             }
 
-            friend TrgOutSignal_t operator&( TrgOutSignal_t a, TrgOutSignal_t b )
+            friend TrgOutSource_t operator&( TrgOutSource_t a, TrgOutSource_t b )
             {
-                return static_cast<TrgOutSignal_t>(
-                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( a ) &
-                        static_cast<std::underlying_type<TrgOutSignal_t>::type>( b ) );
+                return static_cast<TrgOutSource_t>(
+                        static_cast<std::underlying_type<TrgOutSource_t>::type>( a ) &
+                        static_cast<std::underlying_type<TrgOutSource_t>::type>( b ) );
             }
 
             /**
@@ -1483,14 +1483,14 @@ namespace vmepp
             /**
              * Get signals which can contribute to the TRG-OUT signal generation.
              * @return signal mask which can be interpreted by using the bitwise `&` operator. For example:
-             * to check if the signal form Group 1 contributes to the TRG-OUT signal generation, the following
-             * code can be used :
+             * to check if the signal from Group 1 contributes to the TRG-OUT signal generation, the following
+             * code can be used (provided that `mask` has been returned by this function) :
              *
              * @code
-             * if( TrgOutSource_t::G1 & mask )
+             * if( TrgOutSource_t::G1 & mask == TrgOutSource_t::G1 )
              * @endcode
              * @see TrgOutSource_t
-             * @see WriteRGOUTGeneration( TrgOutSource_t )
+             * @see WriteTRGOUTGeneration( TrgOutSource_t )
              */
             TrgOutSource_t ReadTRGOUTGeneration();
 
