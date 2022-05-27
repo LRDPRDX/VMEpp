@@ -21,6 +21,10 @@ Main
 
 # Data
 *.dat
+*.txt
+
+#
+*.pdf
 
 # Documentation
 /doc/*
