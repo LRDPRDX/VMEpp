@@ -21,18 +21,18 @@ int main()
         controller.RegisterSlave( &digitizer );
         controller.Initialize();
 
-        digitizer.WriteGroupEnable( V1742B::Group_t::G1, true );
-        digitizer.WriteTRDigitize( true );
+        digitizer.WriteReadoutEnableGroup( V1742B::Group_t::G0, true );
+        digitizer.WriteReadoutEnableTR( true );
         digitizer.WriteRecordLength( V1742B::RecordLength_t::s1024 );
         digitizer.WriteSamplingRate( V1742B::SamplingRate_t::M5000 );
         digitizer.WriteAcqMode( V1742B::AcqMode_t::Output );
 
-        digitizer.WriteStartStop( true );
+        digitizer.Start();
         usleep( 50000 );
         digitizer.WriteSWTrigger();
         usleep( 50000 );
         digitizer.WriteSWTrigger();
-        digitizer.WriteStartStop( false );
+        digitizer.Stop();
 
         VBuffer buffer;
         digitizer.ReadBuffer( buffer );
@@ -43,7 +43,7 @@ int main()
         while( parser.GetEvent( event, buffer ) )
         {
             event.Print();
-            auto g = event.GetGroup( V1742B::Group_t::G1 );
+            auto g = event.GetGroup( V1742B::Group_t::G0 );
             auto tr = g.GetTR();
             std::cout << tr.size() << "\n";
             g.Print();

@@ -28,23 +28,23 @@ int main()
         digitizer.WriteTestModeEnable( false );
         assert( digitizer.ReadTestModeEnable() == false );
 
-        digitizer.WriteTRPolarity( V1742B::TriggerPolarity_t::RisingEdge );
-        assert( digitizer.ReadTRPolarity() == V1742B::TriggerPolarity_t::RisingEdge );
+        digitizer.WriteTriggerPolarity( V1742B::TriggerPolarity_t::RisingEdge );
+        assert( digitizer.ReadTriggerPolarity() == V1742B::TriggerPolarity_t::RisingEdge );
 
-        digitizer.WriteTRPolarity( V1742B::TriggerPolarity_t::FallingEdge );
-        assert( digitizer.ReadTRPolarity() == V1742B::TriggerPolarity_t::FallingEdge );
+        digitizer.WriteTriggerPolarity( V1742B::TriggerPolarity_t::FallingEdge );
+        assert( digitizer.ReadTriggerPolarity() == V1742B::TriggerPolarity_t::FallingEdge );
 
-        digitizer.WriteTRDigitize();
-        assert( digitizer.ReadTRDigitize() == true );
+        digitizer.WriteReadoutEnableTR();
+        assert( digitizer.ReadReadoutEnableTR() == true );
 
-        digitizer.WriteTRDigitize( false );
-        assert( digitizer.ReadTRDigitize() == false );
+        digitizer.WriteReadoutEnableTR( false );
+        assert( digitizer.ReadReadoutEnableTR() == false );
 
-        digitizer.WriteTREnable();
-        assert( digitizer.ReadTREnable() == true );
+        digitizer.WriteReadoutEnableTR();
+        assert( digitizer.ReadReadoutEnableTR() == true );
 
-        digitizer.WriteTREnable( false );
-        assert( digitizer.ReadTREnable() == false );
+        digitizer.WriteEnableTriggerTR( false );
+        assert( digitizer.ReadEnableTriggerTR() == false );
 
         digitizer.WriteAcqMode( V1742B::AcqMode_t::Output );
         assert( digitizer.ReadAcqMode() == V1742B::AcqMode_t::Output );
@@ -58,23 +58,23 @@ int main()
         digitizer.WriteTRGINEnable( false );
         assert( digitizer.ReadTRGINEnable() == false );
 
-        digitizer.WriteTRGINSignal( V1742B::TriggerIn_t::Gate );
-        assert( digitizer.ReadTRGINSignal() == V1742B::TriggerIn_t::Gate );
+        digitizer.WriteTRGINSignal( V1742B::TrgInSignal_t::Gate );
+        assert( digitizer.ReadTRGINSignal() == V1742B::TrgInSignal_t::Gate );
 
-        digitizer.WriteTRGINSignal( V1742B::TriggerIn_t::Veto );
-        assert( digitizer.ReadTRGINSignal() == V1742B::TriggerIn_t::Veto );
+        digitizer.WriteTRGINSignal( V1742B::TrgInSignal_t::Veto );
+        assert( digitizer.ReadTRGINSignal() == V1742B::TrgInSignal_t::Veto );
 
-        digitizer.WriteTRGOUTSignal( V1742B::TriggerOut_t::NoSignal );
-        assert( digitizer.ReadTRGOUTSignal() == V1742B::TriggerOut_t::NoSignal );
+        digitizer.WriteTRGOUTSignal( V1742B::TrgOutSignal_t::NoSignal );
+        assert( digitizer.ReadTRGOUTSignal() == V1742B::TrgOutSignal_t::NoSignal );
 
-        digitizer.WriteTRGOUTSignal( V1742B::TriggerOut_t::AllTRn );
-        assert( digitizer.ReadTRGOUTSignal() == V1742B::TriggerOut_t::AllTRn );
+        digitizer.WriteTRGOUTSignal( V1742B::TrgOutSignal_t::AllTRn );
+        assert( digitizer.ReadTRGOUTSignal() == V1742B::TrgOutSignal_t::AllTRn );
 
-        digitizer.WriteTRGOUTSignal( V1742B::TriggerOut_t::AcceptedTRn );
-        assert( digitizer.ReadTRGOUTSignal() == V1742B::TriggerOut_t::AcceptedTRn );
+        digitizer.WriteTRGOUTSignal( V1742B::TrgOutSignal_t::AcceptedTRn );
+        assert( digitizer.ReadTRGOUTSignal() == V1742B::TrgOutSignal_t::AcceptedTRn );
 
-        digitizer.WriteTRGOUTSignal( V1742B::TriggerOut_t::BusyGroups );
-        assert( digitizer.ReadTRGOUTSignal() == V1742B::TriggerOut_t::BusyGroups );
+        digitizer.WriteTRGOUTSignal( V1742B::TrgOutSignal_t::BusyGroups );
+        assert( digitizer.ReadTRGOUTSignal() == V1742B::TrgOutSignal_t::BusyGroups );
 
 
         // Acquisition Control Register

@@ -37,14 +37,14 @@ void Draw()
         controller.RegisterSlave( &digitizer );
         controller.Initialize();
 
-        digitizer.WriteGroupEnable( V1742B::Group_t::G0, true );
+        digitizer.WriteReadoutEnableGroup( V1742B::Group_t::G0, true );
+        digitizer.WriteReadoutEnableTR( true );
         digitizer.WriteRecordLength( V1742B::RecordLength_t::s1024 );
         digitizer.WriteSamplingRate( V1742B::SamplingRate_t::M5000 );
 
-        digitizer.WriteTRPolarity( V1742B::TriggerPolarity_t::FallingEdge );
+        digitizer.WriteTriggerPolarity( V1742B::TriggerPolarity_t::FallingEdge );
         digitizer.WriteGlobalTrigger( V1742B::GlobalTrigger_t::SWOnly );
         digitizer.WriteChannelOffset(0, 0x8000);
-        digitizer.WriteTRDigitize( true );
         //digitizer.WriteEnableTrigger(0, true); 
         digitizer.WriteAcqMode( V1742B::AcqMode_t::Output );
         //digitizer.WriteChannelThreshold(0, thr);
