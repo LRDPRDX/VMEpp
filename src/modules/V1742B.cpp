@@ -33,11 +33,9 @@ namespace vmepp
         PrintMessage( Message_t::INFO, "Loading correction tables from " + fPathToCorrectionTable + " ..." );
         std::ifstream f( fPathToCorrectionTable, std::ios_base::in | std::ios_base::binary );
 
-        while( f.good() )
+        for( FreqCorrection corr; f >> corr; )
         {
-            FreqCorrection fCorr;
-            f >> fCorr;
-            fCorrectionTable[fCorr.freq] = fCorr;
+            fCorrectionTable[corr.freq] = corr;
         }
         for( auto rate : RateIterator() )
         {
