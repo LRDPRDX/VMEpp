@@ -2,19 +2,19 @@
 #define V_PLUS_MASTER_H
 
 #include <string>
-#include <vector>
+#include <list>
 
 #include "CAENVMEtypes.h"
 #include "VModule.h"
+#include "VSlave.h"
 
 namespace vmepp
 {
-    class VSlave;
-
     class VMaster : virtual public VModule
     {
-        protected :
-            std::vector<VSlave*>        fSlaves;
+        private :
+            std::list<VSlave*>          fSlaves;
+            void                        UnregisterSlave( VSlave *slave ) noexcept( true );
 
         public :
             VMaster() { }
@@ -22,7 +22,6 @@ namespace vmepp
 
         public :
             void                        RegisterSlave( VSlave *slave );
-            void                        UnregisterSlave( VSlave *slave ) noexcept( true );
             void                        Initialize();
             size_t                      GetNSlaves() const { return fSlaves.size(); }
 
@@ -40,6 +39,7 @@ namespace vmepp
         public :
             std::string                 HelpStringCycle( uint32_t address, CVAddressModifier am, CVDataWidth dw ) const;
             std::string                 HelpStringCycle( uint32_t address, CVAddressModifier am ) const;
+            friend void VSlave::Release();
     };
 }
 #endif

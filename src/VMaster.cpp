@@ -3,6 +3,7 @@
 #include "VException.h"
 
 #include <sstream>
+#include <algorithm>
 
 namespace vmepp
 {
@@ -10,15 +11,16 @@ namespace vmepp
     {
         for( auto it = fSlaves.begin(); it != fSlaves.end(); )
         {
-            UnregisterSlave( *it );
+            (*it)->fMaster = nullptr;
+            it = fSlaves.erase( it );
         }
     }
 
     void VMaster::RegisterSlave( VSlave *slave )
     {
-        if( slave == nullptr )
+        if( (slave == nullptr) or (slave->fMaster != nullptr) )
         {
-            throw( VException( VError_t::vBadSlave, "Slave pointer is invalid" ) );
+            throw( VException( VError_t::vBadSlave, "Slave pointer is invalid or this slave is already has a master (might be the one you're trying to register to)" ) );
         }
         uint32_t newB = slave->GetBaseAddress();
         uint32_t newR = slave->GetRange();
@@ -39,19 +41,11 @@ namespace vmepp
 
     void VMaster::UnregisterSlave( VSlave *slave ) noexcept( true )
     {
-        for( auto it = fSlaves.begin(); it != fSlaves.end(); )
+        auto iter = std::find( fSlaves.begin(), fSlaves.end(), slave );
+        if( iter != fSlaves.end() )
         {
-            if( *it == slave )
-            {
-                (*it)->fMaster = nullptr;
-                // std::vector::erase doesn't throw unless
-                // the assignment operator of VSlave*
-                it = fSlaves.erase( it );
-            }
-            else
-            {
-                ++it;
-            }
+            (*iter)->fMaster = nullptr;
+            fSlaves.erase( iter );
         }
     }
 
