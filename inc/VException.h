@@ -72,13 +72,13 @@ namespace vmepp
                         break;
                     case( VError_t::vOrphan ) :
                         fMessage = "The controller is invalid";
-                        fHint = "Use VController::RegisterSlave( VSlave* ) method to register the board";
+                        fHint = "Use the VController::RegisterSlave( VSlave* ) method to register the board";
                         break;
                     case( VError_t::vBuffAllocFailed ) :
                         fMessage = "Failed to allocate memory for the readout buffer";
                         break;
                     case( VError_t::vBadSlave ) :
-                        fMessage = "Bad master (base address, nullptr, etc.)";
+                        fMessage = "Bad slave (base address, nullptr, etc.)";
                         break;
                     case( VError_t::vConfigError ) :
                         fMessage = "Error occured while writing/reading config";
