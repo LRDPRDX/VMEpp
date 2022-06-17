@@ -9,18 +9,15 @@ namespace vmepp
 {
     VMaster::~VMaster()
     {
-        for( auto it = fSlaves.begin(); it != fSlaves.end(); )
-        {
-            (*it)->fMaster = nullptr;
-            it = fSlaves.erase( it );
-        }
+        auto temp = fSlaves;
+        for( auto s : temp ) { s->Release(); }
     }
 
     void VMaster::RegisterSlave( VSlave *slave )
     {
         if( (slave == nullptr) or (slave->fMaster != nullptr) )
         {
-            throw( VException( VError_t::vBadSlave, "Slave pointer is invalid or this slave is already has a master (might be the one you're trying to register to)" ) );
+            throw( VException( VError_t::vBadSlave, "Slave pointer is invalid, or this slave is already has a master (might be the one you're trying to register to)" ) );
         }
         uint32_t newB = slave->GetBaseAddress();
         uint32_t newR = slave->GetRange();
@@ -41,12 +38,8 @@ namespace vmepp
 
     void VMaster::UnregisterSlave( VSlave *slave ) noexcept( true )
     {
-        auto iter = std::find( fSlaves.begin(), fSlaves.end(), slave );
-        if( iter != fSlaves.end() )
-        {
-            (*iter)->fMaster = nullptr;
-            fSlaves.erase( iter );
-        }
+        slave->fMaster = nullptr;
+        fSlaves.remove( slave );
     }
 
 
